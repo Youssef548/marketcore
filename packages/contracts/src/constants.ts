@@ -11,6 +11,17 @@
 /** Header carrying the correlation id. Shared by the API, the worker and any client. */
 export const REQUEST_ID_HEADER = 'x-request-id';
 
+/**
+ * The prefix every route sits behind, defined once because it is part of the
+ * address a client calls rather than an implementation detail of the server that
+ * serves it.
+ *
+ * It was a literal in `apps/api/src/app.setup.ts` until the web app needed to
+ * build the same URLs: a client that guesses this wrong fails every call, and it
+ * would have failed silently, as a 404 that looks like a missing route.
+ */
+export const API_PREFIX = '/api/v1';
+
 export const HealthStatuses = { OK: 'ok' } as const;
 export type HealthStatus = (typeof HealthStatuses)[keyof typeof HealthStatuses];
 
