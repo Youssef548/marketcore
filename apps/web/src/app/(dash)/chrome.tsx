@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Alert, Button } from '@app/ui';
-import { signOut, useSession } from '@/lib/session/client';
-import { OrganizationSwitcher } from './organization-switcher';
+import { Alert } from '@app/ui';
+import { useSession } from '@/lib/session/client';
+import { Rail } from './rail';
+import { TopBar } from './top-bar';
 
 /**
  * The shell every signed-in page sits in.
@@ -26,7 +26,7 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
   }, [state.status, router]);
 
   if (state.status === 'loading') {
-    return <main className="p-10 text-sm text-gray-500">Loading your session…</main>;
+    return <main className="p-10 text-sm text-ink-muted">Loading your session…</main>;
   }
 
   if (state.status === 'anonymous') {
@@ -43,29 +43,13 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-gray-200">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <Link className="text-sm font-semibold" href="/dashboard">
-            {appName}
-          </Link>
+    <div className="grid min-h-screen grid-cols-[13rem_minmax(0,1fr)]">
+      <Rail appName={appName} />
 
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-500">{state.session.user.email}</span>
-            <OrganizationSwitcher />
-            <Button
-              variant="ghost"
-              onClick={() => {
-                void signOut().then(() => router.replace('/login'));
-              }}
-            >
-              Sign out
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-3xl px-6 py-8">{children}</main>
+      <div className="flex min-w-0 flex-col bg-canvas">
+        <TopBar />
+        <main className="mx-auto w-full max-w-3xl px-6 py-8">{children}</main>
+      </div>
     </div>
   );
 }

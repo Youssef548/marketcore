@@ -1,13 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 
-const mocks = vi.hoisted(() => ({ replace: vi.fn() }));
+const mocks = vi.hoisted(() => ({ replace: vi.fn(), pathname: vi.fn() }));
 
 vi.mock('next/navigation', async (importOriginal) => ({
   // Spread the real module: `next/link` imports from here too, so replacing the
   // whole module with one export breaks rendering for a reason unrelated to the test.
   ...(await importOriginal<typeof import('next/navigation')>()),
   useRouter: () => ({ replace: mocks.replace }),
+  usePathname: () => mocks.pathname(),
 }));
 
 import { SessionProvider } from '@/lib/session/client';
@@ -31,6 +32,8 @@ const fetchMock = vi.fn();
 
 beforeEach(() => {
   mocks.replace.mockClear();
+  mocks.pathname.mockReset();
+  mocks.pathname.mockReturnValue('/dashboard');
   fetchMock.mockReset();
   vi.stubGlobal('fetch', fetchMock);
 });
@@ -65,6 +68,29 @@ describe('the signed-in shell', () => {
     expect(screen.getByText('the page')).toBeTruthy();
     expect(screen.getByRole('combobox')).toBeTruthy();
     expect(screen.queryByText('Loading your session…')).toBeNull();
+  });
+
+  it('puts the tenant in the rail and the user in the top bar, and neither in both', async () => {
+    fetchMock.mockResolvedValue(response(200, SESSION));
+
+    renderShell();
+    await screen.findByText('owner@marketcore.test');
+
+    // The exploration mockups showed both facts twice — the organization in the
+    // rail and again in the top bar, the user in both — and the duplication was a
+    // mistake. One fact, one place. Asserted on the two landmarks rather than on a
+    // raw occurrence count, because the organization's own `<option>` is part of
+    // the rail's control and is meant to name it.
+    const rail = screen.getByRole('complementary');
+    const topBar = screen.getByRole('banner');
+
+    expect(rail.textContent).toContain('Nile Traders');
+    expect(topBar.textContent).not.toContain('Nile Traders');
+
+    expect(topBar.textContent).toContain('owner@marketcore.test');
+    expect(rail.textContent).not.toContain('owner@marketcore.test');
+
+    expect(screen.getByRole('heading', { name: 'Your session' })).toBeTruthy();
   });
 
   it('sends an anonymous visitor to sign in', async () => {
