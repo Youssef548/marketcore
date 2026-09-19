@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@app/runtime';
+import { AuthModule } from './auth/auth.module';
 import { HealthController } from './modules/health/health.controller';
 import { HealthRepository } from './modules/health/health.repository';
 import { HealthService } from './modules/health/health.service';
@@ -13,7 +14,7 @@ import { HealthService } from './modules/health/health.service';
  * owning module's exported service, never through its Prisma models directly.
  */
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AuthModule],
   controllers: [HealthController],
   // Repositories before services: the service depends on the repository, never
   // on the Prisma client directly.

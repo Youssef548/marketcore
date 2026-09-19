@@ -20,6 +20,9 @@ importers:
       '@app/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@app/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@app/runtime':
         specifier: workspace:*
         version: link:../../packages/runtime
