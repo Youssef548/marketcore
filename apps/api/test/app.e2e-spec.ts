@@ -1,13 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from '../src/app.module';
-import { ErrorEnvelopeFilter } from '../src/filters/error-envelope.filter';
+import { configureApp } from '../src/app.setup';
 
 /**
- * Boots the real composition root. This is what proves the global pipe and
- * filter are actually installed on the app the API serves, not merely defined.
+ * Boots the real composition root through the same configureApp() the server
+ * uses. This is what proves the global pipe, filter and request-id middleware
+ * are actually installed on the app the API serves, not merely defined.
  */
 describe('app (e2e)', () => {
   let app: INestApplication;
@@ -15,9 +15,7 @@ describe('app (e2e)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
     app = moduleRef.createNestApplication();
-    app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ZodValidationPipe());
-    app.useGlobalFilters(new ErrorEnvelopeFilter());
+    configureApp(app);
     await app.init();
   });
 
