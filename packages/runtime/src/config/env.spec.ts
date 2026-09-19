@@ -13,6 +13,7 @@ const valid = {
   DATABASE_URL: 'postgresql://app:app@localhost:5432/app',
   PORT: '3001',
   WEB_URL: 'http://localhost:3000',
+  JWT_SECRET: 'ci-secret-that-is-at-least-32-characters',
 };
 
 describe('validateEnv', () => {
@@ -23,7 +24,7 @@ describe('validateEnv', () => {
   });
 
   it('applies defaults for everything optional', () => {
-    const env = validateEnv({ DATABASE_URL: valid.DATABASE_URL });
+    const env = validateEnv({ DATABASE_URL: valid.DATABASE_URL, JWT_SECRET: valid.JWT_SECRET });
     expect(env.PORT).toBe(3001);
     expect(env.APP_NAME).toBe('app');
     expect(env.WEB_URL).toBe('http://localhost:3000');
