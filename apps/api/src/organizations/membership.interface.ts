@@ -11,3 +11,18 @@ export interface MembershipRecord {
   userId: string;
   role: MemberRole;
 }
+
+/**
+ * What happened when a member was removed.
+ *
+ * Three outcomes rather than a boolean, because the service has to answer three
+ * different ways — 404, 409, 204 — and the layer that knows which is the one that
+ * ran the count and the delete.
+ */
+export const MemberRemovalOutcomes = {
+  REMOVED: 'REMOVED',
+  NOT_A_MEMBER: 'NOT_A_MEMBER',
+  LAST_OWNER: 'LAST_OWNER',
+} as const;
+export type MemberRemovalOutcome =
+  (typeof MemberRemovalOutcomes)[keyof typeof MemberRemovalOutcomes];

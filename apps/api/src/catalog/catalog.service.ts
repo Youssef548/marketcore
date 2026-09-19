@@ -11,7 +11,7 @@ import {
   planProductTransition,
   type TenantContext,
 } from '@app/domain';
-import { ProductTransitionMessages } from './catalog.constants';
+import { ProductMessages, ProductTransitionMessages } from './catalog.constants';
 import { CatalogRepository } from './catalog.repository';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class CatalogService {
    */
   async findOne(tenant: TenantContext, id: string): Promise<Product> {
     const product = await this.catalogRepository.findById(tenant, id);
-    if (product === null) throw new NotFoundException('Product not found');
+    if (product === null) throw new NotFoundException(ProductMessages.NOT_FOUND);
     return product;
   }
 
@@ -46,7 +46,7 @@ export class CatalogService {
     input: { name?: string; priceMinor?: number },
   ): Promise<void> {
     const updated = await this.catalogRepository.update(tenant, id, input);
-    if (updated === 0) throw new NotFoundException('Product not found');
+    if (updated === 0) throw new NotFoundException(ProductMessages.NOT_FOUND);
   }
 
   publish(tenant: TenantContext, id: string): Promise<void> {
@@ -59,13 +59,13 @@ export class CatalogService {
 
   async inventory(tenant: TenantContext, id: string): Promise<Inventory> {
     const inventory = await this.catalogRepository.findInventory(tenant, id);
-    if (inventory === null) throw new NotFoundException('Product not found');
+    if (inventory === null) throw new NotFoundException(ProductMessages.NOT_FOUND);
     return inventory;
   }
 
   private async transition(tenant: TenantContext, id: string, to: ProductStatus): Promise<void> {
     const product = await this.catalogRepository.findById(tenant, id);
-    if (product === null) throw new NotFoundException('Product not found');
+    if (product === null) throw new NotFoundException(ProductMessages.NOT_FOUND);
 
     // The rule is pure and lives in @app/domain, so both processes answer the same
     // way once the worker exists; this layer only turns the verdict into a status.

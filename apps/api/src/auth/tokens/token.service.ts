@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_BYTES } from '../auth.constants';
 import type { AccessTokenPayload } from './access-token.interface';
 
@@ -32,12 +32,5 @@ export class TokenService {
    */
   hashRefreshToken(token: string): string {
     return createHash('sha256').update(token).digest('hex');
-  }
-
-  /** Constant-time compare, so a mismatch cannot be timed to reveal a prefix. */
-  refreshTokenMatches(candidate: string, storedHash: string): boolean {
-    const candidateHash = Buffer.from(this.hashRefreshToken(candidate));
-    const stored = Buffer.from(storedHash);
-    return candidateHash.length === stored.length && timingSafeEqual(candidateHash, stored);
   }
 }

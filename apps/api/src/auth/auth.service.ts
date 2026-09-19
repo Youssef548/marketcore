@@ -17,7 +17,7 @@ import {
   type TokenPair,
   type UserSummary,
 } from '@app/contracts';
-import { PASSWORD_HASHER, PasswordPolicyMessages, REFRESH_TOKEN_TTL_MS } from './auth.constants';
+import { AuthMessages, PASSWORD_HASHER, PasswordPolicyMessages, REFRESH_TOKEN_TTL_MS } from './auth.constants';
 import { AuthRepository } from './auth.repository';
 import { PasswordHasher } from './password/password-hasher.interface';
 import { SessionsRepository } from './sessions.repository';
@@ -44,7 +44,7 @@ export class AuthService {
 
     const existing = await this.authRepository.findByEmail(request.email);
     if (existing !== null) {
-      throw new ConflictException('Email is already registered');
+      throw new ConflictException(AuthMessages.EMAIL_TAKEN);
     }
 
     const passwordHash = await this.passwordHasher.hash(request.password);
@@ -56,7 +56,7 @@ export class AuthService {
     // One answer for an unknown email and a wrong password: distinguishing them
     // would make this endpoint an account-enumeration oracle.
     if (user === null || !(await this.passwordHasher.verify(user.passwordHash, request.password))) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(AuthMessages.INVALID_CREDENTIALS);
     }
 
     return this.issuePair(user.id);
@@ -75,7 +75,7 @@ export class AuthService {
     }
 
     if (verdict === RefreshTokenVerdicts.REJECTED) {
-      throw new UnauthorizedException('Refresh token is not usable');
+      throw new UnauthorizedException(AuthMessages.REFRESH_UNUSABLE);
     }
 
     const nextToken = this.tokenService.generateRefreshToken();
@@ -95,7 +95,7 @@ export class AuthService {
     // The access token is signed from the user id, which the session holds — not
     // from the session id, and never from anything the caller supplied.
     const userId = await this.sessionsRepository.findUserIdBySession(record.sessionId);
-    if (userId === null) throw new UnauthorizedException('Session no longer exists');
+    if (userId === null) throw new UnauthorizedException(AuthMessages.SESSION_GONE);
 
     return { accessToken: await this.tokenService.signAccessToken(userId), refreshToken: nextToken };
   }
@@ -115,7 +115,7 @@ export class AuthService {
       sessionId,
       SessionRevocationReasons.REUSE_DETECTED,
     );
-    throw new UnauthorizedException('Refresh token was already used');
+    throw new UnauthorizedException(AuthMessages.REFRESH_REUSED);
   }
 
   private async issuePair(userId: string): Promise<TokenPair> {

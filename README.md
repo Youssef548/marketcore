@@ -73,9 +73,13 @@ cp apps/api/.env.example apps/api/.env
 cp packages/database/.env.example packages/database/.env
 
 pnpm --filter @app/database db:deploy   # apply migrations
-pnpm --filter @app/database db:seed     # upsert one demo user (idempotent)
+pnpm --filter @app/database db:seed     # two organizations, their members, and a product each
 pnpm dev                                # api on :3001, web on :3000
 ```
+
+The seed is deterministic and idempotent, and its users can authenticate — `owner@marketcore.test`
+with the password `correct-horse-battery` is an owner of Nile Traders, and an integration test
+asserts that hash verifies. It exists so the walkthrough below can be run by hand.
 
 | Check | Expected |
 |---|---|

@@ -31,7 +31,15 @@ async function main(): Promise<void> {
     }
 
     for (const user of SEED_USERS) {
-      await prisma.user.upsert({ where: { email: user.email }, update: {}, create: user });
+      // `update` carries the hash and status rather than being empty, so the seed
+      // is declarative: re-running it converges a seeded row to the seed's current
+      // values. With an empty update, changing a seeded password would never reach
+      // an existing database and the walkthrough would keep failing after a fix.
+      await prisma.user.upsert({
+        where: { email: user.email },
+        update: { passwordHash: user.passwordHash, status: user.status },
+        create: user,
+      });
     }
 
     for (const membership of SEED_MEMBERSHIPS) {

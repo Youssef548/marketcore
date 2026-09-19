@@ -10,7 +10,15 @@ import {
 
 export const CreateOrganizationRequestSchema = z.object({
   name: z.string().min(1),
-  slug: z.string().min(SLUG_MIN_LENGTH).max(SLUG_MAX_LENGTH).regex(SLUG_PATTERN),
+  // Optional: a caller that supplies only a name gets one derived from it. Omitted
+  // rather than required-empty so the intent is explicit, and validated by the same
+  // pattern either way.
+  slug: z
+    .string()
+    .min(SLUG_MIN_LENGTH)
+    .max(SLUG_MAX_LENGTH)
+    .regex(SLUG_PATTERN)
+    .optional(),
 });
 export type CreateOrganizationRequest = z.infer<typeof CreateOrganizationRequestSchema>;
 

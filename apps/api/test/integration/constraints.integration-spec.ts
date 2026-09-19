@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { afterAll, describe, expect, it } from '@jest/globals';
+import { verify } from 'argon2';
 import { testPrisma } from '../support/db';
 
 const suffix = () => randomUUID().slice(0, 8);
@@ -45,6 +46,21 @@ describe('database constraints', () => {
     await expect(
       testPrisma.inventory.update({ where: { productId: product.id }, data: { reserved: -1 } }),
     ).rejects.toThrow(/inventory_quantities_non_negative/);
+  });
+
+  it('a seeded user can authenticate with the documented password', async () => {
+    // The README's walkthrough asks a reviewer to log in as a seeded user. An
+    // earlier seed shipped a placeholder in place of a hash, so that login answered
+    // 500 and the walkthrough was unrunnable. The password is pinned here
+    // deliberately rather than imported, so a drift between the seed and its
+    // documentation fails this test instead of staying consistent and wrong.
+    const seeded = await testPrisma.user.findUnique({
+      where: { email: 'owner@marketcore.test' },
+      select: { passwordHash: true },
+    });
+
+    expect(seeded).not.toBeNull();
+    await expect(verify(seeded!.passwordHash, 'correct-horse-battery')).resolves.toBe(true);
   });
 
   it('refuses a duplicate organization slug', async () => {

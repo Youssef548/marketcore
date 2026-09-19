@@ -181,9 +181,12 @@ OrganizationMember, rather than building the first model again.
 | Enum drift | same | all five value sets agree between the const objects and the Prisma enums |
 | Auth flows | `pnpm --filter api test:e2e` | register, login, rotation, replay-revokes-the-family, logout |
 | Whole suite | `pnpm turbo run lint typecheck test build` | **30/30 tasks, 0 failed** |
-| Unit | `pnpm --filter api exec jest` | 43 passed, 9 suites |
-| End to end | `pnpm --filter api test:e2e` | 39 passed, 7 suites |
-| Integration | `pnpm --filter api test:integration` | 12 passed, 3 suites |
+| Unit | `pnpm --filter api exec jest` | 52 passed, 11 suites |
+| End to end | `pnpm --filter api test:e2e` | 46 passed, 8 suites |
+| Integration | `pnpm --filter api test:integration` | 16 passed, 4 suites |
+| The 401 boundary | `pnpm --filter api test:e2e` | missing / malformed / wrongly-signed token each refused; no token on a protected route → 401 |
+| The last-owner rule under concurrency | `pnpm --filter api test:integration` | two racing removals leave exactly one owner — and the test fails 3/3 with the row lock removed |
+| A seeded user can authenticate | `pnpm --filter api test:integration` | the seeded hash verifies against the documented password |
 | Boundary rules still bite | `packages/domain` → `apps/api` import | `pnpm lint` failed with `boundaries/element-types`, reverting restored green |
 
 Full tenancy output is in the commit message for `89ca258`.
@@ -236,18 +239,19 @@ Five, all found by running rather than reading.
 4. **`apps/api` typechecks against a package's `dist`, not its source.** Adding `JWT_SECRET` to
    `@app/runtime` broke `apps/api` typecheck until the package was rebuilt. Turbo's `typecheck`
    depends on `^build` so the full pipeline is safe; a bare `--filter api typecheck` is not.
-5. **Wall clock tracks turn count, not model cost.** Measured across seven dispatches: ≈8s per turn.
-   A cheap model did **not** reduce turns (16/task against 15–18 for a far more expensive one). The
-   turn count, not the model, is what a task costs — and environment friction, not code volume, is
-   where the turns went: one batch of three tasks took 87 turns because it rediscovered `psql` access,
-   the Prisma schema path and two missing devDependencies.
+5. **`@nestjs/jwt@12` is ESM-only and this app is CommonJS.** `"type": "module"` with no CJS export,
+   so `require('@nestjs/jwt')` fails under ts-jest. Pinned to `^11`. The plan named the package without
+   a version; installing the latest was the defect.
+
+*Measurements about the agent process itself — dispatch wall clock, turn counts, and where the time
+went — are in `.superpowers/sdd/…/analytics.md`, not here. This record is for repository evidence.*
 
 ### Deviations from the plan
 
-- **One subagent dispatch per task was abandoned.** Subagents were unable to install packages (a
-  refused tool call, reproduced without any kill from the controller), which stopped three consecutive
-  attempts at the auth tasks with nothing written. The controller installed the dependencies and then
-  implemented Tasks 7–15 directly. Tasks 1–6 were delivered by subagents.
+- **One subagent dispatch per task was abandoned.** Subagents could not install packages, which
+  stopped three consecutive attempts with nothing written. The dependencies were installed by the
+  controller and Tasks 7–15 were then implemented directly. Tasks 1–6 were delivered by subagents.
+  The process measurements behind that decision are in `.superpowers/sdd/…/analytics.md`.
 - **Tasks 8 and 9 share one commit** (`a727d4a`). The first commit swept files already written for the
   second; rather than leave a message claiming only Task 8, the message was amended to say what the
   commit actually contains.

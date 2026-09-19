@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { MemberRoles } from '@app/contracts';
+import { MemberRoles, SLUG_PATTERN } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
 import {
@@ -38,6 +38,20 @@ describe('organizations (e2e)', () => {
       .expect(201);
 
     expect(res.body).toMatchObject({ name: 'Owned Co', slug, role: MemberRoles.OWNER });
+  });
+
+  it('derives a slug from the name when none is given', async () => {
+    const accessToken = await registerAndLogin(app, `${unique('noslug')}@marketcore.test`);
+
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/organizations')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ name: `Derived Name ${unique('co')}` })
+      .expect(201);
+
+    // The contract's own pattern, not a second copy of it — the slug the API
+    // derived from a display name has to satisfy the same rule a caller would.
+    expect(SLUG_PATTERN.test(res.body.slug as string)).toBe(true);
   });
 
   it('refuses a duplicate slug with CONFLICT', async () => {

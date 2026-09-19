@@ -16,6 +16,9 @@ const tokenRecord = (overrides: Record<string, unknown> = {}) => ({
   expiresAt: FUTURE,
   usedAt: null,
   sessionRevokedAt: null,
+  // The session is the outer bound, so the fixture needs it: rotation renews the
+  // token, not the session.
+  sessionExpiresAt: FUTURE,
   ...overrides,
 });
 
@@ -157,12 +160,21 @@ describe('AuthService', () => {
   it('rejects an unknown or expired token without revoking anything', async () => {
     const unknown = build({ loadByTokenHash: jest.fn().mockResolvedValue(tokenRecord({ exists: false })) });
     const expired = build({ loadByTokenHash: jest.fn().mockResolvedValue(tokenRecord({ expiresAt: PAST })) });
+    const sessionExpired = build({
+      loadByTokenHash: jest.fn().mockResolvedValue(tokenRecord({ sessionExpiresAt: PAST })),
+    });
 
     await expect(unknown.service.refresh('refresh')).rejects.toBeInstanceOf(UnauthorizedException);
     await expect(expired.service.refresh('refresh')).rejects.toBeInstanceOf(UnauthorizedException);
-    // Nothing leaked here, so there is nothing to revoke.
+    // A fresh token in a session past its own expiry is still refused: rotation
+    // renews the token, not the session.
+    await expect(sessionExpired.service.refresh('refresh')).rejects.toBeInstanceOf(
+      UnauthorizedException,
+    );
+    // Nothing leaked in any of these cases, so there is nothing to revoke.
     expect(unknown.sessions.revokeSession).not.toHaveBeenCalled();
     expect(expired.sessions.revokeSession).not.toHaveBeenCalled();
+    expect(sessionExpired.sessions.revokeSession).not.toHaveBeenCalled();
   });
 
   it('revokes the session on logout, and treats an unknown token as success', async () => {

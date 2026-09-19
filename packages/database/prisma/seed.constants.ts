@@ -1,11 +1,28 @@
 import { CurrencyCode, MemberRole, ProductStatus, UserStatus, type Prisma } from '@prisma/client';
 
 /**
- * Not credentials. These values are not argon2id hashes, so they cannot
- * authenticate against anything; they exist so the seed has real rows to write.
- * Nothing in the API accepts them. The auth module hashes with argon2id.
+ * The seeded password, in plain text, and deliberately so.
+ *
+ * This is test data. The README's walkthrough and Task 15 both ask a reviewer to
+ * log in as a seeded user, which is impossible if the hash cannot be verified —
+ * an earlier version of this file shipped a placeholder string, so logging in as
+ * `owner@marketcore.test` returned a 500 rather than a token, and the documented
+ * walkthrough was unrunnable.
+ *
+ * This is not a credential for any deployed environment. Nothing in the API reads
+ * it; it exists so `db:seed` produces accounts that authenticate.
  */
-const SEED_PASSWORD_HASH = 'not-a-credential-seed-placeholder';
+export const SEED_PASSWORD = 'correct-horse-battery';
+
+/**
+ * A real argon2id hash of `SEED_PASSWORD`, not a placeholder.
+ *
+ * A fixed hash rather than one computed at seed time, so seeding stays
+ * deterministic — the same input produces the same row. An integration test
+ * verifies it against `SEED_PASSWORD`, which is what stops this drifting.
+ */
+export const SEED_PASSWORD_HASH =
+  '$argon2id$v=19$m=65536,p=4,t=3$OlGqPKZcXCwNwDOj/lOPNw$OkqzX2jmlD5Ao8fAt9UYrMnVTmBoeO2Ja0KyXZaEztk';
 
 /**
  * Fixed identifiers, because products carry no business-level unique key and

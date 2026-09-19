@@ -27,6 +27,21 @@ export const REFRESH_TOKEN_BYTES = 32;
 export const PASSWORD_HASHER = 'PASSWORD_HASHER';
 
 /**
+ * Human-facing messages, one per failure.
+ *
+ * Clients branch on the envelope's `code`, never on these — they exist so a message
+ * has one definition rather than being written inline wherever it happens to be
+ * raised, which is how two endpoints end up describing the same failure two ways.
+ */
+export const AuthMessages = {
+  EMAIL_TAKEN: 'Email is already registered',
+  INVALID_CREDENTIALS: 'Invalid credentials',
+  REFRESH_UNUSABLE: 'Refresh token is not usable',
+  REFRESH_REUSED: 'Refresh token was already used',
+  SESSION_GONE: 'Session no longer exists',
+} as const;
+
+/**
  * One message per policy violation, keyed by the domain's violation enum. A
  * mapping rather than a chain of conditionals, so adding a violation is one line
  * and the compiler reports the omission until it is added.

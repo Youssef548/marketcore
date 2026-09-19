@@ -28,17 +28,12 @@ describe('TokenService', () => {
   });
 
   it('hashes a refresh token deterministically, so a lookup can find it', () => {
+    // The refresh path looks tokens up by exact hash, so this is the only
+    // comparison that happens — no constant-time compare is involved, because the
+    // stored value is never the secret.
     const token = service.generateRefreshToken();
 
     expect(service.hashRefreshToken(token)).toBe(service.hashRefreshToken(token));
     expect(service.hashRefreshToken(token)).not.toBe(token);
-  });
-
-  it('compares refresh tokens without leaking a prefix through timing', () => {
-    const token = service.generateRefreshToken();
-    const stored = service.hashRefreshToken(token);
-
-    expect(service.refreshTokenMatches(token, stored)).toBe(true);
-    expect(service.refreshTokenMatches(`${token}x`, stored)).toBe(false);
   });
 });

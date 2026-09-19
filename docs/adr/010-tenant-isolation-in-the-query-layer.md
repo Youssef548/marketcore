@@ -23,13 +23,24 @@ composes its filter from one shared helper.**
   `(organizationId, userId)`, refuses if it is missing or the organization is not active, and calls
   `buildTenantContext(organizationId, role)`. The value object cannot be constructed without an
   organization id, so a request that reached a controller always acts inside a tenant.
-- Every tenant-scoped repository method takes that `TenantContext` — never a bare organization id —
-  and composes its `where` from `tenantScope(tenant)`. One definition of the filter's shape.
-- Writes use `updateMany` with the tenant in the `where`, never `update`. `update` accepts only a
-  unique predicate, so it could not carry the tenant filter; the row would be written before anyone
-  noticed the tenant did not match.
-- Enforcement is evidence rather than magic: a cross-tenant test per tenant-owned model, plus a
-  control assertion that the owner can still read their own row.
+- Every tenant-scoped **resource** repository method takes that `TenantContext` — never a bare
+  organization id — and composes its `where` from `tenantScope(tenant)`. One definition of the
+  filter's shape. Writes use `updateMany` with the tenant in the `where`, never `update`: `update`
+  accepts only a unique predicate, so it could not carry the tenant filter and the row would be
+  written before anyone noticed the tenant did not match.
+- **The Organizations repositories are the deliberate exception**, and the reason is structural
+  rather than an oversight. `MembershipRepository` is the code that *resolves* a tenant, and
+  `OrganizationRepository.existsActive` is what verifies it, so both take a bare id — a
+  `TenantContext` cannot be an input to the lookup that produces it. They are reachable only from the
+  guard, and from services holding a context the guard already produced. An earlier draft of this
+  ADR claimed the rule was uniform, which was not true of the code; the claim is narrowed here rather
+  than the code contorted to match it.
+- Enforcement is evidence rather than magic: a cross-tenant test for the tenant-owned **resource**
+  models — Product and Inventory, asserted by identifier, by update, by publish and by listing — plus
+  a control assertion that the owner can still read their own row, without which every negative
+  assertion would also pass against a system that 404s everything. Organization, OrganizationMember,
+  Session and RefreshToken are covered by the guard's own refusal test rather than by a per-model
+  cross-tenant case, because they are reached through a resolved tenant rather than by identifier.
 
 ## Alternatives considered
 

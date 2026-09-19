@@ -1,36 +1,41 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { MemberRoles } from '@app/contracts';
 import { buildTenantContext } from '@app/domain';
-import type { MembershipRepository } from './membership.repository';
+import { MemberRemovalOutcomes } from './membership.interface';
 import type { OrganizationRepository } from './organization.repository';
 import { OrganizationWriteOutcomes } from './organization-write.interface';
 import { OrganizationService } from './organization.service';
+import type { MembershipRepository } from './membership.repository';
 
 const tenant = buildTenantContext('org_1', MemberRoles.OWNER);
 
 const build = (
   overrides: {
-    countOwners?: jest.Mock;
+    removal?: string;
     findUserByEmail?: jest.Mock;
     findByOrgAndUser?: jest.Mock;
-    remove?: jest.Mock;
   } = {},
 ) => {
   const membershipRepository = {
-    countOwners: overrides.countOwners ?? jest.fn().mockResolvedValue(2),
+    removeKeepingAnOwner: jest.fn().mockResolvedValue(overrides.removal ?? MemberRemovalOutcomes.REMOVED),
     findUserByEmail: overrides.findUserByEmail ?? jest.fn().mockResolvedValue({ id: 'u2' }),
     findByOrgAndUser:
       overrides.findByOrgAndUser ??
       jest.fn().mockResolvedValue({ organizationId: 'org_1', userId: 'u2', role: MemberRoles.MEMBER }),
     add: jest.fn().mockResolvedValue(undefined),
-    remove: overrides.remove ?? jest.fn().mockResolvedValue(undefined),
     listByOrg: jest.fn(),
   } as unknown as MembershipRepository;
 
   const organizationRepository = {
     createWithOwner: jest.fn().mockResolvedValue({
       outcome: OrganizationWriteOutcomes.CREATED,
-      organization: { id: 'org_1', name: 'Nile', slug: 'nile', status: 'ACTIVE', role: MemberRoles.OWNER },
+      organization: {
+        id: 'org_1',
+        name: 'Nile',
+        slug: 'nile',
+        status: 'ACTIVE',
+        role: MemberRoles.OWNER,
+      },
     }),
     listForUser: jest.fn(),
     existsActive: jest.fn(),
@@ -44,9 +49,29 @@ const build = (
 };
 
 describe('OrganizationService', () => {
+  it('answers CONFLICT when the removal would leave no owner', async () => {
+    // The rule itself — count and delete, atomically — lives in the repository,
+    // because a rule over sibling rows needs one transaction to hold it. This
+    // asserts the mapping from its verdict, and the concurrency proof is
+    // owner-rule.integration-spec.ts against real Postgres.
+    const { service } = build({ removal: MemberRemovalOutcomes.LAST_OWNER });
+
+    await expect(service.removeMember(tenant, 'u2')).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it('answers NOT_FOUND when the target is not a member', async () => {
+    const { service } = build({ removal: MemberRemovalOutcomes.NOT_A_MEMBER });
+
+    await expect(service.removeMember(tenant, 'u2')).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('resolves when the member is removed', async () => {
+    const { service } = build({ removal: MemberRemovalOutcomes.REMOVED });
+
+    await expect(service.removeMember(tenant, 'u2')).resolves.toBeUndefined();
+  });
+
   it('answers CONFLICT when the slug is already taken', async () => {
-    // The repository reports the outcome rather than throwing, because the
-    // database is the only authority on uniqueness — a check-then-insert races.
     const { service, organizationRepository } = build();
     (organizationRepository.createWithOwner as jest.Mock).mockResolvedValue({
       outcome: OrganizationWriteOutcomes.SLUG_TAKEN,
@@ -62,40 +87,6 @@ describe('OrganizationService', () => {
       slug: 'nile',
       role: MemberRoles.OWNER,
     });
-  });
-  it('refuses to remove the last owner, which is a rule and not a constraint', async () => {
-    const { service } = build({
-      countOwners: jest.fn().mockResolvedValue(1),
-      findByOrgAndUser: jest.fn().mockResolvedValue({
-        organizationId: 'org_1',
-        userId: 'u2',
-        role: MemberRoles.OWNER,
-      }),
-    });
-
-    await expect(service.removeMember(tenant, 'u2')).rejects.toBeInstanceOf(ConflictException);
-  });
-
-  it('removes a member when another owner remains', async () => {
-    const remove = jest.fn().mockResolvedValue(undefined);
-    const { service } = build({ countOwners: jest.fn().mockResolvedValue(2), remove });
-
-    await service.removeMember(tenant, 'u2');
-
-    expect(remove).toHaveBeenCalledWith('org_1', 'u2');
-  });
-
-  it('removes a plain member without counting owners at all', async () => {
-    // The count is a query; a member cannot be the last owner, so paying for it
-    // would be a query whose answer could not change the decision.
-    const countOwners = jest.fn().mockResolvedValue(1);
-    const remove = jest.fn().mockResolvedValue(undefined);
-    const { service } = build({ countOwners, remove });
-
-    await service.removeMember(tenant, 'u2');
-
-    expect(remove).toHaveBeenCalledWith('org_1', 'u2');
-    expect(countOwners).not.toHaveBeenCalled();
   });
 
   it('reports an unknown email rather than creating a phantom membership', async () => {

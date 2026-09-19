@@ -10,6 +10,7 @@ const state = (overrides: Partial<Parameters<typeof decideRefreshTokenUse>[0]> =
   expiresAt: future,
   usedAt: null,
   sessionRevokedAt: null,
+  sessionExpiresAt: future,
   ...overrides,
 });
 
@@ -32,15 +33,26 @@ describe('decideRefreshTokenUse', () => {
     expect(decideRefreshTokenUse(state({ expiresAt: past }), now)).toBe(RefreshTokenVerdicts.REJECTED);
   });
 
+  it('rejects a fresh token once the session itself has expired', () => {
+    // The session is the outer bound: rotation renews the token, not the session,
+    // so a client refreshing forever still has to authenticate again eventually.
+    expect(decideRefreshTokenUse(state({ sessionExpiresAt: past }), now)).toBe(
+      RefreshTokenVerdicts.REJECTED,
+    );
+  });
+
   it('reports a replay when an already-used token is presented', () => {
     expect(decideRefreshTokenUse(state({ usedAt: past }), now)).toBe(RefreshTokenVerdicts.REPLAYED);
   });
 
-  it('prefers the replay verdict over expiry, because a replay is the actionable signal', () => {
-    // An attacker replaying a long-dead token is still an event worth revoking
-    // for; reporting only "rejected" would discard that.
+  it('prefers the replay verdict over every expiry, because replay is the actionable signal', () => {
+    // An attacker replaying a long-dead token is still an event worth revoking for;
+    // reporting only "rejected" would discard that.
     expect(decideRefreshTokenUse(state({ usedAt: past, expiresAt: past }), now)).toBe(
       RefreshTokenVerdicts.REPLAYED,
     );
+    expect(
+      decideRefreshTokenUse(state({ usedAt: past, expiresAt: past, sessionExpiresAt: past }), now),
+    ).toBe(RefreshTokenVerdicts.REPLAYED);
   });
 });

@@ -11,6 +11,7 @@ const NO_TOKEN: RefreshTokenRecord = {
   expiresAt: new Date(0),
   usedAt: null,
   sessionRevokedAt: null,
+  sessionExpiresAt: new Date(0),
 };
 
 @Injectable()
@@ -26,7 +27,7 @@ export class SessionsRepository {
         sessionId: true,
         expiresAt: true,
         usedAt: true,
-        session: { select: { revokedAt: true } },
+        session: { select: { revokedAt: true, expiresAt: true } },
       },
     });
 
@@ -39,6 +40,7 @@ export class SessionsRepository {
       expiresAt: token.expiresAt,
       usedAt: token.usedAt,
       sessionRevokedAt: token.session.revokedAt,
+      sessionExpiresAt: token.session.expiresAt,
     };
   }
 
