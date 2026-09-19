@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { ErrorEnvelopeSchema } from '@app/contracts';
+import { ErrorEnvelopeSchema, type Organization, type UserSummary } from '@app/contracts';
 import { SessionViewSchema, type SessionView } from './session';
 
 export type SessionState =
@@ -83,6 +83,64 @@ export function useSession(): SessionContextValue {
   const value = useContext(SessionContext);
   if (value === null) {
     throw new Error('useSession was used outside a SessionProvider');
+  }
+  return value;
+}
+
+/**
+ * The session a signed-in subtree may rely on.
+ *
+ * `useSession` answers *whether* there is a session; this answers *what it is*, for
+ * modules that are only ever rendered once the answer is yes. The four arms of
+ * `SessionState` are narrowed in one place — the shell — so a consumer receives a
+ * session rather than a union it has to narrow and cannot get wrong silently.
+ *
+ * The active organization is resolved here rather than by each module that needs to
+ * name the tenant, so membership is applied once and the two cannot disagree.
+ */
+export interface ReadySession {
+  user: UserSummary;
+  organizations: Organization[];
+  /** The organization the session is acting in, or null when none is chosen. */
+  activeOrganization: Organization | null;
+  reload: () => Promise<void>;
+}
+
+const ReadySessionContext = createContext<ReadySession | null>(null);
+
+export function ReadySessionProvider({
+  session,
+  reload,
+  children,
+}: {
+  session: SessionView;
+  reload: () => Promise<void>;
+  children: ReactNode;
+}) {
+  const value = useMemo<ReadySession>(
+    () => ({
+      user: session.user,
+      organizations: session.organizations,
+      activeOrganization:
+        session.organizations.find(({ id }) => id === session.activeOrganizationId) ?? null,
+      reload,
+    }),
+    [session, reload],
+  );
+
+  return <ReadySessionContext.Provider value={value}>{children}</ReadySessionContext.Provider>;
+}
+
+/**
+ * Throws rather than returning null. This module is rendered only inside the shell's
+ * signed-in branch, so its absence is a wiring mistake — and a guard that returns
+ * null would let every consumer answer "is this rendered in the right place" for
+ * itself, silently, which is the restatement this seam exists to remove.
+ */
+export function useReadySession(): ReadySession {
+  const value = useContext(ReadySessionContext);
+  if (value === null) {
+    throw new Error('useReadySession was used outside a signed-in shell');
   }
   return value;
 }

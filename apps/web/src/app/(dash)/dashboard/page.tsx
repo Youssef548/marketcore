@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from '@/lib/session/client';
+import { useReadySession } from '@/lib/session/client';
 
 /**
  * What the session is, made visible.
@@ -12,13 +12,7 @@ import { useSession } from '@/lib/session/client';
  * end of the journey rather than a placeholder pretending to be one.
  */
 export default function DashboardPage() {
-  const { state } = useSession();
-
-  // Loading and refusals are the chrome's business; it renders the shell around us.
-  if (state.status !== 'ready') return null;
-
-  const { user, organizations, activeOrganizationId } = state.session;
-  const active = organizations.find(({ id }) => id === activeOrganizationId) ?? null;
+  const { user, organizations, activeOrganization } = useReadySession();
 
   return (
     <div className="space-y-8">
@@ -42,14 +36,14 @@ export default function DashboardPage() {
 
         <dt className="text-ink-faint">Acting in</dt>
         <dd>
-          {active === null ? (
+          {activeOrganization === null ? (
             <span className="text-ink-muted">
               Nothing selected{organizations.length > 1 ? ' — choose one in the rail' : ''}
             </span>
           ) : (
             <>
-              <span className="font-medium">{active.name}</span>{' '}
-              <span className="text-ink-faint">({active.role})</span>
+              <span className="font-medium">{activeOrganization.name}</span>{' '}
+              <span className="text-ink-faint">({activeOrganization.role})</span>
             </>
           )}
         </dd>

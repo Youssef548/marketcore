@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Alert } from '@app/ui';
-import { selectOrganization, useSession } from '@/lib/session/client';
+import { selectOrganization, useReadySession } from '@/lib/session/client';
 
 /**
  * Which organization the session is acting in.
@@ -22,13 +22,10 @@ import { selectOrganization, useSession } from '@/lib/session/client';
  * white, which is how an input becomes a slab on a dark rail.
  */
 export function OrganizationSwitcher() {
-  const { state, reload } = useSession();
+  const { organizations, activeOrganization, reload } = useReadySession();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  if (state.status !== 'ready') return null;
-
-  const { organizations, activeOrganizationId } = state.session;
   if (organizations.length === 0) {
     return <p className="text-xs text-ink-on-rail-muted">No organizations</p>;
   }
@@ -54,10 +51,10 @@ export function OrganizationSwitcher() {
         <select
           className="w-full rounded-brand border border-rail-active bg-rail px-2 py-1 text-xs text-ink-on-rail"
           disabled={pending}
-          value={activeOrganizationId ?? ''}
+          value={activeOrganization?.id ?? ''}
           onChange={(event) => void choose(event.target.value)}
         >
-          {activeOrganizationId === null && (
+          {activeOrganization === null && (
             <option value="" disabled>
               Choose an organization
             </option>
