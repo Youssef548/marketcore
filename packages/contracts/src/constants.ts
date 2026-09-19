@@ -20,6 +20,9 @@ export type ReadinessStatus = (typeof ReadinessStatuses)[keyof typeof ReadinessS
 export const DependencyStates = { UP: 'up', DOWN: 'down' } as const;
 export type DependencyState = (typeof DependencyStates)[keyof typeof DependencyStates];
 
+export const MemberRoles = { OWNER: 'OWNER', MEMBER: 'MEMBER' } as const;
+export type MemberRole = (typeof MemberRoles)[keyof typeof MemberRoles];
+
 /**
  * The readiness verdict as an HTTP status, so no caller hand-writes the mapping
  * and none can disagree with another about what "degraded" answers.
