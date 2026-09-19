@@ -29,6 +29,45 @@ async function signIn(page: Page, email: string) {
  * silence rather than refused. That branch is unreachable anywhere but here.
  */
 test.describe('web: the session in a real browser', () => {
+  test('paints the shared design system instead of shipping it unstyled', async ({ page }) => {
+    // Tailwind 4 finds classes by walking the project and deliberately skips
+    // `node_modules`, where `@app/ui` is reached through a symlink. So every class
+    // defined inside the shared package was absent from the stylesheet: the primary
+    // button had no background at all, and the input's focus border and the alert's
+    // colours did not exist. The components still rendered, which is why the unit test
+    // that asserted their presence passed while the page had no visible button.
+    //
+    // Only a browser can ask this question, and it has to be asked of computed styles:
+    // a class name being present in the markup proves nothing about whether anything
+    // was painted.
+    await page.emulateMedia({ colorScheme: 'dark' });
+
+    await page.goto(`${WEB}/login`);
+
+    // Emulated dark on purpose. The theme is a decision rather than a consequence of
+    // the machine, so the page must be light whichever way the visitor's OS is set —
+    // and `color-scheme: light` is what makes the browser agree, including for the
+    // form controls it would otherwise paint itself.
+    await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
+    const pageBackground = await page.evaluate(
+      () => getComputedStyle(document.body).backgroundColor,
+    );
+    expect(pageBackground).toBe('rgb(255, 255, 255)');
+
+    const button = page.getByRole('button', { name: 'Sign in' });
+    const buttonBackground = await button.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    expect(buttonBackground, 'the primary button has a background').not.toBe('rgba(0, 0, 0, 0)');
+    expect(buttonBackground, 'and is not the page it sits on').not.toBe(pageBackground);
+
+    const input = page.getByLabel('Email');
+    const inputBackground = await input.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    expect(inputBackground, 'the field states its own surface').toBe('rgb(255, 255, 255)');
+  });
+
   test('creates an account, signs in, and is turned away once signed out', async ({ page }) => {
     const email = `${unique('web')}@marketcore.test`;
 

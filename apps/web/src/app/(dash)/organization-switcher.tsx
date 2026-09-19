@@ -48,7 +48,7 @@ export function OrganizationSwitcher() {
       <label className="text-xs text-gray-500">
         <span className="sr-only">Active organization</span>
         <select
-          className="rounded-brand border border-gray-300 bg-transparent px-2 py-1 text-sm"
+          className="rounded-brand border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900"
           disabled={pending}
           value={activeOrganizationId ?? ''}
           onChange={(event) => void choose(event.target.value)}
