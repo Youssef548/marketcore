@@ -12,10 +12,13 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@app/api-client": "workspace:^",
+    "@app/contracts": "workspace:^",
     "@app/ui": "workspace:^",
     "next": "15.5.25",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@app/config": "workspace:^",

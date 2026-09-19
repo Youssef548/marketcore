@@ -1,28 +1,16 @@
-import { Button } from '@app/ui';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { SESSION_COOKIES } from '@/lib/session/cookies';
 
 /**
- * A placeholder, not an example. It exists so the app shell, Tailwind, the
- * `@app/ui` cross-package import and the build all have something to render.
- * Replace it with your first real route.
+ * The front door, which decides nothing for itself.
  *
- * The route-group convention — `(marketing)` for public pages, `(dash)` for
- * anything behind a session — is described in the README rather than scaffolded
- * as empty directories.
+ * Presence of the refresh cookie is enough to choose a direction; whether the
+ * session is still valid is `/api/session`'s question, and it is the only place that
+ * can answer it and rotate the tokens if the answer is "not quite".
  */
-export default function HomePage() {
-  return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-6 px-6">
-      <h1 className="text-3xl font-semibold tracking-tight">
-        {process.env.APP_NAME ?? 'app'}
-      </h1>
-      <p className="text-gray-600">
-        The shell is wired. Start with a DTO in <code className="font-mono">packages/contracts</code>,
-        a module in <code className="font-mono">apps/api/src/modules</code>, and a route here.
-      </p>
-      <div className="flex gap-3">
-        <Button>Primary</Button>
-        <Button variant="ghost">Ghost</Button>
-      </div>
-    </main>
-  );
+export default async function HomePage() {
+  const jar = await cookies();
+
+  redirect(jar.has(SESSION_COOKIES.REFRESH) ? '/dashboard' : '/login');
 }

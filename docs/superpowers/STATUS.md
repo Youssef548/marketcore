@@ -270,3 +270,266 @@ race passes repeatedly — 100 concurrent buyers, exactly one order. Everything 
 exists: tenant-scoped repositories, a `TenantContext` the worker can share, and a real database to run
 the race against.
 
+---
+
+## Frontend slice — web session and organization selection — 2026-09-19
+
+**Exit gate:** a browser signs in, holds a session through a stale access token and concurrent
+requests, chooses an organization, signs out — and cannot read either token.
+**Branch:** `feat/web-auth-session`
+**Spec:** `docs/superpowers/specs/2026-09-19-marketcore-web-auth-session-design.md` (D29–D39)
+**Plan:** `docs/superpowers/plans/2026-09-19-marketcore-web-auth-session.md` (8 tasks)
+**ADR:** [`011`](../adr/011-web-session-and-token-storage.md)
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| **The gate** | `pnpm --filter e2e test:behavioural` | **14/14**, including 3 browser journeys |
+| **The behavioural job, in CI** | run [35462183755](https://github.com/Youssef548/marketcore/actions/runs/35462183755) | **pass, 2m53s** — its first green run ever; see finding 6 |
+| The whole check suite | `pnpm turbo run lint typecheck test:coverage build` | **31/31 tasks** |
+| Unit | `pnpm --filter api exec jest` | 60 passed, 12 suites |
+| End to end (API) | `pnpm --filter api test:e2e` | 59 passed, 10 suites |
+| Integration | `pnpm --filter api test:integration` | 16 passed, 4 suites |
+| Contracts | `pnpm --filter @app/contracts test` | 35 passed, 7 files |
+| Web | `pnpm --filter web test` | 59 passed, 10 files |
+| Web coverage gate | `pnpm --filter web test:coverage` | 57.04/80.28/60.71/57.04 against a raised 52/75/55/52 |
+| **`/auth/me` is not public** | `pnpm --filter api test:e2e` | a token returns the user; **no token is 401** |
+| **One rotation for concurrent loads** | `pnpm --filter web test` | 6 coordinator tests, asserting call counts |
+| **One rotation, measured at the API** | by hand, 6 concurrent session loads | **exactly 1** `/auth/refresh` in the API's log, six 200s |
+| A stale access token rotates | by hand | 200 with a new `mc_rt` and a replaced `mc_at` |
+| Cookie flags as a browser received them | behavioural suite | `httpOnly` both, `Secure` both, `SameSite=Lax`, `mc_at` `expires -1`, `mc_rt` in the future |
+| Tokens unreadable from the page | behavioural suite | `document.cookie` contains no `mc_` |
+| The gate after signing out | behavioural suite | `/dashboard` → `/login?next=%2Fdashboard` |
+| Boundary rules still bite | a `packages/*` → `apps/*` import | `pnpm lint` failed with `boundaries/element-types`; reverting restored green |
+
+### Delivered
+
+- **`apps/web` is no longer a shell.** Register, sign in, sign out, a session-backed dashboard, and
+  an organization switcher — the first thing in the app that talks to the API.
+- **A BFF, per ADR 011.** Tokens in `httpOnly` cookies; route handlers are the only code that
+  reaches the API; the browser never holds a credential a script could read.
+- **Single-flight rotation** with one step of memory, because the API revokes a session on a
+  replayed refresh token and naive concurrency *is* a replay.
+- **`GET /api/v1/auth/me`**, in its own controller — `AuthController` is `@Public()` at the class
+  level, so a handler added there would have been reachable with no credentials.
+- **Two shared values** moved to `@app/contracts`: `REFRESH_TOKEN_TTL_MS` (the web app sets a cookie
+  lifetime from it) and `API_PREFIX` (the web app builds the API's URLs).
+- **The web app in the behavioural harness** — its own image, a Caddy site, and a Playwright
+  journey. CI now installs Chromium, and the job that had never passed now does.
+- **The web app's stylesheet actually contains the design system.** It never had: Tailwind 4 skips
+  `node_modules`, where `@app/ui` is symlinked, so every class defined in the shared package was
+  missing — including the primary Button's background. Found by looking at the rendered page rather
+  than at the markup, and pinned by a browser assertion on *computed styles*.
+- **The web app is explicitly light, and says so.** `globals.css` had been handing the background to
+  `prefers-color-scheme` while every component colour was a light-mode grey.
+- **The coverage gate ratcheted** 34/45/45/34 → 52/75/55/52.
+
+### Not proven / deferred
+
+- **No multi-instance story.** The rotation coordinator is module state, so two web instances would
+  each rotate; the API's reuse detection would catch it rather than lose the session silently, but a
+  user could be signed out. Nothing runs more than one instance today.
+- **No multi-tab test.** The mechanism a second tab depends on is covered by the concurrency test;
+  the two-tab case itself is not.
+- **No tenant data page.** `/api/proxy/[...path]` has no caller yet and is deliberately absent (D34).
+  `mc_org` is written and read for display; its first *authorizing* use arrives with the products
+  page, which is where the header starts being attached.
+- **Nothing sends email**, and there is still no password reset or invitation — unchanged from week 2.
+- **`WEB_URL` was left as it was.** The CORS assertions assert `http://web.marketcore.test` and would
+  break, and with a BFF the browser makes no cross-origin API call that would need it.
+
+### Findings
+
+Six, all found by running rather than reading.
+
+1. **Next refuses a cookie write during a Server Component render.** The plan had the protected
+   layout load the session server-side. That cannot rotate: the render would refresh and be unable to
+   store the replacement, so the *next* request would present the superseded token and be refused as
+   a replay — the API revoking the session, caused by where the refresh happened. The session moved to
+   a route handler and the protected area became client-rendered. This is now ADR 011's central
+   consequence: it looks like a style choice and is a platform constraint.
+2. **A bare in-flight map does not cover the case that actually happens.** The near-miss — a request
+   that left the browser before a rotation settled, still carrying the superseded token — is not
+   solved by sharing an in-flight promise, because that promise has already resolved. It needs a
+   record of the last rotation. Both mechanisms are now tested, and the second one only because the
+   first was written down and found insufficient on inspection.
+3. **`page.request` does not use the browser's DNS.** The journey's last assertion reached the web app
+   by its public name through the API request context and failed with `ENOTFOUND`: that context
+   resolves through Node, and the host-resolver rule is a browser argument. The assertion is issued
+   from inside the page instead, which is also more honest — it is the session's own cookies that are
+   under test.
+4. **A strict-mode selector was a real ambiguity, not a test artefact.** `getByText(email)` matched
+   the header and the dashboard body, because both legitimately name the signed-in user. Scoping to
+   the header is a better assertion than a looser one: it is the shell's own claim.
+5. **A pre-existing property test was flaky, and the full suite caught it.** `pnpm turbo …` failed
+   once in `packages/domain/test/refresh-token.property.spec.ts` and passed on an immediate re-run —
+   the worst shape a failure can have, because re-running is exactly what makes it disappear.
+   `fc.date()` generates `Invalid Date` (24 draws in 20 000, measured on fast-check 4.10.1), and
+   every comparison against it is false, so the USABLE equivalence disagreed with the decision table
+   with a counterexample reading like a logic error. Fixed with `noInvalidDate: true`, which is the
+   only in-repo use of `fc.date`. It is unrelated to this slice and would have gone on failing builds
+   at random if the full suite had not been run.
+6. **The behavioural job has never passed in CI, and this branch is what surfaced it.** The job ran
+   `pnpm install` and then the suite, but the suite imports `@app/contracts`, which resolves from that
+   package's built `dist/` — and `dist/` is gitignored, so a fresh runner has none. Nothing in the job
+   built it: `docker compose up --build` compiles inside the image, not on the host. It failed as
+   `Cannot find module …/@app/contracts/dist/src/index.js` and `No tests found` on **every** run since
+   the job was added, including the merge to `main` (`35459274354`) and its own introducing branch
+   (`35459015301`) — which is why week 2's record says the suite is green from a developer's machine
+   and says nothing about CI. Fixed with one step, `pnpm --filter "e2e..." run build`. Reproduced
+   without Docker by deleting `dist/` and running `playwright test --list`: 0 tests, then 13 after the
+   build. **The lesson is the same one week 1 recorded about `db:generate`**: a job that passes because
+   of state the developer already had is not a job that tested anything.
+
+### Deviations from the plan
+
+- **The request id is not stamped by middleware.** It is generated in the layer that calls the API:
+  middleware runs on the Edge runtime, and the id has to reach the API from a route handler.
+- **The dashboard is client-rendered**, for finding 1. The plan assumed a Server Component.
+- **`API_BASE_URL` is the API origin only**, with `/api/v1` appended from the shared constant, rather
+  than a full base URL configured by hand.
+- **`(auth)` is used for the credential pages**, not the README's `(marketing)` — a login form is not
+  marketing. The README now records the convention that exists rather than the one that was planned.
+
+### Next
+
+Week 3 — phase 4: transactional checkout and the stock-1 race. The web app now has a session to build
+the first tenant data page on, which is also where the generic proxy (D34) and the
+`x-organization-id` header arrive.
+
+---
+
+## The web design system — selvedge — 2026-09-19
+
+**Exit gate:** the app's look is one file and the contrast test re-reads it — every text-on-surface
+pair clears 4.5:1, and no component names a colour.
+**Branch:** `feat/web-design-system` (stacked on `feat/web-auth-session`, per D51)
+**Spec:** `docs/superpowers/specs/2026-09-19-marketcore-design-system-design.md` (D40–D51)
+**Plan:** `docs/superpowers/plans/2026-09-19-marketcore-design-system.md` (9 tasks)
+**ADR:** [`012`](../adr/012-component-layer.md)
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| **The gate, as a test** | `pnpm --filter @app/ui test` | **18 passed, 5 files**; worst text-on-surface pair **4.58:1** (`ink-faint` on `sunken`) |
+| Every semantic token is a literal | same | no `color-mix()`, no relative colour syntax — the test refuses anything that is not `oklch()` |
+| Exactly the names the components reference | same | the declared `--color-*` set equals the 23-name list D41 fixes |
+| Palette names and role names stay apart | same | no palette family shares a name with a semantic token |
+| The text ramp stays ordered | same | `ink` darker than `ink-muted` darker than `ink-faint` |
+| **The field error is described, not adjacent** | same | the input's `aria-describedby` resolves to the element carrying the message; **removing the attribute fails 1/1** |
+| `busy` keeps the keyboard | same | not `disabled`; `aria-busy` + `aria-disabled` set; the click is refused |
+| Role names, not colours, in every component | `grep -rE "(bg\|text\|border)-(gray\|brand\|red\|green)" apps/web/src packages/ui/src` | no match — and re-introducing `text-gray-600` makes the check fail |
+| No component reaches into the palette | `grep -rn "palette-" packages/ui/src` | no match |
+| **The theme is light, asserted as a property** | `pnpm --filter e2e test:behavioural` | **14/14**; under an emulated dark OS, page luminance > 0.7 and body text ≥ 7:1 — no `rgb(255, 255, 255)` anywhere |
+| The primary action is painted and is not the page | same | non-transparent, and differs from the page it sits on |
+| The whole check suite | `pnpm turbo run lint typecheck test build` | **33/33 tasks**, 0 failed |
+| Web | `pnpm --filter web test` | 68 passed, 12 files |
+| Web coverage gate | `pnpm --filter web test:coverage` | 59.9/81.16/63.93/59.9 against a held 52/75/55/52 |
+| API unit / e2e / integration | `pnpm --filter api test` | 60 / 59 / 16 — untouched by this phase, run to prove it |
+| Contracts | `pnpm --filter @app/contracts test` | 35 passed, 7 files |
+| Boundary rules still bite | a resolvable `packages/ui` → `apps/web` import | `pnpm lint` fails with `boundaries/element-types`; reverting restores exit 0 |
+
+### Delivered
+
+- **The token layer `packages/ui` was missing** — three layers in one file: a palette of raw OKLCH
+  named by colour family, a semantic layer named by role and declared as `--color-*` so Tailwind 4
+  generates the utilities, and selvedge's one set of palette values. Spacing deliberately not
+  redefined.
+- **Contrast as a mechanism rather than a promise** — 25 text-on-surface pairs, the WCAG computation
+  written out in the test and re-derived from the literals in CI.
+- **`Button` (variants, sizes, `busy`), `Input` (sizes, `invalid`, focus ring), `Label`, `Alert`, and
+  the new `Field`** — the last of which closes a real defect: four fields across two forms rendered an
+  error paragraph with nothing linking it to its input.
+- **The shell in `apps/web`** — a rail owning the tenant and its picker, a top bar owning the page
+  title and the signed-in user, each fact in one place.
+- **Sign-in, register and the session screen rebuilt** on the primitives, with no ad-hoc grey left and
+  no `--background`/`--foreground` second vocabulary in `globals.css`.
+- **ADR 012**, with shadcn/ui as the rejected alternative and the three reasons stated.
+- **The ready-session deepening**, from a frontend architecture review run after the plan: `useSession`'s
+  four-arm union was narrowed by five modules — four of them unreachably — and the active organization
+  was derived independently by two of them. The session module now provides a resolved `ReadySession`
+  to the signed-in subtree, so the shell is the only module that branches, and membership is applied
+  once. 5 new tests pin the interface, including that a signed-in module outside the shell throws
+  rather than silently rendering nothing.
+
+### Not proven / deferred
+
+- **The input's border is 1.96:1** — `rule-strong` on `canvas`, under the 3:1 WCAG 1.4.11 asks of a UI
+  component boundary. D49's test is text-on-surface only, so this is recorded rather than fixed. The
+  focus ring does clear 3:1 on every surface it is drawn against (3.25 / 3.61 / 3.90 on canvas, panel
+  and rail).
+- **No lint rule forbids a colour literal in a component.** The check that no component names a colour
+  is a `grep`, not a test, and a grep is a habit rather than a gate.
+- **No visual regression testing**, refused by the spec's own reasoning: there is no stable rendering
+  environment, and a flaky visual gate is worse than none.
+- **The products page and everything that proves selvedge's signature** — the status thread, the
+  quantity track, the published/draft colours (D48). The direction lands here as its palette, its
+  plane and its type; its signature arrives with the first table.
+- **Dark mode**, and `color-scheme: light` is what says so (D50).
+- **The other four architecture-review candidates** — one routing module, the BFF protocol seam, the
+  session port's second adapter, and the design system's uncalled variants. Reported and not acted on;
+  the report is in the OS temp directory and is deliberately not committed.
+- **Nothing sends email**, no password reset, no invitations — unchanged from week 2.
+
+### Findings
+
+Five, all found by running rather than reading.
+
+1. **A TypeScript interface cannot widen an inherited prop.** `InputProps extends
+   InputHTMLAttributes<HTMLInputElement>` with `size?: InputSize` does not compile: `size` is already
+   `number` on the DOM attributes, and TS2430 rejects the narrowing. The plan carried it as written;
+   the fix is `Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>`. A plan step that had never been
+   compiled is a plan step that has not been checked.
+2. **Tailwind 4 tree-shakes `@theme` variables that no utility uses.** An `@theme` block whose values
+   are `var()` chains emits *nothing* until a source file references the generated utility — so the
+   plan's "build, then grep the stylesheet for `.bg-canvas`" step, written before any component used
+   the new names, would have proved nothing and read as a failure. Verified instead with a throwaway
+   probe file that referenced the classes. The check moved to after the pages were rebuilt, where it
+   passes because the classes exist. **The general form is worth keeping:** a build-and-grep check has
+   to be run at a point where the thing being grepped for should exist.
+3. **`import.meta.url` is not a file URL under Vitest's jsdom environment.** `readFileSync(new
+   URL('../src/tokens.css', import.meta.url))` failed with `The URL must be of scheme file`. The
+   contrast test declares `// @vitest-environment node`, which is the right environment for it anyway:
+   it is pure computation and touches no DOM.
+4. **Week 1's finding 3, re-confirmed while proving the boundary.** A `packages/*` → `apps/*` import
+   whose path does not resolve passes ESLint silently — the first attempt used one `..` too many and
+   lint reported only `no-unused-vars`, not the boundary violation. With a path that resolves it fails
+   as `boundaries/element-types` and reverting restores exit 0. The check is only a check when the
+   import resolves.
+5. **Two of the exploration's values could not support 4.5:1, measured in OKLCH.** The spec says the
+   values come from the exploration set and that the contrast test re-derives them; converting that
+   set showed `ink-faint` on `sunken` at 3.77:1 and the rail's muted ink on `rail-hover` at 3.83:1.
+   Corrected — and `ink-muted` moved *with* `ink-faint`, because darkening the faint step alone would
+   have made it indistinguishable from the muted one and quietly erased the ramp.
+
+### Deviations from the plan
+
+- **Three semantic names added to D41's list.** `--color-rail-hover`, `--color-rail-active` and
+  `--color-ink-on-rail-muted`. The direction's own mockup paints all three — a rail needs a hover
+  plane, a selected plane and secondary text — and the list covers none of them. Without the third,
+  the rail's role label and inactive nav are either unreadable or unexpressible.
+- **Task 1's Step 5 moved to Task 6** for finding 2.
+- **`InputProps` corrected** for finding 1, and the plan's snippet edited in place.
+- **`--radius-brand` is 7px**, the direction's radius, rather than the template's 12px. D41 does not
+  mention radius.
+- **The plan's `chrome.test.tsx` assertion was rewritten before it was trusted.** Asserting the
+  organization's name appears exactly once fails legitimately: the switcher's own `<option>` names it.
+  The assertion is scoped to the two landmarks instead — the rail contains the tenant and not the
+  user, the top bar the reverse — which is what "one fact, one place" actually means.
+- **The ready-session deepening is not in the plan.** It came from a frontend architecture review run
+  after the plan was executed. Ruling: it lands on this branch rather than a third stacked one,
+  because it reshapes the shell this phase introduced and a separate branch would cost more than it
+  separates. It is named in the plan's branch and in the pull request so a reviewer can read the two
+  as two reads.
+- **`(dash)`'s dashboard copy** now says "choose one in the rail" rather than "above", because the
+  picker moved.
+
+### Next
+
+The products page: the first table, the first `x-organization-id` header on a real fetch, the first
+caller for the generic proxy (D34) — and selvedge's signature moves, which this phase deliberately
+deferred rather than shipping a thread nothing draws (D48).
+
+

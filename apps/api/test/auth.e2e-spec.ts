@@ -74,6 +74,29 @@ describe('auth (e2e)', () => {
     expectContract(TokenPairSchema, res.body);
   });
 
+  it('returns the caller for a valid token, satisfying the user contract', async () => {
+    const email = `${unique('me')}@marketcore.test`;
+    const accessToken = await registerAndLogin(app, email);
+
+    const res = await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    expect(res.body).toEqual({ id: expect.any(String), email });
+    expectContract(UserSummarySchema, res.body);
+  });
+
+  it('refuses /auth/me with no token, because the route is not public', async () => {
+    // This is the assertion that holds `me` off AuthController. That class carries
+    // a class-level @Public(), which the guard applies to every handler on it, so
+    // moving `me` back there makes this a 200 and turns this test red.
+    const res = await request(app.getHttpServer()).get('/api/v1/auth/me').expect(401);
+
+    expect(res.body.error.code).toBe('UNAUTHORIZED');
+    expectContract(ErrorEnvelopeSchema, res.body);
+  });
+
   it('answers an unknown email and a wrong password identically', async () => {
     const email = `${unique('enumeration')}@marketcore.test`;
     await registerAndLogin(app, email);

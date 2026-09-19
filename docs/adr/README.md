@@ -18,6 +18,8 @@ its constraint exists describes a guess, not a decision.
 | 008 | Use OpenTelemetry for cross-process tracing | Before instrumentation (phase 12) | Proposed |
 | 009 | Deploy API and worker on ECS Fargate | Before Terraform implementation (phase 14) | Proposed |
 | [010](./010-tenant-isolation-in-the-query-layer.md) | Enforce tenant isolation in the application query layer | Before tenancy and every tenant-owned read (phase 2) | Accepted |
+| [011](./011-web-session-and-token-storage.md) | Hold the web session in httpOnly cookies behind a BFF | Before the first web route that needs a session | Accepted |
+| [012](./012-component-layer.md) | Keep the component layer hand-rolled; adopt Radix per widget | Before the design system's first component | Accepted |
 
 Decisions that do not warrant an ADR live in `docs/superpowers/specs/`, whose `D<n>` identifiers are
 cited from code comments and plans. The sequence is continuous across documents rather than

@@ -1,6 +1,7 @@
 import type { INestApplication, LoggerService } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ZodValidationPipe, cleanupOpenApiDoc } from 'nestjs-zod';
+import { API_PREFIX } from '@app/contracts';
 import {
   LogEvents,
   createLogger,
@@ -26,7 +27,7 @@ export function configureApp(
 ): void {
   const env = validateEnv();
 
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix(API_PREFIX);
   // The id first, so every later stage — including the request log, a validation
   // rejection and the error envelope — can be correlated to it.
   app.use(requestIdMiddleware);

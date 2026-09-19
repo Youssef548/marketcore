@@ -12,9 +12,11 @@ run it, execute deterministic failure scenarios, and see for themselves that inv
 payments, and money stay consistent — every claim below is meant to be checkable by a command, not
 taken on trust.
 
-> **Status: Phases 2–3 of 15 — identity, tenancy and catalog.** The concurrency, idempotency, ledger,
-> and payout guarantees are designed and specified, not yet implemented. See [Roadmap](#roadmap) for
-> what is proven today versus what is planned, and read the claims below accordingly.
+> **Status: Phases 2–3 of 15, plus the first frontend slice.** Identity, tenancy and catalog are
+> built, and `apps/web` now signs a user in, holds the session in `httpOnly` cookies and selects an
+> organization. The concurrency, idempotency, ledger, and payout guarantees are designed and
+> specified, not yet implemented. See [Roadmap](#roadmap) for what is proven today versus what is
+> planned, and read the claims below accordingly.
 
 ## The guarantees being built
 
@@ -39,6 +41,7 @@ in a single transaction; the worker handles asynchronous payment and webhook wor
 ```
 apps/api      NestJS REST under /api/v1
 apps/worker   BullMQ processors (phase 10)
+apps/web      Next.js 15 App Router — the operator UI, and a BFF in front of the API
 packages/
   runtime     env validation, Prisma module, request ids, JSON logger  ← shared by both apps
   domain      pure rules: state machines, invariants, money (phase 2)
@@ -87,6 +90,7 @@ asserts that hash verifies. It exists so the walkthrough below can be run by han
 | `curl localhost:3001/api/v1/health/ready` | `{"status":"ok","checks":{"database":"up"}}` |
 | `curl localhost:3001/api/v1/nope` | the error envelope, carrying a `requestId` |
 | `open localhost:3001/docs` | interactive API docs |
+| `open localhost:3000` | the sign-in page — `owner@marketcore.test` with the password above signs in |
 
 Start from nothing at any point:
 
@@ -137,6 +141,12 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md) with the behaviour
   than by application validation.
 - **The first model.** `User`, with `UserStatus` as a database enum — landed a phase early because
   the readiness probe needs a real query to round-trip (see `docs/superpowers/STATUS.md`).
+- **The first frontend slice.** `apps/web` was a shell with one placeholder route; it now has a
+  session. Register, sign in, sign out and choose an organization, with both tokens in `httpOnly`
+  cookies behind a BFF ([ADR 011](./docs/adr/011-web-session-and-token-storage.md)) and rotation
+  that is single-flight — because the API revokes a session when a refresh token is replayed, so a
+  client that refreshes twice signs the user out. Backed by a new `GET /auth/me`, two browser
+  journeys in the behavioural suite, and a web coverage gate ratcheted from 34 to 52 on statements.
 
 **In progress**
 
@@ -155,7 +165,8 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md) with the behaviour
 
 **Deliberately excluded**
 
-A consumer storefront, Kubernetes, Kafka, real money movement, and payment providers beyond Stripe.
+A consumer storefront (the web app is an operator UI, not a shop), Kubernetes, Kafka, real money
+movement, and payment providers beyond Stripe.
 Each was considered and rejected for a stated reason rather than deferred silently — see
 [`docs/architecture.md`](./docs/architecture.md).
 
@@ -215,6 +226,19 @@ Each was considered and rejected for a stated reason rather than deferred silent
   same OpenAPI component name and `cleanupOpenApiDoc` throws rather than picking one. See the comment
   in `packages/contracts/src/health.ts`.
 - **No `.env` in git.** `.env.example` files only.
+- **The web app holds the session, not the browser.** `apps/web` is a backend-for-frontend
+  ([ADR 011](./docs/adr/011-web-session-and-token-storage.md)): its route handlers are the only
+  code that calls the API, and both tokens live in `httpOnly` cookies, so no script can read one.
+  Rotation is single-flight with one step of memory, because the API revokes a session when a
+  refresh token is replayed — a replayed token is the one failure that looks like a logout rather
+  than an error. `NEXT_PUBLIC_*` is deliberately unused: there is nothing to expose.
+- **Route groups in `apps/web`.** `(auth)` holds the credential pages and `(dash)` everything behind
+  a session. `middleware.ts` gates the latter on the *presence* of the refresh cookie and decides
+  routing only — whether a session is still valid is `/api/session`'s question, because it is the
+  only place that can answer it and rotate while doing so. `middleware.ts` also cannot be where the
+  session is read: Next refuses a cookie write during a render, so a rotation there could not be
+  stored. (An earlier comment named `(marketing)` for the public group; `(auth)` is what a login
+  form actually is.)
 
 ## Working method
 

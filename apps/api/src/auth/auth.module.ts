@@ -5,6 +5,7 @@ import { PASSWORD_HASHER } from './auth.constants';
 import { AuthController } from './auth.controller';
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
+import { MeController } from './me.controller';
 import { Argon2PasswordHasher } from './password/argon2-password-hasher';
 import { SessionsRepository } from './sessions.repository';
 import { TokenService } from './tokens/token.service';
@@ -14,7 +15,10 @@ import { TokenService } from './tokens/token.service';
   // ESM-only (`"type": "module"`, no CommonJS export), and this app is CommonJS,
   // so `require('@nestjs/jwt')` fails under ts-jest and would fail at boot.
   imports: [JwtModule.register({ secret: validateEnv().JWT_SECRET })],
-  controllers: [AuthController],
+  // MeController is separate rather than another handler on AuthController: that
+  // class is @Public(), which the guard applies to every handler on it. See the
+  // comment on MeController.
+  controllers: [AuthController, MeController],
   // Repositories before services: the service depends on the repository.
   providers: [
     AuthRepository,

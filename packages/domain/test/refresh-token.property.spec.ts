@@ -10,8 +10,19 @@ import { decideRefreshTokenUse } from '../src/refresh-token';
  * expiry (so a stolen long-dead token still reports REPLAYED and still triggers
  * revocation), and the session bound is decided before the token bound (because
  * rotation renews the token, never the session).
+ *
+ * `noInvalidDate` below is load-bearing, not tidiness. `fc.date()` generates
+ * `Invalid Date` at roughly one draw in eight hundred, and every comparison against it
+ * is false — `NaN <= now` and `NaN > now` are both false. An invalid date therefore
+ * makes the USABLE equivalence below disagree with the decision table and fails the
+ * suite at random, with a counterexample that reads like a logic error and is not one.
+ * Measured on fast-check 4.10.1: 24 invalid dates in 20 000 draws.
  */
-const aDate = fc.date({ min: new Date('2020-01-01'), max: new Date('2035-01-01') });
+const aDate = fc.date({
+  min: new Date('2020-01-01'),
+  max: new Date('2035-01-01'),
+  noInvalidDate: true,
+});
 
 const aState = fc
   .record({

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  API_PREFIX,
   CurrencyCodes,
   DependencyStates,
   FORWARDED_FOR_HEADER,
@@ -38,6 +39,10 @@ describe('wire constants', () => {
     expect(ORGANIZATION_ID_HEADER).toBe('x-organization-id');
     expect(FORWARDED_PROTO_HEADER).toBe('x-forwarded-proto');
     expect(FORWARDED_FOR_HEADER).toBe('x-forwarded-for');
+  });
+
+  it('fixes the route prefix a client builds every URL from', () => {
+    expect(API_PREFIX).toBe('/api/v1');
   });
 
   it('fixes every enum value a client branches on', () => {

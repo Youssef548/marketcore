@@ -14,7 +14,7 @@ behavioural layer (`apps/e2e`) exists for that gap, and the two runners (`test:c
 
 | # | Layer | Where | Runner | Command |
 |---|---|---|---|---|
-| 1 | Unit | `apps/api/src/**/*.spec.ts`, `packages/*/{src,test}` | Jest / Vitest | `pnpm --filter api exec jest` |
+| 1 | Unit | `apps/api/src/**/*.spec.ts`, `apps/web/src/**/*.test.{ts,tsx}`, `packages/*/{src,test}` | Jest / Vitest | `pnpm --filter api exec jest`, `pnpm --filter web test` |
 | 2 | Property | `**/*.property.spec.ts` | Vitest + fast-check | same as its package |
 | 3 | Integration | `apps/api/test/integration/*.integration-spec.ts` | Jest + real Postgres | `pnpm --filter api test:integration` |
 | 4 | E2E (in-process) | `apps/api/test/*.e2e-spec.ts` | Jest + Supertest | `pnpm --filter api test:e2e` |
@@ -85,6 +85,9 @@ found by a test that can fail, not by review.
 | Mutation testing | Nothing pinned the wire values: replacing `'x-request-id'` with `''` kept the whole suite green, because every test imports the constant. `packages/contracts/test/constants.spec.ts` now asserts them by value. |
 | CORS suite + `configureApp` | CORS was registered in `main.ts`, so no test could see it. |
 | Behavioural suite | The runtime image had no `pnpm` (migrate exited 127) and a root-owned tree; and Prisma defaulted to the wrong OpenSSL engine. None of that is visible to any other layer. |
+| Running it | Next refuses a cookie write during a Server Component render. A protected layout that loaded the session there could not store a rotated refresh token, so the *next* request would present the superseded one and be refused as a replay — the API revoking the session, caused entirely by where the refresh happened. The session moved to a route handler. |
+| Reading the coordinator against the failure it exists for | A bare in-flight map does not cover the request that arrives *after* a rotation settles still carrying the superseded token — the case that actually happens. Sharing a promise cannot help when that promise has already resolved. The one-step rotation memory is the second mechanism, and it exists because the first was written down and found insufficient. |
+| Running it | Six concurrent session loads with one stale access token produced **exactly one** `/auth/refresh` in the API's log. Without the coordinator it would have been six, and five of those are replays — which the API answers by revoking the session. |
 
 ## Mutation baseline
 
@@ -122,15 +125,26 @@ runs it in its own job after `ci` passes.
 
 ## Deliberately not covered
 
-- **Host-based behaviour does not exist yet.** The API reads no `Host`, no
+- **Host-based behaviour still does not exist.** The API reads no `Host`, no
   `X-Forwarded-Proto` and sets no `trust proxy`, so there is nothing to verify. The harness
   is ready for it: `TRUST_PROXY` and a Host-header allowlist are the two features worth
   adding, and each needs its own ADR rather than being smuggled in as test work.
-- **Cookies.** Auth is a bearer token in a body today. When a refresh cookie lands, the
-  behavioural suite is where its `Secure`/`SameSite` flags belong — an in-process assertion
-  cannot see them, because without TLS the `Secure` branch is never taken.
-- **`apps/web`.** A shell with one render test. It has no behavioural coverage because it
-  has no user journey yet.
+- **Cookie flags are covered, and only here.** `apps/web` holds its tokens in `httpOnly`
+  cookies, and whether a browser *stores* one is decided by the browser over real TLS — a
+  `Secure` cookie sent over plain http is dropped in silence, which fails as an unexplained
+  sign-out rather than an error. `web-journey.spec.ts` asserts what the browser actually
+  received, including that `document.cookie` cannot see the tokens.
+- **`apps/web` is covered at two layers, and deliberately not a third.** The session rules,
+  the rotation coordinator, the route gate, the cookie attributes and the forms are
+  unit-tested. The route handlers and the page bodies are covered end to end instead: they are
+  adapters, and an assertion about a `Set-Cookie` header means nothing until a browser has
+  interpreted it. Nothing in `apps/web` is in `turbo run test`'s default path for the same
+  reason the API's e2e is not — it needs the stack.
+- **Multi-tab and multi-instance session behaviour.** The rotation memory covers the mechanism a
+  second tab depends on, and `refresh.test.ts` covers that mechanism, but no test opens two tabs,
+  and nothing runs more than one web instance. A second instance would rotate independently; the
+  API's reuse detection would catch it rather than lose the session silently, but a user could be
+  signed out.
 - **No consumer-driven contract testing (Pact).** `client-contract.e2e-spec.ts` drives the
   real client against the real server, which catches drift; a Pact broker would add
   versioned expectations that this single-repo project does not need yet.

@@ -1,16 +1,21 @@
 /**
  * Implementation-level values the auth module owns.
  *
- * Not in `@app/contracts`: nothing outside this module branches on them, and the
- * conventions put implementation values beside the code that owns them rather
- * than in the wire-format package.
+ * Almost none of them are in `@app/contracts`: nothing outside this module branches
+ * on them, and the conventions put implementation values beside the code that owns
+ * them rather than in the wire-format package.
+ *
+ * The refresh token's lifetime is the exception, and it is re-exported rather than
+ * redefined below — the web app sets a cookie lifetime from it, so a second copy
+ * here would be a second home for one policy. Its definition and the reasoning for
+ * its location are in `@app/contracts`; re-exporting keeps this module the single
+ * import site for everything the auth service reads, so no call site moved.
  */
 
 /** Lifetime of an access token. Short because an access token cannot be revoked. */
 export const ACCESS_TOKEN_TTL = '15m';
 
-/** Lifetime of a refresh token, in milliseconds. */
-export const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+export { REFRESH_TOKEN_TTL_MS } from '@app/contracts';
 
 /** 32 bytes of randomness. Entropy is what makes a fast hash sufficient here. */
 export const REFRESH_TOKEN_BYTES = 32;
@@ -39,6 +44,7 @@ export const AuthMessages = {
   REFRESH_UNUSABLE: 'Refresh token is not usable',
   REFRESH_REUSED: 'Refresh token was already used',
   SESSION_GONE: 'Session no longer exists',
+  USER_GONE: 'User no longer exists',
 } as const;
 
 /**

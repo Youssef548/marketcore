@@ -41,6 +41,15 @@ export default defineConfig({
     // still real, which is what the forwarded-scheme assertion depends on.
     ignoreHTTPSErrors: true,
 
+    // The API assertions talk to `localhost`. The web journey has to reach the app by
+    // its public name instead, because a browser cannot be handed a Host header the
+    // way a request context can — and DNS for these names is deliberately not arranged
+    // on the host. This tells Chromium where the name lives, scoped to the one name so
+    // nothing else about the run changes.
+    launchOptions: {
+      args: ['--host-resolver-rules=MAP web.marketcore.test 127.0.0.1'],
+    },
+
     extraHTTPHeaders: { accept: 'application/json' },
     trace: 'retain-on-failure',
   },
