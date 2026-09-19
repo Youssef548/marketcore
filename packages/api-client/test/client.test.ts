@@ -47,7 +47,14 @@ describe('api-client', () => {
     server.use(
       http.get(`${base}/things/1`, () =>
         HttpResponse.json(
-          { error: { code: 'NOT_FOUND', message: 'No such thing', details: { id: '1' } } },
+          {
+            error: {
+              code: 'NOT_FOUND',
+              message: 'No such thing',
+              requestId: 'req_1',
+              details: { id: '1' },
+            },
+          },
           { status: 404 },
         ),
       ),
@@ -55,6 +62,25 @@ describe('api-client', () => {
     const error = await client.get('/things/1', ThingSchema).catch((e: unknown) => e);
     expect(error).toBeInstanceOf(ApiError);
     expect(error).toMatchObject({ status: 404, code: 'NOT_FOUND', details: { id: '1' } });
+  });
+
+  it('treats an envelope missing requestId as a contract violation, not a valid error', async () => {
+    // requestId is required by the contract, so a server still emitting the
+    // older shape is not partially trusted: the code degrades to INTERNAL rather
+    // than being reported as if the response were well formed. Surfacing a stale
+    // server's own code is how a client silently accepts a contract it does not
+    // actually satisfy.
+    server.use(
+      http.get(`${base}/things/1`, () =>
+        HttpResponse.json(
+          { error: { code: 'NOT_FOUND', message: 'No such thing' } },
+          { status: 404 },
+        ),
+      ),
+    );
+    const error = await client.get('/things/1', ThingSchema).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({ status: 404, code: 'INTERNAL' });
   });
 
   it('falls back to INTERNAL when the failure body is not an envelope', async () => {

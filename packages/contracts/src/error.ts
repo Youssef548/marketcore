@@ -4,12 +4,18 @@ import { z } from 'zod';
  * Every failure the API returns has this shape — nothing else is a valid error
  * response. Clients branch on `code` (stable, machine-readable), never on
  * `message` (human-facing, free to change).
+ *
+ * `requestId` is required, not optional: it is the one value that joins a client
+ * complaint to a server log line, and an error nobody can trace is not worth
+ * returning. The worker's failures carry it too, so both processes are
+ * diagnosable the same way.
  */
 export const ErrorEnvelopeSchema = z
   .object({
     error: z.object({
       code: z.string(),
       message: z.string(),
+      requestId: z.string(),
       details: z.unknown().optional(),
     }),
   })
