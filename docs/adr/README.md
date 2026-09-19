@@ -17,6 +17,7 @@ its constraint exists describes a guess, not a decision.
 | 007 | Use BullMQ for background processing | Before worker and retry configuration (phase 10) | Proposed |
 | 008 | Use OpenTelemetry for cross-process tracing | Before instrumentation (phase 12) | Proposed |
 | 009 | Deploy API and worker on ECS Fargate | Before Terraform implementation (phase 14) | Proposed |
+| [010](./010-tenant-isolation-in-the-query-layer.md) | Enforce tenant isolation in the application query layer | Before tenancy and every tenant-owned read (phase 2) | Accepted |
 
 Decisions that do not warrant an ADR live in `docs/superpowers/specs/`, whose `D<n>` identifiers are
 cited from code comments and plans. The sequence is continuous across documents rather than

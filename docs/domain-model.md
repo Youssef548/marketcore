@@ -40,6 +40,8 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 | User | id, email, passwordHash, status, createdAt | Unique normalized email | 1 * |
 | Organization | id, name, slug, status, createdAt | Unique slug | 2 |
 | OrganizationMember | organizationId, userId, role | Unique (organizationId, userId) | 2 |
+| Session | id, userId, expiresAt, revokedAt, revokedReason | One per login; revocation is explicit and recorded with a reason | 2 *|
+| RefreshToken | sessionId, tokenHash, expiresAt, usedAt | Unique tokenHash; rotated on every use | 2 *|
 | Product | id, organizationId, name, priceMinor, currency, status | Tenant-scoped product access | 3 |
 | Inventory | productId, available, reserved, version | Non-negative quantities; unique productId | 3 |
 | Order | id, organizationId, buyerId, status, totalMinor, currency | Totals immutable after creation | 4 |
@@ -59,6 +61,19 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 **Ownership note.** `LedgerEntry` has no `updatedAt` and no soft-delete column. That is not an
 omission: INV-7 is enforced by the schema offering no way to violate it, which is stronger than a
 convention.
+
+**`*` — Session and RefreshToken were added during phase 2, not before it.** This table originally
+omitted them, which meant `docs/architecture.md`'s phase-2 scope ("refresh" and "revoke") had no
+server-side state to stand on. They are recorded here rather than left as an implementation detail,
+because the refresh decision table in `packages/domain` is written against both and the invariants
+below depend on them existing.
+
+**Where the business rules are enforced, and where they are not.** The database enforces the unique
+keys and the `inventory_quantities_non_negative` CHECK, and a test proves each by writing around the
+application rather than through it. It does **not** enforce "an organization retains at least one
+owner": that is a count over sibling rows, which no `CHECK` can express, so it is a transactional rule
+with its own test and is labelled a rule here so the design does not imply a stronger guarantee than
+exists.
 
 **`*` — why `User` exists in phase 1.** It was pulled forward from phase 2, and not as scaffolding:
 the readiness probe needs a query to round-trip, and a query through Prisma's builder needs a
@@ -104,6 +119,16 @@ capture. Corrections use compensating entries — INV-7.
 Represent orders, payments, refunds, and payouts with explicit states and guarded transitions.
 Reject illegal transitions at the domain boundary and test the transition matrix. A boolean such as
 `paid` cannot express processing, failure, partial refund, or recovery.
+
+### Product
+
+| Legal | Illegal |
+|---|---|
+| DRAFT → PUBLISHED (`publish`), and only when `priceMinor >= 1` | PUBLISHED → PUBLISHED |
+| PUBLISHED → DRAFT (`unpublish`) | DRAFT → DRAFT |
+
+`ARCHIVED` was considered for this table and deliberately not added: no phase-3 operation can reach
+it, and a state no endpoint can enter is scaffolding. It arrives with the operation that needs it.
 
 ### Order
 

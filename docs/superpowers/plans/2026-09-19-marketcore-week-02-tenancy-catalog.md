@@ -2615,9 +2615,10 @@ git add -A && git commit -m "feat(auth): rotating refresh tokens with reuse dete
   `apps/api/src/organizations/membership.repository.ts`,
   `apps/api/src/organizations/organization.service.ts`,
   `apps/api/src/organizations/organization.service.spec.ts`
+- Modify: `apps/api/package.json` (add the `@app/domain` workspace dependency)
 
 **Interfaces:**
-- Consumes: `tenantScope`, `canManageMembership`, `slugify`, the organization contracts.
+- Consumes: `slugify`, `TenantContext`, the organization contracts.
 - Produces:
   - `OrganizationRepository.createWithOwner(name, slug, userId): Promise<Organization>`,
     `listForUser(userId): Promise<Organization[]>`
@@ -2625,6 +2626,15 @@ git add -A && git commit -m "feat(auth): rotating refresh tokens with reuse dete
     `countOwners(organizationId)`, `add(organizationId, userId, role)`,
     `remove(organizationId, userId)`, `listByOrg(organizationId)`
   - `OrganizationService.create`, `.listForUser`, `.listMembers`, `.addMember`, `.removeMember`
+
+- [ ] **Step 0: Add the workspace dependency**
+
+Run: `pnpm --filter api add @app/domain`
+Expected: `"@app/domain": "workspace:*"` joins `apps/api`'s dependencies.
+
+This is the first task whose code imports `@app/domain`. `import/no-extraneous-dependencies` is
+enabled for apps, so without this step lint fails — and a dependency added in the task that needs it
+is the rule this repository already follows.
 
 - [ ] **Step 1: Write the failing service test**
 
@@ -2812,7 +2822,7 @@ export class MembershipRepository {
 ```ts
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { MemberRoles, type Organization, type OrganizationMember } from '@app/contracts';
-import { canManageMembership, slugify, type TenantContext } from '@app/domain';
+import { slugify, type TenantContext } from '@app/domain';
 import { OrganizationRepository } from './organization.repository';
 import { MembershipRepository } from './membership.repository';
 
@@ -2836,8 +2846,10 @@ export class OrganizationService {
   }
 
   async addMember(tenant: TenantContext, email: string): Promise<void> {
-    if (!canManageMembership(tenant.role)) throw new ConflictException('Not permitted');
-
+    // No role check here on purpose. The RolesGuard is the single enforcement
+    // point for @OwnerOnly, and a second check inside the service would be a
+    // second answer to the same question — the spec's error table says 403, so
+    // the guard's verdict is the one the contract describes.
     const user = await this.membershipRepository.findByEmail(email);
     if (user === null) throw new NotFoundException('No user with that email');
 
@@ -3300,9 +3312,9 @@ actually installed — do not weaken the guard to make the old test pass.
 
 - [ ] **Step 6: Register the module**
 
-In `apps/api/src/app.module.ts`, add `AuthModule`, `OrganizationsModule` and `SecurityModule` to
-`imports`. `SecurityModule` must come last so the guards are registered after the modules whose
-providers they use.
+In `apps/api/src/app.module.ts`, add `OrganizationsModule` and `SecurityModule` to `imports` —
+`AuthModule` was already added in Task 8, so adding it again here would be a duplicate. `SecurityModule`
+must come last so the guards are registered after the modules whose providers they use.
 
 - [ ] **Step 7: Write the failing e2e tests for the guard chain**
 
@@ -4068,3 +4080,31 @@ gh pr create --base main --head week-02-tenancy-catalog \
 
 Expected: CI green on the pull request. Tag `w02-tenancy-catalog` on `main` after the merge, not
 before — the tag records what shipped.
+
+---
+
+## Defects found during execution, and how each was resolved
+
+Written after the fact, because every one of these was found by *running* the plan rather than
+reading it. A later reader re-running a task should apply the correction here rather than the
+snippet in the task body.
+
+| # | Where | Defect | Resolution |
+|---|---|---|---|
+| 1 | Task 1 Step 2 | The `tsconfig.build.json` snippet omits `outDir`. `@app/config/tsconfig/base.json` sets none, so it emits `.js`/`.d.ts` beside the sources and never creates `dist/`, while `package.json` declares `main: ./dist/src/index.js`. | Use `packages/contracts/tsconfig.build.json` verbatim: `module: commonjs`, `moduleResolution: node`, `outDir: dist`, `rootDir: "."`, `composite: false`, `declaration: true`, `declarationMap: true`. |
+| 2 | Tasks 1 and 3 | The plan schedules `MemberRoles`/`MemberRole` in Task 3, but Task 1's `TenantContext.role` is typed `MemberRole` — so Task 1 cannot compile, let alone pass, without them. | Pulled `MemberRoles`/`MemberRole` into Task 1. Task 3 adds only the remaining value sets, and must not re-add these. |
+| 3 | Tasks 2 and 3 | The mandated tests import the const-object vocabulary (`PasswordPolicyViolations`, `RefreshTokenVerdicts`, `ProductTransitionOutcomes`) from the logic module, but the mandated implementations only import it. Typecheck fails with TS2724. | Each logic module re-exports its interface file (`export * from './<subject>.interface'`). The `src/index.ts` entry re-exports both, which is safe here because both paths resolve to the same declaration. |
+| 4 | Task 10 | No task added `@app/domain` to `apps/api`'s dependencies, though Tasks 10, 11 and 13 import it. `import/no-extraneous-dependencies` is on for apps, so lint fails. | Task 10 gained a Step 0: `pnpm --filter api add @app/domain`. |
+| 5 | Task 10 | `OrganizationService.addMember` checked `canManageMembership` and threw `ConflictException`, but the spec's error table says an owner-only action refused for a member is `403 FORBIDDEN` — and Task 11's `RolesGuard` already enforces it. | Removed. The `RolesGuard` is the single enforcement point; two answers to one authorization question drift. |
+| 6 | Task 11 Step 6 | The step said to add `AuthModule` to `AppModule.imports`, which Task 8 Step 5 already did — a duplicate import. | Task 11 adds only `OrganizationsModule` and `SecurityModule`. |
+| 7 | §7, error semantics | The table has no row for publishing an unpriced product, though Task 13 implements it. | `409 CONFLICT`, the same "current state does not permit this" class as an illegal transition. |
+| 8 | Task 3 Step 4 | The brief expects `19 passed`; the specs it mandates contain 20 cases. | 20 is correct — the brief's arithmetic was wrong, not the tests. |
+
+**A general lesson worth keeping.** Defects 1, 2, 3 and 8 were not design errors. They were the plan
+being *internally inconsistent* — a snippet that does not run, a value set consumed a task before it
+exists, a test that cannot import what it needs, a count that does not match its own list. A plan
+containing complete code is checked for design and not re-checked for consistency, and that is
+exactly where it breaks. Whoever writes Week 3's plan should run the same scan against it: for every
+pair of tasks sharing a file or an interface, does each consume only what an earlier task produces,
+and does each task's own text agree with itself?
+
