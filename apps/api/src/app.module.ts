@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@app/runtime';
 import { AuthModule } from './auth/auth.module';
+import { CatalogModule } from './catalog/catalog.module';
 import { HealthController } from './modules/health/health.controller';
 import { HealthRepository } from './modules/health/health.repository';
 import { HealthService } from './modules/health/health.service';
@@ -18,7 +19,7 @@ import { SecurityModule } from './security/security.module';
 @Module({
   // SecurityModule last: it registers the global guards, and their providers come
   // from the modules above it.
-  imports: [PrismaModule, AuthModule, OrganizationsModule, SecurityModule],
+  imports: [PrismaModule, AuthModule, OrganizationsModule, CatalogModule, SecurityModule],
   controllers: [HealthController],
   // Repositories before services: the service depends on the repository, never
   // on the Prisma client directly.
