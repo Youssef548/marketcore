@@ -305,6 +305,9 @@ importers:
       '@app/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@types/express':
+        specifier: ^5.0.0
+        version: 5.0.6
       '@types/node':
         specifier: ^24.0.0
         version: 24.13.6

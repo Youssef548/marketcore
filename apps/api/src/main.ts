@@ -1,23 +1,18 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ZodValidationPipe, cleanupOpenApiDoc } from 'nestjs-zod';
+import { cleanupOpenApiDoc } from 'nestjs-zod';
 import { AppModule } from './app.module';
-import { ErrorEnvelopeFilter } from './filters/error-envelope.filter';
-import { validateEnv } from '@app/runtime';
+import { configureApp } from './app.setup';
+import { createLogger, validateEnv } from '@app/runtime';
 
 async function bootstrap() {
   // Validate before anything else, so a bad deploy fails at boot with a list of
   // what is wrong rather than deep inside the first request.
   const env = validateEnv();
 
-  const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api/v1');
-  // Every request body/query/param that uses a contract schema is validated
-  // here, before a handler runs.
-  app.useGlobalPipes(new ZodValidationPipe());
-  // Every uncaught failure leaves through here, in one shape.
-  app.useGlobalFilters(new ErrorEnvelopeFilter());
+  const app = await NestFactory.create(AppModule, { logger: createLogger('api') });
+  configureApp(app);
   app.enableCors({ origin: env.WEB_URL.split(','), credentials: true });
 
   // Documentation only. Nothing reads this at build time — there is no

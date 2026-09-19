@@ -23,6 +23,7 @@
   "devDependencies": {
     "@app/config": "workspace:*",
     "@app/eslint-config": "workspace:*",
+    "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
     "eslint": "^9.18.0",
     "typescript": "^5.7.0",

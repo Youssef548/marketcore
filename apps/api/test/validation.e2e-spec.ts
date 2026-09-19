@@ -1,9 +1,9 @@
 import { Body, Controller, INestApplication, Module, Post } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { ZodValidationPipe, createZodDto } from 'nestjs-zod';
+import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
-import { ErrorEnvelopeFilter } from '../src/filters/error-envelope.filter';
+import { configureApp } from '../src/app.setup';
 
 /**
  * The template ships no DTOs, so this file defines a throwaway one. The point is
@@ -34,9 +34,7 @@ describe('validation and the error envelope (e2e)', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [ProbeModule] }).compile();
     app = moduleRef.createNestApplication();
-    app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ZodValidationPipe());
-    app.useGlobalFilters(new ErrorEnvelopeFilter());
+    configureApp(app);
     await app.init();
   });
 
