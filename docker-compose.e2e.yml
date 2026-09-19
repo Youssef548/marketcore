@@ -1,0 +1,78 @@
+# The behavioural harness: the built artifact in a container, behind a real reverse
+# proxy, over real TLS.
+#
+# Deliberately separate from docker-compose.yml. That stack is a developer's local
+# environment and is expected to persist; this one is disposable, is brought up and
+# torn down by the test run, and must never touch a development database.
+#
+#   docker compose -f docker-compose.e2e.yml up -d --build --wait
+#   pnpm --filter e2e test:behavioural
+#   docker compose -f docker-compose.e2e.yml down -v
+name: marketcore-e2e
+
+x-api-environment: &api-environment
+  APP_NAME: marketcore
+  # Host `db` is the compose service name, which is the whole point of running the
+  # API in here: it reaches the database over the network rather than a socket.
+  DATABASE_URL: postgresql://app:app@db:5432/app_e2e
+  PORT: 3001
+  # The single allowed browser origin the CORS assertions use. One entry is
+  # deliberate — a second, disallowed origin is what proves the allowlist is
+  # consulted rather than reflected.
+  WEB_URL: http://web.marketcore.test
+  # Test-only, and at least 32 characters because the API refuses to boot with a
+  # shorter one. Not a secret: nothing in this stack is deployed.
+  JWT_SECRET: e2e-secret-that-is-at-least-32-characters
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: app_e2e
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app_e2e"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # Migrations and the deterministic seed, as a one-shot that the API depends on.
+  # Its own service so that "the schema is applied" is a precondition rather than a
+  # race the first request has to survive.
+  migrate:
+    image: marketcore-e2e-api
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    environment: *api-environment
+    command:
+      - sh
+      - -c
+      - pnpm --filter @app/database db:deploy && pnpm --filter @app/database db:seed
+    depends_on:
+      db: { condition: service_healthy }
+
+  api:
+    image: marketcore-e2e-api
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    environment: *api-environment
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    healthcheck:
+      # `node -e` rather than curl: the slim image ships no HTTP client, and node 22
+      # has fetch built in. Readiness, not liveness, because this is what the proxy
+      # should wait for.
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3001/api/v1/health/ready').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  proxy:
+    image: caddy:2-alpine
+    ports: ["8443:443"]
+    volumes: ["./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro"]
+    depends_on:
+      api: { condition: service_healthy }

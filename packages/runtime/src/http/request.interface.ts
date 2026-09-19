@@ -17,6 +17,16 @@ export interface RequestLogFields {
   path: string;
   status: number;
   durationMs: number;
+  /**
+   * The hostname the client asked for. Behind a reverse proxy this is the public
+   * name, not the socket's — which is the only way a log line can distinguish the
+   * two, since the process itself sees a local connection either way.
+   */
+  host?: string;
+  /** The scheme a proxy reported, absent when the request did not come through one. */
+  forwardedProto?: string;
+  /** The client address a proxy reported. */
+  forwardedFor?: string;
 }
 
 /** Where a completed-request record goes. Injected so tests never touch a real logger. */

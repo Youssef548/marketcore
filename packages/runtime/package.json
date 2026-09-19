@@ -13,6 +13,7 @@
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -26,7 +27,9 @@
     "@app/eslint-config": "workspace:*",
     "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "^2.1",
     "eslint": "^9.18.0",
+    "fast-check": "^4.10.1",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.20.0",
     "vitest": "^2.1.0"

@@ -1,8 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { ErrorEnvelopeSchema, TokenPairSchema } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
+import { expectContract } from './support/contracts';
 import { credentials, unique } from './support/fixtures';
 
 /**
@@ -47,9 +49,11 @@ describe('refresh rotation (e2e)', () => {
 
     const rotated = await refreshWith(refreshToken).expect(200);
     expect(rotated.body.refreshToken).not.toBe(refreshToken);
+    expectContract(TokenPairSchema, rotated.body);
 
     const reused = await refreshWith(refreshToken).expect(401);
     expect(reused.body.error.code).toBe('UNAUTHORIZED');
+    expectContract(ErrorEnvelopeSchema, reused.body);
   });
 
   it('revokes the whole session when a rotated token is replayed', async () => {

@@ -20,7 +20,18 @@ const eslintConfig = [
     rules: { 'import/no-extraneous-dependencies': 'error' },
   },
   {
-    ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts'],
+    // coverage/** matters now that the web app has a coverage gate: without it the
+    // generated lcov-report JavaScript is linted, and the run fails on a file nobody
+    // wrote. reports/** is the same argument for Stryker output.
+    ignores: [
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'coverage/**',
+      'reports/**',
+      'next-env.d.ts',
+    ],
   },
 ];
 

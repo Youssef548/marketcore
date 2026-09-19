@@ -10,9 +10,10 @@ async function bootstrap() {
   const env = validateEnv();
 
   const app = await NestFactory.create(AppModule, { logger: createLogger('api') });
+  // CORS is registered inside configureApp, so the e2e harness installs the same
+  // policy this process serves. Registering it here would make it untestable.
   configureApp(app);
   configureSwagger(app);
-  app.enableCors({ origin: env.WEB_URL.split(','), credentials: true });
 
   await app.listen(env.PORT);
 }

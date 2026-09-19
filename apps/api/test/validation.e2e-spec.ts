@@ -3,7 +3,9 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { ErrorEnvelopeSchema } from '@app/contracts';
 import { configureApp } from '../src/app.setup';
+import { expectContract } from './support/contracts';
 
 /**
  * The template ships no DTOs, so this file defines a throwaway one. The point is
@@ -57,10 +59,12 @@ describe('validation and the error envelope (e2e)', () => {
       .expect(400);
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
     expect(res.body.error.details).toBeInstanceOf(Array);
+    expectContract(ErrorEnvelopeSchema, res.body);
   });
 
   it('rejects a missing body the same way', async () => {
     const res = await request(app.getHttpServer()).post('/api/v1/probe').send({}).expect(400);
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    expectContract(ErrorEnvelopeSchema, res.body);
   });
 });

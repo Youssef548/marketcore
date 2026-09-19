@@ -13,6 +13,8 @@
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:mutation": "stryker run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -21,7 +23,11 @@
   "devDependencies": {
     "@app/config": "workspace:*",
     "@app/eslint-config": "workspace:*",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
+    "@vitest/coverage-v8": "^2.1",
     "eslint": "^9.18.0",
+    "fast-check": "^4.10.1",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.20.0",
     "vitest": "^2.1.0"

@@ -9,6 +9,7 @@ import {
   validateEnv,
 } from '@app/runtime';
 import { ErrorEnvelopeFilter } from './filters/error-envelope.filter';
+import { corsOptions } from './http/cors-origins';
 
 /**
  * The one place global HTTP behaviour is configured.
@@ -16,12 +17,15 @@ import { ErrorEnvelopeFilter } from './filters/error-envelope.filter';
  * main.ts and the e2e harnesses both call this. A global registered only in
  * main.ts is not installed in tests, so a test that boots a differently
  * configured app proves less than it appears to — the first e2e assertion about
- * request ids failed for exactly this reason.
+ * request ids failed for exactly this reason, and CORS was registered in main.ts
+ * alone until the cors suite proved it could not be seen.
  */
 export function configureApp(
   app: INestApplication,
   logger: LoggerService = createLogger('http'),
 ): void {
+  const env = validateEnv();
+
   app.setGlobalPrefix('api/v1');
   // The id first, so every later stage — including the request log, a validation
   // rejection and the error envelope — can be correlated to it.
@@ -32,6 +36,9 @@ export function configureApp(
   app.useGlobalPipes(new ZodValidationPipe());
   // Every uncaught failure leaves through here, in one shape.
   app.useGlobalFilters(new ErrorEnvelopeFilter());
+  // Last, so a preflight answered by CORS still passes the id middleware and the
+  // request logger above and therefore appears in the logs like any other request.
+  app.enableCors(corsOptions(env));
 }
 
 /**

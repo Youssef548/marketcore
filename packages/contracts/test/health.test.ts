@@ -47,6 +47,21 @@ describe('health contracts', () => {
     ).toBe(false);
   });
 
+  it('says which field is wrong, so the envelope detail a client sees is useful', () => {
+    // Mutation testing found the refine's message and path could be emptied without
+    // any test noticing: every other assertion here checks `success`, which the
+    // options object does not affect. The detail is what a caller debugging a
+    // readiness payload actually reads, so it is asserted by value.
+    const parsed = ReadinessSchema.safeParse({
+      status: ReadinessStatuses.OK,
+      checks: { database: DependencyStates.DOWN },
+    });
+    if (parsed.success) throw new Error('expected the contradicted payload to be rejected');
+
+    expect(parsed.error.issues[0]?.message).toBe('status must be ok exactly when every check is up');
+    expect(parsed.error.issues[0]?.path).toEqual(['status']);
+  });
+
   it('builds a payload whose status is derived, so the invalid pair is unrepresentable', () => {
     expect(buildReadiness({ database: DependencyStates.UP })).toEqual({
       status: ReadinessStatuses.OK,

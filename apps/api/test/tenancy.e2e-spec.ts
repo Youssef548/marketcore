@@ -1,9 +1,15 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { CurrencyCodes, ORGANIZATION_ID_HEADER } from '@app/contracts';
+import {
+  CurrencyCodes,
+  ErrorEnvelopeSchema,
+  ORGANIZATION_ID_HEADER,
+  ProductSchema,
+} from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
+import { expectContract } from './support/contracts';
 import { newTenant, productPayload, tenantHeaders } from './support/fixtures';
 
 /**
@@ -57,6 +63,7 @@ describe('tenant isolation (e2e)', () => {
     expect(res.body.error.code).toBe('NOT_FOUND');
     // Not merely a 404: the response must not carry the data it refused to serve.
     expect(JSON.stringify(res.body)).not.toContain('Alice Widget');
+    expectContract(ErrorEnvelopeSchema, res.body);
   });
 
   it("cannot update another organization's product", async () => {
@@ -116,5 +123,6 @@ describe('tenant isolation (e2e)', () => {
       .expect(200);
 
     expect(res.body.name).toBe('Alice Widget');
+    expectContract(ProductSchema, res.body);
   });
 });

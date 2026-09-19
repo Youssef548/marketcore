@@ -1,0 +1,19 @@
+{
+  "$schema": "../../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "packageManager": "pnpm",
+  "testRunner": "vitest",
+  "plugins": ["@stryker-mutator/vitest-runner"],
+  "vitest": { "configFile": "vitest.config.ts" },
+
+  "//": "Interfaces and the barrel file carry no runtime behaviour, so mutating them produces noise rather than signal.",
+  "mutate": ["src/**/*.ts", "!src/**/*.interface.ts", "!src/index.ts"],
+
+  "reporters": ["clear-text", "progress", "html", "json"],
+  "htmlReporter": { "fileName": "reports/mutation/index.html" },
+  "jsonReporter": { "fileName": "reports/mutation/report.json" },
+
+  "//thresholds": "break is null on purpose: this reports a score, it does not gate a pull request. Mutation runs are slow and a first baseline nobody has seen should not be able to block work. Raise break once the baseline is known.",
+  "thresholds": { "high": 80, "low": 60, "break": null },
+
+  "tempDirName": ".stryker-tmp"
+}

@@ -36,8 +36,8 @@ failure mode in this repo.
 `pnpm --filter api test` runs layers 1, 3 and 4 in sequence. Layers 3 and 4 share one database, which
 is why they run `--runInBand` and why every fixture is suffixed by `unique()`.
 
-**Status.** Layers 1–4 are wired today. Layer 5 and `test:mutation` are not built yet — their commands
-will not resolve until the behavioural-testing work lands. Do not claim a layer-5 result before then.
+**Status.** All five layers and both runners are wired. Layer 5 needs the stack running
+first — see `apps/e2e/README.md` for the up/test/down sequence.
 
 ---
 

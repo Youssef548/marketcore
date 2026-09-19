@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "type": "module",
   "main": "./src/index.ts",
-  "exports": { ".": "./src/index.ts" },
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "lint": "eslint .",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -15,6 +18,7 @@
   "devDependencies": {
     "@app/config": "workspace:*",
     "@app/eslint-config": "workspace:*",
+    "@vitest/coverage-v8": "^2.1",
     "eslint": "^9.18.0",
     "msw": "^2.6.0",
     "typescript": "^5.7.0",

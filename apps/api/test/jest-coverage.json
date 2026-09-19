@@ -1,0 +1,17 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "..",
+  "testEnvironment": "node",
+  "testRegex": "(src/.*\\.spec\\.ts$|test/.*\\.(e2e|integration)-spec\\.ts$)",
+  "transform": { "^.+\\.(t|j)s$": "ts-jest" },
+  "setupFiles": ["dotenv/config"],
+  "moduleNameMapper": {
+    "^@app/(.*)$": "<rootDir>/../../packages/$1/src/index.ts"
+  },
+  "collectCoverageFrom": ["src/**/*.(t|j)s", "!src/**/*.spec.ts"],
+  "coverageDirectory": "./coverage",
+  "coverageReporters": ["text-summary", "lcov"],
+  "coverageThreshold": {
+    "global": { "statements": 91, "branches": 74, "functions": 94, "lines": 91 }
+  }
+}

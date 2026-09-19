@@ -1,9 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { ProductStatuses } from '@app/contracts';
+import { InventorySchema, ProductSchema, ProductStatuses } from '@app/contracts';
+import { z } from 'zod';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
+import { expectContract } from './support/contracts';
 import { newTenant, productPayload, tenantHeaders } from './support/fixtures';
 
 describe('catalog (e2e)', () => {
@@ -28,6 +30,7 @@ describe('catalog (e2e)', () => {
       .set(tenantHeaders(tenant.accessToken, tenant.organizationId))
       .send(productPayload({ name: `Widget ${priceMinor}`, priceMinor }))
       .expect(201);
+    expectContract(ProductSchema, res.body);
     return res.body as { id: string; status: string; priceMinor: number };
   };
 
@@ -42,6 +45,7 @@ describe('catalog (e2e)', () => {
       .expect(200);
 
     expect(inventory.body).toEqual({ productId: product.id, available: 0, reserved: 0 });
+    expectContract(InventorySchema, inventory.body);
   });
 
   it('publishes a priced product and unpublishes it again', async () => {
@@ -128,6 +132,7 @@ describe('catalog (e2e)', () => {
       .expect(200);
 
     expect(ours.body.map((product: { id: string }) => product.id)).toContain(mine.id);
+    expectContract(z.array(ProductSchema), ours.body);
   });
 
   it('answers 404 for a product id that does not exist in this tenant', async () => {
