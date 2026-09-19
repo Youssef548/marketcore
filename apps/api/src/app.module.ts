@@ -4,6 +4,8 @@ import { AuthModule } from './auth/auth.module';
 import { HealthController } from './modules/health/health.controller';
 import { HealthRepository } from './modules/health/health.repository';
 import { HealthService } from './modules/health/health.service';
+import { OrganizationsModule } from './organizations/organizations.module';
+import { SecurityModule } from './security/security.module';
 
 /**
  * The composition root. It stays thin on purpose: it wires infrastructure and
@@ -14,7 +16,9 @@ import { HealthService } from './modules/health/health.service';
  * owning module's exported service, never through its Prisma models directly.
  */
 @Module({
-  imports: [PrismaModule, AuthModule],
+  // SecurityModule last: it registers the global guards, and their providers come
+  // from the modules above it.
+  imports: [PrismaModule, AuthModule, OrganizationsModule, SecurityModule],
   controllers: [HealthController],
   // Repositories before services: the service depends on the repository, never
   // on the Prisma client directly.

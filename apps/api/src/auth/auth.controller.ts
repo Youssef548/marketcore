@@ -1,6 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse } from '@nestjs/swagger';
 import type { TokenPair, UserSummary } from '@app/contracts';
+import { Public } from '../security/decorators/public.decorator';
 import { AuthService } from './auth.service';
 import {
   LoginRequestDto,
@@ -12,11 +13,11 @@ import {
 } from './auth.dto';
 
 /**
- * Registration and login are how a caller obtains a token, so they cannot
- * require one. The `@Public()` marker arrives with the security module
- * (Task 11) — until then these routes are simply reachable without a token,
- * because no global guard exists yet.
+ * Public: these routes are how a caller obtains a token, so they cannot require
+ * one. The marker is explicit because every route is otherwise guarded — the
+ * `grep '@Public'` list is the complete set of routes reachable without a token.
  */
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

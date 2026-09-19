@@ -7,9 +7,18 @@ import {
   type Health,
   type Readiness,
 } from '@app/contracts';
+import { Public } from '../../security/decorators/public.decorator';
 import { HealthDto, ReadinessDto } from './health.dto';
 import { HealthService } from './health.service';
 
+/**
+ * Public, and this marker is not optional. A global AccessTokenGuard closes every
+ * route by default, including this one — and a liveness probe that requires a
+ * token is a probe a load balancer cannot use. The failure this prevents is a
+ * health suite that fails the moment the guard lands, which is the guard proving
+ * it is installed rather than a reason to weaken it.
+ */
+@Public()
 @Controller('health')
 export class HealthController {
   constructor(private readonly healthService: HealthService) {}
