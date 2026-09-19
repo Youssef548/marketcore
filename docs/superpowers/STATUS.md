@@ -285,8 +285,9 @@ requests, chooses an organization, signs out — and cannot read either token.
 
 | Check | Command | Result |
 |---|---|---|
-| **The gate** | `pnpm --filter e2e test:behavioural` | **13/13**, including 2 browser journeys |
-| The whole check suite | `pnpm turbo run lint typecheck test:coverage build` | see below |
+| **The gate** | `pnpm --filter e2e test:behavioural` | **14/14**, including 3 browser journeys |
+| **The behavioural job, in CI** | run [35462183755](https://github.com/Youssef548/marketcore/actions/runs/35462183755) | **pass, 2m53s** — its first green run ever; see finding 6 |
+| The whole check suite | `pnpm turbo run lint typecheck test:coverage build` | **31/31 tasks** |
 | Unit | `pnpm --filter api exec jest` | 60 passed, 12 suites |
 | End to end (API) | `pnpm --filter api test:e2e` | 59 passed, 10 suites |
 | Integration | `pnpm --filter api test:integration` | 16 passed, 4 suites |
@@ -315,7 +316,13 @@ requests, chooses an organization, signs out — and cannot read either token.
 - **Two shared values** moved to `@app/contracts`: `REFRESH_TOKEN_TTL_MS` (the web app sets a cookie
   lifetime from it) and `API_PREFIX` (the web app builds the API's URLs).
 - **The web app in the behavioural harness** — its own image, a Caddy site, and a Playwright
-  journey. CI now installs Chromium.
+  journey. CI now installs Chromium, and the job that had never passed now does.
+- **The web app's stylesheet actually contains the design system.** It never had: Tailwind 4 skips
+  `node_modules`, where `@app/ui` is symlinked, so every class defined in the shared package was
+  missing — including the primary Button's background. Found by looking at the rendered page rather
+  than at the markup, and pinned by a browser assertion on *computed styles*.
+- **The web app is explicitly light, and says so.** `globals.css` had been handing the background to
+  `prefers-color-scheme` while every component colour was a light-mode grey.
 - **The coverage gate ratcheted** 34/45/45/34 → 52/75/55/52.
 
 ### Not proven / deferred
