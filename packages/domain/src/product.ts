@@ -4,6 +4,9 @@ import { ProductTransitionOutcomes, type ProductTransitionOutcome } from './prod
 /** The outcome vocabulary ships with its rule, so callers import from one module. */
 export * from './product.interface';
 
+/** A price below this cannot be published: nothing is sold for nothing. */
+export const MIN_PUBLISHABLE_PRICE_MINOR = 1;
+
 /**
  * The legal transitions, as a table. The domain model's illegal-transition table
  * is the negative space of this one, and a rejected transition is a test case
@@ -22,8 +25,7 @@ export function planProductTransition(
   if (!LEGAL_TRANSITIONS[from].includes(to)) {
     return ProductTransitionOutcomes.ILLEGAL_TRANSITION;
   }
-  // Nothing is sold at zero, so a zero price is not a publishable product.
-  if (to === ProductStatuses.PUBLISHED && priceMinor <= 0) {
+  if (to === ProductStatuses.PUBLISHED && priceMinor < MIN_PUBLISHABLE_PRICE_MINOR) {
     return ProductTransitionOutcomes.UNPUBLISHABLE;
   }
   return ProductTransitionOutcomes.ALLOWED;

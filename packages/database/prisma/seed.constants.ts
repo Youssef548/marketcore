@@ -56,6 +56,12 @@ export const SEED_MEMBERSHIPS = [
   { organizationId: SEED_IDS.ORG_DELTA, userId: SEED_IDS.USER_OUTSIDER, role: MemberRole.OWNER },
 ] as const;
 
+/**
+ * Stock the seed starts each product with. A named value because it is seed data,
+ * not an incidental number — the tests that read it should find one definition.
+ */
+export const SEED_INVENTORY_AVAILABLE = 10;
+
 export const SEED_PRODUCTS = [
   {
     id: SEED_IDS.PRODUCT_NILE,

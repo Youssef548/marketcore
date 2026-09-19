@@ -1,6 +1,12 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
-import { SEED_MEMBERSHIPS, SEED_ORGANIZATIONS, SEED_PRODUCTS, SEED_USERS } from './seed.constants';
+import {
+  SEED_INVENTORY_AVAILABLE,
+  SEED_MEMBERSHIPS,
+  SEED_ORGANIZATIONS,
+  SEED_PRODUCTS,
+  SEED_USERS,
+} from './seed.constants';
 
 /**
  * Deterministic seed data.
@@ -46,7 +52,7 @@ async function main(): Promise<void> {
       await prisma.inventory.upsert({
         where: { productId: product.id },
         update: {},
-        create: { productId: product.id, available: 10, reserved: 0 },
+        create: { productId: product.id, available: SEED_INVENTORY_AVAILABLE, reserved: 0 },
       });
     }
 

@@ -27,16 +27,18 @@ describe('tenant isolation (e2e)', () => {
     configureApp(app);
     await app.init();
 
-    alice = await newTenant(app, 'alice');
+    const aliceTenant = await newTenant(app, 'alice');
     bob = await newTenant(app, 'bob');
 
     const product = await request(app.getHttpServer())
       .post('/api/v1/products')
-      .set(tenantHeaders(alice.accessToken, alice.organizationId))
+      .set(tenantHeaders(aliceTenant.accessToken, aliceTenant.organizationId))
       .send({ name: 'Alice Widget', priceMinor: 500, currency: 'USD' })
       .expect(201);
 
-    alice = { ...alice, productId: product.body.id as string };
+    // Built in one assignment: `alice` is only ever the complete shape, so no
+    // partial state exists for a later assertion to trip over.
+    alice = { ...aliceTenant, productId: product.body.id as string };
   });
 
   afterAll(async () => {

@@ -9,7 +9,7 @@
     "dev": "nest start --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,test}/**/*.ts\"",
-    "test": "jest --passWithNoTests && jest --config ./test/jest-e2e.json --runInBand",
+    "test": "jest --passWithNoTests && jest --config ./test/jest-e2e.json --runInBand && jest --config ./test/jest-integration.json --runInBand",
     "test:watch": "jest --watch",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
     "test:integration": "jest --config ./test/jest-integration.json --runInBand",

@@ -10,12 +10,20 @@ describe('CreateOrganizationRequestSchema', () => {
   });
 
   it('rejects a slug the contract disagrees with', () => {
-    // The pattern has one definition and this asserts the schema actually uses it,
-    // rather than carrying a second copy that can drift from it.
-    const parsed = CreateOrganizationRequestSchema.safeParse({ name: 'Nile Traders', slug: 'Nile_Traders' });
+    // The pattern and the length bounds have one definition each, and this asserts
+    // the schema actually applies them — rather than asserting a constant against
+    // its own literal, which would pass even if the schema ignored it.
+    const uppercase = CreateOrganizationRequestSchema.safeParse({
+      name: 'Nile Traders',
+      slug: 'Nile_Traders',
+    });
+    const tooLong = CreateOrganizationRequestSchema.safeParse({
+      name: 'Nile Traders',
+      slug: 'a'.repeat(SLUG_MAX_LENGTH + 1),
+    });
 
-    expect(parsed.success).toBe(false);
-    expect(SLUG_PATTERN.test('Nile_Traders')).toBe(false);
-    expect(SLUG_MAX_LENGTH).toBe(50);
+    expect(uppercase.success).toBe(false);
+    expect(tooLong.success).toBe(false);
+    expect(SLUG_PATTERN.test('nile-traders')).toBe(true);
   });
 });

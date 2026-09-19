@@ -31,6 +31,22 @@ describe('database constraints', () => {
     ).rejects.toThrow(/inventory_quantities_non_negative/);
   });
 
+  it('refuses to make reserved quantity negative', async () => {
+    // The other half of the same CHECK. Testing only `available` would let a
+    // constraint silently missing `reserved` pass every assertion above.
+    const org = await testPrisma.organization.create({
+      data: { name: 'R', slug: `r-${suffix()}` },
+    });
+    const product = await testPrisma.product.create({
+      data: { organizationId: org.id, name: 'P', priceMinor: 100, currency: 'USD' },
+    });
+    await testPrisma.inventory.create({ data: { productId: product.id, reserved: 1 } });
+
+    await expect(
+      testPrisma.inventory.update({ where: { productId: product.id }, data: { reserved: -1 } }),
+    ).rejects.toThrow(/inventory_quantities_non_negative/);
+  });
+
   it('refuses a duplicate organization slug', async () => {
     const slug = `dup-${suffix()}`;
     await testPrisma.organization.create({ data: { name: 'One', slug } });
