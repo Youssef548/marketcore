@@ -6,10 +6,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { TokenService } from '../../auth/tokens/token.service';
-import { SecurityMessages, SecurityMetadata } from '../security.constants';
+import { BEARER_PREFIX, SecurityMessages, SecurityMetadata } from '../security.constants';
 import type { AuthenticatedRequest } from '../request-context.interface';
-
-const BEARER_PREFIX = 'Bearer ';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {

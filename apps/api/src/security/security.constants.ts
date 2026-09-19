@@ -1,5 +1,8 @@
 import { ORGANIZATION_ID_HEADER } from '@app/contracts';
 
+/** Scheme prefix on the `Authorization` header. Named, because a stray space here is a 401. */
+export const BEARER_PREFIX = 'Bearer ';
+
 /** Metadata keys the guards read. Named so no guard writes a string literal. */
 export const SecurityMetadata = {
   PUBLIC: 'security:public',

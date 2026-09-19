@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
-import { TEST_PASSWORD, unique } from './support/fixtures';
+import { credentials, unique } from './support/fixtures';
 
 /**
  * The refresh token is the only credential the client holds long-term, so the
@@ -28,12 +28,12 @@ describe('refresh rotation (e2e)', () => {
     const email = `${unique('refresh')}@marketcore.test`;
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')
-      .send({ email, password: TEST_PASSWORD })
+      .send(credentials(email))
       .expect(201);
 
     const login = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email, password: TEST_PASSWORD })
+      .send(credentials(email))
       .expect(200);
 
     return { accessToken: login.body.accessToken, refreshToken: login.body.refreshToken };

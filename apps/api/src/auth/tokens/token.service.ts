@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_BYTES } from '../auth.constants';
-
-export interface AccessTokenPayload {
-  sub: string;
-}
+import type { AccessTokenPayload } from './access-token.interface';
 
 @Injectable()
 export class TokenService {

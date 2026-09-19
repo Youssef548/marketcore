@@ -19,7 +19,10 @@ export class OrganizationService {
       userId,
     );
 
-    if (result.outcome === OrganizationWriteOutcomes.SLUG_TAKEN || result.organization === null) {
+    // The union does the narrowing, which is why there is no null check here: the
+    // repository cannot return "created with no organization", so there is no
+    // impossible state for this line to defend against.
+    if (result.outcome === OrganizationWriteOutcomes.SLUG_TAKEN) {
       throw new ConflictException('That slug is already taken');
     }
 

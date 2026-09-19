@@ -50,7 +50,6 @@ describe('OrganizationService', () => {
     const { service, organizationRepository } = build();
     (organizationRepository.createWithOwner as jest.Mock).mockResolvedValue({
       outcome: OrganizationWriteOutcomes.SLUG_TAKEN,
-      organization: null,
     });
 
     await expect(service.create('Nile', 'nile', 'u1')).rejects.toBeInstanceOf(ConflictException);

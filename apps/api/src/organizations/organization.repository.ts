@@ -1,20 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@app/runtime';
 import { MemberRoles, OrganizationStatuses, type Organization } from '@app/contracts';
+import { UNIQUE_CONSTRAINT_VIOLATION } from './organization.constants';
 import {
   OrganizationWriteOutcomes,
   type OrganizationWriteResult,
 } from './organization-write.interface';
-
-/**
- * Prisma's code for a unique constraint violation.
- *
- * Detected structurally rather than by importing Prisma's error class: the
- * generated client is a devDependency of this app (the integration tests import
- * it directly), so a runtime import here would be an extraneous dependency. The
- * code itself is the stable part of the contract.
- */
-const UNIQUE_CONSTRAINT_VIOLATION = 'P2002';
 
 function isUniqueConstraintViolation(error: unknown): boolean {
   return (
@@ -59,7 +50,9 @@ export class OrganizationRepository {
       };
     } catch (error) {
       if (isUniqueConstraintViolation(error)) {
-        return { outcome: OrganizationWriteOutcomes.SLUG_TAKEN, organization: null };
+        // No organization field at all. A discriminated union, so "created with no
+        // organization" is not a representable state for a caller to guard against.
+        return { outcome: OrganizationWriteOutcomes.SLUG_TAKEN };
       }
       throw error;
     }

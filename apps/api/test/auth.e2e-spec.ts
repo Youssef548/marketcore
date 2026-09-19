@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
-import { TEST_PASSWORD, registerAndLogin, unique } from './support/fixtures';
+import { credentials, registerAndLogin, unique } from './support/fixtures';
 
 describe('auth (e2e)', () => {
   let app: INestApplication;
@@ -23,7 +23,7 @@ describe('auth (e2e)', () => {
     const email = `${unique('reg')}@marketcore.test`;
     const res = await request(app.getHttpServer())
       .post('/api/v1/auth/register')
-      .send({ email, password: TEST_PASSWORD })
+      .send(credentials(email))
       .expect(201);
 
     expect(res.body).toEqual({ id: expect.any(String), email });
@@ -42,7 +42,7 @@ describe('auth (e2e)', () => {
 
   it('refuses a duplicate email', async () => {
     const email = `${unique('dup')}@marketcore.test`;
-    const payload = { email, password: TEST_PASSWORD };
+    const payload = credentials(email);
     await request(app.getHttpServer()).post('/api/v1/auth/register').send(payload).expect(201);
 
     const res = await request(app.getHttpServer())
@@ -57,12 +57,12 @@ describe('auth (e2e)', () => {
     const email = `${unique('login')}@marketcore.test`;
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')
-      .send({ email, password: TEST_PASSWORD })
+      .send(credentials(email))
       .expect(201);
 
     const res = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email, password: TEST_PASSWORD })
+      .send(credentials(email))
       .expect(200);
 
     expect(res.body.accessToken).toEqual(expect.any(String));
@@ -79,7 +79,7 @@ describe('auth (e2e)', () => {
       .expect(401);
     const unknownEmail = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email: `${unique('ghost')}@marketcore.test`, password: TEST_PASSWORD })
+      .send(credentials(`${unique('ghost')}@marketcore.test`))
       .expect(401);
 
     expect(wrongPassword.body.error.message).toBe(unknownEmail.body.error.message);

@@ -4,7 +4,14 @@ import request from 'supertest';
 import { MemberRoles } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
-import { newTenant, registerAndLogin, tenantHeaders, unique } from './support/fixtures';
+import {
+  login,
+  newTenant,
+  organizationPayload,
+  registerAndLogin,
+  tenantHeaders,
+  unique,
+} from './support/fixtures';
 
 describe('organizations (e2e)', () => {
   let app: INestApplication;
@@ -27,7 +34,7 @@ describe('organizations (e2e)', () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/organizations')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ name: 'Owned Co', slug })
+      .send(organizationPayload('owned', { name: 'Owned Co', slug }))
       .expect(201);
 
     expect(res.body).toMatchObject({ name: 'Owned Co', slug, role: MemberRoles.OWNER });
@@ -95,12 +102,7 @@ describe('organizations (e2e)', () => {
       .send({ email: memberEmail })
       .expect(204);
 
-    const memberToken = (
-      await request(app.getHttpServer())
-        .post('/api/v1/auth/login')
-        .send({ email: memberEmail, password: 'correct-horse-battery' })
-        .expect(200)
-    ).body.accessToken as string;
+    const memberToken = await login(app, memberEmail);
 
     const res = await request(app.getHttpServer())
       .post('/api/v1/organizations/members')

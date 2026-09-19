@@ -4,7 +4,7 @@ import request from 'supertest';
 import { ProductStatuses } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
-import { newTenant, tenantHeaders } from './support/fixtures';
+import { newTenant, productPayload, tenantHeaders } from './support/fixtures';
 
 describe('catalog (e2e)', () => {
   let app: INestApplication;
@@ -26,7 +26,7 @@ describe('catalog (e2e)', () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/products')
       .set(tenantHeaders(tenant.accessToken, tenant.organizationId))
-      .send({ name: `Widget ${priceMinor}`, priceMinor, currency: 'EGP' })
+      .send(productPayload({ name: `Widget ${priceMinor}`, priceMinor }))
       .expect(201);
     return res.body as { id: string; status: string; priceMinor: number };
   };
@@ -105,7 +105,7 @@ describe('catalog (e2e)', () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/products')
       .set(tenantHeaders(tenant.accessToken, tenant.organizationId))
-      .send({ name: 'Fractional', priceMinor: 12.5, currency: 'EGP' })
+      .send(productPayload({ name: 'Fractional', priceMinor: 12.5 }))
       .expect(400);
 
     expect(res.body.error.code).toBe('VALIDATION_ERROR');

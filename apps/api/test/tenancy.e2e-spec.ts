@@ -1,10 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { ORGANIZATION_ID_HEADER } from '@app/contracts';
+import { CurrencyCodes, ORGANIZATION_ID_HEADER } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
-import { newTenant, tenantHeaders } from './support/fixtures';
+import { newTenant, productPayload, tenantHeaders } from './support/fixtures';
 
 /**
  * INV-9, and the exit gate for the week:
@@ -33,7 +33,7 @@ describe('tenant isolation (e2e)', () => {
     const product = await request(app.getHttpServer())
       .post('/api/v1/products')
       .set(tenantHeaders(aliceTenant.accessToken, aliceTenant.organizationId))
-      .send({ name: 'Alice Widget', priceMinor: 500, currency: 'USD' })
+      .send(productPayload({ name: 'Alice Widget', priceMinor: 500, currency: CurrencyCodes.USD }))
       .expect(201);
 
     // Built in one assignment: `alice` is only ever the complete shape, so no

@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@app/runtime';
 import type { SessionRevocationReason } from '@app/contracts';
-import type { RefreshTokenState } from '@app/domain';
-
-export interface RefreshTokenRecord extends RefreshTokenState {
-  id: string;
-  sessionId: string;
-}
+import type { RefreshTokenRecord } from './sessions.interface';
 
 /** Returned when no row matches the hash. The service rejects before using any id. */
 const NO_TOKEN: RefreshTokenRecord = {
