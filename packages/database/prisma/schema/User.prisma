@@ -18,5 +18,8 @@ model User {
   status       UserStatus @default(ACTIVE)
   createdAt    DateTime   @default(now())
 
+  memberships OrganizationMember[]
+  sessions    Session[]
+
   @@map("users")
 }

@@ -1,0 +1,18 @@
+enum OrganizationStatus {
+  ACTIVE
+  DISABLED
+}
+
+model Organization {
+  id        String             @id @default(uuid())
+  name      String
+  slug      String             @unique
+  status    OrganizationStatus @default(ACTIVE)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  members  OrganizationMember[]
+  products Product[]
+
+  @@map("organizations")
+}

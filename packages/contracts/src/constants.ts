@@ -20,6 +20,9 @@ export type ReadinessStatus = (typeof ReadinessStatuses)[keyof typeof ReadinessS
 export const DependencyStates = { UP: 'up', DOWN: 'down' } as const;
 export type DependencyState = (typeof DependencyStates)[keyof typeof DependencyStates];
 
+export const MemberRoles = { OWNER: 'OWNER', MEMBER: 'MEMBER' } as const;
+export type MemberRole = (typeof MemberRoles)[keyof typeof MemberRoles];
+
 /**
  * The readiness verdict as an HTTP status, so no caller hand-writes the mapping
  * and none can disagree with another about what "degraded" answers.
@@ -28,6 +31,34 @@ export const READINESS_HTTP_STATUS: Record<ReadinessStatus, number> = {
   [ReadinessStatuses.OK]: 200,
   [ReadinessStatuses.DEGRADED]: 503,
 };
+
+/** Header naming the organization a request acts within. Shared with any client. */
+export const ORGANIZATION_ID_HEADER = 'x-organization-id';
+
+export const OrganizationStatuses = { ACTIVE: 'ACTIVE', DISABLED: 'DISABLED' } as const;
+export type OrganizationStatus = (typeof OrganizationStatuses)[keyof typeof OrganizationStatuses];
+
+export const ProductStatuses = { DRAFT: 'DRAFT', PUBLISHED: 'PUBLISHED' } as const;
+export type ProductStatus = (typeof ProductStatuses)[keyof typeof ProductStatuses];
+
+/**
+ * A closed set. Adding a member is a deliberate, tested change — cross-currency
+ * balancing is a rule the ledger depends on from phase 8.
+ */
+export const CurrencyCodes = { USD: 'USD', EUR: 'EUR', EGP: 'EGP' } as const;
+export type CurrencyCode = (typeof CurrencyCodes)[keyof typeof CurrencyCodes];
+
+export const SessionRevocationReasons = {
+  LOGOUT: 'LOGOUT',
+  REUSE_DETECTED: 'REUSE_DETECTED',
+} as const;
+export type SessionRevocationReason =
+  (typeof SessionRevocationReasons)[keyof typeof SessionRevocationReasons];
+
+/** A slug is the organization's public handle, so its shape is wire-level. */
+export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+export const SLUG_MIN_LENGTH = 3;
+export const SLUG_MAX_LENGTH = 50;
 
 /**
  * Turns a const object of wire values into the non-empty tuple `z.enum` needs.

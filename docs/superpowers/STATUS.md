@@ -155,3 +155,118 @@ Written up as two reusable skills, committed here under `.agents/skills/` and in
 Week 2 — phases 2 and 3: identity, tenancy, catalog, inventory. Exit gate: cross-tenant tests pass.
 `User` is already in place and exercised, so phase 2 adds auth against it plus Organization and
 OrganizationMember, rather than building the first model again.
+
+---
+
+## Week 2 — Phases 2 and 3 (tenancy and catalog) — 2026-09-19
+
+**Exit gate:** cross-tenant tests pass — one organization cannot read another's product.
+**Branch:** `week-02-tenancy-catalog`
+**Spec:** `docs/superpowers/specs/2026-09-19-marketcore-week-02-tenancy-catalog-design.md` (D18–D28)
+**Plan:** `docs/superpowers/plans/2026-09-19-marketcore-week-02-tenancy-catalog.md` (15 tasks)
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| **The gate** | `pnpm --filter api test:e2e` | **`PASS test/tenancy.e2e-spec.ts` — 8/8** |
+| Cross-tenant read by identifier | under the other tenant's header | `404 NOT_FOUND`, and the response body does not contain the product name |
+| Cross-tenant update / publish / inventory | same | `404` each, and the owner's product is unchanged afterwards |
+| Cross-tenant listing | `GET /products` as the other tenant | `[]` |
+| Header naming a tenant the caller is not in | | `403 FORBIDDEN` |
+| Tenant-scoped request with no header | | `400 VALIDATION_ERROR`, message names `x-organization-id` |
+| **Control: the owner still reads their own product** | | `200`, correct name — without this, every row above would also pass against a system that 404s everything |
+| Refresh race | `pnpm --filter api test:integration` | exactly one of two concurrent claims rotates; 2 token rows |
+| Database constraints | same | `CHECK` installed by name; negative `available` and negative `reserved` both refused; duplicate slug / membership / token hash refused |
+| Enum drift | same | all five value sets agree between the const objects and the Prisma enums |
+| Auth flows | `pnpm --filter api test:e2e` | register, login, rotation, replay-revokes-the-family, logout |
+| Whole suite | `pnpm turbo run lint typecheck test build` | **30/30 tasks, 0 failed** |
+| Unit | `pnpm --filter api exec jest` | 52 passed, 11 suites |
+| End to end | `pnpm --filter api test:e2e` | 46 passed, 8 suites |
+| Integration | `pnpm --filter api test:integration` | 16 passed, 4 suites |
+| The 401 boundary | `pnpm --filter api test:e2e` | missing / malformed / wrongly-signed token each refused; no token on a protected route → 401 |
+| The last-owner rule under concurrency | `pnpm --filter api test:integration` | two racing removals leave exactly one owner — and the test fails 3/3 with the row lock removed |
+| A seeded user can authenticate | `pnpm --filter api test:integration` | the seeded hash verifies against the documented password |
+| Boundary rules still bite | `packages/domain` → `apps/api` import | `pnpm lint` failed with `boundaries/element-types`, reverting restored green |
+
+Full tenancy output is in the commit message for `89ca258`.
+
+### Delivered
+
+- **`packages/domain`** — pure rules shared by both processes: `TenantContext`/`tenantScope`, password
+  policy, the refresh-token usability decision table, role rules, slug, product transitions.
+- **Identity** — `User` continues from week 1; register, login, refresh with rotation and reuse
+  detection, logout; argon2id behind a `PasswordHasher` port; access tokens stateless, refresh tokens
+  hashed with SHA-256 for the reason recorded in `token.service.ts`.
+- **Tenancy** — the `OrganizationGuard` resolves `x-organization-id` into a `TenantContext`;
+  deny-by-default global guards with `@Public()`, `@TenantFree()` and `@OwnerOnly()` as the greppable
+  opt-outs.
+- **Catalog** — tenant-scoped product CRUD, explicit publish/unpublish transitions, readable inventory.
+- **Six models** — Organization, OrganizationMember, Session, RefreshToken, Product, Inventory, with a
+  hand-edited migration carrying the `inventory_quantities_non_negative` CHECK.
+- **`test:integration` now runs inside `turbo run test`**, so the constraint, drift and race proofs are
+  gated rather than sitting beside the gate.
+- **ADR 010** — tenant isolation in the query layer, with RLS recorded as the week-11 revisit.
+
+### Not proven / deferred
+
+- **No reservations, stock movements or row locking.** Phase 4, where the last-item race justifies the
+  design rather than guessing it.
+- **Access tokens are not revocable.** Revocation covers sessions and refresh tokens only, so a stolen
+  access token lives until it expires. Inherent to a stateless access token; that is why the TTL is
+  short. Documented in the README rather than left implicit.
+- **No email delivery, invitations or password reset.** Member administration adds an existing user by
+  email; nothing sends that email.
+- **One concurrency test, not a suite.** The refresh race is asserted; the concurrency suite with its
+  own database name is still phase 4's.
+- **The no-`apps/*`-import gap in `packages/*` remains** (week 1's finding 3) — unchanged, still
+  recorded in the README's limitations.
+
+### Findings
+
+Five, all found by running rather than reading.
+
+1. **`@nestjs/jwt@12` is ESM-only and this app is CommonJS.** `"type": "module"` with no CJS export, so
+   `require('@nestjs/jwt')` fails under ts-jest. Pinned to `^11`. The plan named the package without a
+   version; installing the latest was the defect.
+2. **A TypeScript interface cannot be a Nest provider token.** `{ provide: PasswordHasher, ... }`
+   handed the container `undefined` and boot died with `metatype is not a constructor` — an error that
+   names neither the token nor the class. Provided under a string token instead.
+3. **A duplicate organization slug answered 500, not the 409 the plan assumed.** Nothing mapped
+   Prisma's unique violation, so it fell through the envelope's catch-all as `INTERNAL`. The fix
+   returns a typed outcome from the repository, keeping the classification in the layer that owns
+   Prisma.
+4. **`apps/api` typechecks against a package's `dist`, not its source.** Adding `JWT_SECRET` to
+   `@app/runtime` broke `apps/api` typecheck until the package was rebuilt. Turbo's `typecheck`
+   depends on `^build` so the full pipeline is safe; a bare `--filter api typecheck` is not.
+5. **`@nestjs/jwt@12` is ESM-only and this app is CommonJS.** `"type": "module"` with no CJS export,
+   so `require('@nestjs/jwt')` fails under ts-jest. Pinned to `^11`. The plan named the package without
+   a version; installing the latest was the defect.
+
+*Measurements about the agent process itself — dispatch wall clock, turn counts, and where the time
+went — are in `.superpowers/sdd/…/analytics.md`, not here. This record is for repository evidence.*
+
+### Deviations from the plan
+
+- **One subagent dispatch per task was abandoned.** Subagents could not install packages, which
+  stopped three consecutive attempts with nothing written. The dependencies were installed by the
+  controller and Tasks 7–15 were then implemented directly. Tasks 1–6 were delivered by subagents.
+  The process measurements behind that decision are in `.superpowers/sdd/…/analytics.md`.
+- **Tasks 8 and 9 share one commit** (`a727d4a`). The first commit swept files already written for the
+  second; rather than leave a message claiming only Task 8, the message was amended to say what the
+  commit actually contains.
+- **The guards e2e suite moved from Task 11 to Tasks 12–14.** There were no tenant-scoped routes at
+  Task 11, so testing the chain would have needed a throwaway probe controller. The guard units land at
+  11 and the route-level assertions land with real routes.
+- **`ARCHIVED` was dropped from `ProductStatus`.** Declared with no endpoint able to reach it — exactly
+  the scaffolding the phase gate forbids. It arrives with the operation that needs it.
+- **The plan's defect table** (at the end of the plan document) records eight further inconsistencies
+  found while executing, including two that could not compile as written.
+
+### Next
+
+Week 3 — phase 4: transactional checkout, with the plan written at this gate. Exit gate: the stock-1
+race passes repeatedly — 100 concurrent buyers, exactly one order. Everything needed to build it now
+exists: tenant-scoped repositories, a `TenantContext` the worker can share, and a real database to run
+the race against.
+

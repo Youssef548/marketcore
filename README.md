@@ -12,9 +12,9 @@ run it, execute deterministic failure scenarios, and see for themselves that inv
 payments, and money stay consistent — every claim below is meant to be checkable by a command, not
 taken on trust.
 
-> **Status: Phase 1 of 15 — foundation.** The concurrency, idempotency, ledger, and payout guarantees
-> are designed and specified, not yet implemented. See [Roadmap](#roadmap) for what is proven today
-> versus what is planned, and read the claims below accordingly.
+> **Status: Phases 2–3 of 15 — identity, tenancy and catalog.** The concurrency, idempotency, ledger,
+> and payout guarantees are designed and specified, not yet implemented. See [Roadmap](#roadmap) for
+> what is proven today versus what is planned, and read the claims below accordingly.
 
 ## The guarantees being built
 
@@ -73,9 +73,13 @@ cp apps/api/.env.example apps/api/.env
 cp packages/database/.env.example packages/database/.env
 
 pnpm --filter @app/database db:deploy   # apply migrations
-pnpm --filter @app/database db:seed     # upsert one demo user (idempotent)
+pnpm --filter @app/database db:seed     # two organizations, their members, and a product each
 pnpm dev                                # api on :3001, web on :3000
 ```
+
+The seed is deterministic and idempotent, and its users can authenticate — `owner@marketcore.test`
+with the password `correct-horse-battery` is an owner of Nile Traders, and an integration test
+asserts that hash verifies. It exists so the walkthrough below can be run by hand.
 
 | Check | Expected |
 |---|---|
@@ -100,6 +104,10 @@ These are the scenarios this project exists to demonstrate. Their tests land as 
 
 | Scenario | Command | Lands |
 |---|---|---|
+| **Tenant isolation — one organization cannot read another's product** | `pnpm --filter api test:e2e` | **phase 2 — `tenancy.e2e-spec.ts`, 8 tests** |
+| Refresh rotation — a replayed token revokes the session | `pnpm --filter api test:e2e` | phase 2 |
+| Refresh race — two concurrent claims, one rotation | `pnpm --filter api test:integration` | phase 2 |
+| Inventory constraints enforced by the database | `pnpm --filter api test:integration` | phase 2 |
 | Last-item race — 100 buyers, 1 unit | `pnpm --filter api test:concurrency` | phase 4 (week 3) |
 | Duplicate checkout — 20 repeats, one order | `pnpm --filter api test:e2e` | phase 5 |
 | Duplicate payment webhook — one ledger transaction | `pnpm --filter api test:e2e` | phase 8 |
@@ -118,18 +126,26 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md) with the behaviour
   checked-in migration and an idempotent seed, structured JSON logging, request IDs on every request
   and inside every error, liveness and readiness probes, Swagger generated from the contracts, CI on
   a Postgres service, and the three architectural rules enforced by the build.
+- **Phase 2 — identity and tenancy.** Registration, login, refresh with rotation and reuse detection,
+  and logout; argon2id for passwords behind a `PasswordHasher` port. Organizations with owner/member
+  memberships, an `x-organization-id` header resolved into a `TenantContext` by a guard, and a
+  deny-by-default guard chain whose opt-outs (`@Public`, `@TenantFree`, `@OwnerOnly`) are greppable.
+  `packages/domain` lands as pure shared rules. The exit gate — one organization cannot read another's
+  product — passes, including the control case that the owner still reads their own.
+- **Phase 3 — catalog and inventory.** Tenant-scoped product CRUD with explicit publish/unpublish
+  transitions, readable inventory, and the `Inventory` CHECK constraint enforced in the database rather
+  than by application validation.
 - **The first model.** `User`, with `UserStatus` as a database enum — landed a phase early because
   the readiness probe needs a real query to round-trip (see `docs/superpowers/STATUS.md`).
 
 **In progress**
 
-- Phases 2–3 (week 2): identity, tenancy, catalog, inventory.
+- Phase 4 (week 3): transactional checkout and the stock-1 race.
 
 **Planned**
 
 | Week | Phase | Milestone |
 |---|---|---|
-| 2 | 2–3 | Tenancy and catalog; cross-tenant tests pass |
 | 3 | 4 | **Transactional checkout; the stock-1 race passes repeatedly** |
 | 4 | 5–6 | Idempotency and the deterministic payment simulator |
 | 5–7 | 7–9 | Stripe test mode, double-entry ledger, refunds |
@@ -147,9 +163,16 @@ Each was considered and rejected for a stated reason rather than deferred silent
 
 - **No published load numbers.** k6 results arrive in phase 13; until then there is nothing to
   measure and no number here to distrust.
-- **Only one table exists.** `User` was pulled forward from phase 2 so the readiness probe could
-  round-trip a query through Prisma's query builder rather than raw SQL. It is exercised — migration,
-  seed, readiness check, CI — but nothing reads it through an API yet.
+- **Seven tables, and concurrency is proven on exactly one of them.** `User`, `Organization`,
+  `OrganizationMember`, `Session`, `RefreshToken`, `Product` and `Inventory` exist, with checked-in
+  migrations and a deterministic seed. Each is exercised by unit, e2e or integration tests — but the
+  only concurrency claim made so far is the refresh race. Nothing here yet proves the system holds up
+  under contended writes, which is what phase 4 is for.
+- **Access tokens cannot be revoked.** Revocation applies to sessions and refresh tokens only, so a
+  stolen access token remains valid until it expires — which is why the TTL is short. This is inherent
+  to a stateless access token, and it is stated here rather than left to be discovered.
+- **No email is sent by anything.** Member administration adds an existing user by email; invitations,
+  delivery and password reset do not exist.
 - **The worker does not exist yet.** It arrives in phase 10, when there is asynchronous work for it
   to consume. The boundary that forces `packages/runtime` is already in place, because enforcing it
   after the fact is more expensive than designing for it.
@@ -170,6 +193,18 @@ Each was considered and rejected for a stated reason rather than deferred silent
   ids, request logging, the validation pipe, the error filter and Swagger. `main.ts` and the e2e
   suite both call it — a global registered only in `main.ts` is not installed in tests, so a test
   that boots a differently configured app proves less than it appears to.
+- **Tenant identity travels in the `x-organization-id` header**, resolved by a guard against the
+  caller's memberships — never read by a controller. The `TenantContext` is built from the membership
+  row that was actually found, so a request reaching a handler always acts inside a tenant it belongs
+  to. A cross-tenant read answers **404** (an identifier is a probe, and 403 would confirm the row
+  exists elsewhere); a header naming someone else's tenant answers **403** (the header is an explicit
+  claim, so refusing it discloses nothing new).
+- **Every route is guarded by default.** `@Public()`, `@TenantFree()` and `@OwnerOnly()` are the only
+  opt-outs and they are greppable — `grep '@Public'` is the complete list of routes reachable without a
+  token. Landing the global guard closed `/api/v1/health` until the probe opted out, which is the guard
+  proving it is installed.
+- **`JWT_SECRET` is required**, at least 32 characters, in `apps/api/.env`, in the CI env block and in
+  turbo's `test` env list. The API refuses to boot without it rather than signing with a weak secret.
 - **Adding a resource**, in layer order:
   1. schema in `packages/contracts/src/<name>.ts`
   2. model in `packages/database/prisma/schema/<Name>.prisma`, then

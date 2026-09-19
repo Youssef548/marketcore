@@ -80,6 +80,12 @@ tested and documented, and extend the project only when the preceding exit gates
 
 Phase numbers indicate when the module lands. Nothing is scaffolded ahead of its phase.
 
+**Delivered in phases 2–3 (week 2):** Auth and Organizations, plus Catalog with Inventory. The tenant
+access pattern these introduced lives in `packages/domain` — `TenantContext` and `tenantScope` — rather
+than in `apps/api`, so the phase-10 worker inherits it instead of reimplementing it. The decision, its
+rejected alternatives (a Prisma extension, and PostgreSQL RLS deferred to phase 11) and what it costs
+are in `docs/adr/010-tenant-isolation-in-the-query-layer.md`.
+
 | Module | Owns | Main responsibilities | Phase |
 |---|---|---|---|
 | Auth | Credentials, sessions, tokens | Register, login, refresh, revoke, password policy, authentication guards | 2 |

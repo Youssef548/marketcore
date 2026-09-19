@@ -9,19 +9,23 @@
     "dev": "nest start --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,test}/**/*.ts\"",
-    "test": "jest --passWithNoTests && jest --config ./test/jest-e2e.json --runInBand",
+    "test": "jest --passWithNoTests && jest --config ./test/jest-e2e.json --runInBand && jest --config ./test/jest-integration.json --runInBand",
     "test:watch": "jest --watch",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
+    "test:integration": "jest --config ./test/jest-integration.json --runInBand",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@app/contracts": "workspace:*",
     "@app/database": "workspace:*",
+    "@app/domain": "workspace:*",
     "@app/runtime": "workspace:*",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.2",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11",
+    "argon2": "^0.45.1",
     "dotenv": "^18.0.0",
     "nestjs-zod": "^5.5.0",
     "reflect-metadata": "^0.2.2",
@@ -31,9 +35,11 @@
   "devDependencies": {
     "@app/config": "workspace:*",
     "@app/eslint-config": "workspace:*",
+    "@jest/globals": "^30.0.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@prisma/client": "^6",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.0",
@@ -50,11 +56,19 @@
     "typescript-eslint": "^8.20.0"
   },
   "jest": {
-    "moduleFileExtensions": ["js", "json", "ts"],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
     "rootDir": ".",
     "testRegex": "src/.*\\.spec\\.ts$",
-    "transform": { "^.+\\.(t|j)s$": "ts-jest" },
-    "collectCoverageFrom": ["src/**/*.(t|j)s"],
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.(t|j)s"
+    ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
