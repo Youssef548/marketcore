@@ -13,8 +13,6 @@ export const SESSION_COOKIES = {
   ORGANIZATION: 'mc_org',
 } as const;
 
-export type SessionCookieName = (typeof SESSION_COOKIES)[keyof typeof SESSION_COOKIES];
-
 /**
  * Everything a session cookie has in common.
  *

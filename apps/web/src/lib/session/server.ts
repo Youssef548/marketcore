@@ -111,5 +111,3 @@ export async function rememberOrganization(organizationId: string): Promise<void
     organizationCookieAttributes(cookiesAreSecure()),
   );
 }
-
-export { SESSION_COOKIES };

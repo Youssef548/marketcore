@@ -54,5 +54,3 @@ export function createResources(accessToken?: string) {
       client.get('/organizations', z.array(OrganizationSchema)),
   };
 }
-
-export type Resources = ReturnType<typeof createResources>;
