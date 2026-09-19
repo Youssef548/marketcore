@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
+import { PrismaModule } from '@app/runtime';
 import { HealthController } from './modules/health/health.controller';
-import { PrismaModule } from './prisma/prisma.module';
+import { HealthRepository } from './modules/health/health.repository';
+import { HealthService } from './modules/health/health.service';
 
 /**
  * The composition root. It stays thin on purpose: it wires infrastructure and
@@ -13,5 +15,8 @@ import { PrismaModule } from './prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   controllers: [HealthController],
+  // Repositories before services: the service depends on the repository, never
+  // on the Prisma client directly.
+  providers: [HealthRepository, HealthService],
 })
 export class AppModule {}

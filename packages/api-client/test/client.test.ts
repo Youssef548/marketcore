@@ -3,6 +3,7 @@ import { setupServer } from 'msw/node';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { ApiError, createApiClient, type ApiClient } from '../src/index';
+import { errorEnvelope, errorEnvelopeWithoutRequestId } from './support/fixtures';
 
 const base = 'http://api.test/api/v1';
 const ThingSchema = z.object({ id: z.string(), name: z.string() });
@@ -46,15 +47,28 @@ describe('api-client', () => {
   it('maps an error envelope to ApiError with its status, code and details', async () => {
     server.use(
       http.get(`${base}/things/1`, () =>
-        HttpResponse.json(
-          { error: { code: 'NOT_FOUND', message: 'No such thing', details: { id: '1' } } },
-          { status: 404 },
-        ),
+        HttpResponse.json(errorEnvelope({ details: { id: '1' } }), { status: 404 }),
       ),
     );
     const error = await client.get('/things/1', ThingSchema).catch((e: unknown) => e);
     expect(error).toBeInstanceOf(ApiError);
     expect(error).toMatchObject({ status: 404, code: 'NOT_FOUND', details: { id: '1' } });
+  });
+
+  it('treats an envelope missing requestId as a contract violation, not a valid error', async () => {
+    // requestId is required by the contract, so a server still emitting the
+    // older shape is not partially trusted: the code degrades to INTERNAL rather
+    // than being reported as if the response were well formed. Surfacing a stale
+    // server's own code is how a client silently accepts a contract it does not
+    // actually satisfy.
+    server.use(
+      http.get(`${base}/things/1`, () =>
+        HttpResponse.json(errorEnvelopeWithoutRequestId(), { status: 404 }),
+      ),
+    );
+    const error = await client.get('/things/1', ThingSchema).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({ status: 404, code: 'INTERNAL' });
   });
 
   it('falls back to INTERNAL when the failure body is not an envelope', async () => {

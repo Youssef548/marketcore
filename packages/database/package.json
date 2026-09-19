@@ -13,6 +13,9 @@
     "db:generate": "prisma generate",
     "db:migrate": "node ../../scripts/check-db-env.mjs && prisma migrate dev",
     "db:deploy": "node ../../scripts/check-db-env.mjs && prisma migrate deploy",
+    "db:seed": "node ../../scripts/check-db-env.mjs && tsx prisma/seed.ts",
+    "db:reset": "node ../../scripts/check-db-env.mjs && node scripts/reset.mjs",
+    "postinstall": "prisma generate",
     "build": "pnpm db:generate && tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
@@ -23,9 +26,11 @@
   "devDependencies": {
     "@app/config": "workspace:*",
     "@app/eslint-config": "workspace:*",
+    "@types/node": "^24.0.0",
     "dotenv": "^18.0.0",
     "eslint": "^9.18.0",
     "prisma": "^6",
+    "tsx": "^4.19.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   }

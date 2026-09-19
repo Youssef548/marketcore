@@ -1,65 +1,69 @@
-# ts-monorepo-template
+# MarketCore
 
-A starting point for a TypeScript full-stack project: one NestJS API, one Next.js
-web app, and the shared packages that keep them honest. It carries the seams —
-and only the seams.
+A multi-tenant marketplace transaction platform that stays correct when requests are retried,
+webhooks are duplicated or reordered, workers crash, and many buyers compete for the last unit of
+stock.
 
-**It contains no domain.** No models, no DTOs, no endpoints beyond a health
-check, no screens beyond a placeholder. The architecture is the wiring and the
-rules that enforce it; everything a real application puts *through* it is yours
-to add.
+**The North Star question:** can the system guarantee that inventory, orders, payments, and money
+remain consistent when failures and concurrent requests occur?
 
-## What is actually here
+This repository is built as engineering evidence rather than a product. A reviewer should be able to
+run it, execute deterministic failure scenarios, and see for themselves that inventory, orders,
+payments, and money stay consistent — every claim below is meant to be checkable by a command, not
+taken on trust.
+
+> **Status: Phase 1 of 15 — foundation.** The concurrency, idempotency, ledger, and payout guarantees
+> are designed and specified, not yet implemented. See [Roadmap](#roadmap) for what is proven today
+> versus what is planned, and read the claims below accordingly.
+
+## The guarantees being built
+
+Ten invariants, each restated as the observable that proves it, live in
+[`docs/domain-model.md`](./docs/domain-model.md). The ones that shape the architecture:
+
+| Invariant | Observable |
+|---|---|
+| Inventory never goes negative | After 100 concurrent checkouts for one unit: exactly one success, stock 0, one order |
+| A checkout idempotency key creates at most one operation | 20 repeat requests with one key produce one order |
+| A webhook causes each side effect at most once | Repeated delivery produces one state transition and one ledger transaction |
+| Ledger transactions balance | Signed entries sum to zero per currency |
+| A payout executes at most once | Two workers racing the same payout call the provider once |
+| One tenant cannot read another's data | Cross-tenant fetch returns 404/403, never data |
+
+## Architecture
+
+A **modular monolith** plus a **separately runnable worker**, sharing domain packages and one
+PostgreSQL database. Checkout's row lock, order insert, inventory decrement, and outbox write commit
+in a single transaction; the worker handles asynchronous payment and webhook work in its own process.
 
 ```
-apps/
-  api/                NestJS — REST under /api/v1, no feature modules yet
-  web/                Next.js App Router — no routes yet
+apps/api      NestJS REST under /api/v1
+apps/worker   BullMQ processors (phase 10)
 packages/
-  contracts/          zod schemas: the source of truth for the wire format
-  database/           Prisma wiring + migrations; prisma/schema/ is empty
-  api-client/         typed fetch: auth headers, response parsing, ApiError
-  ui/                 Tailwind 4 design tokens + primitives
-  config/             shared tsconfig presets
-  eslint-config/      the dependency-boundary enforcement
-scripts/
-  check-db-env.mjs    fails when the two DATABASE_URLs disagree
+  runtime     env validation, Prisma module, request ids, JSON logger  ← shared by both apps
+  domain      pure rules: state machines, invariants, money (phase 2)
+  payments    PaymentProvider port + simulator + Stripe adapter (phase 6)
+  contracts   zod schemas — the single source of truth for the wire format
+  database    Prisma wiring; prisma/schema/ is one file per model
+docs/         architecture, domain model, failure scenarios, ADRs
 ```
 
-## The three invariants
+Three architectural rules are enforced by tooling rather than convention:
 
-Everything else in this template is disposable. These are not.
+1. **Contracts are the source of truth.** Every DTO is a zod schema in `packages/contracts`, with
+   its type inferred from it. The API validates with those schemas; the client re-parses responses
+   with them. No code generation — zod is simultaneously the compile-time type and the runtime guard.
+2. **Dependency boundaries are build errors.** `packages/eslint-config` encodes them and ESLint fails
+   the build. `apps/*` may never import another `apps/*`; `packages/*` may never import an app. This
+   is not decorative — it is *why* `packages/runtime` exists, since the worker cannot import the API.
+3. **Every failure has one shape.** `{ "error": { "code", "message", "requestId", "details?" } }`.
+   Clients branch on `code`, never on `message`.
 
-**1. Contracts are the source of truth.** Every DTO is a zod schema in
-`packages/contracts`, with its type inferred from it. The API validates requests
-with those schemas, the web app imports the *same* schemas for form validation,
-and `api-client` re-parses responses with them. One repo, one version, no
-duplication — and no code generation, because zod is simultaneously the
-compile-time type and the runtime guard on both sides.
+Design decisions and their alternatives are recorded in [`docs/adr/`](./docs/adr/).
 
-**2. Dependency boundaries are build errors, not conventions.**
-`packages/eslint-config` encodes them and ESLint fails the build:
+## Quick start
 
-| From | May import | May not import |
-| --- | --- | --- |
-| `apps/*` | `packages/*` | another `apps/*` |
-| `packages/*` | `packages/*` | an `apps/*`, `config`, `eslint-config` |
-
-Every package exposes exactly one public entry, so deep imports do not resolve.
-These rules are themselves tested — see below.
-
-**3. Every failure has one shape.** The API returns nothing but:
-
-```json
-{ "error": { "code": "NOT_FOUND", "message": "...", "details": {} } }
-```
-
-`code` is stable and machine-readable; `message` is for humans. Clients branch on
-`code`, never on `message`. The API's global exception filter is the only thing
-that writes an error body, and `packages/api-client` turns that envelope into a
-typed `ApiError`, so callers never parse a failure by hand.
-
-## Getting started
+Prerequisites: Node 22, pnpm 9.15.0 via `corepack enable`, and Docker.
 
 ```bash
 docker compose up -d
@@ -67,128 +71,125 @@ corepack enable && pnpm install
 cp .env.example .env
 cp apps/api/.env.example apps/api/.env
 cp packages/database/.env.example packages/database/.env
-pnpm dev                      # api on :3001, web on :3000
+
+pnpm --filter @app/database db:deploy   # apply migrations
+pnpm --filter @app/database db:seed     # upsert one demo user (idempotent)
+pnpm dev                                # api on :3001, web on :3000
 ```
 
-`db:deploy` is deliberately not in that list: with an empty schema there is
-nothing to migrate.
+| Check | Expected |
+|---|---|
+| `curl localhost:3001/api/v1/health` | `{"status":"ok"}` — liveness, no database dependency |
+| `curl localhost:3001/api/v1/health/ready` | `{"status":"ok","checks":{"database":"up"}}` |
+| `curl localhost:3001/api/v1/nope` | the error envelope, carrying a `requestId` |
+| `open localhost:3001/docs` | interactive API docs |
 
-Check it booted: <http://localhost:3001/api/v1/health> → `{"status":"ok"}`, and
-interactive API docs at <http://localhost:3001/docs>.
+Start from nothing at any point:
 
-## Scripts
+```bash
+pnpm --filter @app/database db:reset    # drop, re-migrate, re-seed
+pnpm turbo run lint typecheck test build
+```
 
-| Command | What it does |
-| --- | --- |
-| `pnpm dev` | API and web in watch mode |
-| `pnpm build` | Build everything, in dependency order |
-| `pnpm lint` | ESLint, including the boundary rules |
-| `pnpm typecheck` | `tsc --noEmit` per package |
-| `pnpm test` | Unit + e2e across the workspace |
+Every response carries an `x-request-id` header, echoed from the caller when supplied and always
+present in the logs — so a client complaint can be joined to a log line.
 
-The API's `test` task needs Postgres up, because its e2e suite boots the real app.
+## Flagship scenarios
 
-## How the architecture is tested
+These are the scenarios this project exists to demonstrate. Their tests land as the phases do:
 
-A template with no domain has nothing else worth asserting, so the tests target
-the rules. The interesting one is
-`packages/eslint-config/test/boundaries.test.ts`: it runs the real ESLint config
-against a miniature workspace under `test/fixtures/` and fails if any rule stops
-firing. A boundary rule that silently breaks looks exactly like a codebase that
-follows it, so it is worth a test.
+| Scenario | Command | Lands |
+|---|---|---|
+| Last-item race — 100 buyers, 1 unit | `pnpm --filter api test:concurrency` | phase 4 (week 3) |
+| Duplicate checkout — 20 repeats, one order | `pnpm --filter api test:e2e` | phase 5 |
+| Duplicate payment webhook — one ledger transaction | `pnpm --filter api test:e2e` | phase 8 |
+| Outbox crash recovery — killed mid-flight, processed once | `pnpm --filter worker test:e2e` | phase 10 |
+| Payout race — two workers, one provider call | `pnpm --filter worker test:e2e` | phase 11 |
+| Ledger balance — every transaction sums to zero | `pnpm --filter api test:integration` | phase 8 |
 
-**Two things make the rules real rather than decorative.** Both were bugs that
-passed as green builds before they were caught, and both are easy to undo:
+The failure modes behind them — provider timeouts, reordered webhooks, Redis outages, deadlocks — are
+in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md) with the behaviour required of each.
 
-- **`boundaries/root-path` is set to an absolute monorepo root**
-  (`packages/eslint-config/index.js`). The plugin resolves its `include` and
-  `elements` patterns against `process.cwd()` by default — but turbo runs each
-  package's lint with `cwd` set to that package, so `apps/**` matched nothing, no
-  element was ever recognised, and every rule passed silently. An absolute root
-  makes the rules independent of where ESLint was invoked.
-- **`globalDependencies` in `turbo.json` lists `packages/config/**` and
-  `packages/eslint-config/**`.** Without it, editing the shared ESLint config
-  does not invalidate any package's cached `lint` task, so a changed rule keeps
-  reporting the previous result until someone clears the cache by hand.
+## Roadmap
 
-The fixture tests also deliberately run with the process cwd at the package
-directory rather than the fixture root, so a regression in either of the above
-fails a test instead of passing quietly.
+**Completed**
 
-If you want to check the rules against the real tree, drop a file that imports
-across a boundary and run `pnpm lint` — it should fail the build.
+- **Phase 1 — foundation.** PostgreSQL via Docker, validated configuration, Prisma wiring with a
+  checked-in migration and an idempotent seed, structured JSON logging, request IDs on every request
+  and inside every error, liveness and readiness probes, Swagger generated from the contracts, CI on
+  a Postgres service, and the three architectural rules enforced by the build.
+- **The first model.** `User`, with `UserStatus` as a database enum — landed a phase early because
+  the readiness probe needs a real query to round-trip (see `docs/superpowers/STATUS.md`).
 
-## Adding your first resource
+**In progress**
 
-The order matters less than keeping each step in its own layer.
+- Phases 2–3 (week 2): identity, tenancy, catalog, inventory.
 
-1. **Schema** — `packages/contracts/src/<name>.ts`, a zod schema with
-   `.meta({ id: '<Name>' })`, exported from `src/index.ts`. This is the wire
-   format; it is the only thing the API and the client agree on.
-2. **Model** — `packages/database/prisma/schema/<Name>.prisma`, one file per
-   model. Then:
-   ```bash
-   pnpm --filter @app/database db:migrate --name add_<name>
-   ```
-3. **Module** — `apps/api/src/modules/<name>/`, with a controller, a service and
-   DTOs built from the contract schemas via `createZodDto`. Register it in
-   `app.module.ts`. Validate at the boundary; keep the domain rules in the
-   service.
-4. **Client** — in the app that needs it, add `@app/api-client` and
-   `@app/contracts`, then write resource methods over the generic helpers:
-   ```ts
-   const api = createApiClient({ baseUrl, getAccessToken });
-   const thing = await api.get('/things/1', ThingSchema);
-   ```
-5. **Screen** — a route under `apps/web/src/app/`.
+**Planned**
 
-Because there is no code generation, a URL and the schema it returns both live in
-your hands — the generic helper types the schema, and the API's e2e suite is what
-catches a renamed path.
+| Week | Phase | Milestone |
+|---|---|---|
+| 2 | 2–3 | Tenancy and catalog; cross-tenant tests pass |
+| 3 | 4 | **Transactional checkout; the stock-1 race passes repeatedly** |
+| 4 | 5–6 | Idempotency and the deterministic payment simulator |
+| 5–7 | 7–9 | Stripe test mode, double-entry ledger, refunds |
+| 8–9 | 10–11 | Outbox, worker, payouts, audit |
+| 10–11 | 12–14 | Telemetry, k6 load results, AWS deployment |
+| 12 | 15 | Portfolio presentation and hardening |
 
-## Adding the things this template deliberately omits
+**Deliberately excluded**
 
-Each of these was left out because it is product-shaped, not architectural. They
-are additive, and none of them require changing the structure:
+A consumer storefront, Kubernetes, Kafka, real money movement, and payment providers beyond Stripe.
+Each was considered and rejected for a stated reason rather than deferred silently — see
+[`docs/architecture.md`](./docs/architecture.md).
 
-- **Auth.** A `User` model, an `auth` module, and an `AuthModule` registered in
-  `app.module.ts`. If the browser needs the token, keep it in an httpOnly cookie
-  written by a route handler in `apps/web/src/app/api/`, so the client never
-  holds it.
-- **Roles.** Extend `ErrorCodes` and add a guard; keep the role vocabulary in
-  `contracts` so the client can branch on it.
-- **Idempotent writes.** Dedupe on a client-generated `Idempotency-Key` header
-  with a unique column, and return the original row when it is replayed.
-- **Offline / retry.** Queue writes client-side and rely on the idempotency key
-  to make replay safe.
-- **Queues, PWA, i18n.** Nothing in the structure opposes them; each is a
-  dependency and a directory, not a re-architecture.
+## Honest limitations
 
-## Renaming the project
-
-Two values, no script:
-
-- `package.json` → `name`
-- `APP_NAME` in `.env` (web metadata and the API's Swagger title)
-
-The workspace scope is deliberately fixed at `@app/*` and never derived from the
-project name, so nothing else changes. The trade-off is that workspace packages
-are not org-scoped and cannot be published to npm — fine for private apps, and a
-mechanical rename if that ever changes.
+- **No published load numbers.** k6 results arrive in phase 13; until then there is nothing to
+  measure and no number here to distrust.
+- **Only one table exists.** `User` was pulled forward from phase 2 so the readiness probe could
+  round-trip a query through Prisma's query builder rather than raw SQL. It is exercised — migration,
+  seed, readiness check, CI — but nothing reads it through an API yet.
+- **The worker does not exist yet.** It arrives in phase 10, when there is asynchronous work for it
+  to consume. The boundary that forces `packages/runtime` is already in place, because enforcing it
+  after the fact is more expensive than designing for it.
+- **One known gap in boundary enforcement.** A package importing an app via a path that does not
+  resolve passes both ESLint and `tsc` — `boundaries/no-unknown` is only enabled for apps, and
+  TypeScript ignores unresolved side-effect-only imports. Nothing binds in that shorthand, so the
+  hazard is narrow, but the app direction does not have it. Recorded in
+  `docs/superpowers/STATUS.md` rather than left to be discovered.
 
 ## Conventions
 
-- **Node 22**, pnpm via Corepack. Docker for local Postgres 16.
-- **API surface.** REST under `/api/v1`. The prefix lives in `main.ts`, not in
-  each controller.
-- **`DATABASE_URL` in two places.** `scripts/check-db-env.mjs` runs before every
-  migrate command and refuses when `packages/database/.env` and `apps/api/.env`
-  disagree — otherwise you migrate one database and serve another, silently.
-- **No `.env` in git.** `.env.example` only.
-- **Route groups.** `(marketing)` for public pages and `(dash)` for anything
-  behind a session is the convention this template assumes; the directories are
-  not scaffolded empty.
+- **Node 22**, pnpm 9.15.0 via Corepack, Docker for local Postgres 16. REST under `/api/v1`; the
+  prefix lives in `apps/api/src/app.setup.ts`, not in each controller.
+- **`DATABASE_URL` lives in two places** — `apps/api/.env` and `packages/database/.env`.
+  `scripts/check-db-env.mjs` runs before every migrate and seed command and refuses when they
+  disagree, because the alternative is migrating one database while serving another, silently.
+- **Global HTTP behaviour has one home.** `apps/api/src/app.setup.ts` configures the prefix, request
+  ids, request logging, the validation pipe, the error filter and Swagger. `main.ts` and the e2e
+  suite both call it — a global registered only in `main.ts` is not installed in tests, so a test
+  that boots a differently configured app proves less than it appears to.
+- **Adding a resource**, in layer order:
+  1. schema in `packages/contracts/src/<name>.ts`
+  2. model in `packages/database/prisma/schema/<Name>.prisma`, then
+     `pnpm --filter @app/database db:migrate --name add_<name>`
+  3. module under `apps/api/src/modules/<name>/`, with DTOs built via `createZodDto`, registered in
+     `app.module.ts`
+- **A schema used as a `createZodDto` source must not also carry `.meta({ id })`.** Both register the
+  same OpenAPI component name and `cleanupOpenApiDoc` throws rather than picking one. See the comment
+  in `packages/contracts/src/health.ts`.
+- **No `.env` in git.** `.env.example` files only.
 
-## License
+## Working method
 
-No license has been chosen. Add one before accepting contributions.
+Specifications, implementation plans, and the per-week evidence record live under
+[`docs/superpowers/`](./docs/superpowers/). Work proceeds one phase at a time with an exit gate per
+phase; the project is extended only while the preceding gates stay green.
+
+## Built on
+
+Architecture from [`ts-monorepo-template`](https://github.com/Youssef548/ts-monorepo-template) —
+pnpm + Turborepo, zod contracts, boundary rules as build errors, one error envelope. The template
+ships no domain by design; everything above is built through it. Its original README, including the
+two subtle bugs that make the boundary rules actually fire, is preserved in git history.

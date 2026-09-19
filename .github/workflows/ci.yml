@@ -18,7 +18,7 @@ jobs:
         options: >-
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
-      APP_NAME: app
+      APP_NAME: marketcore
       DATABASE_URL: postgresql://app:app@localhost:5432/app_test
       WEB_URL: http://localhost:3000
     steps:
@@ -34,6 +34,10 @@ jobs:
       # proves the migration path stays runnable.
       - run: pnpm --filter @app/database db:generate
       - run: pnpm --filter @app/database db:deploy
+      # Same reasoning for the seed path: with no models it seeds nothing, but
+      # it fails if migrations were not applied first, so the ordering a
+      # reviewer runs by hand stays exercised on every push.
+      - run: pnpm --filter @app/database db:seed
       # On main, run everything. `--affected` runs no tasks at all for a change
       # that touches no package (docs, workflows) and still exits 0 — a green
       # check that tested nothing.

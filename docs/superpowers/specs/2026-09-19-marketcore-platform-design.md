@@ -196,7 +196,7 @@ evidence column is what gets committed so the claim is checkable.
 
 | Wk | Theme | Phase | New in the tree | Exit gate | Evidence committed |
 |----|-------|-------|-----------------|-----------|--------------------|
-| 1 | Spec + foundation | 0, 1 | `packages/runtime`, `docs/adr/`, `architecture.md`, `domain-model.md`, `failure-scenarios.md` | One command starts the API; all checks green | ADR 001; the three docs; CI green |
+| 1 | Spec + foundation | 0, 1 | `packages/runtime`, `docs/adr/`, `architecture.md`, `domain-model.md`, `failure-scenarios.md`, `User` model + migration (see note) | One command starts the API; all checks green | ADR 001; the three docs; CI green |
 | 2 | Tenancy + catalog | 2, 3 | `packages/domain`; tenant query pattern | Cross-tenant tests pass | Cross-tenant test output |
 | 3 | Transactional checkout | 4 | Inventory locking, order creation | **Stock-1 race passes repeatedly** | Race output ×N runs; `EXPLAIN` of the lock |
 | 4 | Idempotency + simulator | 5, 6 | `packages/payments`; `IdempotencyKey` model | 20 repeats → one operation | Replay test output |
@@ -208,6 +208,13 @@ evidence column is what gets committed so the claim is checkable.
 | 10 | Telemetry | 12b | OTel + metrics in `packages/runtime`; dashboards | A failed payment is traceable end to end | Trace + dashboard screenshot |
 | 11 | Load + deploy | 13, 14 | `load-tests/`, `infrastructure/terraform/` | k6 report reproducible; deploy and rollback | k6 report w/ environment + raw results |
 | 12 | Presentation | 15 | README rewrite; demo script | Reviewer understands value in 5 minutes | Demo video; CV bullets tied to evidence |
+
+**Changed on review: `User` moved from week 2 into week 1.** The readiness probe must round-trip a
+real query — `$connect()` was measured reporting healthy for eighteen seconds against a stopped
+database — and a query through Prisma's query builder needs a delegate, which needs a model. The
+alternatives were keeping raw SQL in the probe or shipping a model with no consumer; instead the
+first model landed early and is genuinely exercised by the migration, the seed, the probe and CI.
+D1 still holds: it was added because something needed it, not ahead of that need.
 
 **Dependency note.** Every week after 3 assumes the previous gate is green. If a gate slips, the
 plan's own guidance applies: extend only when the preceding gates remain green. Weeks 1–4

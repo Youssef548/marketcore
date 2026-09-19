@@ -4,11 +4,12 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  Logger,
+  type LoggerService,
 } from '@nestjs/common';
 import { ZodValidationException } from 'nestjs-zod';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { ErrorCodes, type ErrorCode } from '@app/contracts';
+import { UNKNOWN_REQUEST_ID, createLogger, getRequestId } from '@app/runtime';
 
 /**
  * The only way a failure leaves the API. Clients get a stable machine-readable
@@ -17,20 +18,28 @@ import { ErrorCodes, type ErrorCode } from '@app/contracts';
  * @Catch() with no argument catches everything, including non-HttpException
  * throws, so an unexpected bug still produces the envelope instead of Nest's
  * default body.
+ *
+ * The logger is injected rather than taken from `@nestjs/common`'s `Logger`
+ * because that class types its second argument as a stack string, which would
+ * force the request id into the message text instead of a structured field.
  */
 @Catch()
 export class ErrorEnvelopeFilter implements ExceptionFilter {
-  private readonly logger = new Logger(ErrorEnvelopeFilter.name);
+  constructor(private readonly logger: LoggerService = createLogger('filter')) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
-    const response = host.switchToHttp().getResponse<Response>();
+    const http = host.switchToHttp();
+    const response = http.getResponse<Response>();
+    const requestId = getRequestId(http.getRequest<Request>()) ?? UNKNOWN_REQUEST_ID;
     const { status, code, message, details } = this.map(exception);
 
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.error(exception instanceof Error ? exception.stack : String(exception));
+      this.logger.error(exception instanceof Error ? exception.stack : String(exception), {
+        requestId,
+      });
     }
 
-    response.status(status).json({ error: { code, message, details } });
+    response.status(status).json({ error: { code, message, requestId, details } });
   }
 
   private map(exception: unknown): {

@@ -3,6 +3,9 @@ import { z } from 'zod';
 /**
  * Validated once, at boot, so a misconfigured deploy fails immediately with a
  * list of what is wrong instead of throwing somewhere deep in a request.
+ *
+ * Shared by the API and the worker, which is why it lives in a package: neither
+ * app may import the other.
  */
 const EnvSchema = z.object({
   APP_NAME: z.string().min(1).default('app'),

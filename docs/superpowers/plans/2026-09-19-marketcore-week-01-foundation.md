@@ -281,8 +281,13 @@ each failure names the test that proves it and the week that test lands:
 
 - [ ] **Step 2: Verify coverage**
 
-Confirm every one of the plan's eight Flagship Automated Tests appears as the "Proven by" value of
-at least one failure row, and that no row's Week exceeds 12.
+Confirm all eight of the plan's Flagship Automated Tests appear exactly once in §2, that no row's
+Week exceeds 12, and that every failure row names a test.
+
+Do **not** attempt to map every flagship test to a failure row. Four of the eight are correctness
+claims that no failure produces (last item race, ledger balance, tenant isolation, refund cap), and
+`docs/failure-scenarios.md` §3 records that distinction explicitly. The first attempt at this step
+asserted the mapping and would have failed against a correct document, which is why §3 exists.
 
 - [ ] **Step 3: Commit**
 

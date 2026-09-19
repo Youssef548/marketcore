@@ -1,0 +1,22 @@
+// One file per model. Prisma discovers every *.prisma file under this directory.
+//
+// User is the first model, and it is here a week earlier than the plan's phase 2
+// because the readiness probe needs one: `$connect()` resolves against a dead
+// database (measured — it never failed across 18 seconds after Postgres stopped),
+// so the probe must round-trip a query, and a round-trip through the query
+// builder needs a delegate to hang off. See docs/superpowers/STATUS.md.
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+
+  @@map("users")
+}
