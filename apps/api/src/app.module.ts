@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
+import { PrismaModule } from '@app/runtime';
 import { HealthController } from './modules/health/health.controller';
-import { PrismaModule } from './prisma/prisma.module';
 
 /**
  * The composition root. It stays thin on purpose: it wires infrastructure and
