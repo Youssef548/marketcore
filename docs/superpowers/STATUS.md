@@ -270,3 +270,113 @@ race passes repeatedly — 100 concurrent buyers, exactly one order. Everything 
 exists: tenant-scoped repositories, a `TenantContext` the worker can share, and a real database to run
 the race against.
 
+---
+
+## Frontend slice — web session and organization selection — 2026-09-19
+
+**Exit gate:** a browser signs in, holds a session through a stale access token and concurrent
+requests, chooses an organization, signs out — and cannot read either token.
+**Branch:** `feat/web-auth-session`
+**Spec:** `docs/superpowers/specs/2026-09-19-marketcore-web-auth-session-design.md` (D29–D39)
+**Plan:** `docs/superpowers/plans/2026-09-19-marketcore-web-auth-session.md` (8 tasks)
+**ADR:** [`011`](../adr/011-web-session-and-token-storage.md)
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| **The gate** | `pnpm --filter e2e test:behavioural` | **13/13**, including 2 browser journeys |
+| The whole check suite | `pnpm turbo run lint typecheck test:coverage build` | see below |
+| Unit | `pnpm --filter api exec jest` | 60 passed, 12 suites |
+| End to end (API) | `pnpm --filter api test:e2e` | 59 passed, 10 suites |
+| Integration | `pnpm --filter api test:integration` | 16 passed, 4 suites |
+| Contracts | `pnpm --filter @app/contracts test` | 35 passed, 7 files |
+| Web | `pnpm --filter web test` | 59 passed, 10 files |
+| Web coverage gate | `pnpm --filter web test:coverage` | 57.04/80.28/60.71/57.04 against a raised 52/75/55/52 |
+| **`/auth/me` is not public** | `pnpm --filter api test:e2e` | a token returns the user; **no token is 401** |
+| **One rotation for concurrent loads** | `pnpm --filter web test` | 6 coordinator tests, asserting call counts |
+| **One rotation, measured at the API** | by hand, 6 concurrent session loads | **exactly 1** `/auth/refresh` in the API's log, six 200s |
+| A stale access token rotates | by hand | 200 with a new `mc_rt` and a replaced `mc_at` |
+| Cookie flags as a browser received them | behavioural suite | `httpOnly` both, `Secure` both, `SameSite=Lax`, `mc_at` `expires -1`, `mc_rt` in the future |
+| Tokens unreadable from the page | behavioural suite | `document.cookie` contains no `mc_` |
+| The gate after signing out | behavioural suite | `/dashboard` → `/login?next=%2Fdashboard` |
+| Boundary rules still bite | a `packages/*` → `apps/*` import | `pnpm lint` failed with `boundaries/element-types`; reverting restored green |
+
+### Delivered
+
+- **`apps/web` is no longer a shell.** Register, sign in, sign out, a session-backed dashboard, and
+  an organization switcher — the first thing in the app that talks to the API.
+- **A BFF, per ADR 011.** Tokens in `httpOnly` cookies; route handlers are the only code that
+  reaches the API; the browser never holds a credential a script could read.
+- **Single-flight rotation** with one step of memory, because the API revokes a session on a
+  replayed refresh token and naive concurrency *is* a replay.
+- **`GET /api/v1/auth/me`**, in its own controller — `AuthController` is `@Public()` at the class
+  level, so a handler added there would have been reachable with no credentials.
+- **Two shared values** moved to `@app/contracts`: `REFRESH_TOKEN_TTL_MS` (the web app sets a cookie
+  lifetime from it) and `API_PREFIX` (the web app builds the API's URLs).
+- **The web app in the behavioural harness** — its own image, a Caddy site, and a Playwright
+  journey. CI now installs Chromium.
+- **The coverage gate ratcheted** 34/45/45/34 → 52/75/55/52.
+
+### Not proven / deferred
+
+- **No multi-instance story.** The rotation coordinator is module state, so two web instances would
+  each rotate; the API's reuse detection would catch it rather than lose the session silently, but a
+  user could be signed out. Nothing runs more than one instance today.
+- **No multi-tab test.** The mechanism a second tab depends on is covered by the concurrency test;
+  the two-tab case itself is not.
+- **No tenant data page.** `/api/proxy/[...path]` has no caller yet and is deliberately absent (D34).
+  `mc_org` is written and read for display; its first *authorizing* use arrives with the products
+  page, which is where the header starts being attached.
+- **Nothing sends email**, and there is still no password reset or invitation — unchanged from week 2.
+- **`WEB_URL` was left as it was.** The CORS assertions assert `http://web.marketcore.test` and would
+  break, and with a BFF the browser makes no cross-origin API call that would need it.
+
+### Findings
+
+Five, all found by running rather than reading.
+
+1. **Next refuses a cookie write during a Server Component render.** The plan had the protected
+   layout load the session server-side. That cannot rotate: the render would refresh and be unable to
+   store the replacement, so the *next* request would present the superseded token and be refused as
+   a replay — the API revoking the session, caused by where the refresh happened. The session moved to
+   a route handler and the protected area became client-rendered. This is now ADR 011's central
+   consequence: it looks like a style choice and is a platform constraint.
+2. **A bare in-flight map does not cover the case that actually happens.** The near-miss — a request
+   that left the browser before a rotation settled, still carrying the superseded token — is not
+   solved by sharing an in-flight promise, because that promise has already resolved. It needs a
+   record of the last rotation. Both mechanisms are now tested, and the second one only because the
+   first was written down and found insufficient on inspection.
+3. **`page.request` does not use the browser's DNS.** The journey's last assertion reached the web app
+   by its public name through the API request context and failed with `ENOTFOUND`: that context
+   resolves through Node, and the host-resolver rule is a browser argument. The assertion is issued
+   from inside the page instead, which is also more honest — it is the session's own cookies that are
+   under test.
+4. **A strict-mode selector was a real ambiguity, not a test artefact.** `getByText(email)` matched
+   the header and the dashboard body, because both legitimately name the signed-in user. Scoping to
+   the header is a better assertion than a looser one: it is the shell's own claim.
+5. **A pre-existing property test was flaky, and the full suite caught it.** `pnpm turbo …` failed
+   once in `packages/domain/test/refresh-token.property.spec.ts` and passed on an immediate re-run —
+   the worst shape a failure can have, because re-running is exactly what makes it disappear.
+   `fc.date()` generates `Invalid Date` (24 draws in 20 000, measured on fast-check 4.10.1), and
+   every comparison against it is false, so the USABLE equivalence disagreed with the decision table
+   with a counterexample reading like a logic error. Fixed with `noInvalidDate: true`, which is the
+   only in-repo use of `fc.date`. It is unrelated to this slice and would have gone on failing builds
+   at random if the full suite had not been run.
+
+### Deviations from the plan
+
+- **The request id is not stamped by middleware.** It is generated in the layer that calls the API:
+  middleware runs on the Edge runtime, and the id has to reach the API from a route handler.
+- **The dashboard is client-rendered**, for finding 1. The plan assumed a Server Component.
+- **`API_BASE_URL` is the API origin only**, with `/api/v1` appended from the shared constant, rather
+  than a full base URL configured by hand.
+- **`(auth)` is used for the credential pages**, not the README's `(marketing)` — a login form is not
+  marketing. The README now records the convention that exists rather than the one that was planned.
+
+### Next
+
+Week 3 — phase 4: transactional checkout and the stock-1 race. The web app now has a session to build
+the first tenant data page on, which is also where the generic proxy (D34) and the
+`x-organization-id` header arrive.
+
