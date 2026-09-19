@@ -12,3 +12,7 @@ apps/web/next-env.d.ts
 .idea/
 *.iml
 .DS_Store
+
+# Scratch workspace for subagent-driven plan execution: per-plan ledgers, task
+# briefs, implementer reports and review packages. Working state, not deliverables.
+.superpowers/
