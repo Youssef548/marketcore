@@ -6,42 +6,41 @@
 /* Tailwind 4 finds classes by walking the project and deliberately skips
  * `node_modules` — and `@app/ui` is reached through a symlink there. So every class
  * defined inside the shared package went missing from this stylesheet: the Button's
- * `bg-brand-600` (leaving a white label with no background), the Input's
- * `focus:border-brand-600`, the Alert's reds. The components rendered correctly and
- * were simply painted with nothing, which is why a test that asserted their presence
- * passed while the page looked broken. This is the line that makes the design system
- * a package rather than a copy. */
+ * background (leaving a white label with no background), the Input's focus border,
+ * the Alert's colours. The components rendered correctly and were simply painted with
+ * nothing, which is why a test that asserted their presence passed while the page
+ * looked broken. This is the line that makes the design system a package rather than
+ * a copy. */
 @source "../../../../packages/ui/src";
 
 /* Light, explicitly.
  *
  * This file used to hand `--background` and `--foreground` to the operating system's
  * preference, which made the page dark for anyone whose machine is dark while every
- * colour in the components stayed a light-mode grey — secondary text at `gray-600`
- * on near-black, and form controls the browser then painted as white slabs, because
- * nothing had said what they should look like. Half a theme is worse than one.
+ * colour in the components stayed a light-mode grey — half a theme, which is worse
+ * than one. `color-scheme: light` is the load-bearing line: it tells the browser to
+ * render form controls, scrollbars and the canvas in light mode rather than following
+ * the OS.
  *
- * `color-scheme: light` is the load-bearing line: it tells the browser to render form
- * controls, scrollbars and the canvas in light mode rather than following the OS. A
- * dark theme arrives with a dark palette in `@app/ui/tokens.css` — the package that
- * owns this one — rather than as a media query here that the components know nothing
- * about. */
+ * The page's own colours now come from the token layer rather than being literals
+ * here: `--background`/`--foreground` were a second vocabulary for the same two jobs
+ * the semantic layer already names, which is the second source of truth this
+ * repository refuses everywhere else — the same argument that keeps the token names
+ * out of shadcn's (`docs/adr/012-component-layer.md`). A dark direction arrives as a
+ * second palette in `@app/ui/tokens.css`, the package that owns this one, rather than
+ * as a media query here that the components know nothing about. */
 :root {
   color-scheme: light;
-  --background: #ffffff;
-  --foreground: #171717;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-canvas);
+  color: var(--color-ink);
   /* The loaded font, rather than the Arial that was here. The root layout loads
    * Geist and sets these variables, and nothing referenced them — so the app paid
    * for a webfont and rendered a fallback. */

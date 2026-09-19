@@ -4,7 +4,7 @@ import { Suspense, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LoginRequestSchema } from '@app/contracts';
-import { Alert, Button, Input, Label } from '@app/ui';
+import { Alert, Button, Field } from '@app/ui';
 import { messageFrom, safeRedirect } from '@/lib/http/browser';
 
 /**
@@ -14,6 +14,10 @@ import { messageFrom, safeRedirect } from '@/lib/http/browser';
  * the body with, and the reason `@app/contracts` is a package rather than a
  * convention. A malformed email is refused before a round trip, and what the API
  * would have said about it is what is shown.
+ *
+ * Each field is a `Field`, which is what links the input to the message that
+ * explains a refusal. Rendering the two side by side was four fields wrong in the
+ * same way.
  */
 function LoginForm() {
   const router = useRouter();
@@ -62,8 +66,8 @@ function LoginForm() {
   return (
     <form className="space-y-5" onSubmit={submit} noValidate>
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
-        <p className="text-sm text-gray-600">Use the account you registered.</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">Sign in</h1>
+        <p className="text-sm text-ink-muted">Use the account you registered.</p>
       </header>
 
       {params.get('registered') === '1' && (
@@ -72,41 +76,35 @@ function LoginForm() {
 
       {formError !== null && <Alert>{formError}</Alert>}
 
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          value={email}
-          invalid={fieldErrors.email !== undefined}
-          onChange={(event) => setEmail(event.target.value)}
-        />
-        <Alert>{fieldErrors.email}</Alert>
-      </div>
+      <Field
+        label="Email"
+        name="email"
+        type="email"
+        autoComplete="email"
+        value={email}
+        error={fieldErrors.email}
+        onChange={(event) => setEmail(event.target.value)}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          invalid={fieldErrors.password !== undefined}
-          onChange={(event) => setPassword(event.target.value)}
-        />
-        <Alert>{fieldErrors.password}</Alert>
-      </div>
+      <Field
+        label="Password"
+        name="password"
+        type="password"
+        autoComplete="current-password"
+        value={password}
+        error={fieldErrors.password}
+        onChange={(event) => setPassword(event.target.value)}
+      />
 
-      <Button type="submit" disabled={pending} className="w-full">
+      {/* `busy` rather than `disabled`: a disabled submit button drops keyboard
+       * focus and sends the user back to the top of the form mid-submit. */}
+      <Button type="submit" busy={pending} className="w-full">
         {pending ? 'Signing in…' : 'Sign in'}
       </Button>
 
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-ink-muted">
         No account?{' '}
-        <Link className="text-brand-700 underline" href="/register">
+        <Link className="text-action underline" href="/register">
           Create one
         </Link>
       </p>
