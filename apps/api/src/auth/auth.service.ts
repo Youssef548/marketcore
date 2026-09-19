@@ -66,6 +66,11 @@ export class AuthService {
     const record = await this.sessionsRepository.loadByTokenHash(
       this.tokenService.hashRefreshToken(refreshToken),
     );
+
+    // No row is not a token state, so it is answered here rather than by the
+    // decision table: there is nothing to rotate and nothing to revoke.
+    if (record === null) throw new UnauthorizedException(AuthMessages.REFRESH_UNUSABLE);
+
     const verdict = decideRefreshTokenUse(record, new Date());
 
     if (verdict === RefreshTokenVerdicts.REPLAYED) {
@@ -105,7 +110,7 @@ export class AuthService {
       this.tokenService.hashRefreshToken(refreshToken),
     );
     // Already gone is not an error to report to the caller.
-    if (!record.exists) return;
+    if (record === null) return;
 
     await this.sessionsRepository.revokeSession(record.sessionId, SessionRevocationReasons.LOGOUT);
   }

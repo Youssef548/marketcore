@@ -4099,6 +4099,7 @@ snippet in the task body.
 | 6 | Task 11 Step 6 | The step said to add `AuthModule` to `AppModule.imports`, which Task 8 Step 5 already did — a duplicate import. | Task 11 adds only `OrganizationsModule` and `SecurityModule`. |
 | 7 | §7, error semantics | The table has no row for publishing an unpriced product, though Task 13 implements it. | `409 CONFLICT`, the same "current state does not permit this" class as an illegal transition. |
 | 8 | Task 3 Step 4 | The brief expects `19 passed`; the specs it mandates contain 20 cases. | 20 is correct — the brief's arithmetic was wrong, not the tests. |
+| 9 | Tasks 9 and 15 | `SessionsRepository` expressed a lookup miss as a full record built from an empty id and `new Date(0)`, purely to satisfy `RefreshTokenState`'s `exists` flag. A fallback made of magic values, inline beside the logic. | **Removed rather than relocated.** Moving it to a `constants.ts` would only have renamed the problem. `loadByTokenHash` returns `null`; the service answers 401 from that; the decision table decides only about tokens that were found. `RefreshTokenState` lost its `exists` flag, so `exists: true` carrying no dates is no longer representable. The observable behaviour is unchanged, so §4's decision table still holds — only the mechanism moved. Found by the user reading the code, not by a reviewer. |
 
 **A general lesson worth keeping.** Defects 1, 2, 3 and 8 were not design errors. They were the plan
 being *internally inconsistent* — a snippet that does not run, a value set consumed a task before it

@@ -1,11 +1,11 @@
 import type { RefreshTokenState } from '@app/domain';
 
 /**
- * A refresh token as loaded for the rotation decision: the token's own state plus
- * the session it belongs to, because the decision table needs both.
+ * A refresh token as loaded for the rotation decision: the token's own state, the
+ * session it belongs to, and the identifiers the rotation needs.
  *
- * `exists` is false when no row matched the hash — the service rejects before it
- * reads any identifier, so the empty id and session id are never used.
+ * A lookup miss is `null`, not a record with empty ids — so there is no sentinel for
+ * a caller to read an identifier from by mistake.
  */
 export interface RefreshTokenRecord extends RefreshTokenState {
   id: string;

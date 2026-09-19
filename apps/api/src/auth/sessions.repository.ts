@@ -3,23 +3,18 @@ import { PrismaService } from '@app/runtime';
 import type { SessionRevocationReason } from '@app/contracts';
 import type { RefreshTokenRecord } from './sessions.interface';
 
-/** Returned when no row matches the hash. The service rejects before using any id. */
-const NO_TOKEN: RefreshTokenRecord = {
-  id: '',
-  sessionId: '',
-  exists: false,
-  expiresAt: new Date(0),
-  usedAt: null,
-  sessionRevokedAt: null,
-  sessionExpiresAt: new Date(0),
-};
-
 @Injectable()
 export class SessionsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** One query, because the decision needs the token and its session together. */
-  async loadByTokenHash(tokenHash: string): Promise<RefreshTokenRecord> {
+  /**
+   * One query, because the decision needs the token and its session together.
+   *
+   * `null` when no row matched the hash. There is no empty-id sentinel: absence is
+   * not a token state, and a sentinel would put placeholder identifiers in reach of
+   * code that only ever runs for a token that exists.
+   */
+  async loadByTokenHash(tokenHash: string): Promise<RefreshTokenRecord | null> {
     const token = await this.prisma.refreshToken.findUnique({
       where: { tokenHash },
       select: {
@@ -31,12 +26,11 @@ export class SessionsRepository {
       },
     });
 
-    if (token === null) return NO_TOKEN;
+    if (token === null) return null;
 
     return {
       id: token.id,
       sessionId: token.sessionId,
-      exists: true,
       expiresAt: token.expiresAt,
       usedAt: token.usedAt,
       sessionRevokedAt: token.session.revokedAt,

@@ -12,7 +12,6 @@ const PAST = new Date(Date.now() - 60_000);
 const tokenRecord = (overrides: Record<string, unknown> = {}) => ({
   id: 'tok-1',
   sessionId: 'sess-1',
-  exists: true,
   expiresAt: FUTURE,
   usedAt: null,
   sessionRevokedAt: null,
@@ -158,7 +157,8 @@ describe('AuthService', () => {
   });
 
   it('rejects an unknown or expired token without revoking anything', async () => {
-    const unknown = build({ loadByTokenHash: jest.fn().mockResolvedValue(tokenRecord({ exists: false })) });
+    // A lookup miss is `null`, not a record with placeholder ids.
+    const unknown = build({ loadByTokenHash: jest.fn().mockResolvedValue(null) });
     const expired = build({ loadByTokenHash: jest.fn().mockResolvedValue(tokenRecord({ expiresAt: PAST })) });
     const sessionExpired = build({
       loadByTokenHash: jest.fn().mockResolvedValue(tokenRecord({ sessionExpiresAt: PAST })),
@@ -182,7 +182,7 @@ describe('AuthService', () => {
     await service.logout('refresh');
     expect(sessions.revokeSession).toHaveBeenCalledWith('sess-1', SessionRevocationReasons.LOGOUT);
 
-    const gone = build({ loadByTokenHash: jest.fn().mockResolvedValue(tokenRecord({ exists: false })) });
+    const gone = build({ loadByTokenHash: jest.fn().mockResolvedValue(null) });
     await expect(gone.service.logout('refresh')).resolves.toBeUndefined();
     expect(gone.sessions.revokeSession).not.toHaveBeenCalled();
   });
