@@ -5,6 +5,7 @@
 - **Path:** Application domain on top of `ts-monorepo-template` (existing architecture, greenfield domain)
 - **Source plan:** `MarketCore_End_to_End_Project_Plan.docx` v1.0 (2026-09-19)
 - **Builds on:** `docs/superpowers/specs/2026-09-19-monorepo-boilerplate-design.md` — retained, not superseded. It documents the foundation; this spec records what gets built *through* it.
+- **Continued by:** `docs/superpowers/specs/2026-09-19-marketcore-week-02-tenancy-catalog-design.md` — this document's decisions are D1–D17; that one carries D18 onward, so a code comment citing `D19` resolves through both.
 
 > The plan is the opinion on **what** to build. This spec is the opinion on **how it lands on
 > this repository**. Where the two disagree, this spec wins and the disagreement is recorded in

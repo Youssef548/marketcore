@@ -18,10 +18,11 @@ its constraint exists describes a guess, not a decision.
 | 008 | Use OpenTelemetry for cross-process tracing | Before instrumentation (phase 12) | Proposed |
 | 009 | Deploy API and worker on ECS Fargate | Before Terraform implementation (phase 14) | Proposed |
 
-Decisions that do not warrant an ADR live in
-`docs/superpowers/specs/2026-09-19-marketcore-platform-design.md`, whose `D<n>` identifiers are cited
-from code comments and plans. Week 1's structural decisions — the `packages/runtime` extraction (D5)
-and bigint ledger amounts (D9) — are recorded there.
+Decisions that do not warrant an ADR live in `docs/superpowers/specs/`, whose `D<n>` identifiers are
+cited from code comments and plans. The sequence is continuous across documents rather than
+restarting: D1–D17 are in `2026-09-19-marketcore-platform-design.md`, and D18 onward are in the week
+spec that introduces them. Week 1's structural decisions — the `packages/runtime` extraction (D5) and
+bigint ledger amounts (D9) — are recorded there.
 
 ## Status values
 
