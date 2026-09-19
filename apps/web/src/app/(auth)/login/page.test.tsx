@@ -100,4 +100,17 @@ describe('the sign-in form', () => {
 
     await waitFor(() => expect(screen.getByText('Could not reach the server')).toBeTruthy());
   });
+
+  it('associates a refused field with the message that says why', async () => {
+    render(<LoginPage />);
+    fillIn('not-an-email', 'correct-horse-battery');
+    submit();
+
+    await waitFor(() => expect(screen.getAllByRole('alert').length).toBeGreaterThan(0));
+
+    const email = screen.getByLabelText('Email');
+    const describedBy = email.getAttribute('aria-describedby');
+    expect(describedBy, 'the field error is described, not merely adjacent').toBeTruthy();
+    expect(document.getElementById(describedBy as string)?.textContent).toBeTruthy();
+  });
 });

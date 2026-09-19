@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Alert } from '@app/ui';
-import { selectOrganization, useSession } from '@/lib/session/client';
+import { selectOrganization, useReadySession } from '@/lib/session/client';
 
 /**
  * Which organization the session is acting in.
@@ -16,17 +16,18 @@ import { selectOrganization, useSession } from '@/lib/session/client';
  * shows a placeholder rather than silently selecting the first — the API would
  * refuse a request that named nothing, and guessing would hide that from the person
  * who has to choose.
+ *
+ * It sits on the rail rather than a light surface, so its own plane and ink are
+ * stated: a form control inherits nothing and would otherwise take the platform's
+ * white, which is how an input becomes a slab on a dark rail.
  */
 export function OrganizationSwitcher() {
-  const { state, reload } = useSession();
+  const { organizations, activeOrganization, reload } = useReadySession();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  if (state.status !== 'ready') return null;
-
-  const { organizations, activeOrganizationId } = state.session;
   if (organizations.length === 0) {
-    return <span className="text-xs text-gray-500">No organizations</span>;
+    return <p className="text-xs text-ink-on-rail-muted">No organizations</p>;
   }
 
   async function choose(organizationId: string) {
@@ -44,16 +45,16 @@ export function OrganizationSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <label className="text-xs text-gray-500">
+    <div className="space-y-2">
+      <label className="block">
         <span className="sr-only">Active organization</span>
         <select
-          className="rounded-brand border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900"
+          className="w-full rounded-brand border border-rail-active bg-rail px-2 py-1 text-xs text-ink-on-rail"
           disabled={pending}
-          value={activeOrganizationId ?? ''}
+          value={activeOrganization?.id ?? ''}
           onChange={(event) => void choose(event.target.value)}
         >
-          {activeOrganizationId === null && (
+          {activeOrganization === null && (
             <option value="" disabled>
               Choose an organization
             </option>

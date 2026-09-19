@@ -2,20 +2,28 @@
 
 import type { InputHTMLAttributes } from 'react';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+export type InputSize = 'md' | 'sm';
+
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /**
    * Marks the field as failing validation. Sets `aria-invalid` as well as the
    * colour, so the state reaches a screen reader rather than only the eye.
    */
   invalid?: boolean;
+  size?: InputSize;
 }
 
+const sizes: Record<InputSize, string> = {
+  md: 'px-3 py-2 text-sm',
+  sm: 'px-2.5 py-1.5 text-xs',
+};
+
 const borders = {
-  valid: 'border-gray-300 focus:border-brand-600',
-  invalid: 'border-red-500 focus:border-red-500',
+  valid: 'border-rule-strong focus:border-action',
+  invalid: 'border-attention focus:border-attention',
 } as const;
 
-export function Input({ invalid = false, className = '', ...props }: InputProps) {
+export function Input({ invalid = false, size = 'md', className = '', ...props }: InputProps) {
   const border = invalid ? borders.invalid : borders.valid;
 
   return (
@@ -25,7 +33,7 @@ export function Input({ invalid = false, className = '', ...props }: InputProps)
       // with no background takes whatever the platform gives it, which is how an input
       // ends up as a white slab on a dark page the moment the theme is not the one the
       // component assumed.
-      className={`w-full rounded-brand border bg-white px-3 py-2 text-sm text-gray-900 transition-colors outline-none placeholder:text-gray-400 disabled:opacity-50 ${border} ${className}`}
+      className={`w-full rounded-brand border bg-panel text-ink transition-colors outline-none placeholder:text-ink-faint focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-1 focus-visible:outline-focus-ring disabled:opacity-50 ${sizes[size]} ${border} ${className}`}
       {...props}
     />
   );

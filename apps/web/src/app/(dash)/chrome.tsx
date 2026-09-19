@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Alert, Button } from '@app/ui';
-import { signOut, useSession } from '@/lib/session/client';
-import { OrganizationSwitcher } from './organization-switcher';
+import { Alert } from '@app/ui';
+import { useSession, ReadySessionProvider } from '@/lib/session/client';
+import { Rail } from './rail';
+import { TopBar } from './top-bar';
 
 /**
  * The shell every signed-in page sits in.
@@ -13,10 +13,15 @@ import { OrganizationSwitcher } from './organization-switcher';
  * It renders nothing until the session is known, rather than a shell that fills in
  * afterwards: a header that first claims there is no user and then corrects itself
  * is worse than a moment of nothing.
+ *
+ * This is also the one module that narrows the session's four states. Everything
+ * below it is rendered inside `ReadySessionProvider` and receives a session, so the
+ * rail, the top bar, the switcher and every page state the question "is there a
+ * session" neither by guarding nor in prose.
  */
 export function DashboardChrome({ appName, children }: { appName: string; children: ReactNode }) {
   const router = useRouter();
-  const { state } = useSession();
+  const { state, reload } = useSession();
 
   useEffect(() => {
     // Only a refusal sends someone to sign in. A failure to reach the server is not
@@ -26,7 +31,7 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
   }, [state.status, router]);
 
   if (state.status === 'loading') {
-    return <main className="p-10 text-sm text-gray-500">Loading your session…</main>;
+    return <main className="p-10 text-sm text-ink-muted">Loading your session…</main>;
   }
 
   if (state.status === 'anonymous') {
@@ -43,29 +48,15 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-gray-200">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <Link className="text-sm font-semibold" href="/dashboard">
-            {appName}
-          </Link>
+    <ReadySessionProvider session={state.session} reload={reload}>
+      <div className="grid min-h-screen grid-cols-[13rem_minmax(0,1fr)]">
+        <Rail appName={appName} />
 
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-500">{state.session.user.email}</span>
-            <OrganizationSwitcher />
-            <Button
-              variant="ghost"
-              onClick={() => {
-                void signOut().then(() => router.replace('/login'));
-              }}
-            >
-              Sign out
-            </Button>
-          </div>
+        <div className="flex min-w-0 flex-col bg-canvas">
+          <TopBar />
+          <main className="mx-auto w-full max-w-3xl px-6 py-8">{children}</main>
         </div>
-      </header>
-
-      <main className="mx-auto max-w-3xl px-6 py-8">{children}</main>
-    </div>
+      </div>
+    </ReadySessionProvider>
   );
 }
