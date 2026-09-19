@@ -2,6 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { MemberRoles, type Organization, type OrganizationMember } from '@app/contracts';
 import { slugify, type TenantContext } from '@app/domain';
 import { OrganizationRepository } from './organization.repository';
+import { OrganizationWriteOutcomes } from './organization-write.interface';
 import { MembershipRepository } from './membership.repository';
 
 @Injectable()
@@ -12,7 +13,17 @@ export class OrganizationService {
   ) {}
 
   async create(name: string, slug: string, userId: string): Promise<Organization> {
-    return this.organizationRepository.createWithOwner(name, slug ?? slugify(name), userId);
+    const result = await this.organizationRepository.createWithOwner(
+      name,
+      slug ?? slugify(name),
+      userId,
+    );
+
+    if (result.outcome === OrganizationWriteOutcomes.SLUG_TAKEN || result.organization === null) {
+      throw new ConflictException('That slug is already taken');
+    }
+
+    return result.organization;
   }
 
   async listForUser(userId: string): Promise<Organization[]> {

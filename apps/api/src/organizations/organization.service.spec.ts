@@ -3,16 +3,19 @@ import { MemberRoles } from '@app/contracts';
 import { buildTenantContext } from '@app/domain';
 import type { MembershipRepository } from './membership.repository';
 import type { OrganizationRepository } from './organization.repository';
+import { OrganizationWriteOutcomes } from './organization-write.interface';
 import { OrganizationService } from './organization.service';
 
 const tenant = buildTenantContext('org_1', MemberRoles.OWNER);
 
-const build = (overrides: {
-  countOwners?: jest.Mock;
-  findUserByEmail?: jest.Mock;
-  findByOrgAndUser?: jest.Mock;
-  remove?: jest.Mock;
-}) => {
+const build = (
+  overrides: {
+    countOwners?: jest.Mock;
+    findUserByEmail?: jest.Mock;
+    findByOrgAndUser?: jest.Mock;
+    remove?: jest.Mock;
+  } = {},
+) => {
   const membershipRepository = {
     countOwners: overrides.countOwners ?? jest.fn().mockResolvedValue(2),
     findUserByEmail: overrides.findUserByEmail ?? jest.fn().mockResolvedValue({ id: 'u2' }),
@@ -25,7 +28,10 @@ const build = (overrides: {
   } as unknown as MembershipRepository;
 
   const organizationRepository = {
-    createWithOwner: jest.fn(),
+    createWithOwner: jest.fn().mockResolvedValue({
+      outcome: OrganizationWriteOutcomes.CREATED,
+      organization: { id: 'org_1', name: 'Nile', slug: 'nile', status: 'ACTIVE', role: MemberRoles.OWNER },
+    }),
     listForUser: jest.fn(),
     existsActive: jest.fn(),
   } as unknown as OrganizationRepository;
@@ -33,10 +39,31 @@ const build = (overrides: {
   return {
     service: new OrganizationService(organizationRepository, membershipRepository),
     membershipRepository,
+    organizationRepository,
   };
 };
 
 describe('OrganizationService', () => {
+  it('answers CONFLICT when the slug is already taken', async () => {
+    // The repository reports the outcome rather than throwing, because the
+    // database is the only authority on uniqueness — a check-then-insert races.
+    const { service, organizationRepository } = build();
+    (organizationRepository.createWithOwner as jest.Mock).mockResolvedValue({
+      outcome: OrganizationWriteOutcomes.SLUG_TAKEN,
+      organization: null,
+    });
+
+    await expect(service.create('Nile', 'nile', 'u1')).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it('returns the created organization on success', async () => {
+    const { service } = build();
+
+    await expect(service.create('Nile', 'nile', 'u1')).resolves.toMatchObject({
+      slug: 'nile',
+      role: MemberRoles.OWNER,
+    });
+  });
   it('refuses to remove the last owner, which is a rule and not a constraint', async () => {
     const { service } = build({
       countOwners: jest.fn().mockResolvedValue(1),
