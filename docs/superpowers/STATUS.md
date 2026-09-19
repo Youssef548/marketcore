@@ -32,9 +32,9 @@ start verbatim, with no edits:
 | Reset is idempotent | `db:reset` twice | exit 0 both times |
 | The db guard covers the new command | `db:seed` with mismatched `DATABASE_URL`s | exit 1; exit 0 when aligned |
 | Boundary rules still bite | package→app import in `packages/runtime` | `pnpm lint` fails with `boundaries/element-types`, reverting restores green |
-| CI, on GitHub | run [35448996608](https://github.com/Youssef548/marketcore/actions/runs/35448996608) | **success** — install, generate, deploy, seed, lint, typecheck, test, build |
-| Local test counts | `@app/runtime` 4 files | env 5, request-id 5, request-logger 4, logger 6 |
-| API tests | `pnpm --filter api test` | 2 unit + 9 e2e |
+| CI, on GitHub | run [35448996608](https://github.com/Youssef548/marketcore/actions/runs/35448996608) and every push since | **success**, including the review-fix commit |
+| Package tests | `pnpm --filter @app/<pkg> test` | contracts 9, runtime 20, api-client 8 |
+| API tests | `pnpm --filter api test` | 4 unit + 9 e2e |
 
 ### Delivered
 
@@ -100,6 +100,32 @@ upstream; all three were found by *running* things rather than reading them.
 - **Seed rows deferred** to phase 2; the sequence is proven now.
 - **"First Seven Days" day 6 belongs to week 2** — it is phase 2 material and the 12-week schedule
   assigns week 1 to phases 0–1.
+
+### Review response
+
+Sixteen review comments across two pull requests, and all of them were about the same thing: I wrote
+logic with literals, declared types inline, called Prisma from a service, and reached for a
+conditional where a decision table belonged. The rules were not undocumented — `ErrorCodes` in the
+contracts package was already the precedent for a shared const-object enum, and I ignored it.
+
+Applied here:
+
+| Review point | Change |
+|---|---|
+| "should be on constant.ts or be shared" | `packages/contracts/src/constants.ts` (wire values) and `packages/runtime/src/constants.ts` (implementation values). No literal values left inline. |
+| "this should be ENUM" | Const-object enums with derived types for health status, readiness status and dependency state, plus `READINESS_HTTP_STATUS` as the one mapping. |
+| "interfaces like this should be on another file" | `request.interface.ts`, `logger.interface.ts`. Middleware and logger now hold logic only. |
+| "no prisma style yet, we should have repo pattern" | `HealthRepository` owns the query and returns a typed `DependencyState`; `HealthService` no longer imports `PrismaService`. A test now guards that layering. |
+| "why not ... builder" | `buildReadiness` derives `status` from the checks, and `httpStatusForReadiness` replaces the controller's conditional with one table. |
+| "this can be duplicated a lot" | `buildReadiness`, `wireValues`, `httpStatusForReadiness`, and `packages/api-client/test/support/fixtures.ts`. |
+
+Two of my own defects were found while doing this: the service spec had been stubbing Prisma rather
+than the layer boundary, and the runtime and api-client vitest runs needed the same source aliasing
+that `apps/api`'s jest config already had.
+
+Written up as two reusable skills, committed here under `.agents/skills/` and installed at
+`~/.agents/skills` so they apply beyond this repository: **`nestjs-code-conventions`** and
+**`git-delivery-workflow`**.
 
 ### Environment notes
 
