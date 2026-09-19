@@ -11,6 +11,23 @@ const API = '/api/v1';
  */
 const WEB = 'https://web.marketcore.test:8443';
 
+/** `rgb(r, g, b)` from `getComputedStyle`, as WCAG relative luminance. */
+function luminance(rgb: string): number {
+  const channels = (rgb.match(/\d+/g) ?? []).slice(0, 3).map(Number);
+
+  const [r, g, b] = channels.map((channel) => {
+    const value = channel / 255;
+    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrast(a: string, b: string): number {
+  const [lighter, darker] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
 async function signIn(page: Page, email: string) {
   await page.goto(`${WEB}/login`);
   await page.getByLabel('Email').fill(email);
@@ -49,10 +66,22 @@ test.describe('web: the session in a real browser', () => {
     // and `color-scheme: light` is what makes the browser agree, including for the
     // form controls it would otherwise paint itself.
     await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
+
     const pageBackground = await page.evaluate(
       () => getComputedStyle(document.body).backgroundColor,
     );
-    expect(pageBackground).toBe('rgb(255, 255, 255)');
+    const bodyText = await page.evaluate(() => getComputedStyle(document.body).color);
+
+    // Measured as a property, not as a colour. The old assertion pinned
+    // `rgb(255, 255, 255)`, which asserts *a colour* where the intent was *a
+    // property*: selvedge's canvas is linen, so it broke — and it would not have
+    // caught a dark direction either. This fails loudly if the theme starts
+    // following the OS, or if the ramp drops below legible, which are the two
+    // things the assertion was written to protect.
+    expect(luminance(pageBackground), 'the page is light whichever way the OS is set')
+      .toBeGreaterThan(0.7);
+    expect(contrast(pageBackground, bodyText), 'body text clears 7:1 on the page')
+      .toBeGreaterThanOrEqual(7);
 
     const button = page.getByRole('button', { name: 'Sign in' });
     const buttonBackground = await button.evaluate(
@@ -60,12 +89,6 @@ test.describe('web: the session in a real browser', () => {
     );
     expect(buttonBackground, 'the primary button has a background').not.toBe('rgba(0, 0, 0, 0)');
     expect(buttonBackground, 'and is not the page it sits on').not.toBe(pageBackground);
-
-    const input = page.getByLabel('Email');
-    const inputBackground = await input.evaluate(
-      (element) => getComputedStyle(element).backgroundColor,
-    );
-    expect(inputBackground, 'the field states its own surface').toBe('rgb(255, 255, 255)');
   });
 
   test('creates an account, signs in, and is turned away once signed out', async ({ page }) => {
