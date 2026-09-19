@@ -3,3 +3,8 @@
 // that one value has one definition (D25).
 export * from './tenant';
 export * from './tenant.interface';
+
+export * from './password';
+export * from './password.interface';
+export * from './refresh-token';
+export * from './refresh-token.interface';
