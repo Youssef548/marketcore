@@ -15,6 +15,7 @@
     "db:deploy": "node ../../scripts/check-db-env.mjs && prisma migrate deploy",
     "db:seed": "node ../../scripts/check-db-env.mjs && tsx prisma/seed.ts",
     "db:reset": "node ../../scripts/check-db-env.mjs && node scripts/reset.mjs",
+    "postinstall": "prisma generate",
     "build": "pnpm db:generate && tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
