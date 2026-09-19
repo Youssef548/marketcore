@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ZodValidationPipe, cleanupOpenApiDoc } from 'nestjs-zod';
 import { AppModule } from './app.module';
 import { ErrorEnvelopeFilter } from './filters/error-envelope.filter';
-import { validateEnv } from './config/env';
+import { validateEnv } from '@app/runtime';
 
 async function bootstrap() {
   // Validate before anything else, so a bad deploy fails at boot with a list of

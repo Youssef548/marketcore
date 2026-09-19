@@ -1,0 +1,4 @@
+{
+  "extends": "@app/config/tsconfig/nest.json",
+  "include": ["src"]
+}
