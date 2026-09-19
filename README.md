@@ -73,7 +73,7 @@ cp apps/api/.env.example apps/api/.env
 cp packages/database/.env.example packages/database/.env
 
 pnpm --filter @app/database db:deploy   # apply migrations
-pnpm --filter @app/database db:seed     # deterministic seed data
+pnpm --filter @app/database db:seed     # upsert one demo user (idempotent)
 pnpm dev                                # api on :3001, web on :3000
 ```
 
@@ -114,10 +114,12 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md) with the behaviour
 
 **Completed**
 
-- **Phase 1 — foundation.** PostgreSQL via Docker, validated configuration, Prisma wiring with
-  migrations and a verified seed/reset sequence, structured JSON logging, request IDs on every
-  request and inside every error, liveness and readiness probes, Swagger generated from the
-  contracts, CI on a Postgres service, and the three architectural rules enforced by the build.
+- **Phase 1 — foundation.** PostgreSQL via Docker, validated configuration, Prisma wiring with a
+  checked-in migration and an idempotent seed, structured JSON logging, request IDs on every request
+  and inside every error, liveness and readiness probes, Swagger generated from the contracts, CI on
+  a Postgres service, and the three architectural rules enforced by the build.
+- **The first model.** `User`, with `UserStatus` as a database enum — landed a phase early because
+  the readiness probe needs a real query to round-trip (see `docs/superpowers/STATUS.md`).
 
 **In progress**
 
@@ -145,8 +147,9 @@ Each was considered and rejected for a stated reason rather than deferred silent
 
 - **No published load numbers.** k6 results arrive in phase 13; until then there is nothing to
   measure and no number here to distrust.
-- **No deterministic seed rows yet.** The seed *sequence* is verified against a clean database, but
-  there are no models to seed until phase 2.
+- **Only one table exists.** `User` was pulled forward from phase 2 so the readiness probe could
+  round-trip a query through Prisma's query builder rather than raw SQL. It is exercised — migration,
+  seed, readiness check, CI — but nothing reads it through an API yet.
 - **The worker does not exist yet.** It arrives in phase 10, when there is asynchronous work for it
   to consume. The boundary that forces `packages/runtime` is already in place, because enforcing it
   after the fact is more expensive than designing for it.

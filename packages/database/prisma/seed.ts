@@ -1,27 +1,31 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
+import { SEED_USERS } from './seed.constants';
 
 /**
  * Deterministic seed data.
  *
- * There are no models yet — the schema begins in phase 2 — so this seeds no
- * rows. What it establishes is the *path*: `db:reset` applies migrations and
- * then runs this, against a clean database. Phase 2 adds the first rows here;
- * the command does not change.
+ * Idempotent by construction: every row is upserted on its natural key, so
+ * `db:seed` runs any number of times and the database ends in the same state.
  *
- * The migration-count query is deliberate rather than decorative: it fails if
- * the migrations table is absent, which is what proves reset applied migrations
- * *before* seeding instead of the two merely both having run.
+ * Writing the rows is also what proves migrations ran first — the insert fails on
+ * a database with no `users` table. That replaces an earlier `SELECT count(*) FROM
+ * _prisma_migrations`, which needed raw SQL to answer a question a real write
+ * answers for free.
  */
 async function main(): Promise<void> {
   const prisma = new PrismaClient();
   try {
-    const [applied] = await prisma.$queryRaw<{ count: number }[]>`
-      SELECT count(*)::int AS count FROM _prisma_migrations
-    `;
-    console.log(
-      `seed: connected; ${applied.count} migration(s) applied; no models to seed yet (phase 2)`,
-    );
+    for (const user of SEED_USERS) {
+      await prisma.user.upsert({
+        where: { email: user.email },
+        update: {},
+        create: user,
+      });
+    }
+
+    const users = await prisma.user.count();
+    console.log(`seed: upserted ${SEED_USERS.length} user(s); users table now holds ${users}`);
   } finally {
     await prisma.$disconnect();
   }

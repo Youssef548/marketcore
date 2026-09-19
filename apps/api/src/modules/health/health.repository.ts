@@ -12,18 +12,21 @@ export class HealthRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * Round-trips a query, which is the only thing that actually proves the
-   * database answers: an already-open connection can survive a restart that
-   * makes every subsequent query fail, so `$connect()` would report a healthy
-   * database that cannot serve a request.
+   * Reads a single column through the query builder.
    *
-   * This is the one sanctioned raw query in the project. It stays until phase 2
-   * adds the first model, at which point the probe becomes a model query and the
-   * raw SQL goes away with it.
+   * Reachability is the question, so an empty table answering is a healthy
+   * result: `null` means no rows, not no database.
+   *
+   * It has to be a real round-trip, and that is measured rather than assumed.
+   * `$connect()` resolved every second for 18 seconds after Postgres was
+   * stopped, so it reports `up` against a dead database; a builder query failed
+   * within one second and recovered on its own. An earlier version used
+   * `$queryRaw` for the same reason — it needed no model. Now that one exists,
+   * the query goes through the builder like every other query in the project.
    */
   async databaseState(): Promise<DependencyState> {
     try {
-      await this.prisma.$queryRaw`SELECT 1`;
+      await this.prisma.user.findFirst({ select: { id: true } });
       return DependencyStates.UP;
     } catch {
       return DependencyStates.DOWN;

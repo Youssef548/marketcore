@@ -243,6 +243,9 @@ importers:
       '@app/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.6
       dotenv:
         specifier: ^18.0.0
         version: 18.0.1

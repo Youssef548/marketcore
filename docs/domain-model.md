@@ -37,7 +37,7 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 
 | Entity | Essential fields | Key constraints | Phase |
 |---|---|---|---|
-| User | id, email, passwordHash, status, createdAt | Unique normalized email | 2 |
+| User | id, email, passwordHash, status, createdAt | Unique normalized email | 1 * |
 | Organization | id, name, slug, status, createdAt | Unique slug | 2 |
 | OrganizationMember | organizationId, userId, role | Unique (organizationId, userId) | 2 |
 | Product | id, organizationId, name, priceMinor, currency, status | Tenant-scoped product access | 3 |
@@ -59,6 +59,13 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 **Ownership note.** `LedgerEntry` has no `updatedAt` and no soft-delete column. That is not an
 omission: INV-7 is enforced by the schema offering no way to violate it, which is stronger than a
 convention.
+
+**`*` — why `User` exists in phase 1.** It was pulled forward from phase 2, and not as scaffolding:
+the readiness probe needs a query to round-trip, and a query through Prisma's builder needs a
+delegate to hang off. `$connect()` was measured and is not a probe — it reported healthy for 18
+seconds against a stopped database. `User` is therefore exercised by the migration, the seed, the
+readiness check and CI on the day it lands. The full measurement is in
+`docs/superpowers/STATUS.md`.
 
 ## 3. Money
 

@@ -26,6 +26,7 @@
   "devDependencies": {
     "@app/config": "workspace:*",
     "@app/eslint-config": "workspace:*",
+    "@types/node": "^24.0.0",
     "dotenv": "^18.0.0",
     "eslint": "^9.18.0",
     "prisma": "^6",

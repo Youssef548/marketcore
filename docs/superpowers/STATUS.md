@@ -34,7 +34,7 @@ start verbatim, with no edits:
 | Boundary rules still bite | package→app import in `packages/runtime` | `pnpm lint` fails with `boundaries/element-types`, reverting restores green |
 | CI, on GitHub | run [35448996608](https://github.com/Youssef548/marketcore/actions/runs/35448996608) and every push since | **success**, including the review-fix commit |
 | Package tests | `pnpm --filter @app/<pkg> test` | contracts 9, runtime 20, api-client 8 |
-| API tests | `pnpm --filter api test` | 4 unit + 9 e2e |
+| API tests | `pnpm --filter api test` | 5 unit + 9 e2e |
 
 ### Delivered
 
@@ -46,14 +46,17 @@ start verbatim, with no edits:
 - **Request ids end to end** — generated or accepted, validated against injection, echoed on the
   response, present in every error envelope and in one log line per request.
 - **Liveness/readiness split** with contracted responses; readiness returns 503 when degraded.
+- **The first model and real seed rows.** `User` with a checked-in migration and an idempotent upsert
+  seed; `db:reset` twice leaves exactly one demo row, and CI runs the sequence.
 - **Seed and reset sequence**, proven against a clean database and wired into CI.
 - **One shared HTTP configuration** (`apps/api/src/app.setup.ts`) used by `main.ts` and the e2e suite.
 - **README rewritten** and executed; its content is verified, not aspirational.
 
 ### Not proven / deferred
 
-- **No Prisma models.** The schema is empty by design; models begin in phase 2. Phase 1's "seed data
-  works from a clean database" is therefore satisfied as a *sequence*, not as rows.
+- **`User` is the first model, one phase early.** It was pulled forward from phase 2 on review, and
+  it is exercised rather than speculative: the migration creates it, the seed upserts into it, the
+  readiness probe reads it, and CI runs all three. Phase 2 continues from it rather than redoing it.
 - **No concurrency test.** The last-item race lands in phase 4 (week 3) — this is the project's
   flagship claim and it is not yet made.
 - **No worker, no Redis.** Phase 10.
@@ -67,8 +70,8 @@ start verbatim, with no edits:
 
 ### Findings
 
-Three defects found by building on the template. The first two are template defects worth fixing
-upstream; all three were found by *running* things rather than reading them.
+Five findings — three against the template, two of my own. All five were found by *running* things
+rather than reading them, which is the only reason they were found at all.
 
 1. **A contract schema cannot be both `.meta({ id })` and a `createZodDto` source.** The template's
    README instructs the first and its add-a-resource guide instructs the second; doing both on one
@@ -85,6 +88,16 @@ upstream; all three were found by *running* things rather than reading them.
    `import './nope'` passes, `import x from './nope'` fails). Resolvable imports are caught correctly.
    **Not fixed** — changing `packages/eslint-config` is a `globalDependencies` edit and belongs in its
    own decision. Recorded in the README's limitations.
+4. **`$connect()` is not a health probe, and it looks exactly like one.** Measured against a real
+   database, stopped mid-run: `$connect()` resolved on every call for 18 seconds after Postgres
+   stopped, so a readiness check built on it would have reported `database: up` for as long as the
+   pool stayed open. A round-trip query failed within one second, in 2–9ms, and recovered on its own
+   when the database returned. This is why the probe reads a row rather than calling `$connect()`,
+   and why `User` exists a phase early — a builder query needs a delegate to hang off, and there
+   are no delegates without a model.
+5. **The seed was never typechecked.** `packages/database/tsconfig.json` included only `src`, so
+   `prisma/*.ts` was compiled by nobody — `tsx` transpiles without checking. Adding the seed to the
+   include immediately surfaced a missing `@types/node` that had been invisible the whole time.
 
 ### Deviations from the source plan
 
@@ -97,7 +110,8 @@ upstream; all three were found by *running* things rather than reading them.
   so an ordinary request produced no line for a request id to attach to, and phase 1's
   "structured logs contain a request ID" was unachievable as written.
 - **Health is split into two endpoints** rather than one, so liveness stays database-free.
-- **Seed rows deferred** to phase 2; the sequence is proven now.
+- **Seed rows were deferred, then pulled forward.** `User` arrived a phase early so the readiness
+  probe could use the query builder rather than raw SQL; phase 2 continues from it.
 - **"First Seven Days" day 6 belongs to week 2** — it is phase 2 material and the 12-week schedule
   assigns week 1 to phases 0–1.
 
@@ -139,4 +153,5 @@ Written up as two reusable skills, committed here under `.agents/skills/` and in
 ### Next
 
 Week 2 — phases 2 and 3: identity, tenancy, catalog, inventory. Exit gate: cross-tenant tests pass.
-The first Prisma models and the first real seed rows land there.
+`User` is already in place and exercised, so phase 2 adds auth against it plus Organization and
+OrganizationMember, rather than building the first model again.
