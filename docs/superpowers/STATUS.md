@@ -334,7 +334,7 @@ requests, chooses an organization, signs out — and cannot read either token.
 
 ### Findings
 
-Five, all found by running rather than reading.
+Six, all found by running rather than reading.
 
 1. **Next refuses a cookie write during a Server Component render.** The plan had the protected
    layout load the session server-side. That cannot rotate: the render would refresh and be unable to
@@ -363,6 +363,17 @@ Five, all found by running rather than reading.
    with a counterexample reading like a logic error. Fixed with `noInvalidDate: true`, which is the
    only in-repo use of `fc.date`. It is unrelated to this slice and would have gone on failing builds
    at random if the full suite had not been run.
+6. **The behavioural job has never passed in CI, and this branch is what surfaced it.** The job ran
+   `pnpm install` and then the suite, but the suite imports `@app/contracts`, which resolves from that
+   package's built `dist/` — and `dist/` is gitignored, so a fresh runner has none. Nothing in the job
+   built it: `docker compose up --build` compiles inside the image, not on the host. It failed as
+   `Cannot find module …/@app/contracts/dist/src/index.js` and `No tests found` on **every** run since
+   the job was added, including the merge to `main` (`35459274354`) and its own introducing branch
+   (`35459015301`) — which is why week 2's record says the suite is green from a developer's machine
+   and says nothing about CI. Fixed with one step, `pnpm --filter "e2e..." run build`. Reproduced
+   without Docker by deleting `dist/` and running `playwright test --list`: 0 tests, then 13 after the
+   build. **The lesson is the same one week 1 recorded about `db:generate`**: a job that passes because
+   of state the developer already had is not a job that tested anything.
 
 ### Deviations from the plan
 
