@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@app/runtime';
 import { HealthController } from './modules/health/health.controller';
+import { HealthService } from './modules/health/health.service';
 
 /**
  * The composition root. It stays thin on purpose: it wires infrastructure and
@@ -13,5 +14,6 @@ import { HealthController } from './modules/health/health.controller';
 @Module({
   imports: [PrismaModule],
   controllers: [HealthController],
+  providers: [HealthService],
 })
 export class AppModule {}

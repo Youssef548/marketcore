@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { configureApp } from '../src/app.setup';
+import { configureApp, configureSwagger } from '../src/app.setup';
 
 /**
  * Boots the real composition root through the same configureApp() the server
@@ -16,6 +16,7 @@ describe('app (e2e)', () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
     app = moduleRef.createNestApplication();
     configureApp(app);
+    configureSwagger(app);
     await app.init();
   });
 
@@ -26,6 +27,24 @@ describe('app (e2e)', () => {
   it('GET /api/v1/health returns ok', async () => {
     const res = await request(app.getHttpServer()).get('/api/v1/health').expect(200);
     expect(res.body).toEqual({ status: 'ok' });
+  });
+
+  it('GET /api/v1/health/ready reports the database up against real Postgres', async () => {
+    const res = await request(app.getHttpServer()).get('/api/v1/health/ready').expect(200);
+    expect(res.body).toEqual({ status: 'ok', checks: { database: 'up' } });
+  });
+
+  it('documents both health contracts as named OpenAPI components', async () => {
+    // Proves Swagger describes the contract rather than merely existing: a
+    // response that ships without a contract loses its named component here.
+    //
+    // The names come from the DTO classes, not from `.meta({ id })` on the
+    // schema — see the comment in packages/contracts/src/health.ts for why those
+    // two cannot both be used on one schema.
+    const res = await request(app.getHttpServer()).get('/docs-json').expect(200);
+    expect(Object.keys(res.body.components.schemas)).toEqual(
+      expect.arrayContaining(['HealthDto', 'ReadinessDto']),
+    );
   });
 
   it('an unknown route returns the error envelope, not a bare 404', async () => {

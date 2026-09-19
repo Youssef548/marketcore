@@ -1,6 +1,7 @@
 import type { INestApplication, LoggerService } from '@nestjs/common';
-import { ZodValidationPipe } from 'nestjs-zod';
-import { createLogger, requestIdMiddleware, requestLoggerMiddleware } from '@app/runtime';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ZodValidationPipe, cleanupOpenApiDoc } from 'nestjs-zod';
+import { createLogger, requestIdMiddleware, requestLoggerMiddleware, validateEnv } from '@app/runtime';
 import { ErrorEnvelopeFilter } from './filters/error-envelope.filter';
 
 /**
@@ -25,4 +26,27 @@ export function configureApp(
   app.useGlobalPipes(new ZodValidationPipe());
   // Every uncaught failure leaves through here, in one shape.
   app.useGlobalFilters(new ErrorEnvelopeFilter());
+}
+
+/**
+ * Documentation only. Nothing reads this at build time — there is no generated
+ * client, and the contract lives in packages/contracts.
+ *
+ * Shared with the e2e harness so "Swagger describes the contract" is a tested
+ * claim rather than one verified by hand once. A route that ships without a
+ * documented response becomes visible in the suite.
+ */
+export function configureSwagger(app: INestApplication): void {
+  const env = validateEnv();
+  const document = cleanupOpenApiDoc(
+    SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder()
+        .setTitle(`${env.APP_NAME} API`)
+        .setVersion('0.1.0')
+        .addBearerAuth()
+        .build(),
+    ),
+  );
+  SwaggerModule.setup('docs', app, document);
 }

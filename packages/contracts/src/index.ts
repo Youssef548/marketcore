@@ -8,3 +8,4 @@
 // Give each schema a stable `.meta({ id: 'Name' })` so it gets a named component
 // in the OpenAPI document that /docs renders.
 export * from './error';
+export * from './health';
