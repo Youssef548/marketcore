@@ -9,6 +9,17 @@
     "dev": { "dependsOn": ["^build"], "cache": false, "persistent": true },
     "lint": {},
     "test": { "dependsOn": ["^build"], "env": ["DATABASE_URL", "JWT_SECRET"] },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "env": ["DATABASE_URL", "JWT_SECRET"]
+    },
+    "test:mutation": {
+      "dependsOn": ["^build"],
+      "outputs": ["reports/**"],
+      "env": ["DATABASE_URL", "JWT_SECRET"],
+      "cache": false
+    },
     "typecheck": { "dependsOn": ["^build", "build"] }
   }
 }

@@ -35,6 +35,16 @@ export const READINESS_HTTP_STATUS: Record<ReadinessStatus, number> = {
 /** Header naming the organization a request acts within. Shared with any client. */
 export const ORGANIZATION_ID_HEADER = 'x-organization-id';
 
+/**
+ * Set by a reverse proxy to the scheme and client address it saw.
+ *
+ * These are request headers, so they are only trustworthy once a trusted proxy has
+ * overwritten them — a client can send them itself, which is exactly why the value
+ * is logged as *forwarded* rather than as a verified fact.
+ */
+export const FORWARDED_PROTO_HEADER = 'x-forwarded-proto';
+export const FORWARDED_FOR_HEADER = 'x-forwarded-for';
+
 export const OrganizationStatuses = { ACTIVE: 'ACTIVE', DISABLED: 'DISABLED' } as const;
 export type OrganizationStatus = (typeof OrganizationStatuses)[keyof typeof OrganizationStatuses];
 

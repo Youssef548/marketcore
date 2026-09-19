@@ -1,0 +1,29 @@
+# The build context is the repository ROOT, so this file must live at the root.
+#
+# Excluding node_modules is not an optimisation. The host's copy contains macOS
+# native binaries — argon2 among them — and copying those into a Debian image
+# produces a build that installs cleanly and then crashes at runtime, which is a
+# far more confusing failure than a slow build.
+
+**/node_modules
+**/dist
+**/.next
+**/coverage
+**/.turbo
+**/*.tsbuildinfo
+
+.git
+.github
+
+# Real environment files never enter an image. The harness passes configuration as
+# container environment variables instead, which is what the API reads anyway.
+.env
+.env.*
+!.env.example
+
+# Only the harness on the host needs these.
+docker-compose.e2e.yml
+infra/caddy
+
+*.log
+.DS_Store

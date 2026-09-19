@@ -10,6 +10,14 @@ import { defineConfig } from 'vitest/config';
 const contractsSource = fileURLToPath(new URL('../contracts/src/index.ts', import.meta.url));
 
 export default defineConfig({
-  test: { environment: 'node' },
+  test: {
+    environment: 'node',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'lcov'],
+      // Measured 83.11/86.66/80.95/83.11 when the gate was introduced.
+      thresholds: { statements: 78, branches: 81, functions: 75, lines: 78 },
+    },
+  },
   resolve: { alias: { '@app/contracts': contractsSource } },
 });

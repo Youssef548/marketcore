@@ -1,8 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { ErrorEnvelopeSchema, TokenPairSchema, UserSummarySchema } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
+import { expectContract } from './support/contracts';
 import { credentials, registerAndLogin, unique } from './support/fixtures';
 
 describe('auth (e2e)', () => {
@@ -27,6 +29,7 @@ describe('auth (e2e)', () => {
       .expect(201);
 
     expect(res.body).toEqual({ id: expect.any(String), email });
+    expectContract(UserSummarySchema, res.body);
   });
 
   it('rejects a password below the domain policy, in the error envelope', async () => {
@@ -38,6 +41,7 @@ describe('auth (e2e)', () => {
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
     expect(res.body.error.message).toMatch(/minimum length/);
     expect(res.body.error.requestId).toBeTruthy();
+    expectContract(ErrorEnvelopeSchema, res.body);
   });
 
   it('refuses a duplicate email', async () => {
@@ -67,6 +71,7 @@ describe('auth (e2e)', () => {
 
     expect(res.body.accessToken).toEqual(expect.any(String));
     expect(res.body.refreshToken).toEqual(expect.any(String));
+    expectContract(TokenPairSchema, res.body);
   });
 
   it('answers an unknown email and a wrong password identically', async () => {

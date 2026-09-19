@@ -3,6 +3,10 @@ name: ci
 on:
   push: { branches: [main] }
   pull_request:
+  # Mutation testing runs weekly rather than on every push: it re-runs the suite once
+  # per mutant, which is minutes rather than seconds. The other jobs gate a pull
+  # request; this one reports a score nobody has to wait for.
+  schedule: [{ cron: "0 3 * * 1" }]
 
 jobs:
   ci:
@@ -41,10 +45,71 @@ jobs:
       # it fails if migrations were not applied first, so the ordering a
       # reviewer runs by hand stays exercised on every push.
       - run: pnpm --filter @app/database db:seed
+      # `test:coverage` rather than `test`: it runs the same suites — for the API,
+      # unit, e2e and integration in one Jest invocation — and additionally enforces
+      # the coverage thresholds. Running both would run everything twice.
       # On main, run everything. `--affected` runs no tasks at all for a change
       # that touches no package (docs, workflows) and still exits 0 — a green
       # check that tested nothing.
       - if: github.event_name == 'pull_request'
-        run: pnpm turbo run lint typecheck test build --affected
+        run: pnpm turbo run lint typecheck test:coverage build --affected
       - if: github.event_name != 'pull_request'
-        run: pnpm turbo run lint typecheck test build
+        run: pnpm turbo run lint typecheck test:coverage build
+
+  # The only job that runs the artifact the way a deployment would: an image, a real
+  # reverse proxy, real TLS, a database over the network. Everything above it runs in
+  # one process on localhost, so none of it can see a host, scheme or proxy failure.
+  behavioural:
+    runs-on: ubuntu-latest
+    needs: ci
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # --wait blocks until Postgres is healthy, migrations and the seed have
+      # completed, and the API's readiness probe answers — so a failure here is
+      # attributed to the service that failed rather than to a timing guess.
+      - name: Start the stack
+        run: docker compose -f docker-compose.e2e.yml up -d --build --wait
+      - name: Run the behavioural suite
+        run: pnpm --filter e2e test:behavioural
+      - name: API logs
+        if: failure()
+        run: docker compose -f docker-compose.e2e.yml logs --no-log-prefix api
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/e2e/playwright-report/
+          retention-days: 7
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.e2e.yml down -v
+
+  mutation:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # No Postgres service: the mutated code is the guard chain and the token rules,
+      # and they are covered by the unit suites, which stub their dependencies.
+      - run: pnpm turbo run test:mutation
+      # Survivors are the point of the run, so the report is kept even when the job
+      # is green — a score that only appears on failure is a score nobody reads.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutation-reports
+          path: |
+            apps/api/reports/mutation/
+            packages/domain/reports/mutation/
+            packages/contracts/reports/mutation/
+          retention-days: 30

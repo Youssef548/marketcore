@@ -4,6 +4,15 @@ dist/
 .turbo/
 coverage/
 *.tsbuildinfo
+
+# Mutation testing: Stryker's scratch copy of the sources, and its report output.
+# The report is regenerated per run and is read in CI output, not committed.
+.stryker-tmp/
+reports/
+
+# Playwright's run state and its HTML report.
+apps/e2e/test-results/
+apps/e2e/playwright-report/
 .env
 .env.*
 !.env.example

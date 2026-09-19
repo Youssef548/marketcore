@@ -70,9 +70,10 @@ browser would observe it, or anything about how the connection was actually esta
 
 For everything Layer 1 cannot reach.
 
-> **Status: not built yet.** Until `docker-compose.e2e.yml` and `apps/e2e` exist, treat this layer as
-> the thing to build, not a command to run. Layer 1 plus an explicit statement of what remains
-> unproven is the honest output in the meantime.
+> The harness exists: `docker-compose.e2e.yml`, `infra/caddy/Caddyfile` and `apps/e2e`.
+> `RequestLogFields` carries `host`, `forwardedProto` and `forwardedFor` precisely because
+> those headers are unobservable from inside the process — read them back with
+> `requestLogRecord()` in `apps/e2e/support/compose.ts`.
 
 The harness:
 

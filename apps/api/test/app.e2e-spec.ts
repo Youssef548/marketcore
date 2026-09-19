@@ -1,8 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { ErrorEnvelopeSchema, HealthSchema, ReadinessSchema } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp, configureSwagger } from '../src/app.setup';
+import { expectContract } from './support/contracts';
 
 /**
  * Boots the real composition root through the same configureApp() the server
@@ -26,12 +28,18 @@ describe('app (e2e)', () => {
 
   it('GET /api/v1/health returns ok', async () => {
     const res = await request(app.getHttpServer()).get('/api/v1/health').expect(200);
+
+    // Both assertions, deliberately: the literal proves the value, the contract
+    // proves the shape the client will parse this response with.
     expect(res.body).toEqual({ status: 'ok' });
+    expectContract(HealthSchema, res.body);
   });
 
   it('GET /api/v1/health/ready reports the database up against real Postgres', async () => {
     const res = await request(app.getHttpServer()).get('/api/v1/health/ready').expect(200);
+
     expect(res.body).toEqual({ status: 'ok', checks: { database: 'up' } });
+    expectContract(ReadinessSchema, res.body);
   });
 
   it('documents both health contracts as named OpenAPI components', async () => {
@@ -49,8 +57,12 @@ describe('app (e2e)', () => {
 
   it('an unknown route returns the error envelope, not a bare 404', async () => {
     const res = await request(app.getHttpServer()).get('/api/v1/nope').expect(404);
+
     expect(res.body).toMatchObject({ error: { code: 'NOT_FOUND' } });
     expect(typeof res.body.error.message).toBe('string');
+    // The envelope is a contract too, and it is the one every client parses on
+    // failure — a dropped `requestId` here would go unnoticed by the literal above.
+    expectContract(ErrorEnvelopeSchema, res.body);
   });
 
   it('every failure carries the request id, so a client can quote it', async () => {

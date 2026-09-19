@@ -16,7 +16,7 @@ const PROJECT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..'
  * miniature fixture workspace and fails if any of them stops firing.
  *
  * @param {object} options
- * @param {string} options.type            'app-api' | 'app-web' | 'package'
+ * @param {string} options.type            'app-api' | 'app-web' | 'app-e2e' | 'package'
  * @param {boolean} [options.importRules]  set false when the consuming flat
  *   config already registers a plugin under the key `import` (eslint-config-next
  *   does), because redefining that key makes ESLint throw. Such a consumer can

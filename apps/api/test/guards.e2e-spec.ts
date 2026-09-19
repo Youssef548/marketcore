@@ -1,9 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { ORGANIZATION_ID_HEADER } from '@app/contracts';
+import { ErrorEnvelopeSchema, ORGANIZATION_ID_HEADER } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
+import { expectContract } from './support/contracts';
 import { newTenant, tenantHeaders } from './support/fixtures';
 
 /**
@@ -39,6 +40,7 @@ describe('guards (e2e)', () => {
 
     expect(res.body.error.code).toBe('UNAUTHORIZED');
     expect(res.body.error.requestId).toBeTruthy();
+    expectContract(ErrorEnvelopeSchema, res.body);
   });
 
   it('refuses a malformed bearer token', async () => {
@@ -48,6 +50,7 @@ describe('guards (e2e)', () => {
       .expect(401);
 
     expect(res.body.error.code).toBe('UNAUTHORIZED');
+    expectContract(ErrorEnvelopeSchema, res.body);
   });
 
   it('refuses a token signed with another secret', async () => {
@@ -71,6 +74,7 @@ describe('guards (e2e)', () => {
 
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
     expect(res.body.error.message).toContain(ORGANIZATION_ID_HEADER);
+    expectContract(ErrorEnvelopeSchema, res.body);
   });
 
   it('serves the route with both the token and the tenant header', async () => {

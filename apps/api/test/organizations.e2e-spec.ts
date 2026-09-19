@@ -1,9 +1,16 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { MemberRoles, SLUG_PATTERN } from '@app/contracts';
+import {
+  MemberRoles,
+  OrganizationMemberSchema,
+  OrganizationSchema,
+  SLUG_PATTERN,
+} from '@app/contracts';
+import { z } from 'zod';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
+import { expectContract } from './support/contracts';
 import {
   login,
   newTenant,
@@ -38,6 +45,7 @@ describe('organizations (e2e)', () => {
       .expect(201);
 
     expect(res.body).toMatchObject({ name: 'Owned Co', slug, role: MemberRoles.OWNER });
+    expectContract(OrganizationSchema, res.body);
   });
 
   it('derives a slug from the name when none is given', async () => {
@@ -52,6 +60,7 @@ describe('organizations (e2e)', () => {
     // The contract's own pattern, not a second copy of it — the slug the API
     // derived from a display name has to satisfy the same rule a caller would.
     expect(SLUG_PATTERN.test(res.body.slug as string)).toBe(true);
+    expectContract(OrganizationSchema, res.body);
   });
 
   it('refuses a duplicate slug with CONFLICT', async () => {
@@ -91,6 +100,7 @@ describe('organizations (e2e)', () => {
       owner.organizationId,
     );
     expect(strangerList.body).toEqual([]);
+    expectContract(z.array(OrganizationSchema), own.body);
   });
 
   it('lets a member read the member list', async () => {
@@ -103,6 +113,7 @@ describe('organizations (e2e)', () => {
 
     expect(res.body).toHaveLength(1);
     expect(res.body[0]).toMatchObject({ role: MemberRoles.OWNER });
+    expectContract(z.array(OrganizationMemberSchema), res.body);
   });
 
   it('refuses a member adding another member with FORBIDDEN', async () => {

@@ -1,0 +1,31 @@
+{
+  "$schema": "../../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "packageManager": "pnpm",
+  "testRunner": "jest",
+  "plugins": ["@stryker-mutator/jest-runner"],
+
+  "//jest": "The unit config from package.json, not the e2e one: a mutant that only an HTTP suite can kill costs a full app boot per mutant, and this run has to stay affordable. moduleNameMapper is emptied because Stryker sandboxes this package under .stryker-tmp/, where `<rootDir>/../../packages/...` points at a directory that does not exist — the first attempt to run this failed with 'createNoMappedModuleFoundError'. Without the mapper, jest resolves @app/* through the pnpm workspace symlinks, which reach the real packages and their built dist, so this task depends on ^build.",
+  "jest": {
+    "configFile": "package.json",
+    "config": { "moduleNameMapper": {} }
+  },
+
+  "//mutate": "Scoped to the code the *unit* suites cover — the guard chain, the token and session rules, password hashing. Widening it to src/auth/** also sweeps in the controller, repository and DTOs, which only the e2e suite reaches: the first run scored 53.65% with 76 'no coverage' mutants, almost all of them from those files, which reads as a testing gap when it is really a mismatched runner. Mutating them is worth doing with the e2e config once someone is willing to pay a full app boot per mutant.",
+  "mutate": [
+    "src/security/guards/**/*.ts",
+    "src/auth/auth.service.ts",
+    "src/auth/sessions.repository.ts",
+    "src/auth/tokens/token.service.ts",
+    "src/auth/password/argon2-password-hasher.ts",
+    "!src/**/*.spec.ts"
+  ],
+
+  "reporters": ["clear-text", "progress", "html", "json"],
+  "htmlReporter": { "fileName": "reports/mutation/index.html" },
+  "jsonReporter": { "fileName": "reports/mutation/report.json" },
+
+  "//thresholds": "break is null on purpose: report, do not gate a pull request. See the note in packages/domain/stryker.conf.json.",
+  "thresholds": { "high": 80, "low": 60, "break": null },
+
+  "tempDirName": ".stryker-tmp"
+}
