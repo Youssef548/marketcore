@@ -398,3 +398,138 @@ Week 3 — phase 4: transactional checkout and the stock-1 race. The web app now
 the first tenant data page on, which is also where the generic proxy (D34) and the
 `x-organization-id` header arrive.
 
+---
+
+## The web design system — selvedge — 2026-09-19
+
+**Exit gate:** the app's look is one file and the contrast test re-reads it — every text-on-surface
+pair clears 4.5:1, and no component names a colour.
+**Branch:** `feat/web-design-system` (stacked on `feat/web-auth-session`, per D51)
+**Spec:** `docs/superpowers/specs/2026-09-19-marketcore-design-system-design.md` (D40–D51)
+**Plan:** `docs/superpowers/plans/2026-09-19-marketcore-design-system.md` (9 tasks)
+**ADR:** [`012`](../adr/012-component-layer.md)
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| **The gate, as a test** | `pnpm --filter @app/ui test` | **18 passed, 5 files**; worst text-on-surface pair **4.58:1** (`ink-faint` on `sunken`) |
+| Every semantic token is a literal | same | no `color-mix()`, no relative colour syntax — the test refuses anything that is not `oklch()` |
+| Exactly the names the components reference | same | the declared `--color-*` set equals the 23-name list D41 fixes |
+| Palette names and role names stay apart | same | no palette family shares a name with a semantic token |
+| The text ramp stays ordered | same | `ink` darker than `ink-muted` darker than `ink-faint` |
+| **The field error is described, not adjacent** | same | the input's `aria-describedby` resolves to the element carrying the message; **removing the attribute fails 1/1** |
+| `busy` keeps the keyboard | same | not `disabled`; `aria-busy` + `aria-disabled` set; the click is refused |
+| Role names, not colours, in every component | `grep -rE "(bg\|text\|border)-(gray\|brand\|red\|green)" apps/web/src packages/ui/src` | no match — and re-introducing `text-gray-600` makes the check fail |
+| No component reaches into the palette | `grep -rn "palette-" packages/ui/src` | no match |
+| **The theme is light, asserted as a property** | `pnpm --filter e2e test:behavioural` | **14/14**; under an emulated dark OS, page luminance > 0.7 and body text ≥ 7:1 — no `rgb(255, 255, 255)` anywhere |
+| The primary action is painted and is not the page | same | non-transparent, and differs from the page it sits on |
+| The whole check suite | `pnpm turbo run lint typecheck test build` | **33/33 tasks**, 0 failed |
+| Web | `pnpm --filter web test` | 68 passed, 12 files |
+| Web coverage gate | `pnpm --filter web test:coverage` | 59.9/81.16/63.93/59.9 against a held 52/75/55/52 |
+| API unit / e2e / integration | `pnpm --filter api test` | 60 / 59 / 16 — untouched by this phase, run to prove it |
+| Contracts | `pnpm --filter @app/contracts test` | 35 passed, 7 files |
+| Boundary rules still bite | a resolvable `packages/ui` → `apps/web` import | `pnpm lint` fails with `boundaries/element-types`; reverting restores exit 0 |
+
+### Delivered
+
+- **The token layer `packages/ui` was missing** — three layers in one file: a palette of raw OKLCH
+  named by colour family, a semantic layer named by role and declared as `--color-*` so Tailwind 4
+  generates the utilities, and selvedge's one set of palette values. Spacing deliberately not
+  redefined.
+- **Contrast as a mechanism rather than a promise** — 25 text-on-surface pairs, the WCAG computation
+  written out in the test and re-derived from the literals in CI.
+- **`Button` (variants, sizes, `busy`), `Input` (sizes, `invalid`, focus ring), `Label`, `Alert`, and
+  the new `Field`** — the last of which closes a real defect: four fields across two forms rendered an
+  error paragraph with nothing linking it to its input.
+- **The shell in `apps/web`** — a rail owning the tenant and its picker, a top bar owning the page
+  title and the signed-in user, each fact in one place.
+- **Sign-in, register and the session screen rebuilt** on the primitives, with no ad-hoc grey left and
+  no `--background`/`--foreground` second vocabulary in `globals.css`.
+- **ADR 012**, with shadcn/ui as the rejected alternative and the three reasons stated.
+- **The ready-session deepening**, from a frontend architecture review run after the plan: `useSession`'s
+  four-arm union was narrowed by five modules — four of them unreachably — and the active organization
+  was derived independently by two of them. The session module now provides a resolved `ReadySession`
+  to the signed-in subtree, so the shell is the only module that branches, and membership is applied
+  once. 5 new tests pin the interface, including that a signed-in module outside the shell throws
+  rather than silently rendering nothing.
+
+### Not proven / deferred
+
+- **The input's border is 1.96:1** — `rule-strong` on `canvas`, under the 3:1 WCAG 1.4.11 asks of a UI
+  component boundary. D49's test is text-on-surface only, so this is recorded rather than fixed. The
+  focus ring does clear 3:1 on every surface it is drawn against (3.25 / 3.61 / 3.90 on canvas, panel
+  and rail).
+- **No lint rule forbids a colour literal in a component.** The check that no component names a colour
+  is a `grep`, not a test, and a grep is a habit rather than a gate.
+- **No visual regression testing**, refused by the spec's own reasoning: there is no stable rendering
+  environment, and a flaky visual gate is worse than none.
+- **The products page and everything that proves selvedge's signature** — the status thread, the
+  quantity track, the published/draft colours (D48). The direction lands here as its palette, its
+  plane and its type; its signature arrives with the first table.
+- **Dark mode**, and `color-scheme: light` is what says so (D50).
+- **The other four architecture-review candidates** — one routing module, the BFF protocol seam, the
+  session port's second adapter, and the design system's uncalled variants. Reported and not acted on;
+  the report is in the OS temp directory and is deliberately not committed.
+- **Nothing sends email**, no password reset, no invitations — unchanged from week 2.
+
+### Findings
+
+Five, all found by running rather than reading.
+
+1. **A TypeScript interface cannot widen an inherited prop.** `InputProps extends
+   InputHTMLAttributes<HTMLInputElement>` with `size?: InputSize` does not compile: `size` is already
+   `number` on the DOM attributes, and TS2430 rejects the narrowing. The plan carried it as written;
+   the fix is `Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>`. A plan step that had never been
+   compiled is a plan step that has not been checked.
+2. **Tailwind 4 tree-shakes `@theme` variables that no utility uses.** An `@theme` block whose values
+   are `var()` chains emits *nothing* until a source file references the generated utility — so the
+   plan's "build, then grep the stylesheet for `.bg-canvas`" step, written before any component used
+   the new names, would have proved nothing and read as a failure. Verified instead with a throwaway
+   probe file that referenced the classes. The check moved to after the pages were rebuilt, where it
+   passes because the classes exist. **The general form is worth keeping:** a build-and-grep check has
+   to be run at a point where the thing being grepped for should exist.
+3. **`import.meta.url` is not a file URL under Vitest's jsdom environment.** `readFileSync(new
+   URL('../src/tokens.css', import.meta.url))` failed with `The URL must be of scheme file`. The
+   contrast test declares `// @vitest-environment node`, which is the right environment for it anyway:
+   it is pure computation and touches no DOM.
+4. **Week 1's finding 3, re-confirmed while proving the boundary.** A `packages/*` → `apps/*` import
+   whose path does not resolve passes ESLint silently — the first attempt used one `..` too many and
+   lint reported only `no-unused-vars`, not the boundary violation. With a path that resolves it fails
+   as `boundaries/element-types` and reverting restores exit 0. The check is only a check when the
+   import resolves.
+5. **Two of the exploration's values could not support 4.5:1, measured in OKLCH.** The spec says the
+   values come from the exploration set and that the contrast test re-derives them; converting that
+   set showed `ink-faint` on `sunken` at 3.77:1 and the rail's muted ink on `rail-hover` at 3.83:1.
+   Corrected — and `ink-muted` moved *with* `ink-faint`, because darkening the faint step alone would
+   have made it indistinguishable from the muted one and quietly erased the ramp.
+
+### Deviations from the plan
+
+- **Three semantic names added to D41's list.** `--color-rail-hover`, `--color-rail-active` and
+  `--color-ink-on-rail-muted`. The direction's own mockup paints all three — a rail needs a hover
+  plane, a selected plane and secondary text — and the list covers none of them. Without the third,
+  the rail's role label and inactive nav are either unreadable or unexpressible.
+- **Task 1's Step 5 moved to Task 6** for finding 2.
+- **`InputProps` corrected** for finding 1, and the plan's snippet edited in place.
+- **`--radius-brand` is 7px**, the direction's radius, rather than the template's 12px. D41 does not
+  mention radius.
+- **The plan's `chrome.test.tsx` assertion was rewritten before it was trusted.** Asserting the
+  organization's name appears exactly once fails legitimately: the switcher's own `<option>` names it.
+  The assertion is scoped to the two landmarks instead — the rail contains the tenant and not the
+  user, the top bar the reverse — which is what "one fact, one place" actually means.
+- **The ready-session deepening is not in the plan.** It came from a frontend architecture review run
+  after the plan was executed. Ruling: it lands on this branch rather than a third stacked one,
+  because it reshapes the shell this phase introduced and a separate branch would cost more than it
+  separates. It is named in the plan's branch and in the pull request so a reviewer can read the two
+  as two reads.
+- **`(dash)`'s dashboard copy** now says "choose one in the rail" rather than "above", because the
+  picker moved.
+
+### Next
+
+The products page: the first table, the first `x-organization-id` header on a real fetch, the first
+caller for the generic proxy (D34) — and selvedge's signature moves, which this phase deliberately
+deferred rather than shipping a thread nothing draws (D48).
+
+
