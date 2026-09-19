@@ -3,6 +3,7 @@ import { setupServer } from 'msw/node';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { ApiError, createApiClient, type ApiClient } from '../src/index';
+import { errorEnvelope, errorEnvelopeWithoutRequestId } from './support/fixtures';
 
 const base = 'http://api.test/api/v1';
 const ThingSchema = z.object({ id: z.string(), name: z.string() });
@@ -46,17 +47,7 @@ describe('api-client', () => {
   it('maps an error envelope to ApiError with its status, code and details', async () => {
     server.use(
       http.get(`${base}/things/1`, () =>
-        HttpResponse.json(
-          {
-            error: {
-              code: 'NOT_FOUND',
-              message: 'No such thing',
-              requestId: 'req_1',
-              details: { id: '1' },
-            },
-          },
-          { status: 404 },
-        ),
+        HttpResponse.json(errorEnvelope({ details: { id: '1' } }), { status: 404 }),
       ),
     );
     const error = await client.get('/things/1', ThingSchema).catch((e: unknown) => e);
@@ -72,10 +63,7 @@ describe('api-client', () => {
     // actually satisfy.
     server.use(
       http.get(`${base}/things/1`, () =>
-        HttpResponse.json(
-          { error: { code: 'NOT_FOUND', message: 'No such thing' } },
-          { status: 404 },
-        ),
+        HttpResponse.json(errorEnvelopeWithoutRequestId(), { status: 404 }),
       ),
     );
     const error = await client.get('/things/1', ThingSchema).catch((e: unknown) => e);

@@ -1,7 +1,12 @@
-import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
 import { ApiOkResponse, ApiServiceUnavailableResponse } from '@nestjs/swagger';
 import type { Response } from 'express';
-import type { Health, Readiness } from '@app/contracts';
+import {
+  HealthStatuses,
+  httpStatusForReadiness,
+  type Health,
+  type Readiness,
+} from '@app/contracts';
 import { HealthDto, ReadinessDto } from './health.dto';
 import { HealthService } from './health.service';
 
@@ -17,23 +22,23 @@ export class HealthController {
   @Get()
   @ApiOkResponse({ type: HealthDto })
   check(): Health {
-    return { status: 'ok' };
+    return { status: HealthStatuses.OK };
   }
 
   /**
-   * Readiness. Answers 503 when degraded so a load balancer stops routing to a
-   * process that cannot serve, while still returning the body — a degraded
-   * result is a successful evaluation of the probe, not a failed request, so it
-   * never becomes the error envelope.
+   * Readiness. The status comes from the contract's mapping rather than a
+   * conditional here, so every endpoint that reports a verdict — this one and
+   * the worker's later — answers the same way for the same reason.
+   *
+   * Setting 200 explicitly rather than leaving it implicit is what removes the
+   * branch: there is one code path, and the mapping decides.
    */
   @Get('ready')
   @ApiOkResponse({ type: ReadinessDto })
   @ApiServiceUnavailableResponse({ type: ReadinessDto })
   async ready(@Res({ passthrough: true }) res: Response): Promise<Readiness> {
     const readiness = await this.healthService.checkReadiness();
-    if (readiness.status !== 'ok') {
-      res.status(HttpStatus.SERVICE_UNAVAILABLE);
-    }
+    res.status(httpStatusForReadiness(readiness));
     return readiness;
   }
 }

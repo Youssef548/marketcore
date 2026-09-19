@@ -1,31 +1,31 @@
-import type { PrismaService } from '@app/runtime';
+import { DependencyStates, ReadinessStatuses } from '@app/contracts';
+import type { HealthRepository } from './health.repository';
 import { HealthService } from './health.service';
 
+const serviceWith = (databaseState: jest.Mock) =>
+  new HealthService({ databaseState } as unknown as HealthRepository);
+
 /**
- * The probe is stubbed here, deliberately and only here: the "database is down"
- * branch cannot be reached by an integration test without stopping PostgreSQL
- * mid-run. The e2e suite proves the real, connected path against a real
- * database; this covers the branch it cannot reach.
+ * These tests exist to guard the layering, not to re-test the builder. If Prisma
+ * reappears in this service — the mistake they were written after — the first
+ * test fails, because there would be no repository to call.
  */
-const serviceWith = (queryRaw: jest.Mock) =>
-  new HealthService({ $queryRaw: queryRaw } as unknown as PrismaService);
-
 describe('HealthService', () => {
-  it('reports the database up when the probe succeeds', async () => {
-    const service = serviceWith(jest.fn().mockResolvedValue([{ '?column?': 1 }]));
+  it('asks the repository for the dependency state instead of touching Prisma', async () => {
+    const databaseState = jest.fn().mockResolvedValue(DependencyStates.UP);
 
-    await expect(service.checkReadiness()).resolves.toEqual({
-      status: 'ok',
-      checks: { database: 'up' },
-    });
+    await serviceWith(databaseState).checkReadiness();
+
+    expect(databaseState).toHaveBeenCalledTimes(1);
   });
 
-  it('reports degraded rather than throwing when the database is unreachable', async () => {
-    const service = serviceWith(jest.fn().mockRejectedValue(new Error('ECONNREFUSED')));
+  it('derives the verdict from the checks it was given', async () => {
+    const up = await serviceWith(jest.fn().mockResolvedValue(DependencyStates.UP)).checkReadiness();
+    const down = await serviceWith(
+      jest.fn().mockResolvedValue(DependencyStates.DOWN),
+    ).checkReadiness();
 
-    await expect(service.checkReadiness()).resolves.toEqual({
-      status: 'degraded',
-      checks: { database: 'down' },
-    });
+    expect(up.status).toBe(ReadinessStatuses.OK);
+    expect(down.status).toBe(ReadinessStatuses.DEGRADED);
   });
 });

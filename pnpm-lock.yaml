@@ -292,6 +292,9 @@ importers:
 
   packages/runtime:
     dependencies:
+      '@app/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       '@app/database':
         specifier: workspace:*
         version: link:../database

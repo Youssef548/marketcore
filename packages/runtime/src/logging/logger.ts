@@ -1,14 +1,6 @@
 import type { LoggerService } from '@nestjs/common';
-
-export type LogLevelName = 'debug' | 'error' | 'log' | 'verbose' | 'warn';
-
-/** Where a finished line goes. Injected so tests never touch the real streams. */
-export type LogSink = (line: string, level: LogLevelName) => void;
-
-export interface JsonLoggerOptions {
-  context: string;
-  write?: LogSink;
-}
+import { LogLevels, STDERR_LOG_LEVELS, type LogLevelName } from '../constants';
+import type { JsonLoggerOptions, LogSink } from './logger.interface';
 
 /**
  * JSON, not pretty-printing, because these lines are read by machines first and
@@ -33,7 +25,8 @@ function safeStringify(value: unknown): string {
 }
 
 function defaultSink(line: string, level: LogLevelName): void {
-  const stream = level === 'error' || level === 'warn' ? process.stderr : process.stdout;
+  const goesToStderr = (STDERR_LOG_LEVELS as readonly string[]).includes(level);
+  const stream = goesToStderr ? process.stderr : process.stdout;
   stream.write(`${line}\n`);
 }
 
@@ -47,23 +40,23 @@ export class JsonLogger implements LoggerService {
   }
 
   log(message: unknown, ...optionalParams: unknown[]): void {
-    this.emit('log', message, optionalParams);
+    this.emit(LogLevels.LOG, message, optionalParams);
   }
 
   error(message: unknown, ...optionalParams: unknown[]): void {
-    this.emit('error', message, optionalParams);
+    this.emit(LogLevels.ERROR, message, optionalParams);
   }
 
   warn(message: unknown, ...optionalParams: unknown[]): void {
-    this.emit('warn', message, optionalParams);
+    this.emit(LogLevels.WARN, message, optionalParams);
   }
 
   debug(message: unknown, ...optionalParams: unknown[]): void {
-    this.emit('debug', message, optionalParams);
+    this.emit(LogLevels.DEBUG, message, optionalParams);
   }
 
   verbose(message: unknown, ...optionalParams: unknown[]): void {
-    this.emit('verbose', message, optionalParams);
+    this.emit(LogLevels.VERBOSE, message, optionalParams);
   }
 
   private emit(level: LogLevelName, message: unknown, params: unknown[]): void {
@@ -79,7 +72,7 @@ export class JsonLogger implements LoggerService {
     this.write(
       safeStringify({
         level,
-        event: typeof message === 'string' ? message : 'log',
+        event: typeof message === 'string' ? message : LogLevels.LOG,
         context: this.context,
         ...(typeof message === 'string' ? {} : { message }),
         ...fields,

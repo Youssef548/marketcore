@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { NextFunction, Request, Response } from 'express';
-import { REQUEST_ID_HEADER, requestIdMiddleware } from './request-id.middleware';
+import { REQUEST_ID_HEADER } from '@app/contracts';
+import { requestIdMiddleware } from './request-id.middleware';
 
 function fakeReq(headers: Record<string, unknown> = {}): Request {
   return { headers } as unknown as Request;

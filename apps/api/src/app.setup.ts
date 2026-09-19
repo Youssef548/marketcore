@@ -1,7 +1,13 @@
 import type { INestApplication, LoggerService } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ZodValidationPipe, cleanupOpenApiDoc } from 'nestjs-zod';
-import { createLogger, requestIdMiddleware, requestLoggerMiddleware, validateEnv } from '@app/runtime';
+import {
+  LogEvents,
+  createLogger,
+  requestIdMiddleware,
+  requestLoggerMiddleware,
+  validateEnv,
+} from '@app/runtime';
 import { ErrorEnvelopeFilter } from './filters/error-envelope.filter';
 
 /**
@@ -20,7 +26,7 @@ export function configureApp(
   // The id first, so every later stage — including the request log, a validation
   // rejection and the error envelope — can be correlated to it.
   app.use(requestIdMiddleware);
-  app.use(requestLoggerMiddleware((fields) => logger.log('http.request.completed', fields)));
+  app.use(requestLoggerMiddleware((fields) => logger.log(LogEvents.HTTP_REQUEST_COMPLETED, fields)));
   // Every request body/query/param built from a contract schema is validated
   // here, before a handler runs.
   app.useGlobalPipes(new ZodValidationPipe());

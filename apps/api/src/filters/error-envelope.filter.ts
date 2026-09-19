@@ -9,10 +9,7 @@ import {
 import { ZodValidationException } from 'nestjs-zod';
 import type { Request, Response } from 'express';
 import { ErrorCodes, type ErrorCode } from '@app/contracts';
-import { createLogger, getRequestId } from '@app/runtime';
-
-/** Used only when the request-id middleware did not run, which is a misconfiguration. */
-const UNKNOWN_REQUEST_ID = 'unknown';
+import { UNKNOWN_REQUEST_ID, createLogger, getRequestId } from '@app/runtime';
 
 /**
  * The only way a failure leaves the API. Clients get a stable machine-readable

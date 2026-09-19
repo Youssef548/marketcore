@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@app/runtime';
 import { HealthController } from './modules/health/health.controller';
+import { HealthRepository } from './modules/health/health.repository';
 import { HealthService } from './modules/health/health.service';
 
 /**
@@ -14,6 +15,8 @@ import { HealthService } from './modules/health/health.service';
 @Module({
   imports: [PrismaModule],
   controllers: [HealthController],
-  providers: [HealthService],
+  // Repositories before services: the service depends on the repository, never
+  // on the Prisma client directly.
+  providers: [HealthRepository, HealthService],
 })
 export class AppModule {}
