@@ -32,6 +32,7 @@ start verbatim, with no edits:
 | Reset is idempotent | `db:reset` twice | exit 0 both times |
 | The db guard covers the new command | `db:seed` with mismatched `DATABASE_URL`s | exit 1; exit 0 when aligned |
 | Boundary rules still bite | package→app import in `packages/runtime` | `pnpm lint` fails with `boundaries/element-types`, reverting restores green |
+| CI, on GitHub | run [35448996608](https://github.com/Youssef548/marketcore/actions/runs/35448996608) | **success** — install, generate, deploy, seed, lint, typecheck, test, build |
 | Local test counts | `@app/runtime` 4 files | env 5, request-id 5, request-logger 4, logger 6 |
 | API tests | `pnpm --filter api test` | 2 unit + 9 e2e |
 
@@ -57,8 +58,12 @@ start verbatim, with no edits:
   flagship claim and it is not yet made.
 - **No worker, no Redis.** Phase 10.
 - **No load numbers.** Phase 13.
-- **CI has not actually run.** The workflow is written and its commands were executed locally and in
-  a clean clone, but no CI run exists until the branch is pushed.
+- **CI is green but only on the pull request path.** The `--affected` variant ran; the full
+  unconditional run on `main` executes after merge. Both are the same task set, and the full one has
+  been run locally in a clean clone (26/26).
+- **`main` carries a Node 20 deprecation warning** from `actions/checkout@v4`, `actions/setup-node@v4`
+  and `pnpm/action-setup@v4`. Informational, not a failure, but the actions will need bumping before
+  GitHub's Node 20 removal.
 
 ### Findings
 
