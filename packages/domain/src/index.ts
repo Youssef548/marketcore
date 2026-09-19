@@ -8,3 +8,8 @@ export * from './password';
 export * from './password.interface';
 export * from './refresh-token';
 export * from './refresh-token.interface';
+
+export * from './product';
+export * from './product.interface';
+export * from './roles';
+export * from './slug';
