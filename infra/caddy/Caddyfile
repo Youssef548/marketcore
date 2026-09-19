@@ -1,17 +1,29 @@
 # The behavioural harness's edge.
 #
-# Two names share one site on purpose. `localhost` is how the test runner reaches
-# the proxy from the host (published as 8443), and the second is the public name
-# the stack is pretending to have. Both go through the same reverse_proxy, so the
-# app's view of the request is a real one rather than a header a test set by hand.
+# Two hosts share one published port. Caddy selects between them on the TLS SNI and
+# the Host header, which is how a browser can reach both the API and the web app
+# through a single real proxy.
+#
+# The API site: `localhost` is how the API suite reaches the proxy from the host
+# (published as 8443), and `api.marketcore.test` is the public name that stack
+# pretends to have. Both go through the same reverse_proxy, so the app's view of the
+# request is a real one rather than a header a test set by hand.
+#
+# The web site is separate rather than routed by path, because the web app and the
+# API both serve paths under /api — the BFF's own route handlers and the API's
+# `/api/v1` — so one host cannot carry both.
 #
 # `tls internal` is Caddy's own CA: real TLS termination, with a certificate the
-# test client is told to trust rather than one a browser would accept.
+# client is told to trust rather than one a browser would accept. That is what makes
+# a `Secure` cookie storable here, which is the whole reason the web suite exists —
+# an in-process assertion cannot take that branch, because without TLS the browser
+# drops the cookie silently.
 https://localhost, https://api.marketcore.test {
 	tls internal
-
-	# Caddy rewrites X-Forwarded-For and X-Forwarded-Proto on the way through and
-	# leaves the client's Host alone. That is what gives the API something to
-	# observe, and what the forwarded-header assertions read back.
 	reverse_proxy api:3001
+}
+
+https://web.marketcore.test {
+	tls internal
+	reverse_proxy web:3000
 }

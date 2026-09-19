@@ -69,6 +69,13 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
       - run: pnpm install --frozen-lockfile
+      # The web journey drives a real browser; the API assertions do not, so this is
+      # new with the first browser test. `--with-deps` also installs the shared
+      # libraries Chromium needs, which a bare `install` leaves to the runner image.
+      # It runs before the stack is started, so a download failure does not leave
+      # containers running behind it.
+      - name: Install the browser
+        run: pnpm --filter e2e exec playwright install --with-deps chromium
       # --wait blocks until Postgres is healthy, migrations and the seed have
       # completed, and the API's readiness probe answers — so a failure here is
       # attributed to the service that failed rather than to a timing guess.

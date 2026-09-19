@@ -70,9 +70,37 @@ services:
       timeout: 3s
       retries: 30
 
+  # The web app is part of this stack because cookies are not fully testable without
+  # it: whether a browser *stores* an httpOnly, Secure, SameSite cookie is decided by
+  # the browser, over real TLS, and no in-process suite can take that branch.
+  web:
+    image: marketcore-e2e-web
+    build: { context: ., dockerfile: apps/web/Dockerfile }
+    environment:
+      APP_NAME: marketcore
+      # Server-to-server over the compose network, so no TLS and no proxy hop: in this
+      # design the browser never calls the API directly.
+      API_BASE_URL: http://api:3001
+      # Read from its own variable rather than inferred from NODE_ENV, so this stack —
+      # the one place a browser can be asked what it actually stored — exercises the
+      # Secure branch. A Secure cookie over plain http is dropped in silence.
+      SESSION_COOKIE_SECURE: "true"
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/login').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
   proxy:
     image: caddy:2-alpine
     ports: ["8443:443"]
     volumes: ["./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro"]
     depends_on:
       api: { condition: service_healthy }
+      web: { condition: service_healthy }
