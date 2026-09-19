@@ -1,0 +1,19 @@
+enum SessionRevocationReason {
+  LOGOUT
+  REUSE_DETECTED
+}
+
+model Session {
+  id            String                   @id @default(uuid())
+  userId        String
+  createdAt     DateTime                 @default(now())
+  lastUsedAt    DateTime                 @default(now())
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  revokedReason SessionRevocationReason?
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+
+  @@map("sessions")
+}

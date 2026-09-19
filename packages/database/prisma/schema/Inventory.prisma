@@ -1,0 +1,12 @@
+model Inventory {
+  productId String   @id
+  available Int      @default(0)
+  reserved  Int      @default(0)
+  version   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("inventory")
+}
