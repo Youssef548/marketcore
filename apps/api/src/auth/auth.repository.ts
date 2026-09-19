@@ -18,6 +18,17 @@ export class AuthRepository {
     });
   }
 
+  /**
+   * The other direction from `findByEmail`: a caller already has an id, from the
+   * access token's subject, and wants the user it names.
+   */
+  async findById(id: string): Promise<UserSummary | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true, email: true },
+    });
+  }
+
   async createUser(email: string, passwordHash: string): Promise<UserSummary> {
     return this.prisma.user.create({
       data: { email, passwordHash },

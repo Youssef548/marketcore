@@ -23,6 +23,7 @@ const tokenRecord = (overrides: Record<string, unknown> = {}) => ({
 
 const build = (overrides: {
   findByEmail?: jest.Mock;
+  findById?: jest.Mock;
   createUser?: jest.Mock;
   createSessionWithToken?: jest.Mock;
   loadByTokenHash?: jest.Mock;
@@ -30,6 +31,8 @@ const build = (overrides: {
 } = {}) => {
   const repository = {
     findByEmail: overrides.findByEmail ?? jest.fn().mockResolvedValue(null),
+    // Defaults to a miss, which is the case `getUser` has to refuse.
+    findById: overrides.findById ?? jest.fn().mockResolvedValue(null),
     createUser: overrides.createUser ?? jest.fn().mockResolvedValue({ id: 'u1', email: 'a@b.test' }),
     createSessionWithToken:
       overrides.createSessionWithToken ?? jest.fn().mockResolvedValue(undefined),
@@ -175,6 +178,22 @@ describe('AuthService', () => {
     expect(unknown.sessions.revokeSession).not.toHaveBeenCalled();
     expect(expired.sessions.revokeSession).not.toHaveBeenCalled();
     expect(sessionExpired.sessions.revokeSession).not.toHaveBeenCalled();
+  });
+
+  it('returns the user its token subject names, and never the hash', async () => {
+    const { service, repository } = build({
+      findById: jest.fn().mockResolvedValue({ id: 'u1', email: 'a@b.test' }),
+    });
+
+    await expect(service.getUser('u1')).resolves.toEqual({ id: 'u1', email: 'a@b.test' });
+    expect(repository.findById).toHaveBeenCalledWith('u1');
+  });
+
+  it('refuses a token whose user no longer exists', async () => {
+    // Reachable rather than theoretical: an access token cannot be revoked, so
+    // deleting the row leaves every token already issued for it valid until it
+    // expires.
+    await expect(build().service.getUser('u1')).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
   it('revokes the session on logout, and treats an unknown token as success', async () => {

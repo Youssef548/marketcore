@@ -115,6 +115,20 @@ export class AuthService {
     await this.sessionsRepository.revokeSession(record.sessionId, SessionRevocationReasons.LOGOUT);
   }
 
+  /**
+   * Who the caller is. The id comes from the verified access token, so it is
+   * looked up rather than trusted as a whole user.
+   *
+   * A miss is reachable in normal operation rather than theoretical: an access
+   * token cannot be revoked, so a token issued before a user row was deleted stays
+   * valid until it expires, and this is the only thing that notices.
+   */
+  async getUser(userId: string): Promise<UserSummary> {
+    const user = await this.authRepository.findById(userId);
+    if (user === null) throw new UnauthorizedException(AuthMessages.USER_GONE);
+    return user;
+  }
+
   private async revokeForReuse(sessionId: string): Promise<never> {
     await this.sessionsRepository.revokeSession(
       sessionId,
