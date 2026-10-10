@@ -69,6 +69,15 @@ export type ProductStatus = (typeof ProductStatuses)[keyof typeof ProductStatuse
 export const CurrencyCodes = { USD: 'USD', EUR: 'EUR', EGP: 'EGP' } as const;
 export type CurrencyCode = (typeof CurrencyCodes)[keyof typeof CurrencyCodes];
 
+/**
+ * The password policy's one browser-visible fact.
+ *
+ * Defined here, in the wire contract, rather than only in `@app/domain`, because the
+ * registration form has to state it and the two must not drift. The domain imports
+ * this and owns the rule that applies it; the browser repeats only the number.
+ */
+export const PASSWORD_MIN_LENGTH = 12;
+
 export const SessionRevocationReasons = {
   LOGOUT: 'LOGOUT',
   REUSE_DETECTED: 'REUSE_DETECTED',

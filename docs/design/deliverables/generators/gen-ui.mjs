@@ -658,7 +658,11 @@ SKINS.forEach((s) => {
 /* =============================================================== tokens.json */
 const T = (value, type) => ({ value, type });
 const tokens = {
-  $description: 'MarketCore — Quartz. Generated from generators/gen-ui.mjs; the same values the UI board and the code use.',
+  $description:
+    'MarketCore — the Quartz direction, as designed. NOT the tokens the shipped app uses: the ' +
+    'console is styled by packages/ui/src/tokens.css, whose names (action, positive, attention) ' +
+    'and radii differ from the Quartz board. This file is the unshipped design spec; see ' +
+    'docs/design/deliverables/README.md, "Not yet done". Generated from generators/gen-ui.mjs.',
   color: Object.fromEntries(Object.entries(SKINS[0].v)
     .filter(([k]) => !['r', 'rSm', 'shadow', 'grid', 'font', 'fontMono'].includes(k))
     .map(([k, v]) => [k, T(v, 'color')])),

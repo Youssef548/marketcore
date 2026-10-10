@@ -50,9 +50,8 @@ export default function DashboardPage() {
         </dd>
       </dl>
 
-      <p className="border-t border-rule pt-4 text-xs text-ink-faint">
-        The access and refresh tokens are held in <code className="font-mono">httpOnly</code>{' '}
-        cookies. Nothing on this page — and no script that found its way onto it — can read them.
+      <p className="border-t border-rule pt-4 text-xs text-ink-muted">
+        Your session is kept in secure cookies that scripts on this page cannot read.
       </p>
     </div>
   );

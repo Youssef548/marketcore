@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { RegisterRequestSchema } from '@app/contracts';
+import { PASSWORD_MIN_LENGTH, RegisterRequestSchema } from '@app/contracts';
 import { Alert, Button, Field } from '@app/ui';
 import { messageFrom } from '@/lib/http/browser';
 
@@ -14,9 +14,9 @@ import { messageFrom } from '@/lib/http/browser';
  * signing in apart — so a success sends the visitor to the login page rather than
  * pretending they are now signed in.
  *
- * The password policy is not restated here. It lives in `@app/domain` on the server
- * and its refusal comes back as a message, which is the one place it can be trusted
- * to be current.
+ * The password policy's minimum is stated from the same constant the domain checks
+ * against, so the hint cannot drift from the rule — and the server's own refusal
+ * remains the authority, arriving as a message if the client-side check is bypassed.
  */
 export default function RegisterPage() {
   const router = useRouter();
@@ -84,15 +84,18 @@ export default function RegisterPage() {
         onChange={(event) => setEmail(event.target.value)}
       />
 
-      <Field
-        label="Password"
-        name="password"
-        type="password"
-        autoComplete="new-password"
-        value={password}
-        error={fieldErrors.password}
-        onChange={(event) => setPassword(event.target.value)}
-      />
+      <div className="space-y-2">
+        <Field
+          label="Password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          value={password}
+          error={fieldErrors.password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+        <p className="text-xs text-ink-muted">At least {PASSWORD_MIN_LENGTH} characters.</p>
+      </div>
 
       <Button type="submit" busy={pending} className="w-full">
         {pending ? 'Creating…' : 'Create account'}

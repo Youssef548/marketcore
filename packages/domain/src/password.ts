@@ -1,10 +1,16 @@
+import { PASSWORD_MIN_LENGTH } from '@app/contracts';
 import { PasswordPolicyViolations, type PasswordPolicyViolation } from './password.interface';
 
 /** The policy's vocabulary ships with its rule, so callers import from one module. */
 export * from './password.interface';
 
-/** A minimum, not a character-class rule: length beats composition for guessing resistance. */
-export const PASSWORD_MIN_LENGTH = 12;
+/**
+ * The minimum lives in `@app/contracts`, not here: the registration form has to state
+ * it and must not hold a second copy that could drift. The domain keeps the rule that
+ * uses it — a minimum rather than a character-class rule, because length beats
+ * composition for guessing resistance.
+ */
+export { PASSWORD_MIN_LENGTH };
 
 /** Bounded so a hostile request cannot hand argon2 an unbounded input. */
 export const PASSWORD_MAX_LENGTH = 200;

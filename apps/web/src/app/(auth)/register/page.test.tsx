@@ -54,8 +54,9 @@ describe('the registration form', () => {
   });
 
   it('shows the policy the server refused with, rather than one of its own', async () => {
-    // The password rule lives in @app/domain and is not restated in the browser, so
-    // this is the only place it can be trusted to be current.
+    // The browser states the minimum length from the shared constant, but the rule is
+    // enforced by the server, so its message is what must be shown rather than one of
+    // the client's own making.
     fetchMock.mockResolvedValue(
       response(400, {
         error: {

@@ -66,31 +66,46 @@ describe('the signed-in shell', () => {
 
     expect(await screen.findByText('owner@marketcore.test')).toBeTruthy();
     expect(screen.getByText('the page')).toBeTruthy();
-    expect(screen.getByRole('combobox')).toBeTruthy();
+    expect(screen.getByText('Nile Traders')).toBeTruthy();
+    // One membership is nothing to switch, so there is no control pretending otherwise.
+    expect(screen.queryByRole('combobox')).toBeNull();
     expect(screen.queryByText('Loading your session…')).toBeNull();
   });
 
-  it('puts the tenant in the rail and the user in the top bar, and neither in both', async () => {
+  it('puts the tenant and the user in the top bar, and neither in the rail', async () => {
     fetchMock.mockResolvedValue(response(200, SESSION));
 
     renderShell();
     await screen.findByText('owner@marketcore.test');
 
-    // The exploration mockups showed both facts twice — the organization in the
-    // rail and again in the top bar, the user in both — and the duplication was a
-    // mistake. One fact, one place. Asserted on the two landmarks rather than on a
-    // raw occurrence count, because the organization's own `<option>` is part of
-    // the rail's control and is meant to name it.
+    // One fact, one place. The tenant gates every tenant-scoped request, so it lives
+    // on the strip that is always visible beside the page it scopes; the rail is
+    // navigation and names neither the tenant nor the user.
     const rail = screen.getByRole('complementary');
     const topBar = screen.getByRole('banner');
 
-    expect(rail.textContent).toContain('Nile Traders');
-    expect(topBar.textContent).not.toContain('Nile Traders');
-
+    expect(topBar.textContent).toContain('Nile Traders');
     expect(topBar.textContent).toContain('owner@marketcore.test');
+    expect(rail.textContent).not.toContain('Nile Traders');
     expect(rail.textContent).not.toContain('owner@marketcore.test');
 
     expect(screen.getByRole('heading', { name: 'Your session' })).toBeTruthy();
+  });
+
+  it('offers a switcher only once there is more than one organization to choose from', async () => {
+    fetchMock.mockResolvedValue(
+      response(200, {
+        ...SESSION,
+        organizations: [
+          ...SESSION.organizations,
+          { id: 'org-2', name: 'Cairo Loom', slug: 'cairo-loom', status: 'ACTIVE', role: 'MEMBER' },
+        ],
+      }),
+    );
+
+    renderShell();
+
+    expect(await screen.findByRole('combobox')).toBeTruthy();
   });
 
   it('sends an anonymous visitor to sign in', async () => {

@@ -5,6 +5,7 @@ import {
   ProductSchema,
   TokenPairSchema,
   UserSummarySchema,
+  type CreateProductRequest,
   type LoginRequest,
   type Organization,
   type Product,
@@ -65,6 +66,13 @@ export function createResources(accessToken?: string) {
      */
     products: (organizationId: string): Promise<Product[]> =>
       client.get('/products', z.array(ProductSchema), {
+        headers: { 'x-organization-id': organizationId },
+      }),
+
+    /** Creates a product inside one organization. The tenant travels exactly as it reads. */
+    createProduct: (organizationId: string, body: CreateProductRequest): Promise<Product> =>
+      client.post('/products', ProductSchema, {
+        body,
         headers: { 'x-organization-id': organizationId },
       }),
   };
