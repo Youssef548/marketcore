@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { buildReadiness, type Readiness } from '@app/contracts';
-import { HealthRepository } from './health.repository';
+import { HealthRepository } from './repositories/health.repository';
 
 @Injectable()
 export class HealthService {

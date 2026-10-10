@@ -1,6 +1,6 @@
 import type { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import type { Env } from '@app/runtime';
-import { ORIGIN_SEPARATOR } from '../constants';
+import { ORIGIN_SEPARATOR } from '../common/constants/api.constants';
 
 /**
  * Origins are credited rather than wildcarded, so the browser will attach the

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { argon2id, hash, verify } from 'argon2';
-import type { PasswordHasher } from './password-hasher.interface';
+import type { PasswordHasher } from './interfaces/password-hasher.interface';
 
 /**
  * argon2id, the current recommendation for password storage: memory-hard, so a

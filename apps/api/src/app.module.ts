@@ -3,7 +3,7 @@ import { PrismaModule } from '@app/runtime';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { HealthController } from './modules/health/health.controller';
-import { HealthRepository } from './modules/health/health.repository';
+import { HealthRepository } from './modules/health/repositories/health.repository';
 import { HealthService } from './modules/health/health.service';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { SecurityModule } from './security/security.module';

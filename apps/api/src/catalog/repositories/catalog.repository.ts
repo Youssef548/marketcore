@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@app/runtime';
 import type { CurrencyCode, Inventory, Product, ProductStatus } from '@app/contracts';
 import { tenantScope, type TenantContext } from '@app/domain';
-import type { ProductRecord } from './product.interface';
+import type { ProductRecord } from '../interfaces/product.interface';
 
 /**
  * Every method takes a TenantContext, never a bare organization id, and every

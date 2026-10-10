@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { SessionRevocationReasons } from '@app/contracts';
 import { AuthLogEvents } from './auth.constants';
-import type { PasswordHasher } from './password/password-hasher.interface';
-import type { SessionsRepository } from './sessions.repository';
-import type { TokenService } from './tokens/token.service';
-import type { AuthRepository } from './auth.repository';
+import type { PasswordHasher } from './interfaces/password-hasher.interface';
+import type { SessionsRepository } from './repositories/sessions.repository';
+import type { TokenService } from './token.service';
+import type { AuthRepository } from './repositories/auth.repository';
 import { AuthService } from './auth.service';
 
 const FUTURE = new Date(Date.now() + 60_000);

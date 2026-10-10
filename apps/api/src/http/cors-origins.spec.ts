@@ -1,4 +1,4 @@
-import { ORIGIN_SEPARATOR } from '../constants';
+import { ORIGIN_SEPARATOR } from '../common/constants/api.constants';
 import { corsOptions, parseAllowedOrigins } from './cors-origins';
 
 describe('parseAllowedOrigins', () => {

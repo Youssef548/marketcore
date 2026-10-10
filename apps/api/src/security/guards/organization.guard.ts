@@ -8,10 +8,10 @@ import {
 import { Reflector } from '@nestjs/core';
 import { ORGANIZATION_ID_HEADER } from '@app/contracts';
 import { buildTenantContext } from '@app/domain';
-import { OrganizationRepository } from '../../organizations/organization.repository';
-import { MembershipRepository } from '../../organizations/membership.repository';
+import { OrganizationRepository } from '../../organizations/repositories/organization.repository';
+import { MembershipRepository } from '../../organizations/repositories/membership.repository';
 import { SecurityMessages, SecurityMetadata } from '../security.constants';
-import type { AuthenticatedRequest } from '../request-context.interface';
+import type { AuthenticatedRequest } from '../../common/interfaces/request-context.interface';
 
 @Injectable()
 export class OrganizationGuard implements CanActivate {

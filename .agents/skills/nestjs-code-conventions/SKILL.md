@@ -8,9 +8,10 @@ description: Organise TypeScript and NestJS code the way this codebase expects �
 These rules come from a review that rejected a first implementation for seven specific reasons. They
 are not stylistic preferences — each one was raised as a defect. Apply all seven before opening a PR.
 
-**The short version:** no literals in logic, values are enums, types live in their own files, Prisma
-is behind a repository, build objects instead of validating them, and share anything you can see
-being used twice.
+**The short version:** no literals in logic, values are enums, types live in their own files, a
+feature module groups `dto/`, `repositories/` and `interfaces/` into folders, Prisma is behind a
+repository, build objects instead of validating them, and share anything you can see being used
+twice.
 
 ---
 
@@ -79,28 +80,61 @@ casting at every schema.
 
 ---
 
-## Rule 3 — Interfaces and types live in their own file
+## Rule 3 — Types live in their own file; a feature module groups artifacts into folders
 
 A file named for a behaviour holds **only** that behaviour. Types defined next to logic make the
 logic hard to find and make the type impossible to import without pulling in the implementation.
 
-**Wrong** — `request-id.middleware.ts` exporting `RequestWithId`, `RequestLogFields`,
-`RequestLogSink` *and* the middleware.
+In a **feature module** (`apps/api/src/<module>/`) that goes further: artifacts are grouped by
+**type** into `dto/`, `repositories/` and `interfaces/`. Controllers, services, guards, decorators,
+the module file and `constants.ts` stay at the module root. A `.dto.ts`, `.repository.ts` or
+`.interface.ts` lying loose in a module root is the defect this rule exists to prevent — a module
+whose shape is only visible by reading every filename has no shape.
 
-**Right**
+**Wrong** — every artifact flat in the module root:
 
 ```
-http/
-  request.interface.ts        ← RequestWithId, RequestLogFields, RequestLogSink, HttpMiddleware
-  request-id.middleware.ts    ← logic only, imports the interface file
-  request-logger.middleware.ts
-logging/
-  logger.interface.ts         ← LogSink, JsonLoggerOptions, LogFields
-  logger.ts                   ← logic only
+organizations/
+  organization.dto.ts
+  organization.repository.ts
+  membership.repository.ts
+  organization-write.interface.ts
+  membership.interface.ts
+  organization.controller.ts
+  organization.service.ts
+  organization.constants.ts
+  organizations.module.ts
 ```
 
-Name the file `<subject>.interface.ts` and place it beside the logic it serves, then re-export both
-from the package entry point.
+**Right** — one folder per artifact type, logic at the root:
+
+```
+organizations/
+  dto/
+    organization.dto.ts
+  repositories/
+    organization.repository.ts
+    membership.repository.ts
+  interfaces/
+    organization-write.interface.ts    ← one type per file
+    membership.interface.ts
+  organization.controller.ts
+  organization.service.ts
+  organization.constants.ts
+  organizations.module.ts
+```
+
+- `interfaces/` holds every `*.interface.ts`, one type per file, named `<subject>.interface.ts`. A
+  port and its adapter are not an exception: the port goes in `interfaces/`, the adapter at the root.
+- A capability folder holding a single service is deleted, not nested — `auth/tokens/token.service.ts`
+  becomes `auth/token.service.ts`, not `auth/tokens/token.service.ts`.
+- Cross-cutting code that belongs to **no** module — shared request types, app-level constants —
+  lives in `src/common/{interfaces,constants}/`, not in the module that happens to use it first. It is
+  not a place to park a feature; a `common/` file that knows about one module's domain is misfiled.
+
+In a **package** (`packages/*`) a type still lives in `<subject>.interface.ts` beside the logic it
+serves and is re-exported from the package entry point — the folder layout above is a feature-module
+rule, not a package rule.
 
 **Careful:** if `constants.ts` and an interface file both export the same name and the package entry
 does `export * from` both, TypeScript fails with a duplicate-export error. Export each name from
@@ -258,15 +292,21 @@ grep -rnE "'(ok|degraded|up|down|unknown|[a-z]+\.[a-z.]+)'" packages/*/src apps/
 # 2. services touching Prisma directly
 grep -rn "PrismaService" apps/*/src --include='*.service.ts'
 
-# 3. interfaces declared beside logic
+# 3. a feature module's dto/repository/interface files must sit in their folder
+for m in $(find apps/api/src -name '*.module.ts'); do
+  find "$(dirname "$m")" -maxdepth 1 -type f \
+    \( -name '*.dto.ts' -o -name '*.repository.ts' -o -name '*.interface.ts' \)
+done
+
+# 4. interfaces and types declared beside logic rather than in their own file
 grep -rln "export interface\|export type" packages/*/src apps/*/src --include='*.ts' \
   | grep -vE '\.(interface|types|dto|schema)\.ts$' | grep -v 'constants.ts'
 
-# 4. the suite and the architecture rules
+# 5. the suite and the architecture rules
 pnpm turbo run lint typecheck test build
 ```
 
-**Zero hits on 1–3**, or a written reason why each remaining hit is correct.
+**Zero hits on 1–4**, or a written reason why each remaining hit is correct.
 
 ## Edge cases
 

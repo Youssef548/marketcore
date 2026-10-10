@@ -1,7 +1,7 @@
 import { UnauthorizedException, type ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AccessTokenGuard } from './access-token.guard';
-import { TokenService } from '../../auth/tokens/token.service';
+import { TokenService } from '../../auth/token.service';
 
 /**
  * The 401 boundary had no test until this file existed, and that was a real hole:

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@app/runtime';
 import type { SessionRevocationReason } from '@app/contracts';
-import type { RefreshTokenRecord } from './sessions.interface';
+import type { RefreshTokenRecord } from '../interfaces/sessions.interface';
 
 @Injectable()
 export class SessionsRepository {

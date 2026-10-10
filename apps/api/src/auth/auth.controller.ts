@@ -11,7 +11,7 @@ import {
   RegisterRequestDto,
   TokenPairDto,
   UserSummaryDto,
-} from './auth.dto';
+} from './dto/auth.dto';
 
 /**
  * Public: these routes are how a caller obtains a token, so they cannot require

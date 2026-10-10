@@ -3,8 +3,8 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import type { UserSummary } from '@app/contracts';
 import { CurrentUser } from '../security/decorators/current-user.decorator';
 import { TenantFree } from '../security/decorators/tenant-free.decorator';
-import type { AuthenticatedUser } from '../security/request-context.interface';
-import { UserSummaryDto } from './auth.dto';
+import type { AuthenticatedUser } from '../common/interfaces/request-context.interface';
+import { UserSummaryDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 
 /**

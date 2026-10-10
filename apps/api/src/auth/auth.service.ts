@@ -26,10 +26,10 @@ import {
   PasswordPolicyMessages,
   REFRESH_TOKEN_TTL_MS,
 } from './auth.constants';
-import { AuthRepository } from './auth.repository';
-import { PasswordHasher } from './password/password-hasher.interface';
-import { SessionsRepository } from './sessions.repository';
-import { TokenService } from './tokens/token.service';
+import { AuthRepository } from './repositories/auth.repository';
+import { PasswordHasher } from './interfaces/password-hasher.interface';
+import { SessionsRepository } from './repositories/sessions.repository';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {

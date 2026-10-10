@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@app/runtime';
 import { MemberRoles, OrganizationStatuses, type Organization } from '@app/contracts';
-import { UNIQUE_CONSTRAINT_VIOLATION } from './organization.constants';
+import { UNIQUE_CONSTRAINT_VIOLATION } from '../organization.constants';
 import {
   OrganizationWriteOutcomes,
   type OrganizationWriteResult,
-} from './organization-write.interface';
+} from '../interfaces/organization-write.interface';
 
 function isUniqueConstraintViolation(error: unknown): boolean {
   return (

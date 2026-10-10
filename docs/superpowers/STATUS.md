@@ -755,5 +755,72 @@ closed, with a test that would fail if it reopened.
   publish, inventory — is phase 3's remaining surface, not this change's.
 - **Everything in the Roadmap from phase 4 on.** Those are the plan, not gaps.
 
+---
+
+## Module folder structure — 2026-10-10 (architecture)
+
+**Claim:** every `apps/api` module has the same shape — `dto/`, `repositories/` and `interfaces/`
+folders, with controllers, services and the module file at the root — and the convention that says so
+can no longer drift from the code, because the skill that documents it now states the folder layout
+and carries a check that fails on a loose file.
+**Branch:** `refactor/module-folder-structure`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33 tasks** |
+| Lint and typecheck | `pnpm turbo run lint typecheck` | **25/25 tasks** |
+| Unit | `pnpm --filter api exec jest` | 66 passed, 12 suites |
+| End to end | `pnpm --filter api test:e2e` | 60 passed, 11 suites |
+| Integration | `pnpm --filter api test:integration` | 16 passed, 4 suites |
+| The folder rule | the skill's check 3 — loose `*.dto.ts` / `*.repository.ts` / `*.interface.ts` in a module root | no hits |
+| No service touches Prisma | the skill's check 2 | no hits |
+
+### Delivered
+
+- **`organizations/`, `auth/`, `catalog/` and `modules/health/` restructured** into `dto/`,
+  `repositories/` and `interfaces/` folders. They were flat, suffix-named files; a module root now
+  carries only controllers, services, adapters, `*.constants.ts` and the module itself.
+- **Two single-service capability folders dissolved.** `auth/tokens/token.service.ts` is now
+  `auth/token.service.ts` and `auth/password/argon2-password-hasher.ts` is
+  `auth/argon2-password-hasher.ts`; their interfaces moved to `auth/interfaces/`. A folder holding one
+  service is nesting with no reader.
+- **`apps/api/src/common/` created** for code that belongs to no module —
+  `interfaces/request-context.interface.ts` (imported by guards, decorators and controllers in three
+  modules) and `constants/api.constants.ts` (the former `src/constants.ts`).
+- **The two authorities now agree, and that contradiction was the actual defect.**
+  `nestjs-code-conventions` Rule 3 required a type to sit *beside* the logic it serves — the flat
+  layout this change removes — while `nestjs-best-practices`' `arch-feature-modules` rule showed a
+  `dto/` folder. Rule 3 now states the folder layout and check 3 enforces it; the best-practices rule
+  shows `repositories/` and `interfaces/` folders instead of a flat `users.repository.ts`. The project
+  copy and the `~/.agents/skills` copy are byte-identical again.
+- **`AGENTS.md` and the `backend-developer` agent** carry the rule, so it is stated where the work is
+  specified and where it is implemented.
+
+### Not proven / deferred
+
+- **`filters/`, `http/` and `security/` were left where they are.** They are app-level infrastructure
+  rather than feature modules, so the folder rule does not reach them — `security/` keeps its
+  `guards/` and `decorators/` type folders.
+- **`filters/error-envelope.dto.ts` is a `.dto.ts` outside a `dto/` folder and is imported by nothing.**
+  It is dead rather than misplaced, so it is recorded here and left untouched instead of being moved
+  or deleted as part of a layout change.
+- **`packages/*` still keep `<subject>.interface.ts` beside `<subject>.ts`.** The folder layout is a
+  feature-module rule; the packages were out of scope, and Rule 3's package paragraph still prescribes
+  their beside-logic layout.
+
+### Findings
+
+1. **A worktree has no `.env` files, and the suite fails before it runs a test.** They are gitignored
+   and `dotenv` resolves from each package's cwd, so `apps/api/.env`, `apps/web/.env` and
+   `packages/database/.env` each had to be copied in by hand. The first run failed all 11 e2e suites
+   with `JWT_SECRET: expected string, received undefined`, which reads like a code defect and is a
+   missing file.
+2. **Two convention skills disagreed, and a convention two skills disagree on is enforced by
+   neither.** The flat `organizations/` was not an oversight — it was Rule 3 obeyed — while the
+   best-practices rule asked for the folder. Both had to be corrected together or the next module
+   would have picked whichever the author happened to read.
+
 
 

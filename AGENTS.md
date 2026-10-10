@@ -28,6 +28,9 @@ Act as the tech lead for this repository. For substantial work, do not jump stra
 - MarketCore is engineering evidence, not a feature-complete marketplace. Optimize for provable correctness.
 - Contracts live in `packages/contracts` and are the source of truth for wire formats.
 - `packages/*` must not import `apps/*`; apps must not import other apps.
+- A feature module groups its artifacts by type: `dto/`, `repositories/` and `interfaces/` folders,
+  with controllers, services and the module file at the module root. Shared non-module code lives in
+  `apps/api/src/common/`.
 - Global API behaviour belongs in `apps/api/src/app.setup.ts`, not only in `main.ts`.
 - Tenant identity comes from `x-organization-id`, resolved by guards, not controllers.
 - Every route is guarded by default; `@Public()`, `@TenantFree()`, and `@OwnerOnly()` are the greppable opt-outs.
