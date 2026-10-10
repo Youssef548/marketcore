@@ -1,5 +1,11 @@
-import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  UnauthorizedException,
+  type LoggerService,
+} from '@nestjs/common';
 import { SessionRevocationReasons } from '@app/contracts';
+import { AuthLogEvents } from './auth.constants';
 import type { PasswordHasher } from './password/password-hasher.interface';
 import type { SessionsRepository } from './sessions.repository';
 import type { TokenService } from './tokens/token.service';
@@ -52,13 +58,23 @@ const build = (overrides: {
     revokeSession: jest.fn().mockResolvedValue(undefined),
     findUserIdBySession: jest.fn().mockResolvedValue('u1'),
   } as unknown as SessionsRepository;
+  // Captured rather than written, so the security-event assertions below read the
+  // record the service would have emitted instead of a log line a human has to find.
+  const logger = {
+    log: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+    verbose: jest.fn(),
+  } as unknown as LoggerService;
 
   return {
-    service: new AuthService(repository, hasher, tokens, sessions),
+    service: new AuthService(repository, hasher, tokens, sessions, logger),
     repository,
     hasher,
     tokens,
     sessions,
+    logger,
   };
 };
 
@@ -204,5 +220,47 @@ describe('AuthService', () => {
     const gone = build({ loadByTokenHash: jest.fn().mockResolvedValue(null) });
     await expect(gone.service.logout('refresh')).resolves.toBeUndefined();
     expect(gone.sessions.revokeSession).not.toHaveBeenCalled();
+  });
+
+  it('emits a security event when a login is refused for an unknown email', async () => {
+    const attemptedEmail = 'nobody@b.test';
+    const { service, logger } = build();
+
+    await expect(
+      service.login({ email: attemptedEmail, password: 'a'.repeat(12) }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    // The response is deliberately identical to a wrong password (no enumeration
+    // oracle), so the log is the only place the two are distinguishable — which is
+    // exactly what an operator investigating a credential-stuffing run needs.
+    expect(logger.warn).toHaveBeenCalledWith(AuthLogEvents.LOGIN_FAILED, { email: attemptedEmail });
+  });
+
+  it('emits the same security event when a login is refused for a wrong password', async () => {
+    const email = 'a@b.test';
+    const { service, logger, hasher } = build({
+      findByEmail: jest.fn().mockResolvedValue({ id: 'u1', email, passwordHash: 'h' }),
+    });
+    (hasher.verify as jest.Mock).mockResolvedValue(false);
+
+    await expect(
+      service.login({ email, password: 'a'.repeat(12) }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    expect(logger.warn).toHaveBeenCalledWith(AuthLogEvents.LOGIN_FAILED, { email });
+  });
+
+  it('emits a reuse-detected security event naming the session it revoked', async () => {
+    const { service, logger } = build({
+      loadByTokenHash: jest.fn().mockResolvedValue(tokenRecord({ usedAt: PAST })),
+    });
+
+    await expect(service.refresh('refresh')).rejects.toBeInstanceOf(UnauthorizedException);
+
+    // A replay means the token leaked, so this leaves a record at error level —
+    // the operator's signal that a session was killed rather than merely refused.
+    expect(logger.error).toHaveBeenCalledWith(AuthLogEvents.REFRESH_REUSE_DETECTED, {
+      sessionId: 'sess-1',
+    });
   });
 });
