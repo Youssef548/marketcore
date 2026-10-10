@@ -30,7 +30,7 @@ function token(name: string): Oklch {
   return { l: Number(parts[1]), c: Number(parts[2]), h: Number(parts[3]) };
 }
 
-/** The names D41 fixes as the interface. The list is the assertion. */
+/** The semantic interface, fixed by D41 and carried unchanged into Quartz. The list is the assertion. */
 const SEMANTIC_TOKENS = [
   'canvas',
   'panel',
@@ -86,7 +86,7 @@ const TEXT_ON_SURFACE: [string, string][] = [
   ['ink', 'positive-wash'],
 ];
 
-describe('the selvedge palette', () => {
+describe('the Quartz palette', () => {
   it('declares exactly the semantic tokens the components name', () => {
     const declaredSemantic = [...declared.keys()]
       .filter((name) => name.startsWith('--color-'))

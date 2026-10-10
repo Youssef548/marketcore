@@ -4,9 +4,9 @@
  *
  *   palette    raw OKLCH values, named by colour family — never by role
  *   semantic   what components reference — named for the job, never the hue
- *   direction  one set of palette values, and this is selvedge's
+ *   direction  one set of palette values, and this is Quartz's
  *
- * A component that writes `bg-brand-600` names a colour; one that writes
+ * A component that writes `bg-indigo-600` names a colour; one that writes
  * `bg-action` names what the colour is *for*. The second survives the direction
  * changing, and the first becomes a lie the moment it does.
  *
@@ -16,55 +16,60 @@
  * changing the app's look means changing.
  *
  * Values are literal rather than computed. `color-mix()` and relative colour
- * syntax are legitimate and were used in the exploration file, but a colour
- * computed at runtime cannot be contrast-checked before it ships, and
- * `test/tokens.spec.ts` has to read the same values the browser will. That is why
- * attention and its wash are two palette steps rather than one value and a mix.
+ * syntax are legitimate, but a colour computed at runtime cannot be
+ * contrast-checked before it ships, and `test/tokens.spec.ts` has to read the
+ * same values the browser will. That is why a wash is its own palette step
+ * rather than a mix of the colour it belongs to.
  *
  * Spacing is deliberately not redefined: Tailwind's default scale is already a
  * 4px step, and a second scale would be a second thing to keep in agreement.
  */
 
-/* Direction: selvedge — indigo chrome, undyed-linen canvas, warm dark ink, one
- * indigo action colour, and madder red reserved for attention.
+/* Direction: Quartz — a dark navy rail, a cool near-white canvas, near-black
+ * ink, one indigo action colour, crimson reserved for attention and emerald for
+ * healthy.
  *
- * Every text-on-surface pair here clears 4.5:1, measured (not asserted in prose)
- * by `test/tokens.spec.ts`, which re-derives these numbers from these literals.
- * The muted and faint greys are darker than the exploration's, so that
- * `ink-faint` clears on `sunken`; the rail's muted ink is lighter, so that it
- * clears on `rail-hover`. The ramp stays ordered, which is why `ink-muted` moved
- * with `ink-faint` rather than being left where it was. */
+ * The vivid values a designer reaches for do not survive measurement, and these
+ * did not either. Drawn as intended, ten of the twenty-five text-on-surface pairs
+ * the components actually paint fell short: the faint grey measured 2.3:1 on
+ * `sunken`, emerald 3.0:1 on `panel`, crimson 4.1:1 on its own wash, and the
+ * hover indigo 4.47:1 against white. Each was darkened along its own hue until it
+ * cleared 4.5:1, which is why `ink-faint` is a mid grey rather than a light one.
+ * The ramp stays ordered — `ink` darker than `ink-muted` darker than `ink-faint`
+ * — because darkening the faint step alone would have made it indistinguishable
+ * from the muted one and quietly erased the ramp.
+ *
+ * The twenty-three semantic names are unchanged from the previous direction, so
+ * this is a change of values rather than of interface: no component moved. */
 :root {
   /* Palette — raw OKLCH, named by colour family. Never referenced by a
    * component: a palette step is a colour, and a component needs a job. */
-  --palette-linen-50: oklch(0.994 0.006 84.6);
-  --palette-linen-100: oklch(0.958 0.011 89.7);
-  --palette-linen-200: oklch(0.923 0.017 88);
-  --palette-linen-300: oklch(0.864 0.011 89.7);
-  --palette-linen-400: oklch(0.751 0.01 87.5);
+  --palette-slate-25: oklch(0.9765 0.0054 275);
+  --palette-slate-50: oklch(0.9643 0.0083 271.3);
+  --palette-slate-100: oklch(0.9315 0.0097 273.4);
+  --palette-slate-200: oklch(0.8849 0.0131 266.7);
+  --palette-slate-400: oklch(0.6635 0.0311 268.2);
+  --palette-slate-500: oklch(0.5326 0.0193 259.4);
+  --palette-slate-600: oklch(0.5205 0.0335 266.1);
+  --palette-slate-900: oklch(0.2222 0.0187 266.1);
+  --palette-slate-975: oklch(0.1604 0.0152 272.2);
+  --palette-slate-980: oklch(0.1521 0.0151 278.1);
+  --palette-slate-1000: oklch(0.141 0.0159 270.3);
 
-  --palette-umber-400: oklch(0.51 0.01 84.6);
-  --palette-umber-500: oklch(0.45 0.015 84.6);
-  --palette-umber-900: oklch(0.245 0.012 84.6);
+  --palette-cloud-100: oklch(0.9576 0.0087 264.5);
+  --palette-white-0: oklch(1 0 89.9);
 
-  --palette-indigo-300: oklch(0.72 0.021 263);
-  --palette-indigo-400: oklch(0.62 0.11 263);
-  --palette-indigo-500: oklch(0.497 0.064 264.2);
-  --palette-indigo-600: oklch(0.401 0.042 263.2);
-  --palette-indigo-700: oklch(0.391 0.08 263.8);
-  --palette-indigo-800: oklch(0.345 0.047 263);
-  --palette-indigo-900: oklch(0.287 0.053 262.6);
-  --palette-indigo-950: oklch(0.229 0.048 262.4);
+  --palette-indigo-500: oklch(0.5854 0.2041 277.1);
+  --palette-indigo-560: oklch(0.5729 0.1993 277.1);
+  --palette-indigo-600: oklch(0.5106 0.2301 277);
 
-  --palette-madder-100: oklch(0.955 0.022 32);
-  --palette-madder-600: oklch(0.488 0.13 31.2);
+  --palette-crimson-50: oklch(0.9574 0.0188 5.3);
+  --palette-crimson-600: oklch(0.5468 0.2068 17.2);
 
-  --palette-moss-100: oklch(0.955 0.02 155);
-  --palette-moss-600: oklch(0.479 0.078 161.1);
+  --palette-emerald-50: oklch(0.9625 0.0198 159.8);
+  --palette-emerald-600: oklch(0.5145 0.1374 149.4);
 
-  --palette-paper-0: oklch(1 0 0);
-
-  --radius-brand: 7px;
+  --radius-brand: 10px;
 }
 
 /* Semantic — the interface. Named for the job a colour does, so a component
@@ -72,37 +77,37 @@
  * component. */
 @theme {
   /* surface — the planes a screen is built from */
-  --color-canvas: var(--palette-linen-100);
-  --color-panel: var(--palette-linen-50);
-  --color-sunken: var(--palette-linen-200);
-  --color-rail: var(--palette-indigo-900);
-  --color-rail-edge: var(--palette-indigo-950);
-  --color-rail-hover: var(--palette-indigo-800);
+  --color-canvas: var(--palette-slate-25);
+  --color-panel: var(--palette-white-0);
+  --color-sunken: var(--palette-slate-50);
+  --color-rail: var(--palette-slate-975);
+  --color-rail-edge: var(--palette-slate-1000);
+  --color-rail-hover: var(--palette-slate-900);
   --color-rail-active: var(--palette-indigo-600);
 
   /* text */
-  --color-ink: var(--palette-umber-900);
-  --color-ink-muted: var(--palette-umber-500);
-  --color-ink-faint: var(--palette-umber-400);
-  --color-ink-on-action: var(--palette-paper-0);
-  --color-ink-on-rail: var(--palette-paper-0);
-  --color-ink-on-rail-muted: var(--palette-indigo-300);
+  --color-ink: var(--palette-slate-980);
+  --color-ink-muted: var(--palette-slate-600);
+  --color-ink-faint: var(--palette-slate-500);
+  --color-ink-on-action: var(--palette-white-0);
+  --color-ink-on-rail: var(--palette-cloud-100);
+  --color-ink-on-rail-muted: var(--palette-slate-400);
 
   /* edge */
-  --color-rule: var(--palette-linen-300);
-  --color-rule-strong: var(--palette-linen-400);
+  --color-rule: var(--palette-slate-100);
+  --color-rule-strong: var(--palette-slate-200);
 
   /* action */
-  --color-action: var(--palette-indigo-700);
-  --color-action-hover: var(--palette-indigo-500);
-  --color-action-ink: var(--palette-paper-0);
+  --color-action: var(--palette-indigo-600);
+  --color-action-hover: var(--palette-indigo-560);
+  --color-action-ink: var(--palette-white-0);
 
   /* state */
-  --color-attention: var(--palette-madder-600);
-  --color-attention-wash: var(--palette-madder-100);
-  --color-positive: var(--palette-moss-600);
-  --color-positive-wash: var(--palette-moss-100);
+  --color-attention: var(--palette-crimson-600);
+  --color-attention-wash: var(--palette-crimson-50);
+  --color-positive: var(--palette-emerald-600);
+  --color-positive-wash: var(--palette-emerald-50);
 
   /* control */
-  --color-focus-ring: var(--palette-indigo-400);
+  --color-focus-ring: var(--palette-indigo-500);
 }
