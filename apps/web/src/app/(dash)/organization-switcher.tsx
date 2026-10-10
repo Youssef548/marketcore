@@ -28,6 +28,9 @@ export function OrganizationSwitcher() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
+  // No empty case: this renders inside the shell, and the shell is not reachable without an
+  // organization — `chrome.tsx` shows the onboarding screen instead. A branch here could only
+  // be dead code, and dead code that looks load-bearing is worse than none.
   async function choose(organizationId: string) {
     setPending(true);
     setError(null);

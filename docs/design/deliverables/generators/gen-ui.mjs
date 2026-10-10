@@ -5,8 +5,13 @@ import { fileURLToPath } from 'node:url';
 // Writes beside this script: ui/design-board.html and ui/tokens.json.
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(HERE, '..', 'ui');
-fs.rmSync(OUT, { recursive: true, force: true });
+// Remove only this script's own outputs, never the directory. `ui/screens/` and
+// `before-after.html` are produced by other generators, and wiping `ui/` deleted them —
+// the kind of "cleanup" that destroys work it did not create.
 fs.mkdirSync(OUT, { recursive: true });
+for (const name of ['design-board.html', 'tokens.json']) {
+  fs.rmSync(path.join(OUT, name), { force: true });
+}
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const money = (m) => `E£${(m / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
@@ -383,6 +388,17 @@ function operations() {
      </div>`);
 }
 
+function onboarding() {
+  return `<div class="authwrap"><div class="authcard">
+    <div class="brandbig"><span class="logo"></span><b>MarketCore</b></div>
+    <h2>You&rsquo;re not in an organization yet</h2>
+    <p class="authsub">MarketCore keeps products, orders and money inside an organization. Create one and you are its owner.</p>
+    <label class="fld"><span>Organization name</span><input class="input" placeholder="Nile Traders"></label>
+    <button class="btn full">Create organization</button>
+    <p class="authfoot">Wrong account? <a>Sign out</a></p>
+  </div><div class="authnote">Shown <b>instead of</b> the shell, not inside it: without a tenant every control in the shell is inert. One field, because the API derives the slug.</div></div>`;
+}
+
 function signin() {
   return `<div class="authwrap"><div class="authcard">
     <div class="brandbig"><span class="logo"></span><b>MarketCore</b></div>
@@ -637,6 +653,7 @@ nav{display:flex;flex-direction:column;gap:1px}
 const SCREENS = [
   { id: 'signin', title: 'Sign in', note: 'auth · error state', h: 820, doc: true, fn: signin },
   { id: 'register', title: 'Register', note: 'auth · password policy', h: 820, doc: true, fn: register },
+  { id: 'onboarding', title: 'First run', note: 'no organization yet → create one', h: 820, doc: true, fn: onboarding },
   { id: 'dashboard', title: 'Dashboard', note: 'KPIs, chart, orders', h: 1140, fn: dashboard },
   { id: 'products', title: 'Products', note: 'dense table, stock bars, trend', h: 940, fn: products },
   { id: 'product', title: 'Product detail', note: 'form, inventory, sales', h: 1000, fn: productDetail },

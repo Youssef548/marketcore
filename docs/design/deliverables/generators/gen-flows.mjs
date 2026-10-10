@@ -124,6 +124,17 @@ const ALT='Alt outcome';
 const PHASES=[
  { id:'1-live', name:'Live today', sub:'Phases 0–3 + web session slice',
    flows:[
+    {title:'First run — create an organization',subtitle:'A user with no memberships is not admitted to the shell',lanes:['Buyer','Web','API','Database',ALT],
+     nodes:[
+      {id:'s',type:'start',lane:'Buyer',label:'Sign in, belongs to nothing'},
+      {id:'g',type:'decision',lane:'API',label:'Member of any organization?'},
+      {id:'h',type:'screen',lane:'Web',label:'First-run screen — create one'},
+      {id:'p',type:'action',lane:'API',label:'POST /organizations — tenant-free'},
+      {id:'c',type:'action',lane:'Database',label:'Organization + OWNER membership, one transaction'},
+      {id:'r',type:'end',lane:'Web',label:'Session reloaded → the shell appears'},
+      {id:'alt',type:'action',lane:ALT,label:'Shell: rail, nav, the tenant'},
+     ],
+     edges:[{from:'s',to:'g'},{from:'g',to:'alt',label:'yes'},{from:'g',to:'h',label:'no'},{from:'h',to:'p'},{from:'p',to:'c'},{from:'c',to:'r'}]},
     {title:'Sign up',subtitle:'Registration creates the user only',lanes:['Buyer','Web','API','Database',ALT],
      nodes:[
       {id:'s',type:'start',lane:'Buyer',label:'Open /register'},

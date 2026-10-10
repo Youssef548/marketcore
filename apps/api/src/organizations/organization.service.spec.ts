@@ -1,11 +1,11 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { MemberRoles } from '@app/contracts';
 import { buildTenantContext } from '@app/domain';
-import { MemberRemovalOutcomes } from './membership.interface';
-import type { OrganizationRepository } from './organization.repository';
-import { OrganizationWriteOutcomes } from './organization-write.interface';
+import { MemberRemovalOutcomes } from './interfaces/membership.interface';
+import type { OrganizationRepository } from './repositories/organization.repository';
+import { OrganizationWriteOutcomes } from './interfaces/organization-write.interface';
 import { OrganizationService } from './organization.service';
-import type { MembershipRepository } from './membership.repository';
+import type { MembershipRepository } from './repositories/membership.repository';
 
 const tenant = buildTenantContext('org_1', MemberRoles.OWNER);
 

@@ -215,6 +215,10 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md), each with the beh
   products page reads the catalog through the BFF, carrying `x-organization-id` so the browser never
   names a tenant. `control-edge` gives inputs a boundary that clears WCAG 1.4.11 in both themes, and
   two ESLint rules close the boundary hole the README used to admit.
+- **The first-run flow.** A user who registers belongs to nothing, and every tenant-scoped screen is
+  inert without a tenant — so signing in with no memberships shows a **create-your-first-organization
+  screen instead of the shell**. `POST /organizations` was always there and the app never called it;
+  it does now, and the caller becomes the owner.
 
 **In progress**
 
@@ -255,6 +259,9 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
 - **The products page exists, and it is thin.** Name, status and price, for the organization the
   session acts in. Editing, inventory and images are the catalog phase's work; the board is the
   specification for the rest.
+- **One organization can be created, and only as the first one.** The onboarding screen closes that
+  dead end. Creating a *second* organization for someone who already has one is not built — the BFF
+  route supports it, and it is a button beside the switcher when it is wanted.
 - **A known gap in boundary enforcement, now closed.** A package importing an app via a path that does
   not resolve used to pass both ESLint and `tsc`. It needed two rules, not one: `no-unknown` reports a
   file that *resolves* and belongs to no element, and is silent on a path that resolves to nothing at
@@ -278,6 +285,10 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
   naming someone else's tenant answers **403**.
 - **Every route is guarded by default.** `@Public()`, `@TenantFree()` and `@OwnerOnly()` are the only
   opt-outs, and they are greppable.
+- **A feature module groups its artifacts into folders by type.** `apps/api/src/<module>/` keeps
+  `dto/`, `repositories/` and `interfaces/` folders; controllers, services and the module file stay at
+  the module root. Code that belongs to no module lives in `apps/api/src/common/`. The rule, and the
+  check that fails on a loose file, are in `.agents/skills/nestjs-code-conventions`.
 - **The web app holds the session, not the browser.** `apps/web` is a BFF: its route handlers are the
   only code that calls the API, and both tokens live in `httpOnly` cookies.
 - **No `.env` in git.** `.env.example` files only.

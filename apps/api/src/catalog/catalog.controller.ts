@@ -8,7 +8,7 @@ import {
   InventoryDto,
   ProductDto,
   UpdateProductRequestDto,
-} from './catalog.dto';
+} from './dto/catalog.dto';
 import { CatalogService } from './catalog.service';
 
 /** Every route here is tenant-scoped: the header is resolved by the guard, not read here. */

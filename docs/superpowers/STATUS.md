@@ -755,5 +755,123 @@ closed, with a test that would fail if it reopened.
   publish, inventory — is phase 3's remaining surface, not this change's.
 - **Everything in the Roadmap from phase 4 on.** Those are the plan, not gaps.
 
+---
+
+## Module folder structure — 2026-10-10 (architecture)
+
+**Claim:** every `apps/api` module has the same shape — `dto/`, `repositories/` and `interfaces/`
+folders, with controllers, services and the module file at the root — and the convention that says so
+can no longer drift from the code, because the skill that documents it now states the folder layout
+and carries a check that fails on a loose file.
+**Branch:** `refactor/module-folder-structure`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33 tasks** |
+| Lint and typecheck | `pnpm turbo run lint typecheck` | **25/25 tasks** |
+| Unit | `pnpm --filter api exec jest` | 66 passed, 12 suites |
+| End to end | `pnpm --filter api test:e2e` | 60 passed, 11 suites |
+| Integration | `pnpm --filter api test:integration` | 16 passed, 4 suites |
+| The folder rule | the skill's check 3 — loose `*.dto.ts` / `*.repository.ts` / `*.interface.ts` in a module root | no hits |
+| No service touches Prisma | the skill's check 2 | no hits |
+
+### Delivered
+
+- **`organizations/`, `auth/`, `catalog/` and `modules/health/` restructured** into `dto/`,
+  `repositories/` and `interfaces/` folders. They were flat, suffix-named files; a module root now
+  carries only controllers, services, adapters, `*.constants.ts` and the module itself.
+- **Two single-service capability folders dissolved.** `auth/tokens/token.service.ts` is now
+  `auth/token.service.ts` and `auth/password/argon2-password-hasher.ts` is
+  `auth/argon2-password-hasher.ts`; their interfaces moved to `auth/interfaces/`. A folder holding one
+  service is nesting with no reader.
+- **`apps/api/src/common/` created** for code that belongs to no module —
+  `interfaces/request-context.interface.ts` (imported by guards, decorators and controllers in three
+  modules) and `constants/api.constants.ts` (the former `src/constants.ts`).
+- **The two authorities now agree, and that contradiction was the actual defect.**
+  `nestjs-code-conventions` Rule 3 required a type to sit *beside* the logic it serves — the flat
+  layout this change removes — while `nestjs-best-practices`' `arch-feature-modules` rule showed a
+  `dto/` folder. Rule 3 now states the folder layout and check 3 enforces it; the best-practices rule
+  shows `repositories/` and `interfaces/` folders instead of a flat `users.repository.ts`. The project
+  copy and the `~/.agents/skills` copy are byte-identical again.
+- **`AGENTS.md` and the `backend-developer` agent** carry the rule, so it is stated where the work is
+  specified and where it is implemented.
+
+### Not proven / deferred
+
+- **`filters/`, `http/` and `security/` were left where they are.** They are app-level infrastructure
+  rather than feature modules, so the folder rule does not reach them — `security/` keeps its
+  `guards/` and `decorators/` type folders.
+- **`filters/error-envelope.dto.ts` is a `.dto.ts` outside a `dto/` folder and is imported by nothing.**
+  It is dead rather than misplaced, so it is recorded here and left untouched instead of being moved
+  or deleted as part of a layout change.
+- **`packages/*` still keep `<subject>.interface.ts` beside `<subject>.ts`.** The folder layout is a
+  feature-module rule; the packages were out of scope, and Rule 3's package paragraph still prescribes
+  their beside-logic layout.
+
+### Findings
+
+1. **A worktree has no `.env` files, and the suite fails before it runs a test.** They are gitignored
+   and `dotenv` resolves from each package's cwd, so `apps/api/.env`, `apps/web/.env` and
+   `packages/database/.env` each had to be copied in by hand. The first run failed all 11 e2e suites
+   with `JWT_SECRET: expected string, received undefined`, which reads like a code defect and is a
+   missing file.
+2. **Two convention skills disagreed, and a convention two skills disagree on is enforced by
+   neither.** The flat `organizations/` was not an oversight — it was Rule 3 obeyed — while the
+   best-practices rule asked for the folder. Both had to be corrected together or the next module
+   would have picked whichever the author happened to read.
+
+## The first-run flow — 2026-10-10
+
+**Claim:** a user who registers can get from "signed in, belongs to nothing" to a working shell,
+entirely through the UI.
+**Branch:** `feat/first-run-onboarding`
+**Plan:** `~/.commandcode/plans/marketcore-first-run-onboarding.md`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The gate and the loop | `pnpm --filter e2e test:behavioural` | **20/20** — register → sign in → the first-run screen → create → the shell, with that tenant's (empty) catalog |
+| It is a gate, not a hint | same | `/products` asked for directly still shows the first-run screen |
+| The shell is admitted by the reload | `pnpm --filter web test` | **73 passed** — a session with no organizations renders onboarding and not the rail |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33** |
+| The design matches | regenerate + headless check | **14 board screens**, `flows/` at 17 diagrams, no clipping, nothing out of frame |
+
+### Delivered
+
+- **`POST /api/organizations`** at the BFF — the first route in this app that can be called by someone
+  with **no tenant**, because the API's own create is `@TenantFree()` and it has to be: a request that
+  required a header could never create the first organization.
+- **`Onboarding`** — rendered *instead of* the shell, not inside it. A user with no tenant has no
+  working controls to be shown, so showing them the shell is the dead end this replaces.
+- **The dead branch removed** from `organization-switcher.tsx`: the gate makes "no organizations"
+  unreachable inside the shell, and dead code that looks load-bearing is worse than none.
+- **The board and the flows** carry the screen and the journey, so the design cannot drift from it.
+
+### Findings
+
+1. **The design had the same hole as the code**, which is why it went unnoticed for so long: the board
+   was drawn entirely against seeded data, and no seeded user lacks an organization. A mockup built on
+   fixtures cannot show a state the fixtures exclude.
+2. **A passing test can be a statement about the wrong behaviour.** The existing journey registered a
+   brand-new user and asserted they reached the shell — which is exactly what was broken. Adding the
+   gate made it fail, and the failure was the test being *right* about the bug and wrong about the
+   intent. It now creates an organization through the API first, because its subject is the session
+   and its cookies.
+3. **A screenshot-like assertion is easier to write than to scope.** `getByText('Nile Traders')` matched
+   twice — the rail and the switcher's `<option>` — the same ambiguity the design-system phase recorded.
+   Read from the rail instead.
+
+### Not proven / deferred
+
+- **Only the first organization can be created.** Creating a second for an existing user is not built
+  and not in this change.
+- **No invitation flow**, no member management from this screen — `POST /organizations/members` exists
+  and is `@OwnerOnly`, and it is unchanged.
+- **The new screen has no automated visual check**, the same gap the repository already records.
+
+
 
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@app/runtime';
 import { MemberRoles, type MemberRole, type OrganizationMember } from '@app/contracts';
-import type { MembershipRecord } from './membership.interface';
-import { MemberRemovalOutcomes, type MemberRemovalOutcome } from './membership.interface';
+import type { MembershipRecord } from '../interfaces/membership.interface';
+import { MemberRemovalOutcomes, type MemberRemovalOutcome } from '../interfaces/membership.interface';
 
 @Injectable()
 export class MembershipRepository {

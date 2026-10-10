@@ -4,12 +4,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { createLogger, validateEnv } from '@app/runtime';
 import { AUTH_LOGGER, AUTH_THROTTLE_LIMIT, AUTH_THROTTLE_TTL_MS, PASSWORD_HASHER } from './auth.constants';
 import { AuthController } from './auth.controller';
-import { AuthRepository } from './auth.repository';
+import { AuthRepository } from './repositories/auth.repository';
 import { AuthService } from './auth.service';
 import { MeController } from './me.controller';
-import { Argon2PasswordHasher } from './password/argon2-password-hasher';
-import { SessionsRepository } from './sessions.repository';
-import { TokenService } from './tokens/token.service';
+import { Argon2PasswordHasher } from './argon2-password-hasher';
+import { SessionsRepository } from './repositories/sessions.repository';
+import { TokenService } from './token.service';
 
 @Module({
   // `@nestjs/jwt` is pinned to the v11 line deliberately: v12 is published as

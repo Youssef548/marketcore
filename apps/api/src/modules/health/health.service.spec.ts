@@ -1,5 +1,5 @@
 import { DependencyStates, ReadinessStatuses } from '@app/contracts';
-import type { HealthRepository } from './health.repository';
+import type { HealthRepository } from './repositories/health.repository';
 import { HealthService } from './health.service';
 
 const serviceWith = (databaseState: jest.Mock) =>

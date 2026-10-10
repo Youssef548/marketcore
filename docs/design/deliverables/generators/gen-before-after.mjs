@@ -67,9 +67,14 @@ const CHANGES = [
       'The top bar already titles the page, so the page-level <code>h1</code>/<code>h2</code> that repeated the same words were removed — a clean heading outline instead of a duplicated one.',
   },
   {
-    title: 'The tenant control is readable at its weight',
+    title: 'The tenant moves to the top bar',
     detail:
-      'The organization switcher grew from <code>text-xs</code>/<code>px-2 py-1</code> to <code>text-sm</code>/<code>px-2.5 py-1.5</code>. It stays in the rail, because the shell asserts the tenant lives in exactly one place.',
+      'The organization the session acts in is now a persistent context strip in the top bar, beside the page it scopes, rather than a box in the rail. The switcher appears only when there is more than one organization to choose from, and the rail is navigation and nothing else.',
+  },
+  {
+    title: 'The empty catalog can be filled',
+    detail:
+      'An <code>Add product</code> action creates the first product through a new <code>/api/products</code> route, which takes the tenant from the session. The dead-end empty state is gone.',
   },
   {
     title: 'Accessibility floor',

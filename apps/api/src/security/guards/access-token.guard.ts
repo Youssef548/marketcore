@@ -5,9 +5,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { TokenService } from '../../auth/tokens/token.service';
+import { TokenService } from '../../auth/token.service';
 import { BEARER_PREFIX, SecurityMessages, SecurityMetadata } from '../security.constants';
-import type { AuthenticatedRequest } from '../request-context.interface';
+import type { AuthenticatedRequest } from '../../common/interfaces/request-context.interface';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {

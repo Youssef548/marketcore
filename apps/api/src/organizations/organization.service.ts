@@ -1,11 +1,11 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { MemberRoles, type Organization, type OrganizationMember } from '@app/contracts';
 import { slugify, type TenantContext } from '@app/domain';
-import { OrganizationRepository } from './organization.repository';
-import { MemberRemovalOutcomes } from './membership.interface';
+import { OrganizationRepository } from './repositories/organization.repository';
+import { MemberRemovalOutcomes } from './interfaces/membership.interface';
 import { OrganizationMessages } from './organization.constants';
-import { OrganizationWriteOutcomes } from './organization-write.interface';
-import { MembershipRepository } from './membership.repository';
+import { OrganizationWriteOutcomes } from './interfaces/organization-write.interface';
+import { MembershipRepository } from './repositories/membership.repository';
 
 @Injectable()
 export class OrganizationService {

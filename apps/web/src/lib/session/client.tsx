@@ -193,3 +193,26 @@ export async function createProduct(input: {
     throw new Error(await messageFrom(response));
   }
 }
+
+/**
+ * Creates an organization, with the caller as its owner.
+ *
+ * The caller reloads afterwards, and that reload is what admits them to the shell: the
+ * organization did not exist a moment ago, so there is nothing to navigate to — the session
+ * changes and the shell appears in place. A failure carries the server's message, because a
+ * duplicate name is a thing the user can fix and a status number is not.
+ */
+export async function createOrganization(name: string): Promise<void> {
+  const response = await fetch('/api/organizations', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
+
+  if (response.ok) return;
+
+  const envelope = ErrorEnvelopeSchema.safeParse(await response.json().catch(() => null));
+  throw new Error(
+    envelope.success ? envelope.data.error.message : 'Could not create the organization',
+  );
+}

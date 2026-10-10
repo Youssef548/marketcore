@@ -12,7 +12,7 @@ import {
   type TenantContext,
 } from '@app/domain';
 import { ProductMessages, ProductTransitionMessages } from './catalog.constants';
-import { CatalogRepository } from './catalog.repository';
+import { CatalogRepository } from './repositories/catalog.repository';
 
 @Injectable()
 export class CatalogService {

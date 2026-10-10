@@ -6,6 +6,7 @@ import { Alert } from '@app/ui';
 import { useSession, ReadySessionProvider } from '@/lib/session/client';
 import { Rail } from './rail';
 import { TopBar } from './top-bar';
+import { Onboarding } from './onboarding';
 
 /**
  * The shell every signed-in page sits in.
@@ -49,6 +50,16 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
         <Alert>{state.message}</Alert>
       </main>
     );
+  }
+
+  // The fifth outcome of `ready`: a session with no organization.
+  //
+  // Rendered *instead of* the shell, not inside it. Every tenant-scoped control in the shell is
+  // inert without a tenant — a rail with nothing to pick, pages that answer "choose an
+  // organization first" — and admitting someone to that is the dead end this replaces. Creating
+  // the organization reloads the session, and the shell appears in place.
+  if (state.session.organizations.length === 0) {
+    return <Onboarding onCreated={reload} />;
   }
 
   return (

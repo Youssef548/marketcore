@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
-import { JWT_AUDIENCE, JWT_ISSUER } from '../auth.constants';
+import { JWT_AUDIENCE, JWT_ISSUER } from './auth.constants';
 import { TokenService } from './token.service';
 
 const service = new TokenService(new JwtService({ secret: 'a'.repeat(32) }));
