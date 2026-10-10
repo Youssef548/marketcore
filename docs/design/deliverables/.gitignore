@@ -1,0 +1,5 @@
+# Regenerated on demand by the export step; the content is already in the SVG and HTML
+# alongside, so committing these is megabytes of binary for nothing.
+ui/screens/
+flows/svg-export/
+system-design/svg-export/
