@@ -85,6 +85,20 @@ export async function currentRefreshToken(): Promise<string | undefined> {
 }
 
 /**
+ * The access token this request is holding, after `loadCurrentSession` has had its
+ * chance to rotate it.
+ *
+ * Call it *after* the session load, never instead of it: the load is what retries a
+ * stale token and stores the replacement, so reading the jar first could hand a
+ * caller a token the API has already stopped honouring. Tenant data goes through
+ * here, which is why the ordering is stated rather than assumed.
+ */
+export async function currentAccessToken(): Promise<string | undefined> {
+  const jar = await cookies();
+  return jar.get(SESSION_COOKIES.ACCESS)?.value;
+}
+
+/**
  * Forgets the session locally.
  *
  * Revoking it at the API is the caller's separate step, and deliberately not folded

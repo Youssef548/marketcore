@@ -165,6 +165,27 @@ test.describe('web: the session in a real browser', () => {
       .toBeGreaterThanOrEqual(4.5);
   });
 
+  test('lists the products of the organization the session acts in', async ({ page }) => {
+    // The seeded owner belongs to Nile Traders alone, so the organization resolves
+    // without asking and the catalog is deterministic.
+    await signIn(page, 'owner@marketcore.test');
+
+    await page.goto(`${WEB}/products`);
+
+    // The top bar names the page. Scoped to the banner because the page carries its own
+    // heading with the same words — the shell's claim and the page's, and the locator
+    // has to say which one it means.
+    await expect(
+      page.getByRole('banner').getByRole('heading', { name: 'Products' }),
+    ).toBeVisible();
+
+    // ...and the row can only appear if the request carried `x-organization-id`: the
+    // API answers a tenant-scoped read without that header with 400, never with
+    // everything. This is the first page in the app that reads tenant data, so it is
+    // the first place that claim can be checked from a browser.
+    await expect(page.getByRole('cell', { name: 'Nile Cotton Shirt' })).toBeVisible();
+  });
+
   test('creates an account, signs in, and is turned away once signed out', async ({ page }) => {
     const email = `${unique('web')}@marketcore.test`;
 

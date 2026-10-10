@@ -2,10 +2,12 @@ import { z } from 'zod';
 import { createApiClient } from '@app/api-client';
 import {
   OrganizationSchema,
+  ProductSchema,
   TokenPairSchema,
   UserSummarySchema,
   type LoginRequest,
   type Organization,
+  type Product,
   type RegisterRequest,
   type TokenPair,
   type UserSummary,
@@ -52,5 +54,18 @@ export function createResources(accessToken?: string) {
     /** Tenant-free: this is how a client learns which organizations it may act in. */
     organizations: (): Promise<Organization[]> =>
       client.get('/organizations', z.array(OrganizationSchema)),
+
+    /**
+     * The caller's products, inside one organization.
+     *
+     * The organization travels as `x-organization-id` — the header the guard resolves
+     * into a `TenantContext` — rather than as a path segment or a query parameter. A
+     * request without it is refused with 400 rather than answered with everything,
+     * which is what makes a missing header a loud failure instead of a leak.
+     */
+    products: (organizationId: string): Promise<Product[]> =>
+      client.get('/products', z.array(ProductSchema), {
+        headers: { 'x-organization-id': organizationId },
+      }),
   };
 }
