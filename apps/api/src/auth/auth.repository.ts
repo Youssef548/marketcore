@@ -45,8 +45,8 @@ export class AuthRepository {
    */
   async createSessionWithToken(
     userId: string,
-    refreshTokenHash: string,
     sessionExpiresAt: Date,
+    refreshTokenHash: string,
     tokenExpiresAt: Date,
   ): Promise<void> {
     await this.prisma.$transaction(async (tx) => {
