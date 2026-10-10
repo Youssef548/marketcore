@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>MarketCore — system design</title>
+<style>
+:root{--canvas:#f4f1e9;--panel:#fffdf9;--ink:#23201a;--muted:#59554c;--faint:#696660;--line:#d5d2ca;--rail:#1c2a45}
+body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.55 Helvetica,Arial,sans-serif}
+.top{background:var(--rail);color:#fffdf9;padding:26px 44px}
+.top h1{margin:0;font-size:23px}.top p{margin:6px 0 0;color:#9ea5b2;max-width:90ch}
+.top nav{display:flex;gap:18px;margin-top:14px;font-size:12.5px}.top a{color:#f4f1e9;text-decoration:none;border-bottom:1px solid #3c485f;padding-bottom:2px}
+h3.sec{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:34px 44px 4px}
+.grid{padding:8px 44px 60px;display:grid;gap:30px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.card h2{margin:0;padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);font-weight:600;text-transform:capitalize;display:flex;gap:10px;align-items:baseline}
+.card h2 span{background:#1c2a45;color:#f4f1e9;font-size:10px;padding:2px 7px;border-radius:3px;letter-spacing:.06em;text-transform:uppercase}
+.card h2 code{color:var(--faint);font-weight:400}
+.cv{padding:16px;overflow:auto}img{display:block}
+.legend{margin:0 44px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+</style>
+<div class="top"><h1>MarketCore — system design</h1>
+<p>Structure and behaviour for the whole project: C4 context and containers, the module map and its enforced boundaries, the entity map, and the sequences behind each race the project exists to prove. Colours are selvedge's real tokens, converted from <code>tokens.css</code>. SVG — import into Figma or Miro.</p>
+<nav><a href="#structure">Structure</a><a href="#behaviour">Behaviour</a></nav></div>
+<div class="legend"><span><i style="background:#2f4470"></i>control / identity</span><span><i style="background:#2f6b4f"></i>shipped</span><span><i style="background:#9c3d2e"></i>attention / failure</span><span><i style="background:#59554c"></i>operations</span></div>
+<h3 class="sec" id="structure">Structure</h3><div class="grid"><section class="card"><h2><span>Structure</span>context <code>01-context.svg</code></h2><div class="cv"><img src="01-context.svg" alt="01-context"></div></section><section class="card"><h2><span>Structure</span>containers <code>02-containers.svg</code></h2><div class="cv"><img src="02-containers.svg" alt="02-containers"></div></section><section class="card"><h2><span>Structure</span>modules <code>03-modules.svg</code></h2><div class="cv"><img src="03-modules.svg" alt="03-modules"></div></section><section class="card"><h2><span>Structure</span>entity map <code>04-entity-map.svg</code></h2><div class="cv"><img src="04-entity-map.svg" alt="04-entity-map"></div></section></div>
+<h3 class="sec" id="behaviour">Behaviour</h3><div class="grid"><section class="card"><h2><span>Behaviour</span>seq refresh rotation <code>05-seq-refresh-rotation.svg</code></h2><div class="cv"><img src="05-seq-refresh-rotation.svg" alt="05-seq-refresh-rotation"></div></section><section class="card"><h2><span>Behaviour</span>seq checkout race <code>06-seq-checkout-race.svg</code></h2><div class="cv"><img src="06-seq-checkout-race.svg" alt="06-seq-checkout-race"></div></section><section class="card"><h2><span>Behaviour</span>seq webhook dedupe <code>07-seq-webhook-dedupe.svg</code></h2><div class="cv"><img src="07-seq-webhook-dedupe.svg" alt="07-seq-webhook-dedupe"></div></section><section class="card"><h2><span>Behaviour</span>seq outbox recovery <code>08-seq-outbox-recovery.svg</code></h2><div class="cv"><img src="08-seq-outbox-recovery.svg" alt="08-seq-outbox-recovery"></div></section><section class="card"><h2><span>Behaviour</span>seq payout race <code>09-seq-payout-race.svg</code></h2><div class="cv"><img src="09-seq-payout-race.svg" alt="09-seq-payout-race"></div></section></div>

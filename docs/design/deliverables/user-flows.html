@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MarketCore — user flows, shipped and next sprints</title>
+<style>
+  :root{
+    --paper:#f6f4ef;
+    --panel:#ffffff;
+    --ink:#1b1a18;
+    --muted:#6d6a63;
+    --faint:#9a968d;
+    --line:#e4dfd6;
+    --line-strong:#cfc8bb;
+    --proven:#0e6b5c;
+    --next:#9a5b06;
+    --gap:#9a2b1e;
+    --proven-bg:#e7f1ee;
+    --next-bg:#f6ecda;
+    --gap-bg:#f6e4e1;
+    --accent:#1b1a18;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font:15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif;font-weight:600;letter-spacing:-.01em;margin:0}
+  a{color:inherit}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86em;background:#efece5;padding:1px 5px;border-radius:2px}
+
+  .wrap{display:grid;grid-template-columns:262px 1fr;min-height:100vh}
+  @media (max-width:860px){.wrap{grid-template-columns:1fr}}
+
+  /* ---------- sidebar ---------- */
+  .nav{border-right:1px solid var(--line);padding:28px 22px;position:sticky;top:0;align-self:start;height:100vh;overflow:auto}
+  @media (max-width:860px){.nav{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}}
+  .brand{font-family:Georgia,serif;font-size:19px;letter-spacing:-.02em}
+  .brand small{display:block;font-family:inherit;font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
+  .nav h4{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:26px 0 10px;font-weight:600}
+  .navbtn{
+    display:block;width:100%;text-align:left;background:none;border:0;border-left:2px solid transparent;
+    padding:9px 10px;cursor:pointer;color:var(--muted);font:inherit;font-size:13.5px;line-height:1.35;
+  }
+  .navbtn:hover{color:var(--ink);background:#efece5}
+  .navbtn[aria-current="true"]{color:var(--ink);border-left-color:var(--accent);background:#efece5;font-weight:600}
+  .navbtn .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px;vertical-align:1px}
+  .dot.shipped{background:var(--proven)}
+  .dot.wip{background:var(--next)}
+  .dot.planned{background:var(--faint)}
+
+  .legend{font-size:12.5px;color:var(--muted);line-height:1.9}
+  .role{display:inline-block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--line-strong);border-radius:2px;background:#fff}
+  .role.buyer{border-color:#b9c6d6;background:#eef3f8}
+  .role.seller{border-color:#cbbfa4;background:#f6f1e6}
+  .role.web{border-color:#c9c2d8;background:#f1eef7}
+  .role.api{border-color:#a9cfc6;background:#e6f1ee}
+  .role.db{border-color:#c6cdb2;background:#eef1e6}
+  .role.worker{border-color:#d8c3a8;background:#f7eee3}
+  .role.provider{border-color:#d6b0b0;background:#f7eaea}
+
+  /* ---------- main ---------- */
+  main{padding:38px 44px 90px;max-width:1180px}
+  @media (max-width:860px){main{padding:26px 18px 70px}}
+  .kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
+  .title{font-size:30px;margin:8px 0 10px}
+  .lede{color:var(--muted);max-width:70ch;margin:0 0 26px}
+
+  .roadmap{display:flex;gap:0;border:1px solid var(--line);background:var(--panel);margin:0 0 34px;flex-wrap:wrap}
+  .seg{flex:1 1 150px;padding:12px 14px;border-right:1px solid var(--line)}
+  .seg:last-child{border-right:0}
+  .seg b{display:block;font-size:12.5px}
+  .seg span{font-size:11.5px;color:var(--muted)}
+  .seg .bar{height:4px;margin-top:9px;background:var(--line)}
+  .seg .bar i{display:block;height:100%}
+  .bar .done{background:var(--proven)}
+  .bar .doing{background:var(--next)}
+
+  .flow{border:1px solid var(--line);background:var(--panel);margin:0 0 22px}
+  .flow > header{padding:15px 18px 13px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+  .flow h3{font-size:16.5px}
+  .flow .who{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .flow .body{padding:16px 18px}
+
+  .rail{display:flex;flex-wrap:wrap;align-items:stretch;gap:0}
+  .step{
+    border:1px solid var(--line-strong);background:#fdfcf9;padding:9px 11px;cursor:pointer;
+    min-width:132px;max-width:200px;transition:background .12s,border-color .12s;
+  }
+  .step:hover{background:#f4f1ea}
+  .step[aria-pressed="true"]{border-color:var(--accent);background:#efece5;box-shadow:inset 0 0 0 1px var(--accent)}
+  .step .rl{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:3px}
+  .step .tx{font-size:13px;line-height:1.35}
+  .arrow{display:flex;align-items:center;color:var(--line-strong);padding:0 8px;font-size:15px;user-select:none}
+  @media (max-width:520px){.arrow{transform:rotate(90deg);padding:4px 0}}
+
+  .detail{margin-top:14px;border-left:3px solid var(--accent);background:#f4f1ea;padding:11px 14px;font-size:13.5px;min-height:22px;color:var(--muted)}
+  .detail b{color:var(--ink)}
+
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:14px;padding-top:13px;border-top:1px dashed var(--line-strong);font-size:12.5px}
+  .meta div{color:var(--muted)}
+  .meta b{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:3px;font-weight:600}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:2px;margin:0 4px 4px 0}
+  .pill.proven{background:var(--proven-bg);color:var(--proven)}
+  .pill.next{background:var(--next-bg);color:var(--next)}
+  .pill.gap{background:var(--gap-bg);color:var(--gap)}
+
+  .note{margin-top:16px;border:1px dashed var(--line-strong);background:#fbfaf7;padding:12px 15px;font-size:13px;color:var(--muted)}
+  .note b{color:var(--ink)}
+  footer.page{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" id="nav"></nav>
+  <main id="main"></main>
+</div>
+
+<script>
+const ROLES = {
+  buyer:    "Buyer",
+  seller:   "Seller / org member",
+  web:      "Web app (BFF)",
+  api:      "API",
+  db:       "Database",
+  worker:   "Worker",
+  provider: "Payment provider"
+};
+
+const PHASES = [
+  {
+    id: "now",
+    dot: "shipped",
+    nav: "Live today",
+    navsub: "Phases 0–3 + web slice",
+    kicker: "Shipped",
+    title: "What a user can already do",
+    lede: "Identity, tenancy and catalog are built, and the operator web app signs a user in, holds the session in httpOnly cookies and selects an organization. Everything below is exercised by unit, e2e, integration or behavioural tests.",
+    flows: [
+      {
+        title: "Create an account",
+        who: ["buyer", "seller"],
+        steps: [
+          { role:"web",   label:"Open /register" },
+          { role:"web",   label:"Submit email + password" },
+          { role:"api",   label:"Check password policy (12+ code points)" },
+          { role:"api",   label:"Refuse duplicate email → 409" },
+          { role:"api",   label:"Hash with argon2id, create User" },
+          { role:"web",   label:"Redirect → /login?registered=1" }
+        ],
+        detail: ["Registration creates the <b>user only</b> — a session is a separate concern. A rejected password never reaches the hasher, so a hostile request cannot spend CPU on argon2 before being refused.", "Refused login and wrong password answer <b>identically</b>, so the endpoint is not an account-enumeration oracle."],
+        proves: ["proven"],
+        invariant: "Identity foundation",
+        gate: "pnpm --filter api test:e2e"
+      },
+      {
+        title: "Sign in and hold a session",
+        who: ["buyer","seller"],
+        steps: [
+          { role:"web",   label:"Open /login, submit credentials" },
+          { role:"web",   label:"BFF POST /api/auth/login" },
+          { role:"api",   label:"Verify argon2 hash" },
+          { role:"api",   label:"Issue access + refresh, open Session row" },
+          { role:"web",   label:"Set httpOnly cookies (mc_at, mc_rt)" },
+          { role:"web",   label:"Redirect /dashboard → pick organization" }
+        ],
+        detail: ["The browser never holds a credential a script can read: both tokens live in <b>httpOnly</b> cookies and only the BFF's route handlers call the API (ADR 011).", "A wrong password returns the same <code>401</code> as an unknown email, by design."],
+        proves:["proven"],
+        invariant:"Session established",
+        gate:"pnpm --filter e2e test:behavioural"
+      },
+      {
+        title: "Stay signed in across a stale access token",
+        who: ["buyer","seller"],
+        steps: [
+          { role:"web",   label:"Any request with an expired access token" },
+          { role:"web",   label:"Single-flight refresh (one rotation)" },
+          { role:"api",   label:"Rotate refresh token; revoke on replay" },
+          { role:"web",   label:"Store replacement cookies, retry once" }
+        ],
+        detail: ["Naive concurrency <i>is</i> a replay, and a replay kills the whole session — so rotation is single-flight with one step of memory for the request that left before the rotation settled.", "Measured: six concurrent session loads produce <b>exactly one</b> <code>/auth/refresh</code>."],
+        proves:["proven"],
+        invariant:"Refresh rotation / reuse detection",
+        gate:"pnpm --filter web test"
+      },
+      {
+        title: "Act inside one organization (tenant)",
+        who: ["seller","api"],
+        steps: [
+          { role:"web",   label:"Choose organization in the rail" },
+          { role:"web",   label:"Attach x-organization-id header" },
+          { role:"api",   label:"TenantGuard resolves membership → TenantContext" },
+          { role:"db",    label:"Queries scoped to the organization" },
+          { role:"api",   label:"Cross-tenant → 404 (or 403 for a wrong header)" }
+        ],
+        detail: ["Tenant identity travels in a header resolved by a guard, never read by a controller. A cross-tenant read answers <b>404</b>; a header naming someone else's tenant answers <b>403</b>.","This is the project's flagship proven invariant."],
+        proves:["proven"],
+        invariant:"INV-9 — tenant isolation",
+        gate:"pnpm --filter api test:e2e"
+      },
+      {
+        title: "Manage a product (seller)",
+        who: ["seller"],
+        steps: [
+          { role:"api",   label:"Create product → DRAFT" },
+          { role:"api",   label:"Publish (price ≥ 1) / unpublish" },
+          { role:"db",    label:"Inventory row; CHECK available ≥ 0" },
+          { role:"api",   label:"Read inventory" }
+        ],
+        detail: ["Publish/unpublish are explicit guarded transitions, and the non-negative quantity is enforced by a database <code>CHECK</code> rather than by application validation — a test writes around the app to prove it."],
+        proves:["proven","gap"],
+        gap: "No products page in the UI yet — the catalog is API-only.",
+        invariant:"INV-1 (constraint half)",
+        gate:"pnpm --filter api test:integration"
+      },
+      {
+        title: "Sign out",
+        who: ["buyer","seller"],
+        steps: [
+          { role:"web",   label:"POST /api/auth/logout" },
+          { role:"api",   label:"Revoke session (reason LOGOUT)" },
+          { role:"web",   label:"Clear cookies → /login?next=…" }
+        ],
+        detail: ["Revocation covers sessions and refresh tokens. A stolen access token remains valid until it expires — inherent to a stateless token, which is why its TTL is short."],
+        proves:["proven"],
+        invariant:"Session revoked",
+        gate:"pnpm --filter e2e test:behavioural"
+      }
+    ]
+  },
+
+  {
+    id: "w3",
+    dot: "wip",
+    nav: "Week 3 · Phase 4",
+    navsub: "Checkout + the stock-1 race",
+    kicker: "Next up — in progress",
+    title: "Transactional checkout and the last-unit race",
+    lede: "The project's headline claim: 100 buyers competing for one unit produce exactly one order and stock 0. This is where the row lock, the order insert and the inventory decrement commit together.",
+    flows: [
+      {
+        title: "Checkout (the race)",
+        who: ["buyer","api","db"],
+        steps: [
+          { role:"buyer", label:"100 buyers: checkout 1 unit" },
+          { role:"api",   label:"Begin transaction" },
+          { role:"db",    label:"SELECT … FOR UPDATE on inventory (row lock)" },
+          { role:"api",   label:"Check available ≥ requested" },
+          { role:"db",    label:"Insert Order + OrderItems (price snapped)" },
+          { role:"db",    label:"Decrement available, bump version" },
+          { role:"db",    label:"Write OutboxEvent" },
+          { role:"api",   label:"COMMIT → 1 success, 99 refused" }
+        ],
+        detail: ["Postgres runs at READ COMMITTED, so the lock — not the transaction alone — is what makes exactly one writer win. The outbox write joins the same transaction so a committed order can never lose its event."],
+        proves:["next"],
+        invariant:"INV-1 — inventory never negative",
+        gate:"pnpm --filter api test:concurrency",
+        models:"Order, OrderItem",
+        risks:["Losing the lock would let two orders both decrement from 1."]
+      }
+    ]
+  },
+
+  {
+    id: "w4",
+    dot: "planned",
+    nav: "Week 4 · Phases 5–6",
+    navsub: "Idempotency + payments",
+    kicker: "Planned",
+    title: "Retry-safe checkout and the payment simulator",
+    lede: "A client that retries must not create a second order, and an order must be paid at most once for the same amount — decided behind a provider port so a deterministic simulator stands in for Stripe.",
+    flows: [
+      {
+        title: "Retry the same checkout",
+        who: ["buyer","api"],
+        steps: [
+          { role:"buyer", label:"20 repeats, one Idempotency-Key" },
+          { role:"api",   label:"Look up (organizationId, key)" },
+          { role:"api",   label:"First call: run checkout, store response" },
+          { role:"api",   label:"Replays: return the stored response" }
+        ],
+        detail: ["One key creates at most one logical operation. The stored response also means a replay returns the same body rather than a fresh attempt."],
+        proves:["next"],
+        invariant:"INV-2 — at most one operation per key",
+        gate:"pnpm --filter api test:e2e",
+        models:"IdempotencyKey"
+      },
+      {
+        title: "Pay for an order",
+        who: ["buyer","provider"],
+        steps: [
+          { role:"api",   label:"Order pending → create Payment" },
+          { role:"provider", label:"Attempt capture (simulator or Stripe test)" },
+          { role:"api",   label:"Pending → Processing → Succeeded" },
+          { role:"db",    label:"Record PaymentAttempt (unique op key)" }
+        ],
+        detail: ["Illegal transitions are rejected at the domain boundary: a failed payment cannot become succeeded without a new attempt, and a succeeded payment cannot be captured twice."],
+        proves:["next"],
+        invariant:"INV-3 — paid at most once",
+        gate:"pnpm --filter api test:e2e",
+        models:"Payment, PaymentAttempt"
+      }
+    ]
+  },
+
+  {
+    id: "w5",
+    dot: "planned",
+    nav: "Weeks 5–7 · Phases 7–9",
+    navsub: "Stripe, ledger, refunds",
+    kicker: "Planned",
+    title: "Webhooks, the double-entry ledger and refunds",
+    lede: "Money becomes auditable: every financial event writes a balanced ledger transaction, a duplicated webhook causes each side effect once, and a refund can never exceed what was captured.",
+    flows: [
+      {
+        title: "A payment webhook arrives",
+        who: ["provider","api"],
+        steps: [
+          { role:"provider", label:"Stripe posts the event (maybe twice)" },
+          { role:"api",   label:"WebhookEvent unique (provider, eventId)" },
+          { role:"api",   label:"Already seen → 200, no work" },
+          { role:"db",    label:"Else: order/payment transition + ledger tx" }
+        ],
+        detail: ["Deduplication is keyed on the provider's own event id, so a reordered or repeated delivery is a no-op rather than a double charge."],
+        proves:["next"],
+        invariant:"INV-4 — side effect at most once",
+        gate:"pnpm --filter api test:e2e",
+        models:"WebhookEvent"
+      },
+      {
+        title: "Capture posts to the ledger",
+        who: ["api","db"],
+        steps: [
+          { role:"api",   label:"Capture 100, fee 10" },
+          { role:"db",    label:"Debit platform cash 100" },
+          { role:"db",    label:"Credit seller payable 90 + platform revenue 10" },
+          { role:"db",    label:"Signed entries sum to 0, per currency" }
+        ],
+        detail: ["Entries are append-only: <code>LedgerEntry</code> has no update or delete path, so INV-7 is enforced by the schema offering no way to violate it. Amounts are integer minor units; <code>signedAmountMinor</code> is a BigInt with a wire string codec."],
+        proves:["next"],
+        invariant:"INV-6 and INV-7 — balances, append-only",
+        gate:"pnpm --filter api test:integration",
+        models:"LedgerAccount, LedgerTransaction, LedgerEntry"
+      },
+      {
+        title: "Refund a payment",
+        who: ["seller","provider"],
+        steps: [
+          { role:"seller", label:"Request refund ≤ captured total" },
+          { role:"api",   label:"Requested → Processing" },
+          { role:"provider", label:"Provider refund" },
+          { role:"db",    label:"Reversing ledger transaction (never an edit)" },
+          { role:"api",   label:"→ Succeeded or Failed" }
+        ],
+        detail: ["Cumulative refunds can never exceed the capture, checked in the transaction. Corrections use compensating entries rather than editing history."],
+        proves:["next"],
+        invariant:"INV-5 — refunds ≤ captures",
+        gate:"pnpm --filter api test:e2e",
+        models:"Refund"
+      }
+    ]
+  },
+
+  {
+    id: "w8",
+    dot: "planned",
+    nav: "Weeks 8–9 · Phases 10–11",
+    navsub: "Outbox, worker, payouts",
+    kicker: "Planned",
+    title: "Asynchronous work that survives a crash",
+    lede: "The worker arrives with the outbox: work is claimed from the database, retried, and processed exactly once even if a process is killed between commit and publication.",
+    flows: [
+      {
+        title: "An outbox event is processed",
+        who: ["api","worker","db"],
+        steps: [
+          { role:"api",   label:"Commit business state + OutboxEvent (one tx)" },
+          { role:"worker", label:"Claim pending rows (skip locked)" },
+          { role:"worker", label:"Perform side effect" },
+          { role:"db",    label:"Mark processed; on crash, retry" }
+        ],
+        detail: ["Killed between commit and publication, the event is still recovered and processed <b>exactly once</b> — the claim predicate, not the worker's memory, is the guard."],
+        proves:["next"],
+        invariant:"INV-10 — recoverable after a crash",
+        gate:"pnpm --filter worker test:e2e",
+        models:"OutboxEvent (+ Redis arrives)"
+      },
+      {
+        title: "Two workers race one payout",
+        who: ["worker","provider"],
+        steps: [
+          { role:"worker", label:"Both claim the same Payout" },
+          { role:"db",    label:"One claim wins the state predicate" },
+          { role:"provider", label:"Exactly one provider transfer" },
+          { role:"worker", label:"Requested → Processing → Paid" }
+        ],
+        detail: ["The payout operation is idempotent at the boundary: a duplicate claim is refused before any money moves."],
+        proves:["next"],
+        invariant:"INV-8 — payout executed at most once",
+        gate:"pnpm --filter worker test:e2e",
+        models:"Payout"
+      },
+      {
+        title: "Every mutation is recorded",
+        who: ["api","db"],
+        steps: [
+          { role:"api",   label:"Actor, organization, action, before/after" },
+          { role:"db",    label:"Append immutable AuditLog row" },
+          { role:"api",   label:"Carry the requestId" }
+        ],
+        detail: ["The request id finally reaches the domain layer here, joining an audit record to the log line for the same request."],
+        proves:["next"],
+        invariant:"Auditability",
+        gate:"pnpm --filter api test:e2e",
+        models:"AuditLog"
+      }
+    ]
+  },
+
+  {
+    id: "w10",
+    dot: "planned",
+    nav: "Weeks 10–12 · Phases 12–15",
+    navsub: "Telemetry, load, deploy",
+    kicker: "Planned",
+    title: "Operate it and ship it",
+    lede: "No new invariant — this is the phase where the system is measured, deployed and presented. Every claim above gets a number or a URL behind it.",
+    flows: [
+      {
+        title: "Prove it under load and in the cloud",
+        who: ["api","worker"],
+        steps: [
+          { role:"api",    label:"Telemetry / tracing" },
+          { role:"worker", label:"k6 load scenario → published numbers" },
+          { role:"api",    label:"AWS deployment" },
+          { role:"api",    label:"Hardening + portfolio write-up" }
+        ],
+        detail: ["The repository is engineering evidence: each completed phase closes with a runnable command that proves its exit gate, and the README records what is proven versus planned."],
+        proves:["next"],
+        invariant:"—",
+        gate:"pnpm turbo run lint typecheck test:coverage build",
+        models:"—"
+      }
+    ]
+  }
+];
+
+// ---- render ----
+const nav = document.getElementById("nav");
+const main = document.getElementById("main");
+
+nav.innerHTML =
+  '<div class="brand">MarketCore<small>user flows</small></div>' +
+  '<h4>Roadmap</h4>' +
+  PHASES.map((p,i) =>
+    '<button class="navbtn" data-i="'+i+'" data-id="'+p.id+'">' +
+      '<span class="dot '+p.dot+'"></span>'+p.nav+'</button>'
+  ).join("") +
+  '<h4>Actors</h4><div class="legend">' +
+    Object.keys(ROLES).map(r => '<div><span class="role '+r+'">'+ROLES[r]+'</span></div>').join("") +
+  '</div>' +
+  '<h4>Status</h4><div class="legend">' +
+    '<div><span class="dot shipped"></span> Shipped &amp; tested</div>' +
+    '<div><span class="dot wip"></span> In progress</div>' +
+    '<div><span class="dot planned"></span> Planned</div>' +
+  '</div>';
+
+function roleChip(r){ return '<span class="role '+r+'">'+ROLES[r]+'</span>'; }
+
+function renderPhase(i){
+  const p = PHASES[i];
+  main.innerHTML =
+    '<div class="kicker">'+p.kicker+'</div>' +
+    '<h1 class="title">'+p.title+'</h1>' +
+    '<p class="lede">'+p.lede+'</p>' +
+    '<div class="roadmap">'+PHASES.map((q,j)=>{
+        const fill = q.dot==="shipped" ? '<i class="done" style="width:100%"></i>'
+                   : q.dot==="wip" ? '<i class="doing" style="width:55%"></i>' : '';
+        return '<div class="seg"><b style="color:'+(j===i?'var(--ink)':'var(--muted)')+'">'+q.nav+'</b><span>'+q.navsub+'</span><div class="bar">'+fill+'</div></div>';
+      }).join("") + '</div>' +
+    p.flows.map((f,fi) => {
+      const rail = f.steps.map((s,si)=>{
+        const arrow = si < f.steps.length-1 ? '<span class="arrow">&#8594;</span>' : '';
+        return '<div class="step" role="button" tabindex="0" aria-pressed="false" data-f="'+fi+'" data-s="'+si+'">' +
+                 '<span class="rl">'+ROLES[s.role]+'</span><span class="tx">'+s.label+'</span></div>' + arrow;
+      }).join("");
+      const pills = (f.proves||[]).map(x => '<span class="pill '+x+'">'+(x==="proven"?"Proven":x==="gap"?"Gap":"Planned")+'</span>').join("");
+      const meta =
+        '<div class="meta">' +
+          '<div><b>Invariant</b>'+f.invariant+'</div>' +
+          '<div><b>Exit gate</b><code>'+f.gate+'</code></div>' +
+          '<div><b>Models</b>'+(f.models||"—")+'</div>' +
+        '</div>' +
+        (f.risks ? '<div class="note"><b>Watch:</b> '+f.risks.join(" ")+'</div>' : "") +
+        (f.gap ? '<div class="note"><b>Gap:</b> '+f.gap+'</div>' : "");
+      return '<section class="flow"><header><h3>'+f.title+'</h3><div class="who">' +
+               (f.who||[]).map(roleChip).join("") + pills +
+             '</div></header><div class="body">' +
+               '<div class="rail">'+rail+'</div>' +
+               '<div class="detail" data-detail="'+fi+'">Click a step to see what happens and why it matters.</div>' +
+               meta +
+             '</div></section>';
+    }).join("") +
+    '<footer class="page">Source of truth: <code>README.md</code> (roadmap), <code>docs/domain-model.md</code> (invariants), <code>docs/superpowers/STATUS.md</code> (evidence). Generated for planning — not a committed artifact.</footer>';
+
+  // wire nav state
+  [...nav.querySelectorAll(".navbtn")].forEach(b =>
+    b.setAttribute("aria-current", String(Number(b.dataset.i)===i)));
+
+  // wire steps
+  main.querySelectorAll(".step").forEach(el => {
+    const activate = () => {
+      const f = p.flows[Number(el.dataset.f)];
+      main.querySelectorAll('.step[data-f="'+el.dataset.f+'"]')
+        .forEach(s => s.setAttribute("aria-pressed","false"));
+      el.setAttribute("aria-pressed","true");
+      const d = main.querySelector('.detail[data-detail="'+el.dataset.f+'"]');
+      const txt = f.detail[Number(el.dataset.s)] || f.detail[0];
+      d.innerHTML = '<b>'+f.steps[Number(el.dataset.s)].label+'</b> — '+txt;
+    };
+    el.addEventListener("click", activate);
+    el.addEventListener("keydown", e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); activate(); }});
+  });
+}
+
+nav.addEventListener("click", e => {
+  const b = e.target.closest(".navbtn");
+  if(b) renderPhase(Number(b.dataset.i));
+});
+
+renderPhase(0);
+</script>
+</body>
+</html>
