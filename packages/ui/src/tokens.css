@@ -67,8 +67,6 @@
 
   --palette-emerald-50: oklch(0.9625 0.0198 159.8);
   --palette-emerald-600: oklch(0.5145 0.1374 149.4);
-
-  --radius-brand: 10px;
 }
 
 /* Semantic — the interface. Named for the job a colour does, so a component never
@@ -109,6 +107,14 @@
   /* control */
   --color-control-edge: var(--palette-slate-450);
   --color-focus-ring: var(--palette-indigo-500);
+
+  /* radius — belongs in `@theme`, and this is not cosmetic. Tailwind generates a utility
+   * from a `@theme` variable and NOT from a plain `:root` one, so while this lived in
+   * `:root` every component's `rounded-brand` was a class the stylesheet never contained:
+   * inputs, buttons and the theme toggle all rendered with `border-radius: 0`. No test
+   * asserted a computed radius, so nothing failed — which is the whole lesson. It is here
+   * so the utility exists, and `apps/e2e` now asserts a component is actually round. */
+  --radius-brand: 10px;
 }
 
 /* Direction: Graphite — the same structure, dark. Not a media query: the OS does
