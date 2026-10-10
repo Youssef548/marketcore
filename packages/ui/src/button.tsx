@@ -2,7 +2,7 @@
 
 import type { ButtonHTMLAttributes, MouseEvent } from 'react';
 
-export type ButtonVariant = 'primary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'quiet';
 export type ButtonSize = 'md' | 'sm';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -17,13 +17,17 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-action text-ink-on-action hover:bg-action-hover',
-  ghost: 'bg-transparent text-action hover:bg-sunken',
+  primary: 'bg-action text-ink-on-action border-transparent hover:bg-action-hover',
+  // Bordered rather than transparent: in this direction the second action is a thing
+  // you can see, not an absence. It is `secondary` rather than `ghost` because a
+  // bordered ghost is a name that lies about what it paints.
+  secondary: 'bg-panel text-ink border-rule-strong hover:bg-sunken',
+  quiet: 'bg-transparent text-ink-muted border-transparent hover:text-ink',
 };
 
 const sizes: Record<ButtonSize, string> = {
-  md: 'px-4 py-2 text-sm',
-  sm: 'px-3 py-1.5 text-xs',
+  md: 'h-10 px-4 text-sm',
+  sm: 'h-8 px-3 text-xs',
 };
 
 export function Button({
@@ -48,7 +52,7 @@ export function Button({
       aria-busy={busy || undefined}
       aria-disabled={busy || undefined}
       onClick={handleClick}
-      className={`inline-flex items-center justify-center rounded-brand font-medium transition-colors focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-focus-ring disabled:opacity-50 ${sizes[size]} ${variants[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-brand border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-focus-ring disabled:opacity-50 ${sizes[size]} ${variants[variant]} ${className}`}
       {...props}
     />
   );

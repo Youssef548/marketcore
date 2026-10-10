@@ -49,7 +49,7 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
 
   return (
     <ReadySessionProvider session={state.session} reload={reload}>
-      <div className="grid min-h-screen grid-cols-[13rem_minmax(0,1fr)]">
+      <div className="grid min-h-screen grid-cols-[15.75rem_minmax(0,1fr)]">
         <Rail appName={appName} />
 
         <div className="flex min-w-0 flex-col bg-canvas">

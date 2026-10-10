@@ -22,9 +22,17 @@ export function TopBar() {
       <h1 className="text-base font-semibold text-ink">{pageTitle(pathname)}</h1>
 
       <div className="flex items-center gap-3">
-        <span className="text-xs text-ink-muted">{user.email}</span>
+        <span className="flex items-center gap-2.5 rounded-brand border border-rule bg-panel py-1.5 pl-1.5 pr-3">
+          <span
+            aria-hidden
+            className="grid h-7 w-7 place-items-center rounded-full bg-sunken text-[11px] font-semibold text-ink-muted"
+          >
+            {user.email.slice(0, 2).toUpperCase()}
+          </span>
+          <span className="text-xs font-medium text-ink">{user.email}</span>
+        </span>
         <Button
-          variant="ghost"
+          variant="secondary"
           size="sm"
           onClick={() => {
             void signOut().then(() => router.replace('/login'));
