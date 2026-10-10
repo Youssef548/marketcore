@@ -1,0 +1,556 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MarketCore — UI/UX design (selvedge)</title><style>
+:root{
+  --canvas:#f4f1e9;--panel:#fffdf9;--sunken:#eae5d9;--rule:#d5d2ca;--rule-strong:#b1aea7;
+  --rail:#1c2a45;--rail-edge:#101c33;--rail-hover:#2c3952;--rail-active:#3c485f;
+  --ink:#23201a;--ink-muted:#59554c;--ink-faint:#696660;--indigo300:#9ea5b2;--focus:#6385c8;
+  --action:#2f4470;--action-hover:#506287;--attention:#9c3d2e;--attention-wash:#ffebe7;
+  --positive:#2f6b4f;--positive-wash:#e6f4ea;--paper:#ffffff;--radius:7px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#eceae4;color:var(--ink);
+  font:400 15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.boardhead{max-width:1360px;margin:0 auto;padding:34px 24px 8px}
+.boardhead h1{margin:0;font-size:26px}.boardhead p{color:var(--ink-muted);max-width:90ch;margin:8px 0 0}
+.board{padding:10px 24px 70px;display:flex;flex-direction:column;gap:34px;align-items:center}
+.frame-wrap{margin:0;width:1360px;max-width:100%}
+figcaption{display:flex;gap:12px;align-items:baseline;padding:0 2px 8px;font-size:12px;color:var(--ink-muted)}
+figcaption b{color:var(--ink);font-size:12.5px}figcaption em{margin-left:auto;color:var(--ink-faint);font-style:normal;font-family:ui-monospace,Menlo,monospace}
+.frame{background:var(--canvas);border:1px solid #d7d2c6;border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.app{display:flex;height:100%}
+.muted{color:var(--ink-muted)}.muted.small,.small{font-size:12px}
+.pos{color:var(--positive)}.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+.lbl{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-muted);font-weight:600}
+.link{color:var(--action);font-size:12.5px;text-decoration:none;font-weight:600}
+/* rail */
+.rail{width:248px;flex:0 0 248px;background:var(--rail);color:var(--paper);display:flex;flex-direction:column;padding:20px 16px}
+.brand{display:flex;gap:10px;align-items:center;padding:2px 6px 18px}
+.brand b{display:block;font-size:15px;letter-spacing:-.01em}.brand i{font-style:normal;font-size:10.5px;color:var(--indigo300);letter-spacing:.06em;text-transform:uppercase}
+.mark{width:26px;height:26px;border-radius:7px;background:var(--rail-active);display:inline-block;position:relative}
+.mark:after{content:"";position:absolute;inset:7px 7px 7px 7px;border-left:3px solid #fff;opacity:.9}
+.mark.lg{width:34px;height:34px;border-radius:9px}
+.tenant{padding:0 6px 16px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:12px}
+.tenant .lbl{color:var(--indigo300)}
+.orgsel{margin-top:7px;width:100%;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:var(--radius);padding:9px 11px;font:inherit;font-size:13.5px}
+.orgsel .dot{width:8px;height:8px;border-radius:50%;background:var(--positive)}
+.orgsel svg{width:10px;height:6px;margin-left:auto;fill:var(--indigo300)}
+nav{display:flex;flex-direction:column;gap:2px}
+nav a{padding:9px 12px;border-radius:var(--radius);color:var(--indigo300);font-size:13.5px;text-decoration:none}
+nav a.on{background:var(--railActive);color:#fff;font-weight:600}
+.railfoot{margin-top:auto;padding:12px 8px 2px;font-size:10.5px;color:var(--indigo300);opacity:.75;border-top:1px solid rgba(255,255,255,.08)}
+/* main */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:66px;flex:0 0 66px;background:var(--panel);border-bottom:1px solid var(--rule);display:flex;align-items:center;padding:0 22px;gap:16px}
+.titles h1{margin:0;font-size:19px;letter-spacing:-.01em}.titles p{margin:1px 0 0;font-size:12px;color:var(--ink-muted)}
+.topright{margin-left:auto;display:flex;align-items:center;gap:14px}
+.user{display:flex;gap:9px;align-items:center}
+.user .ava{width:30px;height:30px;border-radius:50%;background:var(--sunken);border:1px solid var(--rule-strong);display:grid;place-items:center;font-weight:700;font-size:12.5px}
+.user b{display:block;font-size:12.5px}.user i{font-style:normal;font-size:10.5px;color:var(--ink-muted)}
+.content{flex:1;padding:22px;overflow:hidden}
+/* controls */
+.btn{background:var(--action);color:#fff;border:1px solid transparent;border-radius:var(--radius);padding:9px 15px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule-strong)}
+.btn.quiet{background:transparent;color:var(--ink-muted);border-color:transparent}
+.btn.sm{padding:6px 11px;font-size:12px}.btn.full{width:100%;padding:11px}
+.input{height:38px;border:1px solid var(--rule-strong);border-radius:var(--radius);padding:0 12px;background:#fff;font:inherit;font-size:13.5px;color:var(--ink);width:100%}
+.input:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--focus)}
+.search{max-width:300px}
+.field{display:block;margin:0 0 14px}
+.field .lbl{display:block;margin-bottom:6px}
+.field .hint{display:block;margin-top:5px;font-size:11px;color:var(--ink-faint);font-style:normal}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.actions{display:flex;gap:10px;margin-top:6px}.actions.col{flex-direction:column}
+.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px}.spacer{flex:1}
+.pillrow{display:flex;align-items:center;gap:6px;margin-bottom:16px;font-size:12px}
+.pill{padding:4px 10px;border-radius:999px;background:var(--sunken);color:var(--ink-muted);border:1px solid var(--rule)}
+.pill.done{background:var(--positive-wash);color:var(--positive);border-color:var(--positive)}
+.pillarrow{color:var(--ink-faint);font-style:normal}
+/* cards + tables */
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.card.pad{padding:16px}
+.cardhead{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--rule)}
+.cardhead h3{margin:0;font-size:13px;letter-spacing:.01em}.cardhead .link,.cardhead .badge,.cardhead span{margin-left:auto}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;padding:11px 16px;border-bottom:1px solid var(--rule)}
+.tbl td{padding:12px 16px;font-size:13.5px;border-bottom:1px solid var(--rule)}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl.big td{padding:15px 16px}
+.tbl tfoot td{padding:12px 16px;border-top:1px solid var(--rule-strong);background:var(--sunken)}
+.tbl .right{text-align:right}
+.tblfoot{padding:11px 16px;font-size:11.5px;color:var(--ink-muted);border-top:1px dashed var(--rule-strong)}
+/* the signature thread */
+.thread{position:relative}
+.thread:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.thread.positive:before{background:var(--positive)}
+.thread.attention:before{background:var(--attention)}
+.thread.sunken:before{background:var(--rule-strong)}
+.thread.draft:before{background:var(--rule-strong)}
+/* badges */
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2.5px 8px;border-radius:3px;text-transform:lowercase}
+.badge.published{background:var(--positive-wash);color:var(--positive)}
+.badge.draft{background:var(--sunken);color:var(--ink-muted)}
+.badge.attention{background:var(--attention-wash);color:var(--attention)}
+/* quantity track */
+.trackwrap{display:flex;align-items:center;gap:9px}
+.track{width:78px;height:6px;border-radius:3px;background:var(--sunken);overflow:hidden}
+.track i{display:block;height:100%}
+.track i.ok{background:var(--positive)}.track i.warn{background:var(--attention)}.track i.bad{background:var(--attention);opacity:.5}
+.trackwrap span{font-size:12.5px;font-variant-numeric:tabular-nums}
+/* layout helpers */
+.cols{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:16px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.stat{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.stat b{display:block;font-size:22px;margin:6px 0 3px;letter-spacing:-.02em}
+.stat i{font-style:normal;font-size:11.5px;color:var(--ink-muted)}.stat i.pos{color:var(--positive)}.stat i.warn{color:var(--attention)}
+.kv{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule);font-size:13px}
+.kv:last-child{border-bottom:0}.kv span{color:var(--ink-muted)}.kv b{font-size:13px}
+.bignum{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:4px 0 10px}.bignum span{font-size:12px;font-weight:400;color:var(--ink-muted)}
+.lowrow{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid var(--rule);font-size:13px}
+.lowrow:last-child{border-bottom:0}
+.session{padding:13px 16px;display:flex;flex-direction:column;gap:10px;font-size:13px}
+.session b{font-size:13.5px}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{padding:9px 0 9px 16px;position:relative;border-left:2px solid var(--rule)}
+.tl li:before{content:"";position:absolute;left:-5px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--positive);border:2px solid var(--panel)}
+.tl b{display:block;font-size:12.5px}.tl span{font-size:11.5px;color:var(--ink-muted)}
+.alertbad,.alertwarn{border-radius:var(--radius);padding:10px 12px;font-size:12.5px;margin:0 0 14px}
+.alertbad{background:var(--attention-wash);color:var(--attention);border:1px solid var(--attention)}
+.alertwarn{background:var(--attention-wash);color:var(--attention);border:1px dashed var(--attention)}
+/* auth */
+.authwrap{height:100%;display:grid;place-items:center;background:var(--canvas);position:relative}
+.authcard{width:380px;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:28px}
+.authcard h2{margin:18px 0 4px;font-size:21px}
+.brandbig{display:flex;gap:10px;align-items:center;font-size:17px}
+.authfoot{margin:16px 0 0;font-size:12.5px;color:var(--ink-muted);text-align:center}
+.authfoot a{color:var(--action);font-weight:600}
+.authnote{position:absolute;bottom:22px;font-size:11.5px;color:var(--ink-faint);max-width:520px;text-align:center}
+/* foundations + states */
+.doc{padding:26px 30px}
+.dochead h1{margin:0 0 6px;font-size:22px}.dochead p{margin:0 0 18px;color:var(--ink-muted);max-width:100ch;font-size:13.5px}
+.doc section{margin-bottom:18px}
+.doc h4{margin:0 0 9px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.swrow{display:flex;gap:12px;flex-wrap:wrap}
+.sw{border:1px solid var(--rule);border-radius:8px;padding:10px;width:180px;background:var(--panel)}
+.sw span{display:block;height:38px;border-radius:5px;border:1px solid rgba(0,0,0,.08)}
+.sw b{display:block;margin-top:8px;font-size:12.5px}.sw i{font-style:normal;font-size:11px;color:var(--ink-muted);display:block}
+.sw code{font-size:10.5px;color:var(--ink-faint)}
+.typerow{display:flex;gap:22px;align-items:baseline;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:14px 16px}
+.typerow .mono{color:var(--ink-muted)}
+.motifs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.motiflabel{display:block;font-size:11.5px;color:var(--ink-muted);margin-bottom:9px}
+.threaddemo,.trackdemo{background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.threadrow{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-muted);background:var(--sunken);border-radius:4px;padding:6px 10px;position:relative}
+.threadrow i{width:3px;height:16px;display:inline-block;border-radius:2px}
+.threadrow i.positive{background:var(--positive)}.threadrow i.attention{background:var(--attention)}.threadrow i.sunken{background:var(--rule-strong)}
+.ctlrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:12px 14px}
+.stategrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.stategrid .card{min-height:180px;display:flex;flex-direction:column;gap:10px}
+.skel{height:13px;border-radius:4px;background:var(--sunken)}
+.empty{align-items:center;justify-content:center;text-align:center}
+.emblem{width:38px;height:38px;border-radius:9px;background:var(--sunken);display:inline-block}
+.emblem.slash{background:repeating-linear-gradient(45deg,var(--rule-strong),var(--rule-strong) 4px,var(--sunken) 4px,var(--sunken) 8px)}
+.empty b{font-size:14px}
+</style></head><body>
+<div class="boardhead"><h1>MarketCore — UI design</h1>
+<p>The operator console, designed to <b>selvedge</b> — the direction in <code>packages/ui</code>. Same tokens the code uses (converted from <code>tokens.css</code>), so these screens and the build agree. Content uses the real seed data: Nile Traders, <i>Nile Cotton Shirt</i> at E£249.00, stock 10.</p></div>
+<div class="board"><figure class="frame-wrap"><figcaption><b>Foundations</b><span>Tokens, type, signature motifs</span><em>1360 × 1250</em></figcaption><div class="frame" id="foundations" style="width:1360px;height:1250px">
+    <div class="doc">
+      <div class="dochead"><h1>Foundations — selvedge</h1><p>One direction: indigo chrome, undyed-linen canvas, warm dark ink, a single indigo action colour and madder red reserved for attention. Components name <b>roles</b>, never hues, so the look is one file.</p></div>
+      <section><h4>Surface</h4><div class="swrow"><div class="sw"><span style="background:#f4f1e9"></span><b>canvas</b><i>app background</i><code>#f4f1e9</code></div><div class="sw"><span style="background:#fffdf9"></span><b>panel</b><i>cards, surfaces</i><code>#fffdf9</code></div><div class="sw"><span style="background:#eae5d9"></span><b>sunken</b><i>inset wells</i><code>#eae5d9</code></div><div class="sw"><span style="background:#1c2a45"></span><b>rail</b><i>navigation plane</i><code>#1c2a45</code></div></div></section>
+      <section><h4>Text</h4><div class="swrow"><div class="sw"><span style="background:#23201a"></span><b>ink</b><i>primary text</i><code>#23201a</code></div><div class="sw"><span style="background:#59554c"></span><b>ink-muted</b><i>secondary</i><code>#59554c</code></div><div class="sw"><span style="background:#696660"></span><b>ink-faint</b><i>tertiary</i><code>#696660</code></div><div class="sw"><span style="background:#ffffff"></span><b>ink-on-action</b><i>on indigo</i><code>#ffffff</code></div></div></section>
+      <section><h4>Edge</h4><div class="swrow"><div class="sw"><span style="background:#d5d2ca"></span><b>rule</b><i>hairlines</i><code>#d5d2ca</code></div><div class="sw"><span style="background:#b1aea7"></span><b>rule-strong</b><i>control borders</i><code>#b1aea7</code></div></div></section>
+      <section><h4>State &amp; control</h4><div class="swrow"><div class="sw"><span style="background:#2f4470"></span><b>action</b><i>primary action</i><code>#2f4470</code></div><div class="sw"><span style="background:#9c3d2e"></span><b>attention</b><i>needs attention</i><code>#9c3d2e</code></div><div class="sw"><span style="background:#2f6b4f"></span><b>positive</b><i>healthy / paid</i><code>#2f6b4f</code></div><div class="sw"><span style="background:#6385c8"></span><b>focus-ring</b><i>focus</i><code>#6385c8</code></div></div></section>
+      <section><h4>Type — system sans, one scale</h4>
+        <div class="typerow"><span style="font-size:26px;font-weight:700">Page title</span><span style="font-size:15px">Body 15</span><span style="font-size:13px">UI 13</span><span class="lbl">LABEL 11</span><code class="mono">code 12.5</code></div>
+      </section>
+      <section><h4>Signature motifs</h4>
+        <div class="motifs">
+          <div><span class="motiflabel">status thread — 3px on the leading edge, coloured by state</span>
+            <div class="threaddemo"><div class="threadrow"><i class="positive"></i><span>row</span></div><div class="threadrow"><i class="attention"></i><span>row</span></div><div class="threadrow"><i class="sunken"></i><span>row</span></div></div></div>
+          <div><span class="motiflabel">quantity track — length is stock, not decoration</span>
+            <div class="trackdemo"><div class="trackwrap"><div class="track"><i class="ok" style="width:100%"></i></div><span>10</span></div><div class="trackwrap"><div class="track"><i class="warn" style="width:30%"></i></div><span>3</span></div><div class="trackwrap"><div class="track"><i class="bad" style="width:4%"></i></div><span>0</span></div></div></div>
+        </div>
+      </section>
+      <section><h4>Radius &amp; control</h4><div class="ctlrow"><code>--radius-brand 7px</code><button class="btn">Primary action</button><button class="btn ghost">Secondary</button><button class="btn quiet">Quiet</button><input class="input" style="width:200px" value="Text field" /><span class="badge published">published</span><span class="badge draft">draft</span><span class="badge attention">failed</span></div></section>
+    </div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Sign in</b><span>auth · error state shown</span><em>1360 × 780</em></figcaption><div class="frame" id="signin" style="width:1360px;height:780px">
+  <div class="authwrap">
+    <div class="authcard">
+      <div class="brandbig"><span class="mark lg"></span><b>MarketCore</b></div>
+      <h2>Sign in</h2><p class="muted">Use your organization account to continue.</p>
+      <label class="field"><span class="lbl">Email</span><input class="input" value="owner@marketcore.test"></label>
+      <label class="field"><span class="lbl">Password</span><input class="input" type="password" value="correct-horse-battery"></label>
+      <div class="alertbad">That email and password don't match an account.</div>
+      <button class="btn full">Sign in</button>
+      <p class="authfoot">No account? <a>Create one</a></p>
+    </div>
+    <div class="authnote">Error state shown. The API answers the same way for an unknown email and a wrong password, so this screen never reveals which.</div>
+  </div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Register</b><span>auth · password policy</span><em>1360 × 780</em></figcaption><div class="frame" id="register" style="width:1360px;height:780px">
+  <div class="authwrap">
+    <div class="authcard">
+      <div class="brandbig"><span class="mark lg"></span><b>MarketCore</b></div>
+      <h2>Create your account</h2><p class="muted">12 characters or more — a policy, not a suggestion.</p>
+      <label class="field"><span class="lbl">Email</span><input class="input" placeholder="you@company.test"></label>
+      <label class="field"><span class="lbl">Password</span><input class="input" placeholder="at least 12 characters"><em class="hint">12+ code points</em></label>
+      <button class="btn full">Create account</button>
+      <p class="authfoot">Already have one? <a>Sign in</a></p>
+    </div>
+  </div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Dashboard</b><span>session · overview</span><em>1360 × 880</em></figcaption><div class="frame" id="dashboard" style="width:1360px;height:880px"><div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><div><b>MarketCore</b><i>operator console</i></div></div>
+    <div class="tenant">
+      <span class="lbl">Organization</span>
+      <button class="orgsel"><span class="dot"></span>Nile Traders<svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg></button>
+    </div>
+    <nav><a class="on">Dashboard</a><a class="">Products</a><a class="">Orders</a><a class="">Refunds</a><a class="">Payouts</a><a class="">Members</a><a class="">Operations</a></nav>
+    <div class="railfoot">v0.1 · phase 3 of 15</div>
+  </aside><div class="main">
+  <header class="topbar">
+    <div class="titles"><h1>Dashboard</h1><p>Nile Traders · last 30 days</p></div>
+    <div class="topright">
+      <div class="user"><span class="ava">Y</span><div><b>owner@marketcore.test</b><i>Owner · Nile Traders</i></div></div>
+      <button class="btn ghost sm">Sign out</button>
+    </div>
+  </header><div class="content"><div class="stats"><div class="stat"><span class="lbl">Revenue</span><b>E£48,290.00</b><i class="pos">+12.4% vs prev</i></div><div class="stat"><span class="lbl">Orders</span><b>128</b><i class="pos">+9 this week</i></div><div class="stat"><span class="lbl">Low stock</span><b>2</b><i class="warn">1 out of stock</i></div><div class="stat"><span class="lbl">Payout available</span><b>E£6,150.00</b><i class="undefined">settles Friday</i></div></div><div class="cols"><div class="card"><div class="cardhead"><h3>Recent orders</h3><a class="link">View all</a></div><table class="tbl"><thead><tr><th>Order</th><th>Buyer</th><th>Total</th><th>Payment</th></tr></thead><tbody><tr><td class="thread positive"><b>#1042</b></td><td class="muted">m.buyer@…</td><td class="mono">E£249.00</td><td><span class="badge published">paid</span></td></tr><tr><td class="thread positive"><b>#1041</b></td><td class="muted">s.ahmed@…</td><td class="mono">E£498.00</td><td><span class="badge published">paid</span></td></tr><tr><td class="thread draft"><b>#1040</b></td><td class="muted">k.hassan@…</td><td class="mono">E£189.00</td><td><span class="badge draft">pending</span></td></tr><tr><td class="thread attention"><b>#1039</b></td><td class="muted">n.said@…</td><td class="mono">E£249.00</td><td><span class="badge attention">refunded</span></td></tr></tbody></table></div><div class="card"><div class="cardhead"><h3>Low stock</h3></div><div class="lowrow"><span>Nile Cotton Shirt</span><div class="trackwrap"><div class="track"><i class="warn" style="width:30%"></i></div><span>3</span></div></div><div class="lowrow"><span>Ramie Table Runner</span><div class="trackwrap"><div class="track"><i class="bad" style="width:4%"></i></div><span>0</span></div></div><div class="session"><div><span class="lbl">Signed in as</span><b>owner@marketcore.test</b></div><div><span class="lbl">Acting in</span><b>Nile Traders</b> <span class="badge published">OWNER</span></div></div></div></div></div></div></div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Products</b><span>catalog · the signature thread</span><em>1360 × 880</em></figcaption><div class="frame" id="products" style="width:1360px;height:880px"><div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><div><b>MarketCore</b><i>operator console</i></div></div>
+    <div class="tenant">
+      <span class="lbl">Organization</span>
+      <button class="orgsel"><span class="dot"></span>Nile Traders<svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg></button>
+    </div>
+    <nav><a class="">Dashboard</a><a class="on">Products</a><a class="">Orders</a><a class="">Refunds</a><a class="">Payouts</a><a class="">Members</a><a class="">Operations</a></nav>
+    <div class="railfoot">v0.1 · phase 3 of 15</div>
+  </aside><div class="main">
+  <header class="topbar">
+    <div class="titles"><h1>Products</h1><p>4 products · 2 published</p></div>
+    <div class="topright">
+      <div class="user"><span class="ava">Y</span><div><b>owner@marketcore.test</b><i>Owner · Nile Traders</i></div></div>
+      <button class="btn ghost sm">Sign out</button>
+    </div>
+  </header><div class="content">
+    <div class="toolbar">
+      <input class="input search" placeholder="Search products…">
+      <button class="btn ghost">Filter</button><span class="spacer"></span>
+      <button class="btn">New product</button>
+    </div>
+    <div class="card">
+      <table class="tbl big"><thead><tr><th>Product</th><th>Status</th><th>Price</th><th>Available</th><th>Updated</th></tr></thead><tbody>
+      
+        <tr>
+          <td class="thread positive"><b>Nile Cotton Shirt</b></td>
+          <td><span class="badge published">published</span></td>
+          <td class="mono">E£249.00</td>
+          <td><div class="trackwrap"><div class="track"><i class="ok" style="width:42%"></i></div><span>10</span></div></td>
+          <td class="muted">2 min ago</td>
+        </tr>
+        <tr>
+          <td class="thread sunken"><b>Giza Sheet Set</b></td>
+          <td><span class="badge draft">draft</span></td>
+          <td class="mono">E£1,250.00</td>
+          <td><div class="trackwrap"><div class="track"><i class="bad" style="width:4%"></i></div><span>0</span></div></td>
+          <td class="muted">yesterday</td>
+        </tr>
+        <tr>
+          <td class="thread positive"><b>Ramie Table Runner</b></td>
+          <td><span class="badge published">published</span></td>
+          <td class="mono">E£180.00</td>
+          <td><div class="trackwrap"><div class="track"><i class="warn" style="width:13%"></i></div><span>3</span></div></td>
+          <td class="muted">3 days ago</td>
+        </tr>
+        <tr>
+          <td class="thread positive"><b>Delta Olive Oil</b></td>
+          <td><span class="badge published">published</span></td>
+          <td class="mono">E£189.00</td>
+          <td><div class="trackwrap"><div class="track"><i class="ok" style="width:100%"></i></div><span>24</span></div></td>
+          <td class="muted">last week</td>
+        </tr>
+      </tbody></table>
+      <div class="tblfoot">The 3px thread on the leading edge is the direction's signature — one row is findable by scanning the left margin.</div>
+    </div></div></div></div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Product detail</b><span>catalog · inventory + publish rule</span><em>1360 × 880</em></figcaption><div class="frame" id="product" style="width:1360px;height:880px"><div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><div><b>MarketCore</b><i>operator console</i></div></div>
+    <div class="tenant">
+      <span class="lbl">Organization</span>
+      <button class="orgsel"><span class="dot"></span>Nile Traders<svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg></button>
+    </div>
+    <nav><a class="">Dashboard</a><a class="on">Products</a><a class="">Orders</a><a class="">Refunds</a><a class="">Payouts</a><a class="">Members</a><a class="">Operations</a></nav>
+    <div class="railfoot">v0.1 · phase 3 of 15</div>
+  </aside><div class="main">
+  <header class="topbar">
+    <div class="titles"><h1>Nile Cotton Shirt</h1><p>Product · Nile Traders</p></div>
+    <div class="topright">
+      <div class="user"><span class="ava">Y</span><div><b>owner@marketcore.test</b><i>Owner · Nile Traders</i></div></div>
+      <button class="btn ghost sm">Sign out</button>
+    </div>
+  </header><div class="content">
+  <div class="cols">
+    <div class="stack">
+      <div class="card pad">
+        <div class="cardhead"><h3>Details</h3><span class="badge published">published</span></div>
+        <label class="field"><span class="lbl">Name</span><input class="input" value="Nile Cotton Shirt"></label>
+        <div class="row2">
+          <label class="field"><span class="lbl">Price</span><input class="input mono" value="249.00"></label>
+          <label class="field"><span class="lbl">Currency</span><input class="input" value="EGP"></label>
+        </div>
+        <div class="actions"><button class="btn">Save changes</button><button class="btn ghost">Unpublish</button></div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card pad">
+        <div class="cardhead"><h3>Inventory</h3></div>
+        <div class="bignum">10 <span>available</span></div>
+        <div class="trackwrap"><div class="track"><i class="ok" style="width:100%"></i></div><span>10</span></div>
+        <div class="kv"><span>Reserved</span><b>0</b></div>
+        <div class="kv"><span>Version</span><b class="mono">7</b></div>
+        <p class="muted small">The database enforces <code>available ≥ 0</code> with a CHECK constraint — the API cannot sell what it does not have.</p>
+      </div>
+      <div class="card pad">
+        <div class="cardhead"><h3>Publish rule</h3></div>
+        <p class="muted small">A product may move DRAFT → PUBLISHED only when its price is at least 1 minor unit. Publishing a free product is refused, not silently allowed.</p>
+      </div>
+    </div>
+  </div></div></div></div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Orders</b><span>orders · states</span><em>1360 × 880</em></figcaption><div class="frame" id="orders" style="width:1360px;height:880px"><div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><div><b>MarketCore</b><i>operator console</i></div></div>
+    <div class="tenant">
+      <span class="lbl">Organization</span>
+      <button class="orgsel"><span class="dot"></span>Nile Traders<svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg></button>
+    </div>
+    <nav><a class="">Dashboard</a><a class="">Products</a><a class="on">Orders</a><a class="">Refunds</a><a class="">Payouts</a><a class="">Members</a><a class="">Operations</a></nav>
+    <div class="railfoot">v0.1 · phase 3 of 15</div>
+  </aside><div class="main">
+  <header class="topbar">
+    <div class="titles"><h1>Orders</h1><p>4 orders · 1 needs attention</p></div>
+    <div class="topright">
+      <div class="user"><span class="ava">Y</span><div><b>owner@marketcore.test</b><i>Owner · Nile Traders</i></div></div>
+      <button class="btn ghost sm">Sign out</button>
+    </div>
+  </header><div class="content">
+    <div class="toolbar"><input class="input search" placeholder="Search by order or buyer…"><button class="btn ghost">Status</button><span class="spacer"></span><button class="btn ghost">Export</button></div>
+    <div class="card"><table class="tbl big"><thead><tr><th>Order</th><th>Buyer</th><th>Items</th><th>Total</th><th>Payment</th><th>Fulfilment</th></tr></thead><tbody>
+    <tr>
+      <td class="thread positive"><b class="mono">#1042</b></td>
+      <td>m.buyer@marketcore.test</td><td>1</td><td class="mono">E£249.00</td>
+      <td><span class="badge published">paid</span></td>
+      <td><span class="badge draft">fulfilling</span></td></tr><tr>
+      <td class="thread positive"><b class="mono">#1041</b></td>
+      <td>s.ahmed@marketcore.test</td><td>2</td><td class="mono">E£498.00</td>
+      <td><span class="badge published">paid</span></td>
+      <td><span class="badge draft">completed</span></td></tr><tr>
+      <td class="thread positive"><b class="mono">#1040</b></td>
+      <td>k.hassan@marketcore.test</td><td>1</td><td class="mono">E£189.00</td>
+      <td><span class="badge draft">processing</span></td>
+      <td><span class="badge draft">pending</span></td></tr><tr>
+      <td class="thread attention"><b class="mono">#1039</b></td>
+      <td>n.said@marketcore.test</td><td>1</td><td class="mono">E£249.00</td>
+      <td><span class="badge attention">refunded</span></td>
+      <td><span class="badge draft">cancelled</span></td></tr>
+    </tbody></table></div></div></div></div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Order detail</b><span>ledger for one order</span><em>1360 × 880</em></figcaption><div class="frame" id="order" style="width:1360px;height:880px"><div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><div><b>MarketCore</b><i>operator console</i></div></div>
+    <div class="tenant">
+      <span class="lbl">Organization</span>
+      <button class="orgsel"><span class="dot"></span>Nile Traders<svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg></button>
+    </div>
+    <nav><a class="">Dashboard</a><a class="">Products</a><a class="on">Orders</a><a class="">Refunds</a><a class="">Payouts</a><a class="">Members</a><a class="">Operations</a></nav>
+    <div class="railfoot">v0.1 · phase 3 of 15</div>
+  </aside><div class="main">
+  <header class="topbar">
+    <div class="titles"><h1>Order #1042</h1><p>Placed 2 minutes ago · Nile Traders</p></div>
+    <div class="topright">
+      <div class="user"><span class="ava">Y</span><div><b>owner@marketcore.test</b><i>Owner · Nile Traders</i></div></div>
+      <button class="btn ghost sm">Sign out</button>
+    </div>
+  </header><div class="content">
+  <div class="pillrow"><span class="pill done">pending payment</span><i class="pillarrow">→</i><span class="pill done">paid</span><i class="pillarrow">→</i><span class="pill ">fulfilling</span><i class="pillarrow">→</i><span class="pill ">completed</span></div>
+  <div class="cols">
+    <div class="stack">
+      <div class="card">
+        <div class="cardhead"><h3>Items</h3></div>
+        <table class="tbl"><thead><tr><th>Product</th><th>Qty</th><th>Unit</th><th>Line</th></tr></thead><tbody>
+          <tr><td class="thread positive">Nile Cotton Shirt</td><td>1</td><td class="mono">E£249.00</td><td class="mono">E£249.00</td></tr>
+        </tbody><tfoot><tr><td colspan="3" class="right muted">Total</td><td class="mono"><b>E£249.00</b></td></tr></tfoot></table>
+      </div>
+      <div class="card">
+        <div class="cardhead"><h3>Ledger</h3><span class="badge published">balanced</span></div>
+        <table class="tbl"><thead><tr><th>Account</th><th>Debit</th><th>Credit</th></tr></thead><tbody>
+          <tr><td>Platform cash</td><td class="mono pos">E£249.00</td><td class="mono">—</td></tr>
+          <tr><td>Seller payable</td><td class="mono">—</td><td class="mono">E£224.10</td></tr>
+          <tr><td>Platform revenue</td><td class="mono">—</td><td class="mono">E£24.90</td></tr>
+        </tbody><tfoot><tr><td class="right muted">Signed sum</td><td colspan="2" class="mono pos">0.00</td></tr></tfoot></table>
+        <div class="tblfoot">Append-only: entries are never edited. A correction is a compensating transaction, not a rewrite.</div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card pad"><div class="cardhead"><h3>Payment</h3></div>
+        <div class="kv"><span>Status</span><b><span class="badge published">succeeded</span></b></div>
+        <div class="kv"><span>Attempts</span><b>1</b></div>
+        <div class="kv"><span>Provider ref</span><b class="mono small">pi_3Qk…9d2</b></div>
+      </div>
+      <div class="card pad"><div class="cardhead"><h3>Timeline</h3></div>
+        <ul class="tl"><li><b>Payment captured</b><span>2 min ago · webhook applied once</span></li><li><b>Order created</b><span>2 min ago · inventory 10 → 9</span></li><li><b>Checkout</b><span>2 min ago · idempotency key reused 0×</span></li></ul>
+      </div>
+      <div class="card pad"><div class="cardhead"><h3>Actions</h3></div>
+        <div class="actions col"><button class="btn ghost">Refund</button><button class="btn quiet">Cancel order</button></div>
+      </div>
+    </div>
+  </div></div></div></div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Refunds</b><span>INV-5</span><em>1360 × 880</em></figcaption><div class="frame" id="refunds" style="width:1360px;height:880px"><div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><div><b>MarketCore</b><i>operator console</i></div></div>
+    <div class="tenant">
+      <span class="lbl">Organization</span>
+      <button class="orgsel"><span class="dot"></span>Nile Traders<svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg></button>
+    </div>
+    <nav><a class="">Dashboard</a><a class="">Products</a><a class="">Orders</a><a class="on">Refunds</a><a class="">Payouts</a><a class="">Members</a><a class="">Operations</a></nav>
+    <div class="railfoot">v0.1 · phase 3 of 15</div>
+  </aside><div class="main">
+  <header class="topbar">
+    <div class="titles"><h1>Refunds</h1><p>INV-5 — refunds never exceed the capture</p></div>
+    <div class="topright">
+      <div class="user"><span class="ava">Y</span><div><b>owner@marketcore.test</b><i>Owner · Nile Traders</i></div></div>
+      <button class="btn ghost sm">Sign out</button>
+    </div>
+  </header><div class="content">
+  <div class="cols">
+    <div class="stack">
+      <div class="card"><table class="tbl big"><thead><tr><th>Refund</th><th>Order</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+        <tr><td class="thread positive">RF-0042</td><td class="mono">#1039</td><td class="mono">E£249.00</td><td><span class="badge published">succeeded</span></td></tr>
+        <tr><td class="thread attention">RF-0041</td><td class="mono">#1036</td><td class="mono">E£90.00</td><td><span class="badge attention">failed</span></td></tr>
+        <tr><td class="thread draft">RF-0040</td><td class="mono">#1032</td><td class="mono">E£50.00</td><td><span class="badge draft">processing</span></td></tr>
+      </tbody></table></div>
+    </div>
+    <div class="stack">
+      <div class="card pad"><div class="cardhead"><h3>Request a refund</h3></div>
+        <label class="field"><span class="lbl">Order</span><input class="input mono" value="#1039"></label>
+        <label class="field"><span class="lbl">Amount</span><input class="input mono" value="249.00"><em class="hint">captured: 249.00 EGP</em></label>
+        <div class="alertwarn">A refund above the captured total is refused before the provider is called.</div>
+        <button class="btn full">Request refund</button>
+      </div>
+      <div class="card pad"><div class="cardhead"><h3>Ledger effect</h3></div>
+        <p class="muted small">A refund posts a <b>reversing</b> transaction — seller payable and platform revenue are debited, platform cash credited. The original capture is never touched.</p>
+      </div>
+    </div>
+  </div></div></div></div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Payouts</b><span>INV-8</span><em>1360 × 880</em></figcaption><div class="frame" id="payouts" style="width:1360px;height:880px"><div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><div><b>MarketCore</b><i>operator console</i></div></div>
+    <div class="tenant">
+      <span class="lbl">Organization</span>
+      <button class="orgsel"><span class="dot"></span>Nile Traders<svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg></button>
+    </div>
+    <nav><a class="">Dashboard</a><a class="">Products</a><a class="">Orders</a><a class="">Refunds</a><a class="on">Payouts</a><a class="">Members</a><a class="">Operations</a></nav>
+    <div class="railfoot">v0.1 · phase 3 of 15</div>
+  </aside><div class="main">
+  <header class="topbar">
+    <div class="titles"><h1>Payouts</h1><p>INV-8 — a payout is executed at most once</p></div>
+    <div class="topright">
+      <div class="user"><span class="ava">Y</span><div><b>owner@marketcore.test</b><i>Owner · Nile Traders</i></div></div>
+      <button class="btn ghost sm">Sign out</button>
+    </div>
+  </header><div class="content">
+  <div class="stats">
+    <div class="stat"><span class="lbl">Available</span><b>E£6,150.00</b><i class="pos">withdrawable now</i></div>
+    <div class="stat"><span class="lbl">Pending settlement</span><b>E£1,824.00</b><i>clears in 2 days</i></div>
+    <div class="stat"><span class="lbl">Paid out (all time)</span><b>E£34,870.00</b><i>41 payouts</i></div>
+  </div>
+  <div class="toolbar"><span class="spacer"></span><button class="btn">Request payout</button></div>
+  <div class="card"><table class="tbl big"><thead><tr><th>Payout</th><th>Amount</th><th>Status</th><th>Provider ref</th><th>Requested</th></tr></thead><tbody>
+    <tr><td class="thread positive">PO-0031</td><td class="mono">E£2,241.00</td><td><span class="badge published">paid</span></td><td class="mono small">tr_1Qk…</td><td class="muted">Mon</td></tr>
+    <tr><td class="thread draft">PO-0032</td><td class="mono">E£6,150.00</td><td><span class="badge draft">processing</span></td><td class="mono small">—</td><td class="muted">today</td></tr>
+    <tr><td class="thread attention">PO-0030</td><td class="mono">E£980.00</td><td><span class="badge attention">failed</span></td><td class="mono small">—</td><td class="muted">Fri</td></tr>
+  </tbody></table>
+  <div class="tblfoot">Two workers may race one payout; the state predicate — not the worker — is the guard, so exactly one provider transfer is initiated.</div></div></div></div></div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Members</b><span>tenancy · roles</span><em>1360 × 880</em></figcaption><div class="frame" id="members" style="width:1360px;height:880px"><div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><div><b>MarketCore</b><i>operator console</i></div></div>
+    <div class="tenant">
+      <span class="lbl">Organization</span>
+      <button class="orgsel"><span class="dot"></span>Nile Traders<svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg></button>
+    </div>
+    <nav><a class="">Dashboard</a><a class="">Products</a><a class="">Orders</a><a class="">Refunds</a><a class="">Payouts</a><a class="on">Members</a><a class="">Operations</a></nav>
+    <div class="railfoot">v0.1 · phase 3 of 15</div>
+  </aside><div class="main">
+  <header class="topbar">
+    <div class="titles"><h1>Members</h1><p>Nile Traders · 2 members</p></div>
+    <div class="topright">
+      <div class="user"><span class="ava">Y</span><div><b>owner@marketcore.test</b><i>Owner · Nile Traders</i></div></div>
+      <button class="btn ghost sm">Sign out</button>
+    </div>
+  </header><div class="content">
+  <div class="cols">
+    <div class="stack">
+      <div class="card"><table class="tbl big"><thead><tr><th>Member</th><th>Role</th><th>Status</th><th>Joined</th></tr></thead><tbody>
+        <tr><td class="thread positive"><b>owner@marketcore.test</b></td><td><span class="badge published">owner</span></td><td><span class="badge published">active</span></td><td class="muted">Sep 19</td></tr>
+        <tr><td class="thread sunken"><b>member@marketcore.test</b></td><td><span class="badge draft">member</span></td><td><span class="badge published">active</span></td><td class="muted">Sep 20</td></tr>
+      </tbody></table>
+      <div class="tblfoot">The last owner cannot be removed — a count over sibling rows, enforced in a transaction, with its own test.</div></div>
+    </div>
+    <div class="stack">
+      <div class="card pad"><div class="cardhead"><h3>Add a member</h3></div>
+        <label class="field"><span class="lbl">Email</span><input class="input" placeholder="teammate@company.test"></label>
+        <label class="field"><span class="lbl">Role</span><select class="input"><option>Member</option><option>Owner</option></select></label>
+        <button class="btn full">Add to organization</button>
+        <p class="muted small">Nothing sends email yet — this adds an existing MarketCore user by address.</p>
+      </div>
+      <div class="card pad"><div class="cardhead"><h3>Tenant isolation</h3></div>
+        <p class="muted small">The organization is chosen in the rail and attached as <code>x-organization-id</code>. A cross-tenant read answers <b>404</b>; a header naming someone else's tenant answers <b>403</b>.</p>
+      </div>
+    </div>
+  </div></div></div></div></div></figure>
+<figure class="frame-wrap"><figcaption><b>Operations</b><span>webhooks · outbox</span><em>1360 × 880</em></figcaption><div class="frame" id="operations" style="width:1360px;height:880px"><div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark"></span><div><b>MarketCore</b><i>operator console</i></div></div>
+    <div class="tenant">
+      <span class="lbl">Organization</span>
+      <button class="orgsel"><span class="dot"></span>Nile Traders<svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg></button>
+    </div>
+    <nav><a class="">Dashboard</a><a class="">Products</a><a class="">Orders</a><a class="">Refunds</a><a class="">Payouts</a><a class="">Members</a><a class="on">Operations</a></nav>
+    <div class="railfoot">v0.1 · phase 3 of 15</div>
+  </aside><div class="main">
+  <header class="topbar">
+    <div class="titles"><h1>Operations</h1><p>Trace and recover failed work</p></div>
+    <div class="topright">
+      <div class="user"><span class="ava">Y</span><div><b>owner@marketcore.test</b><i>Owner · Nile Traders</i></div></div>
+      <button class="btn ghost sm">Sign out</button>
+    </div>
+  </header><div class="content">
+  <div class="toolbar"><span class="pill done">All systems normal</span><span class="spacer"></span><input class="input search" placeholder="Filter by request id…"></div>
+  <div class="cols">
+    <div class="stack">
+      <div class="card"><div class="cardhead"><h3>Webhook events</h3><span class="muted small">deduplicated by (provider, eventId)</span></div>
+        <table class="tbl"><thead><tr><th>Event</th><th>Type</th><th>Applied</th></tr></thead><tbody>
+          <tr><td class="thread positive mono small">evt_1Qk…9d2</td><td>payment_intent.succeeded</td><td><span class="badge published">once</span></td></tr>
+          <tr><td class="thread sunken mono small">evt_1Qk…9d2</td><td>payment_intent.succeeded</td><td><span class="badge draft">duplicate — no-op</span></td></tr>
+          <tr><td class="thread attention mono small">evt_1Qk…11a</td><td>charge.refunded</td><td><span class="badge attention">retrying</span></td></tr>
+        </tbody></table></div>
+    </div>
+    <div class="stack">
+      <div class="card"><div class="cardhead"><h3>Outbox jobs</h3><span class="muted small">at-least-once, idempotent</span></div>
+        <table class="tbl"><thead><tr><th>Job</th><th>Attempts</th><th>Request id</th></tr></thead><tbody>
+          <tr><td class="thread positive">publish.order.paid</td><td>1</td><td class="mono small">req_9616c9…</td></tr>
+          <tr><td class="thread attention">publish.refund.succeeded</td><td>3</td><td class="mono small">req_2bb178…</td></tr>
+          <tr><td class="thread draft">publish.payout.paid</td><td>—</td><td class="mono small">req_053540…</td></tr>
+        </tbody></table>
+        <div class="tblfoot">A job killed between commit and publication stays claimable and is retried — processed exactly once after recovery.</div>
+      </div>
+    </div>
+  </div></div></div></div></div></figure>
+<figure class="frame-wrap"><figcaption><b>States</b><span>Loading · empty · error · not found</span><em>1360 × 620</em></figcaption><div class="frame" id="states" style="width:1360px;height:620px">
+    <div class="doc">
+      <div class="dochead"><h1>States</h1><p>The shapes a screen takes before and instead of data. Empty and error are designed, not defaulted — they are where a user learns what to do.</p></div>
+      <div class="stategrid">
+        <div class="card pad"><span class="lbl">Loading</span><div class="skel" style="width:60%"></div><div class="skel" style="width:90%"></div><div class="skel" style="width:75%"></div><div class="skel" style="width:40%"></div></div>
+        <div class="card pad empty"><span class="emblem"></span><b>No products yet</b><p class="muted small">Products you add to Nile Traders appear here.</p><button class="btn">New product</button></div>
+        <div class="card pad"><span class="lbl">Error</span><div class="alertbad"><b>Query failed</b><span class="mono small">req_2bb178…</span></div><p class="muted small">Every failure carries one envelope: a code to branch on, a message, and the request id that joins it to a log line.</p></div>
+        <div class="card pad empty"><span class="emblem slash"></span><b>404 — not found</b><p class="muted small">A product from another organization answers 404, never 403: an id is a probe, and 403 would confirm it exists.</p></div>
+      </div>
+    </div></div></figure></div>
+</body></html>
