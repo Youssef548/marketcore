@@ -5,6 +5,7 @@ import {
   ProductSchema,
   TokenPairSchema,
   UserSummarySchema,
+  type CreateOrganizationRequest,
   type LoginRequest,
   type Organization,
   type Product,
@@ -54,6 +55,17 @@ export function createResources(accessToken?: string) {
     /** Tenant-free: this is how a client learns which organizations it may act in. */
     organizations: (): Promise<Organization[]> =>
       client.get('/organizations', z.array(OrganizationSchema)),
+
+    /**
+     * Creates an organization, with the caller as its owner — one operation, because an
+     * organization nobody belongs to is a row nobody can use.
+     *
+     * Tenant-free at the API, and it has to be: a user with no memberships has no tenant
+     * to name, so a request that required a header could never create the first one.
+     * `slug` is left to the API, which derives it from the name.
+     */
+    createOrganization: (body: CreateOrganizationRequest): Promise<Organization> =>
+      client.post('/organizations', OrganizationSchema, { body }),
 
     /**
      * The caller's products, inside one organization.

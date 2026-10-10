@@ -209,7 +209,43 @@ test.describe('web: the session in a real browser', () => {
     await expect(first.getByRole('cell', { name: 'Nile Cotton Shirt' })).toBeVisible();
   });
 
-  test('creates an account, signs in, and is turned away once signed out', async ({ page }) => {
+  test('a brand-new user is asked for an organization before reaching the shell', async ({ page }) => {
+    const email = `${unique('web-first-run')}@marketcore.test`;
+    const organization = `Onboarded ${Date.now()}`;
+
+    await page.goto(`${WEB}/register`);
+    await page.getByLabel('Email').fill(email);
+    await page.getByLabel('Password').fill(TEST_PASSWORD);
+    await page.getByRole('button', { name: 'Create account' }).click();
+    await expect(page).toHaveURL(/\/login\?registered=1/);
+
+    await signIn(page, email);
+
+    // A user who belongs to nothing gets the first-run screen, not a shell whose every
+    // tenant-scoped control answers "choose an organization first".
+    await expect(
+      page.getByRole('heading', { name: /not in an organization yet/i }),
+    ).toBeVisible();
+    await expect(page.getByRole('complementary')).toHaveCount(0);
+
+    // And it is a gate, not a hint: asking for a tenant page directly does not get past it.
+    await page.goto(`${WEB}/products`);
+    await expect(
+      page.getByRole('heading', { name: /not in an organization yet/i }),
+    ).toBeVisible();
+
+    await page.getByLabel('Organization name').fill(organization);
+    await page.getByRole('button', { name: 'Create organization' }).click();
+
+    // Creating it admits the session to the shell, with the new organization as the tenant.
+    await expect(page.getByRole('complementary')).toBeVisible();
+    await expect(page.getByRole('complementary')).toContainText(organization);
+
+    // And the tenant it just made is real: the catalog is empty rather than unavailable.
+    await expect(page.getByText('No products yet')).toBeVisible();
+  });
+
+  test('creates an account, signs in, and is turned away once signed out', async ({ page, request }) => {
     const email = `${unique('web')}@marketcore.test`;
 
     await page.goto(`${WEB}/register`);
@@ -221,6 +257,19 @@ test.describe('web: the session in a real browser', () => {
     // from signing one in, and the app sends the visitor to sign in rather than
     // chaining a login behind their back.
     await expect(page).toHaveURL(/\/login\?registered=1/);
+
+    // This user belongs to nothing, and a user who belongs to nothing is sent to the
+    // first-run screen rather than the shell — so an organization is created first, through
+    // the same call the onboarding screen makes. What is under test here is the session and
+    // its cookies; the gate has its own journey above, and it is a gate rather than a hint.
+    const session = await request.post(`${API}/auth/login`, { data: credentials(email) });
+    expect(session.status()).toBe(200);
+    const tokens = TokenPairSchema.parse(await session.json());
+    const created = await request.post(`${API}/organizations`, {
+      data: { name: `Shell ${Date.now()}` },
+      headers: { authorization: `Bearer ${tokens.accessToken}` },
+    });
+    expect(created.status()).toBe(201);
 
     await signIn(page, email);
     // Scoped to the header: the address is the shell's own claim about who is signed
