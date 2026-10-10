@@ -20,6 +20,7 @@ its constraint exists describes a guess, not a decision.
 | [010](./010-tenant-isolation-in-the-query-layer.md) | Enforce tenant isolation in the application query layer | Before tenancy and every tenant-owned read (phase 2) | Accepted |
 | [011](./011-web-session-and-token-storage.md) | Hold the web session in httpOnly cookies behind a BFF | Before the first web route that needs a session | Accepted |
 | [012](./012-component-layer.md) | Keep the component layer hand-rolled; adopt Radix per widget | Before the design system's first component | Accepted |
+| [013](./013-design-direction-quartz.md) | Adopt Quartz as the design direction | After the first web slice, on looking at the built app | Accepted |
 
 Decisions that do not warrant an ADR live in `docs/superpowers/specs/`, whose `D<n>` identifiers are
 cited from code comments and plans. The sequence is continuous across documents rather than

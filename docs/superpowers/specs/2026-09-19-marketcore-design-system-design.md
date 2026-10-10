@@ -75,6 +75,12 @@ transcribed wrongly fails rather than ships.
 
 ## D42 — The direction is selvedge
 
+> **Superseded by [ADR 013](../../adr/013-design-direction-quartz.md).** The direction is now Quartz.
+> This section is left as written because it is the record of what was decided then, and what it says
+> about *why* a direction is chosen by looking at rendered options still holds — the method produced
+> selvedge, and later produced Quartz from the same method. Everything below D42 that names selvedge
+> (D48's deferred signature, D49's contrast values, the deliverables list) refers to that direction.
+
 Indigo chrome, undyed-linen canvas, warm dark ink, a single indigo action colour, and madder red
 reserved for attention.
 
