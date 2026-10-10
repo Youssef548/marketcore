@@ -49,7 +49,7 @@ export function OrganizationSwitcher() {
       <label className="block">
         <span className="sr-only">Active organization</span>
         <select
-          className="w-full rounded-brand border border-rail-active bg-rail px-2 py-1 text-xs text-ink-on-rail"
+          className="w-full rounded-brand border border-rail-active bg-rail px-2.5 py-1.5 text-sm text-ink-on-rail"
           disabled={pending}
           value={activeOrganization?.id ?? ''}
           onChange={(event) => void choose(event.target.value)}

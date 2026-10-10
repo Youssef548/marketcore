@@ -16,8 +16,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">Your session</h1>
+      {/* The top bar already titles the page; a second `h1` with the same words is a
+       * duplicated outline a screen reader has to wade through. */}
+      <header>
         <p className="text-sm text-ink-muted">
           Signed in as <span className="font-medium">{user.email}</span>.
         </p>

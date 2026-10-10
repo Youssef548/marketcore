@@ -34,7 +34,7 @@ export function Rail({ appName }: { appName: string }) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex flex-col gap-1 border-r border-rail-edge bg-rail px-3.5 py-4">
+    <aside className="flex flex-col gap-1 border-b border-rail-edge bg-rail px-3.5 py-4 lg:border-b-0 lg:border-r">
       <Link
         className="flex items-center gap-2.5 px-1.5 pb-4 text-sm font-semibold text-ink-on-rail"
         href="/dashboard"
@@ -48,7 +48,7 @@ export function Rail({ appName }: { appName: string }) {
       </Link>
 
       <div className="mb-3 space-y-2 rounded-brand bg-rail-hover px-2.5 py-2.5">
-        <p className="text-sm font-medium text-ink-on-rail">
+        <p className="truncate text-sm font-medium text-ink-on-rail">
           {activeOrganization === null ? 'No organization' : activeOrganization.name}
         </p>
         <p className="text-xs text-ink-on-rail-muted">

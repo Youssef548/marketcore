@@ -73,8 +73,7 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight text-ink">Products</h2>
+      <header>
         <p className="text-sm text-ink-muted">
           {activeOrganization === null
             ? 'Choose an organization in the rail to see its catalog.'
@@ -91,7 +90,7 @@ export default function ProductsPage() {
       ) : state.status === 'failed' ? (
         <Alert>{state.message}</Alert>
       ) : state.status === 'loading' ? (
-        <div className="space-y-2 rounded-brand border border-rule bg-panel p-4" aria-busy>
+        <div role="status" className="space-y-2 rounded-brand border border-rule bg-panel p-4" aria-busy>
           <span className="sr-only">Loading products…</span>
           <div className="h-3 w-1/3 rounded bg-sunken" />
           <div className="h-3 w-2/3 rounded bg-sunken" />
@@ -101,21 +100,25 @@ export default function ProductsPage() {
         <div className="rounded-brand border border-rule bg-panel px-6 py-10 text-center">
           <p className="text-sm font-medium text-ink">No products yet</p>
           <p className="mt-1 text-xs text-ink-muted">
-            Products you add to this organization appear here.
+            Products created through the API and published to this organization appear
+            here.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-brand border border-rule">
+        <div className="overflow-x-auto rounded-brand border border-rule">
           <table className="w-full border-collapse text-sm">
+            <caption className="sr-only">
+              Products{activeOrganization === null ? '' : ` in ${activeOrganization.name}`}
+            </caption>
             <thead>
               <tr className="bg-sunken text-left">
-                <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+                <th scope="col" className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
                   Product
                 </th>
-                <th className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+                <th scope="col" className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
                   Status
                 </th>
-                <th className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+                <th scope="col" className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
                   Price
                 </th>
               </tr>
