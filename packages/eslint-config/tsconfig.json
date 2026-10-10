@@ -12,5 +12,11 @@
     "declarationMap": false,
     "types": ["node"]
   },
-  "include": ["test", "index.js"]
+  // `test` is the boundary tests. `test/fixtures` is deliberately excluded: it is a
+  // miniature workspace of files that exist to be *linted* — including one `.tsx`
+  // component, which the linter must parse and this package has no JSX compiler options
+  // for, and one file that imports a module that does not exist, which is the point of it.
+  // Typechecking them would assert the opposite of what they are for.
+  "include": ["test", "index.js"],
+  "exclude": ["test/fixtures"]
 }

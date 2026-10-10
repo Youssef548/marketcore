@@ -19,7 +19,10 @@ const sizes: Record<InputSize, string> = {
 };
 
 const borders = {
-  valid: 'border-rule-strong focus:border-action',
+  // `control-edge` rather than the decorative `rule-strong`: this border is the only
+  // thing distinguishing the input from the page, so it answers to WCAG 1.4.11's 3:1
+  // for a UI component boundary, and the token layer carries one that clears it.
+  valid: 'border-control-edge focus:border-action',
   invalid: 'border-attention focus:border-attention',
 } as const;
 

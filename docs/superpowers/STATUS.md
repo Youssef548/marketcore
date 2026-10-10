@@ -692,5 +692,62 @@ Five, all found by measuring rather than by looking.
 - **DM Sans and DM Mono are fetched at build time**, so a networked build is required. Geist was
   fetched the same way; this is two families rather than one.
 
+---
+
+## Closing the deferred list — 2026-10-10
+
+**Claim:** every gap the previous sections recorded and that did not belong to a later phase is
+closed, with a test that would fail if it reopened.
+**Branches:** `design/graphite-theme`, `feat/products-page`, `fix/guard-rail-gaps`
+**Introduced:** PR 1 of 3 in `design/quartz-tokens` was the token layer; these four are the rest.
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| Both themes' contrast | `pnpm --filter @app/ui test` | **28 passed** — 24 tokens, 25 text pairs and 2 control boundaries per theme |
+| The rules fire | `pnpm --filter @app/eslint-config test` | **10 passed**, a fixture per shape |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33** |
+| Behavioural, real browser over TLS | `docker compose -f docker-compose.e2e.yml up -d --build --wait` + `pnpm --filter e2e test:behavioural` | **16/16** |
+| The dark theme, in a browser | same | a dark OS yields a light page; choosing dark yields luminance < 0.3 with body text ≥ 4.5:1 |
+| The first tenant page | same | `/products` shows the seeded product — which is only possible if the request carried `x-organization-id` |
+
+### Delivered
+
+- **Graphite ships.** A second palette under `[data-theme='dark']`, a cookie the server reads, a toggle
+  in the top bar, and `tokens.spec.ts` checking both themes.
+- **The products page**, and the BFF route that carries `x-organization-id` for it.
+- **`control-edge`** — a control boundary that clears WCAG 1.4.11's 3:1 in both themes, separate from
+  the decorative hairline.
+- **Two ESLint rules** that close the boundary hole, and one that forbids a colour literal in a
+  component — the check that used to be a `grep`.
+
+### Findings
+
+1. **The behavioural colour assertions were measuring nothing.** The helper parsed `rgb(r, g, b)` from
+   `getComputedStyle`, but the tokens are literal `oklch()`, so Chrome returns `oklch(…)` — and its
+   digits were being read as RGB channels. "Body text clears 7:1" had been passing on garbage since it
+   was written. Colours are now read as sRGB bytes through a canvas.
+2. **The documented boundary gap was mis-stated, and the fix needed two rules.** `boundaries/no-unknown`
+   does not report an unresolvable path — it reports a file that *resolves* and belongs to no element.
+   The recorded hole (a path that resolves to nothing) needed `import/no-unresolved`, which no one had
+   added. A fixture per shape is what found it.
+3. **A rule can be configured correctly and still never run.** The colour-literal fixture failed to
+   parse ("Unexpected token <") because the fixture workspace did not enable JSX, so the rule was
+   green on nothing. A lint rule with no fixture proving it fires is a rule nobody has tested.
+4. **Deriving the dark palette found a bug the light one hid:** the active rail item carries a *light*
+   accent in dark, so `ink-on-rail` failed there at 2.5:1. The component now uses `ink-on-action`.
+5. **A strict-mode locator found duplicate page titles.** The top bar's `h1` and the page's `h2` both
+   said "Products"; scoped the assertion to the banner, the same ruling the repo made for the email.
+
+### Not proven / deferred
+
+- **No visual regression testing.** Still refused: no stable rendering environment, and a flaky visual
+  gate is worse than none. This is the one gap on the list that is a judgement rather than a backlog.
+- **No multi-instance story** — unchanged, and phase-10 material.
+- **The products page is read-only**, and lists three fields. The rest of the catalog — create, edit,
+  publish, inventory — is phase 3's remaining surface, not this change's.
+- **Everything in the Roadmap from phase 4 on.** Those are the plan, not gaps.
+
 
 

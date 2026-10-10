@@ -74,6 +74,7 @@ const SEMANTIC_TOKENS = [
   'attention-wash',
   'positive',
   'positive-wash',
+  'control-edge',
   'focus-ring',
 ];
 
@@ -109,6 +110,20 @@ const TEXT_ON_SURFACE: [string, string][] = [
   ['ink', 'positive-wash'],
 ];
 
+/**
+ * What identifies a control, against the surfaces it is drawn on.
+ *
+ * A different bar from the pairs above, and deliberately so: WCAG asks 3:1 of a UI
+ * component boundary (1.4.11) and 4.5:1 of text. An input whose border is the only
+ * thing distinguishing it from the page is a control a low-vision user cannot find,
+ * which is why this is a token of its own rather than the same hairline `rule-strong`
+ * used for decoration.
+ */
+const UI_BOUNDARIES: [string, string][] = [
+  ['control-edge', 'canvas'],
+  ['control-edge', 'panel'],
+];
+
 describe.each(THEMES)('the $name palette', ({ declared }) => {
   it('declares exactly the semantic tokens the components name', () => {
     const declaredSemantic = [...declared.keys()]
@@ -131,6 +146,15 @@ describe.each(THEMES)('the $name palette', ({ declared }) => {
     }));
 
     expect(measured.filter(({ ratio }) => ratio < 4.5)).toEqual([]);
+  });
+
+  it('clears 3:1 for the control boundary, so an input is findable', () => {
+    const measured = UI_BOUNDARIES.map(([edge, surface]) => ({
+      pair: `${edge} on ${surface}`,
+      ratio: Number(contrastRatio(token(declared, edge), token(declared, surface)).toFixed(2)),
+    }));
+
+    expect(measured.filter(({ ratio }) => ratio < 3)).toEqual([]);
   });
 
   it('keeps the text ramp ordered against the surface, so the faint step is actually fainter', () => {

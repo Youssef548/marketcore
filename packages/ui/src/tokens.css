@@ -47,6 +47,7 @@
   --palette-slate-100: oklch(0.9315 0.0097 273.4);
   --palette-slate-200: oklch(0.8849 0.0131 266.7);
   --palette-slate-400: oklch(0.6635 0.0311 268.2);
+  --palette-slate-450: oklch(0.6352 0.0244 263.1);
   --palette-slate-500: oklch(0.5326 0.0193 259.4);
   --palette-slate-600: oklch(0.5205 0.0335 266.1);
   --palette-slate-900: oklch(0.2222 0.0187 266.1);
@@ -106,6 +107,7 @@
   --color-positive-wash: var(--palette-emerald-50);
 
   /* control */
+  --color-control-edge: var(--palette-slate-450);
   --color-focus-ring: var(--palette-indigo-500);
 }
 
@@ -134,6 +136,7 @@
   --palette-haze-400: oklch(0.7116 0.0341 266.1);
   --palette-haze-500: oklch(0.6465 0.0396 266.5);
   --palette-haze-600: oklch(0.6354 0.0355 264.3);
+  --palette-haze-700: oklch(0.5162 0.034 264.2);
 
   --palette-periwinkle-300: oklch(0.7263 0.1427 276.1);
   --palette-periwinkle-400: oklch(0.6809 0.169 275);
@@ -177,5 +180,6 @@
   --color-positive-wash: var(--palette-jade-900);
 
   /* control */
+  --color-control-edge: var(--palette-haze-700);
   --color-focus-ring: var(--palette-periwinkle-300);
 }

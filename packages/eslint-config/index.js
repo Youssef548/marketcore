@@ -71,19 +71,65 @@ export function defineConfig({ type, importRules = true, rootPath = PROJECT_ROOT
             ],
           },
         ],
-        ...(importRules ? { 'import/no-extraneous-dependencies': 'error' } : {}),
+        ...(importRules
+          ? {
+              'import/no-extraneous-dependencies': 'error',
+              // The second half of the boundary hole, and the one the README got wrong.
+              // It recorded "a package importing an app via a path that does not resolve
+              // passes both ESLint and tsc", and implied `no-unknown` was what apps had.
+              // It is not: `no-unknown` reports a file that *resolves* and belongs to no
+              // element, and is silent on a path that resolves to nothing at all. So both
+              // rules are needed, and the fixture for each shape proves it.
+              //
+              // Restricted to relative specifiers, which is the shape the hole is about. A
+              // bare specifier is resolved by the bundler and TypeScript — including
+              // subpath exports like `dotenv/config` and `vitest/config`, which the plain
+              // node resolver this plugin uses cannot follow — so checking them here buys
+              // false positives rather than safety.
+              'import/no-unresolved': ['error', { ignore: ['^(?!\\.\\.?/)'] }],
+            }
+          : {}),
       },
     },
   ];
 
-  if (isApp) {
-    rules.push({
-      files: ['apps/*/src/**/*.{ts,tsx}'],
-      // An import that resolves to no known element is a hole in the rules, so
-      // make it loud rather than silent.
-      rules: { 'boundaries/no-unknown': 'error' },
-    });
-  }
+  // An import that resolves to no known element is a hole in the rules, so make it loud
+  // rather than silent — for packages as well as apps.
+  //
+  // Until this covered packages, a `packages/*` → app import whose path did not resolve
+  // passed both ESLint and `tsc`: `boundaries/no-unknown` was app-only, and TypeScript
+  // deliberately ignores an unresolved *side-effect-only* import. It was recorded in the
+  // README as a known gap because the fix belongs in this file rather than in a package.
+  //
+  // Both directions are listed; the consuming package's own tree first, so a reader sees
+  // their own code at the front of the pattern.
+  const own = isApp ? 'apps/*/src/**/*.{ts,tsx}' : 'packages/*/src/**/*.{ts,tsx}';
+  const other = isApp ? 'packages/*/src/**/*.{ts,tsx}' : 'apps/*/src/**/*.{ts,tsx}';
+
+  rules.push({
+    files: [own, other],
+    rules: { 'boundaries/no-unknown': 'error' },
+  });
+
+  // A colour belongs in the token layer, not in a component. This used to be a habit —
+  // a `grep` in the README — and a grep is not a gate: it is run by whoever remembers.
+  rules.push({
+    files: ['apps/*/src/**/*.tsx', 'packages/*/src/**/*.tsx'],
+    ignores: ['**/*.test.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          // A colour inside a class list counts, so the match is anchored at a word
+          // boundary — the start of the string, after whitespace, or after the `[` of an
+          // arbitrary Tailwind value — rather than requiring the literal to *be* a colour.
+          selector: 'Literal[value=/(^|\\s|\\[)(#[0-9a-fA-F]{3,8}|oklch\\(|rgba?\\(|hsla?\\()/]',
+          message:
+            'A colour value belongs in the token layer (packages/ui/src/tokens.css), named for the job it does. A component names a role — bg-action, text-ink, border-rule — never a value.',
+        },
+      ],
+    },
+  });
 
   return rules;
 }
