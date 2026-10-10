@@ -7,9 +7,16 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "test:e2e": "e2e run"
   },
   "devDependencies": {
-    "turbo": "^2.3.0"
+    "@ai-sdk/openai": "^4.0.0",
+    "@ai-sdk/openai-compatible": "^3.0.0",
+    "@e2e-dev/web": "^0.13.0",
+    "ai": "^7.0.0",
+    "e2e": "^0.18.0",
+    "turbo": "^2.3.0",
+    "zod": "^4.1.8"
   }
 }
