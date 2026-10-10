@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { afterAll, describe, expect, it } from '@jest/globals';
 import type { PrismaService } from '@app/runtime';
-import { SessionsRepository } from '../../src/auth/sessions.repository';
+import { SessionsRepository } from '../../src/auth/repositories/sessions.repository';
 import { testPrisma } from '../support/db';
 
 /**

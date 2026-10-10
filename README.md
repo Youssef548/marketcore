@@ -278,6 +278,10 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
   naming someone else's tenant answers **403**.
 - **Every route is guarded by default.** `@Public()`, `@TenantFree()` and `@OwnerOnly()` are the only
   opt-outs, and they are greppable.
+- **A feature module groups its artifacts into folders by type.** `apps/api/src/<module>/` keeps
+  `dto/`, `repositories/` and `interfaces/` folders; controllers, services and the module file stay at
+  the module root. Code that belongs to no module lives in `apps/api/src/common/`. The rule, and the
+  check that fails on a loose file, are in `.agents/skills/nestjs-code-conventions`.
 - **The web app holds the session, not the browser.** `apps/web` is a BFF: its route handlers are the
   only code that calls the API, and both tokens live in `httpOnly` cookies.
 - **No `.env` in git.** `.env.example` files only.

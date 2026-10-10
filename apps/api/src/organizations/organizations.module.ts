@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { OrganizationController } from './organization.controller';
-import { OrganizationRepository } from './organization.repository';
-import { MembershipRepository } from './membership.repository';
+import { OrganizationRepository } from './repositories/organization.repository';
+import { MembershipRepository } from './repositories/membership.repository';
 import { OrganizationService } from './organization.service';
 
 /**

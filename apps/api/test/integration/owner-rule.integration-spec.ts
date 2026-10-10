@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { afterAll, describe, expect, it } from '@jest/globals';
 import { MemberRole } from '@prisma/client';
 import type { PrismaService } from '@app/runtime';
-import { MemberRemovalOutcomes } from '../../src/organizations/membership.interface';
-import { MembershipRepository } from '../../src/organizations/membership.repository';
+import { MemberRemovalOutcomes } from '../../src/organizations/interfaces/membership.interface';
+import { MembershipRepository } from '../../src/organizations/repositories/membership.repository';
 import { testPrisma } from '../support/db';
 
 const suffix = () => randomUUID().slice(0, 8);

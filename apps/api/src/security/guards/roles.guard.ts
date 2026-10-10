@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@
 import { Reflector } from '@nestjs/core';
 import { canManageMembership } from '@app/domain';
 import { SecurityMessages, SecurityMetadata } from '../security.constants';
-import type { AuthenticatedRequest } from '../request-context.interface';
+import type { AuthenticatedRequest } from '../../common/interfaces/request-context.interface';
 
 /**
  * Reads the membership the OrganizationGuard already loaded, so it costs no query.

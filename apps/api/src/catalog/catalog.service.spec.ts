@@ -1,7 +1,7 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { MemberRoles, ProductStatuses } from '@app/contracts';
 import { buildTenantContext } from '@app/domain';
-import type { CatalogRepository } from './catalog.repository';
+import type { CatalogRepository } from './repositories/catalog.repository';
 import { CatalogService } from './catalog.service';
 
 const tenant = buildTenantContext('org_1', MemberRoles.OWNER);

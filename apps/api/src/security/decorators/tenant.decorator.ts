@@ -1,6 +1,6 @@
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 import type { TenantContext } from '@app/domain';
-import type { AuthenticatedRequest } from '../request-context.interface';
+import type { AuthenticatedRequest } from '../../common/interfaces/request-context.interface';
 
 /**
  * Reads what the OrganizationGuard resolved. Never reads the raw header: a

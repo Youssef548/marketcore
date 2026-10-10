@@ -14,9 +14,9 @@
   "mutate": [
     "src/security/guards/**/*.ts",
     "src/auth/auth.service.ts",
-    "src/auth/sessions.repository.ts",
-    "src/auth/tokens/token.service.ts",
-    "src/auth/password/argon2-password-hasher.ts",
+    "src/auth/repositories/sessions.repository.ts",
+    "src/auth/token.service.ts",
+    "src/auth/argon2-password-hasher.ts",
     "!src/**/*.spec.ts"
   ],
 

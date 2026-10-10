@@ -6,13 +6,13 @@ import { CurrentUser } from '../security/decorators/current-user.decorator';
 import { OwnerOnly } from '../security/decorators/owner-only.decorator';
 import { Tenant } from '../security/decorators/tenant.decorator';
 import { TenantFree } from '../security/decorators/tenant-free.decorator';
-import type { AuthenticatedUser } from '../security/request-context.interface';
+import type { AuthenticatedUser } from '../common/interfaces/request-context.interface';
 import {
   AddMemberRequestDto,
   CreateOrganizationRequestDto,
   OrganizationDto,
   OrganizationMemberDto,
-} from './organization.dto';
+} from './dto/organization.dto';
 import { OrganizationService } from './organization.service';
 
 @Controller('organizations')

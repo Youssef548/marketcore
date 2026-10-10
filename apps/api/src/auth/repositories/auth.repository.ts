@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@app/runtime';
 import type { UserSummary } from '@app/contracts';
-import type { UserRecord } from './user.interface';
+import type { UserRecord } from '../interfaces/user.interface';
 
 /**
  * Every Prisma call the auth module makes. The service depends on this and never

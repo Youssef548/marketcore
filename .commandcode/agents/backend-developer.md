@@ -31,6 +31,9 @@ Your scope is `apps/api`, `packages/contracts`, `packages/domain`, `packages/run
 ## Non-negotiables
 
 - Do not write literals inline when a constant, const-object enum, fixture, or contract schema should own the value.
+- Place a module's `*.dto.ts`, `*.repository.ts` and `*.interface.ts` files in `dto/`,
+  `repositories/` and `interfaces/` folders, not loose at the module root; shared non-module code
+  goes in `apps/api/src/common/`.
 - Do not let packages import apps.
 - Do not register global HTTP behaviour only in `main.ts`; tests must install it through `configureApp()`.
 - Do not weaken or delete assertions to get green.
