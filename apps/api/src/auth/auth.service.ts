@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   UnauthorizedException,
+  type LoggerService,
 } from '@nestjs/common';
 import {
   checkPasswordPolicy,
@@ -17,7 +18,14 @@ import {
   type TokenPair,
   type UserSummary,
 } from '@app/contracts';
-import { AuthMessages, PASSWORD_HASHER, PasswordPolicyMessages, REFRESH_TOKEN_TTL_MS } from './auth.constants';
+import {
+  AUTH_LOGGER,
+  AuthLogEvents,
+  AuthMessages,
+  PASSWORD_HASHER,
+  PasswordPolicyMessages,
+  REFRESH_TOKEN_TTL_MS,
+} from './auth.constants';
 import { AuthRepository } from './auth.repository';
 import { PasswordHasher } from './password/password-hasher.interface';
 import { SessionsRepository } from './sessions.repository';
@@ -30,6 +38,7 @@ export class AuthService {
     @Inject(PASSWORD_HASHER) private readonly passwordHasher: PasswordHasher,
     private readonly tokenService: TokenService,
     private readonly sessionsRepository: SessionsRepository,
+    @Inject(AUTH_LOGGER) private readonly logger: LoggerService,
   ) {}
 
   /**
@@ -56,6 +65,9 @@ export class AuthService {
     // One answer for an unknown email and a wrong password: distinguishing them
     // would make this endpoint an account-enumeration oracle.
     if (user === null || !(await this.passwordHasher.verify(user.passwordHash, request.password))) {
+      // The response says nothing about which of the two it was, deliberately; the
+      // log is where the difference survives, for whoever investigates a burst.
+      this.logger.warn(AuthLogEvents.LOGIN_FAILED, { email: request.email });
       throw new UnauthorizedException(AuthMessages.INVALID_CREDENTIALS);
     }
 
@@ -134,6 +146,10 @@ export class AuthService {
       sessionId,
       SessionRevocationReasons.REUSE_DETECTED,
     );
+    // A replay means the token leaked, so this is logged at error level: the caller
+    // only ever sees a 401 that is indistinguishable from any other, which makes the
+    // log the operator's only signal that a session was killed.
+    this.logger.error(AuthLogEvents.REFRESH_REUSE_DETECTED, { sessionId });
     throw new UnauthorizedException(AuthMessages.REFRESH_REUSED);
   }
 

@@ -532,4 +532,29 @@ The products page: the first table, the first `x-organization-id` header on a re
 caller for the generic proxy (D34) — and selvedge's signature moves, which this phase deliberately
 deferred rather than shipping a thread nothing draws (D48).
 
+---
 
+## Auth security-event logging — 2026-10-10 (hardening)
+
+**Claim:** the auth module records the two security-relevant outcomes its HTTP responses deliberately
+hide — a refused login, and a refresh-token replay that kills a session.
+**Branch:** `feat/auth-security-event-logging`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The events are emitted | `pnpm --filter api exec jest src/auth/auth.service.spec.ts` | 15 passed — `auth.login.failed` for an unknown email and a wrong password alike, `auth.refresh.reuse_detected` naming the revoked session on a replay |
+| The API still boots and behaves | `pnpm --filter api test:e2e` | 10 suites, 59 tests passed |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33 tasks** |
+
+### Not proven / deferred
+
+- **No request id on a domain event.** `AuthService` has no access to the request and there is no
+  async-context store, so an event cannot be correlated to the `http.request.completed` line for the
+  same request. `nestjs-cls` is a separate decision, not smuggled in here.
+- **Nothing consumes the events.** They exist to be grepped; a sink that acts on them (lockout after N
+  failures, alerting) is later phase work.
+- **The attempted email is logged.** It is what makes a credential-stuffing run investigable, and it is
+  the identifier the caller supplied rather than a secret — but it is user data in a log line, noted
+  rather than buried.

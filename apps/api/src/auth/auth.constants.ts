@@ -56,3 +56,28 @@ export const PasswordPolicyMessages = {
   TOO_SHORT: 'Password is shorter than the minimum length',
   TOO_LONG: 'Password is longer than the maximum length',
 } as const;
+
+/**
+ * The security events this module emits, one per outcome an operator would search
+ * for. A log event name is a contract rather than a literal — it is grepped across
+ * a fleet, so it has exactly one definition here instead of at each call site.
+ *
+ * These are implementation values, not wire values: no client branches on them, so
+ * they belong beside the code that owns them rather than in `@app/contracts`.
+ */
+export const AuthLogEvents = {
+  /** A login was refused. Emitted for an unknown email and a wrong password alike. */
+  LOGIN_FAILED: 'auth.login.failed',
+  /** A refresh token was replayed and the whole session was revoked as a result. */
+  REFRESH_REUSE_DETECTED: 'auth.refresh.reuse_detected',
+} as const;
+
+/**
+ * The DI token for the auth module's logger.
+ *
+ * A string, not the `LoggerService` type, for the reason `PASSWORD_HASHER` gives
+ * above: an interface does not exist at runtime, so `@Inject` needs a value to
+ * match on. Resolved by a factory in `AuthModule`, and overridden in tests so the
+ * emitted security events can be asserted instead of read off a stream.
+ */
+export const AUTH_LOGGER = 'AUTH_LOGGER';
