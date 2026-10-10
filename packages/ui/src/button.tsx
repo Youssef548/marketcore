@@ -21,7 +21,7 @@ const variants: Record<ButtonVariant, string> = {
   // Bordered rather than transparent: in this direction the second action is a thing
   // you can see, not an absence. It is `secondary` rather than `ghost` because a
   // bordered ghost is a name that lies about what it paints.
-  secondary: 'bg-panel text-ink border-rule-strong hover:bg-sunken',
+  secondary: 'bg-panel text-ink border-control-edge hover:bg-sunken',
   quiet: 'bg-transparent text-ink-muted border-transparent hover:text-ink',
 };
 

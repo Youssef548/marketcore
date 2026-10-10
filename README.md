@@ -93,10 +93,14 @@ Two things make it a system rather than a skin:
 
 - **One file is the look.** `packages/ui/src/tokens.css` is a three-layer token set — palette, then
   semantic roles, then the direction's values — so a component names what a colour is *for*
-  (`bg-action`) rather than what it is. Changing the app's look is changing that file.
+  (`bg-action`) rather than what it is. Changing the app's look is changing that file, and a second
+  theme is a second value set for the same names: **Quartz** by default, **Graphite** dark, chosen by
+  a cookie the server reads so the first paint is already right.
 - **Contrast is a test, not a promise.** `packages/ui/test/tokens.spec.ts` re-derives every
-  text-on-surface pair the components paint from the literal values and fails below 4.5:1. It is why
-  Quartz ships duller than it was drawn: ten of those pairs failed at the values that looked right.
+  text-on-surface pair the components paint from the literal values and fails below 4.5:1 — for both
+  themes. It is why Quartz ships duller than it was drawn: ten of those pairs failed at the values
+  that looked right. The control boundary is held to its own 3:1 bar (WCAG 1.4.11), because an input's
+  border is the only thing distinguishing it from the page.
 
 Everything visual is generated and committed, so it cannot drift from the code:
 
@@ -207,6 +211,10 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md), each with the beh
   single-flight rotation, because the API revokes a session when a refresh token is replayed.
 - **The design system.** One direction, three token layers, five components, contrast as a test, and
   the screens designed against it — [ADR 013](./docs/adr/013-design-direction-quartz.md).
+- **The second theme and the first tenant page.** Graphite dark ships as a cookie the server reads. The
+  products page reads the catalog through the BFF, carrying `x-organization-id` so the browser never
+  names a tenant. `control-edge` gives inputs a boundary that clears WCAG 1.4.11 in both themes, and
+  two ESLint rules close the boundary hole the README used to admit.
 
 **In progress**
 
@@ -242,12 +250,15 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
   delivery and password reset do not exist.
 - **The worker does not exist yet.** It arrives in phase 10, when there is asynchronous work for it to
   consume. The boundary that forces `packages/runtime` is already in place.
-- **The design system ships one light theme.** A dark palette exists in the board and in
-  `tokens.json`, but `apps/web` renders one theme and `color-scheme: light` says so.
-- **The products page does not exist.** The catalog is API-only; the board is its specification.
-- **One known gap in boundary enforcement.** A package importing an app via a path that does not
-  resolve passes both ESLint and `tsc`. The hazard is narrow, but it is recorded rather than left to be
-  discovered.
+- **Two themes ship, and a person chooses.** `apps/web` renders Quartz or Graphite from a cookie the
+  server reads, so the page arrives painted. The default is light whatever the operating system says.
+- **The products page exists, and it is thin.** Name, status and price, for the organization the
+  session acts in. Editing, inventory and images are the catalog phase's work; the board is the
+  specification for the rest.
+- **A known gap in boundary enforcement, now closed.** A package importing an app via a path that does
+  not resolve used to pass both ESLint and `tsc`. It needed two rules, not one: `no-unknown` reports a
+  file that *resolves* and belongs to no element, and is silent on a path that resolves to nothing at
+  all — which `import/no-unresolved` catches. Both are enabled, with a fixture per shape.
 - **No visual regression testing.** No stable rendering environment; a flaky visual gate is worse than
   none.
 

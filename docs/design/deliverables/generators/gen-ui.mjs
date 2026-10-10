@@ -20,7 +20,7 @@ const SKINS = [
     v: {
       canvas: '#f6f7fb', panel: '#ffffff', panel2: '#f1f3f9', rail: '#0b0d14',
       railInk: '#eef1f7', railMuted: '#8b93a7', ink: '#0a0b12', muted: '#667085', faint: '#98a2b3',
-      line: '#e6e8ef', lineStrong: '#d5d9e2', accent: '#4f46e5', accentInk: '#ffffff', accentWash: '#eef0ff',
+      line: '#e6e8ef', lineStrong: '#d5d9e2', controlEdge: '#838b9a', accent: '#4f46e5', accentInk: '#ffffff', accentWash: '#eef0ff',
       ok: '#16a34a', okWash: '#e8f7ee', bad: '#e11d48', badWash: '#fdecef', warn: '#d97706', warnWash: '#fdf3e4',
       info: '#0ea5e9', r: '12px', rSm: '8px',
       shadow: '0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.06)', grid: '#eef0f5',
@@ -33,7 +33,7 @@ const SKINS = [
     v: {
       canvas: '#0b0d12', panel: '#12151c', panel2: '#171b24', rail: '#070910',
       railInk: '#e8ebf2', railMuted: '#78829a', ink: '#e9ecf3', muted: '#98a2b8', faint: '#6b7488',
-      line: '#1e232e', lineStrong: '#2a3140', accent: '#7c8cff', accentInk: '#0a0d18', accentWash: 'rgba(124,140,255,.15)',
+      line: '#1e232e', lineStrong: '#2a3140', controlEdge: '#5e687c', accent: '#7c8cff', accentInk: '#0a0d18', accentWash: 'rgba(124,140,255,.15)',
       ok: '#34d399', okWash: 'rgba(52,211,153,.15)', bad: '#fb7185', badWash: 'rgba(251,113,133,.15)',
       warn: '#fbbf24', warnWash: 'rgba(251,191,36,.15)', info: '#38bdf8', r: '12px', rSm: '8px',
       shadow: 'none', grid: '#1b202a',
@@ -411,7 +411,7 @@ function foundations(skin) {
   const groups = [
     ['Surface', [['canvas', 'canvas', 'app background'], ['panel', 'panel', 'cards'], ['panel2', 'panel2', 'inset wells'], ['rail', 'rail', 'navigation plane']]],
     ['Text', [['ink', 'ink', 'primary'], ['muted', 'muted', 'secondary'], ['faint', 'faint', 'tertiary'], ['accent', 'accent', 'action']]],
-    ['Edge', [['line', 'line', 'hairline'], ['lineStrong', 'lineStrong', 'control border']]],
+    ['Edge', [['line', 'line', 'hairline'], ['lineStrong', 'lineStrong', 'decorative border'], ['controlEdge', 'control-edge', 'control boundary · 3:1']]],
     ['State', [['ok', 'ok', 'healthy / paid'], ['bad', 'bad', 'failed'], ['warn', 'warn', 'needs attention'], ['info', 'info', 'informational']]],
   ];
   return `<div class="doc"><div class="dochead"><h1>Foundations — ${skin.name}</h1>
@@ -509,10 +509,10 @@ nav{display:flex;flex-direction:column;gap:1px}
 .seg button{border:0;background:none;font:600 12.5px/1 "DM Sans",sans-serif;color:var(--muted);padding:7px 12px;border-radius:6px;cursor:pointer}
 .seg button.on{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
 .btn{display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:var(--accentInk);border:1px solid transparent;border-radius:9px;padding:9px 14px;font:600 13px/1 "DM Sans",sans-serif;cursor:pointer}
-.btn.ghost{background:var(--panel);color:var(--ink);border-color:var(--lineStrong)}
+.btn.ghost{background:var(--panel);color:var(--ink);border-color:var(--controlEdge)}
 .btn.quiet{background:none;color:var(--muted);border-color:transparent;padding:6px 8px}
 .btn.sm{padding:6px 10px;font-size:12px}.btn.full{width:100%;justify-content:center}
-.inline-search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--lineStrong);border-radius:9px;height:38px;padding:0 11px;color:var(--muted);width:250px}
+.inline-search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--controlEdge);border-radius:9px;height:38px;padding:0 11px;color:var(--muted);width:250px}
 .inline-search input{border:0;background:none;outline:none;font:inherit;font-size:13px;color:var(--ink);width:100%}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px 10px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px}
@@ -574,7 +574,7 @@ nav{display:flex;flex-direction:column;gap:1px}
 .fld{display:block}
 .fld>span{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:6px}
 .fld em{display:block;font-style:normal;font-size:11px;color:var(--faint);margin-top:5px}
-.input{width:100%;height:38px;border:1px solid var(--lineStrong);border-radius:9px;padding:0 12px;background:var(--panel);font:400 13.5px/1 "DM Sans",sans-serif;color:var(--ink)}
+.input{width:100%;height:38px;border:1px solid var(--controlEdge);border-radius:9px;padding:0 12px;background:var(--panel);font:400 13.5px/1 "DM Sans",sans-serif;color:var(--ink)}
 .input:focus{outline:2px solid var(--accent);outline-offset:1px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .kv{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}

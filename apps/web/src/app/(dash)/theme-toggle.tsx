@@ -39,7 +39,7 @@ export function ThemeToggle() {
       aria-pressed={theme === 'dark'}
       disabled={pending}
       onClick={() => void choose(theme === 'dark' ? 'light' : 'dark')}
-      className="grid h-8 w-8 place-items-center rounded-brand border border-rule-strong bg-panel text-ink-muted hover:text-ink disabled:opacity-50"
+      className="grid h-8 w-8 place-items-center rounded-brand border border-control-edge bg-panel text-ink-muted hover:text-ink disabled:opacity-50"
     >
       {/* Both marks are drawn and one is hidden, so the control is the same size in
        * either theme and the button does not move when it is pressed. */}
