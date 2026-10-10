@@ -123,8 +123,8 @@ describe('AuthService', () => {
     });
     expect(repository.createSessionWithToken).toHaveBeenCalledWith(
       'u1',
-      'refresh-hash',
       expect.any(Date),
+      'refresh-hash',
       expect.any(Date),
     );
   });

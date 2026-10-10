@@ -159,8 +159,8 @@ export class AuthService {
 
     await this.authRepository.createSessionWithToken(
       userId,
-      this.tokenService.hashRefreshToken(refreshToken),
       expiresAt,
+      this.tokenService.hashRefreshToken(refreshToken),
       expiresAt,
     );
 
