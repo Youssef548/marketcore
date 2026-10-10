@@ -74,7 +74,7 @@ test.describe('web: the session in a real browser', () => {
 
     // Measured as a property, not as a colour. The old assertion pinned
     // `rgb(255, 255, 255)`, which asserts *a colour* where the intent was *a
-    // property*: selvedge's canvas is linen, so it broke — and it would not have
+    // property*: the previous direction's canvas was linen, so it broke — and it would not have
     // caught a dark direction either. This fails loudly if the theme starts
     // following the OS, or if the ramp drops below legible, which are the two
     // things the assertion was written to protect.

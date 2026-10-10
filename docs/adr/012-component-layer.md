@@ -22,6 +22,11 @@ The direction also matters here. Selvedge's signature moves are a 3px status thr
 leading edge and a quantity drawn as length. Neither is a shadcn component, so they would sit against
 that library's conventions rather than with them.
 
+> **Amended by [013](./013-design-direction-quartz.md).** The direction this ADR refers to has since
+> changed from selvedge to Quartz. The decision above — the component layer is hand-rolled, and Radix
+> arrives one widget at a time — is unaffected, and the argument does not depend on which direction is
+> current: no direction's moves are shadcn components.
+
 ## Decision
 
 Components stay hand-rolled in `packages/ui`, marked `'use client'`, styled with Tailwind utilities

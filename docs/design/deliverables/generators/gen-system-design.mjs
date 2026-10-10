@@ -9,7 +9,7 @@ const OUT = path.join(HERE, '..', 'system-design');
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
-/* ---------- oklch -> hex, so the diagrams carry selvedge's real colours ---------- */
+/* ---------- oklch -> hex, so the diagrams carry exact values ---------- */
 function oklch(L, C, h) {
   const hr = (h * Math.PI) / 180;
   const a = C * Math.cos(hr), b = C * Math.sin(hr);
@@ -171,7 +171,7 @@ function moduleDiagram() {
   ['contracts', 'zod schemas — the wire format, source of truth', true],
   ['database', 'Prisma wiring; prisma/schema one file per model', true],
   ['api-client', 'typed client the web app and tests share', true],
-  ['ui', 'selvedge design system — tokens + components', true],
+  ['ui', 'the design system — Quartz tokens + components', true],
   ['payments', 'PaymentProvider port + simulator + Stripe (phase 6)', false],
   ['config', 'shared tsconfig / tooling presets', true],
   ['eslint-config', 'the boundary rules, encoded and enforced', true]];
@@ -442,7 +442,7 @@ h3.sec{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--
 .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 </style>
 <div class="top"><h1>MarketCore — system design</h1>
-<p>Structure and behaviour for the whole project: C4 context and containers, the module map and its enforced boundaries, the entity map, and the sequences behind each race the project exists to prove. Colours are selvedge's real tokens, converted from <code>tokens.css</code>. SVG — import into Figma or Miro.</p>
+<p>Structure and behaviour for the whole project: C4 context and containers, the module map and its enforced boundaries, the entity map, and the sequences behind each race the project exists to prove. Colours here follow the diagrams' own categorical palette rather than the app's brand tokens — in a diagram a colour is a legend. SVG — import into Figma or Miro.</p>
 <nav><a href="#structure">Structure</a><a href="#behaviour">Behaviour</a></nav></div>
 <div class="legend"><span><i style="background:${P.indigo700}"></i>control / identity</span><span><i style="background:${P.moss600}"></i>shipped</span><span><i style="background:${P.madder600}"></i>attention / failure</span><span><i style="background:${P.umber500}"></i>operations</span></div>
 <h3 class="sec" id="structure">Structure</h3><div class="grid">${sec('Structure').map(card).join('')}</div>

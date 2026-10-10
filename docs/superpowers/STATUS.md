@@ -618,4 +618,79 @@ error envelope, without touching ordinary sign-in traffic.
   scales with instance count. A shared store is phase 8/10 material.
 - **No `Retry-After` header.** The envelope names the code; it does not tell the client when to retry.
 
+---
+
+## The design direction — Quartz — 2026-10-10
+
+**Claim:** the shipped design system is a direction chosen by looking at rendered options rather than
+by preference, and every text-on-surface pair it paints clears 4.5:1.
+**Branches:** `design/quartz-tokens`, `design/quartz-shell`, `design/quartz-docs`
+**ADR:** [`013`](../../adr/013-design-direction-quartz.md), superseding the direction fixed by D42
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| **The contrast mechanism** | `pnpm --filter @app/ui test` | **18 passed** — all 25 painted pairs clear 4.5:1 (minimum 4.7:1), 23 declared names match the interface, ramp ordered |
+| The values are literals | same | every `--color-*` resolves to a literal `oklch()` through `--palette-*`, so contrast is readable before it ships |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33 tasks** — with the web build fetching DM Sans and DM Mono |
+| Behavioural, real browser over TLS | `docker compose -f docker-compose.e2e.yml up -d --build --wait` + `pnpm --filter e2e test:behavioural` | **14/14**, including *paints the shared design system instead of shipping it unstyled* |
+| The real app, measured | signed in through the stack | `font-family: "DM Sans"`, canvas `oklch(0.9765 0.0054 275)`, rail `oklch(0.1604 0.0152 272.2)`, rail **252px**, Sign out border **1px** |
+| One fact, one place survives the re-skin | `pnpm --filter web test` | the tenant is still only in the rail and the user only in the top bar |
+| Design deliverables regenerate | `node docs/design/deliverables/generators/gen-ui.mjs` | 13 screens × 2 skins, no clipping, no console errors |
+| Diagrams still layout-clean | regenerate + headless check | no text out of frame, no colliding labels |
+
+### Delivered
+
+- **Quartz is the direction**, recorded as an ADR rather than only in a spec, because it has now been
+  changed once and a superseded direction is not where the current one should be found.
+- **The token layer re-derived**: the same 23 semantic names, new values, all as literal `oklch()`.
+- **The components and the shell painted**: a real `secondary` button variant (`ghost` removed — a
+  bordered ghost names a thing it does not paint), one shared control height, DM Sans + DM Mono, the
+  rail's mark and 252px width, a user chip, and credential pages on a card.
+- **`ui/tokens.json`** — the Quartz set in Tokens Studio shape, so a Figma library can read the same
+  vocabulary the code does.
+- **A 13-screen UI board**, two skins, generated from one script so the board and the tokens cannot
+  disagree.
+
+### Findings
+
+Five, all found by measuring rather than by looking.
+
+1. **The drawn values failed the gate, and the gate was right.** Ten of the twenty-five pairs the
+   components actually paint fell short: `ink-faint` 2.32:1 on `sunken`, emerald 2.98:1 on its own wash,
+   crimson 4.12:1 on its own wash, and hover indigo 4.47:1 against white. Each was darkened along its
+   own hue. **The general form:** a palette that has only ever been looked at has not been measured, and
+   the difference between "looks fine" and "clears 4.5:1" is invisible to the eye at exactly the values
+   where it matters.
+2. **A quoted font family inside an inline `style` attribute truncates it.** `style="--font:"DM Sans"…"`
+   ends at the second quote, so the font *and every custom property after it* silently did not apply.
+   Found because the rendered page kept the fallback font while the CSS looked correct. Unquoted
+   families are valid CSS and are now used.
+3. **A missing `display: flex` on a wrapper passed every automated check and still looked wrong.** The
+   shell's rail stacked *above* the content and the page had a screen-sized hole. Only a person looking
+   at the render sees this; measuring it afterwards (top bar at `y=670` instead of `0`) is what turned
+   "looks off" into a defect with a fix.
+4. **A screenshot assertion reads colours, so a theme change is what finds the assertions that pin
+   them.** The web journey's design assertion had already been rewritten to assert *properties*
+   (luminance, contrast) rather than `rgb(255,255,255)`, which is why the direction change did not break
+   it — and the change is the only thing that would have proved it.
+5. **A generator that passes a joined string to a helper expecting an array fails loudly**, which is
+   the good news; the same class of mistake in a template is silent. Four `tableCard` calls had the
+   argument one position out.
+
+### Not proven / deferred
+
+- **Only one theme ships.** Graphite (dark) exists in the board and in `ui/tokens.json`; `apps/web`
+  renders one light theme and `color-scheme: light` says so.
+- **No visual regression testing**, unchanged from the previous phase and for the same reason: no
+  stable rendering environment, and a flaky visual gate is worse than none.
+- **The diagrams are not re-tinted.** `flows/` and `system-design/` colour by actor and outcome; in a
+  diagram a colour is a legend. They are the one place the set is not one palette.
+- **The products page still does not exist**, so the direction's table is designed and not built. The
+  board is the specification for it.
+- **DM Sans and DM Mono are fetched at build time**, so a networked build is required. Geist was
+  fetched the same way; this is two families rather than one.
+
+
 
