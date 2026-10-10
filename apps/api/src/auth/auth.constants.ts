@@ -23,13 +23,15 @@ export const REFRESH_TOKEN_BYTES = 32;
 /**
  * The DI token for the `PasswordHasher` port.
  *
- * A string, not the interface, because a TypeScript interface does not exist at
+ * A Symbol, not the interface, because a TypeScript interface does not exist at
  * runtime: `provide: PasswordHasher` hands the container `undefined` and boot
  * fails with "metatype is not a constructor" — an error that names neither the
- * token nor the class it came from. `@Inject(PASSWORD_HASHER)` at the consumer
- * is the other half of the pair; both ends must use this constant.
+ * token nor the class it came from. A Symbol rather than a string so the token is
+ * unique by identity and cannot be matched by an unrelated provider that happens
+ * to spell the same name. `@Inject(PASSWORD_HASHER)` at the consumer is the other
+ * half of the pair; both ends must use this constant.
  */
-export const PASSWORD_HASHER = 'PASSWORD_HASHER';
+export const PASSWORD_HASHER = Symbol('PASSWORD_HASHER');
 
 /**
  * Human-facing messages, one per failure.
@@ -75,9 +77,20 @@ export const AuthLogEvents = {
 /**
  * The DI token for the auth module's logger.
  *
- * A string, not the `LoggerService` type, for the reason `PASSWORD_HASHER` gives
- * above: an interface does not exist at runtime, so `@Inject` needs a value to
- * match on. Resolved by a factory in `AuthModule`, and overridden in tests so the
- * emitted security events can be asserted instead of read off a stream.
+ * A Symbol for the same reason as `PASSWORD_HASHER`: the `LoggerService` interface
+ * is erased at runtime, so `@Inject` needs a value to match on, and a Symbol keeps
+ * the token unique. Resolved by a factory in `AuthModule`, and overridden in tests
+ * so the emitted security events can be asserted instead of read off a stream.
  */
-export const AUTH_LOGGER = 'AUTH_LOGGER';
+export const AUTH_LOGGER = Symbol('AUTH_LOGGER');
+
+/**
+ * The issuer and audience every access token carries and is verified against.
+ *
+ * They scope a token to this API: two services that happen to share a signing
+ * secret would otherwise accept each other's tokens. Fixed values rather than
+ * environment configuration because there is exactly one issuer and one audience,
+ * and neither changes per deployment.
+ */
+export const JWT_ISSUER = 'marketcore';
+export const JWT_AUDIENCE = 'marketcore-api';

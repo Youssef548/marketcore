@@ -558,3 +558,28 @@ hide — a refused login, and a refresh-token replay that kills a session.
 - **The attempted email is logged.** It is what makes a credential-stuffing run investigable, and it is
   the identifier the caller supplied rather than a secret — but it is user data in a log line, noted
   rather than buried.
+
+---
+
+## Auth DI tokens and JWT claims — 2026-10-10 (hardening)
+
+**Claim:** the auth module's interface-backed dependencies are keyed by symbols, and its access tokens
+are scoped to this API by an issuer and audience.
+**Branch:** `chore/auth-di-token-jwt-claims`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| A foreign token is refused | `pnpm --filter api exec jest src/auth/tokens/token.service.spec.ts` | 7 passed — the token carries `iss`/`aud`, and one minted for another issuer or audience is rejected |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33 tasks** |
+
+### Notes
+
+- `PASSWORD_HASHER` and `AUTH_LOGGER` are now `Symbol`s rather than strings, so a token cannot be
+  matched by an unrelated provider that happens to spell the same name. The reason a token is needed
+  at all — an interface is erased at runtime — is unchanged.
+- The issuer and audience are fixed constants, not environment values: there is one of each and
+  neither varies per deployment. If a second consumer that must reject these tokens appears, that is
+  when they move to configuration.
+

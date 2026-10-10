@@ -1,7 +1,11 @@
 import { JwtService } from '@nestjs/jwt';
+import { JWT_AUDIENCE, JWT_ISSUER } from '../auth.constants';
 import { TokenService } from './token.service';
 
 const service = new TokenService(new JwtService({ secret: 'a'.repeat(32) }));
+
+const claims = (token: string): Record<string, unknown> =>
+  JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'));
 
 describe('TokenService', () => {
   it('signs an access token carrying the user id', async () => {
@@ -35,5 +39,32 @@ describe('TokenService', () => {
 
     expect(service.hashRefreshToken(token)).toBe(service.hashRefreshToken(token));
     expect(service.hashRefreshToken(token)).not.toBe(token);
+  });
+
+  it('stamps the access token with the issuer and audience it is verified against', async () => {
+    // Without an issuer and audience, a token minted for one service is accepted by
+    // any other that shares the secret — the claims are what scope it to this API.
+    const decoded = claims(await service.signAccessToken('user_1'));
+
+    expect(decoded.iss).toBe(JWT_ISSUER);
+    expect(decoded.aud).toBe(JWT_AUDIENCE);
+  });
+
+  it('rejects an access token minted for a different audience', async () => {
+    const minted = await new JwtService({ secret: 'a'.repeat(32) }).signAsync(
+      { sub: 'user_1' },
+      { issuer: JWT_ISSUER, audience: 'another-service' },
+    );
+
+    await expect(service.verifyAccessToken(minted)).rejects.toThrow();
+  });
+
+  it('rejects an access token minted by a different issuer', async () => {
+    const minted = await new JwtService({ secret: 'a'.repeat(32) }).signAsync(
+      { sub: 'user_1' },
+      { issuer: 'another-service', audience: JWT_AUDIENCE },
+    );
+
+    await expect(service.verifyAccessToken(minted)).rejects.toThrow();
   });
 });
