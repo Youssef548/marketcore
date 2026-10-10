@@ -1,32 +1,29 @@
 'use client';
 
+import Link from 'next/link';
 import { useReadySession } from '@/lib/session/client';
 
 /**
- * What the session is, made visible.
+ * The landing page behind the session: what it is, and where to go next.
  *
- * This page exists to prove the session rather than to do anything with it: the
- * signed-in user, the organizations the API says they belong to, and which one the
- * session is acting in. The first page that reads tenant data — products — arrives
- * with the proxy that carries `x-organization-id`, and until then this is the honest
- * end of the journey rather than a placeholder pretending to be one.
+ * It proves the session rather than doing anything with it — the signed-in user, the
+ * organizations the API says they belong to, and which one the session is acting in —
+ * and points at the first page that reads tenant data. It states the tenant the way
+ * the top bar does and names no internal identifier, so it reads as an overview
+ * rather than a debug dump.
  */
 export default function DashboardPage() {
   const { user, organizations, activeOrganization } = useReadySession();
 
   return (
     <div className="space-y-8">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">Your session</h1>
+      <header>
         <p className="text-sm text-ink-muted">
           Signed in as <span className="font-medium">{user.email}</span>.
         </p>
       </header>
 
       <dl className="grid grid-cols-[10rem_1fr] gap-x-4 gap-y-3 text-sm">
-        <dt className="text-ink-faint">User id</dt>
-        <dd className="font-mono break-all">{user.id}</dd>
-
         <dt className="text-ink-faint">Organizations</dt>
         <dd>
           {organizations.length === 0
@@ -38,7 +35,7 @@ export default function DashboardPage() {
         <dd>
           {activeOrganization === null ? (
             <span className="text-ink-muted">
-              Nothing selected{organizations.length > 1 ? ' — choose one in the rail' : ''}
+              Nothing selected{organizations.length > 1 ? ' — choose one above' : ''}
             </span>
           ) : (
             <>
@@ -49,9 +46,17 @@ export default function DashboardPage() {
         </dd>
       </dl>
 
-      <p className="border-t border-rule pt-4 text-xs text-ink-faint">
-        The access and refresh tokens are held in <code className="font-mono">httpOnly</code>{' '}
-        cookies. Nothing on this page — and no script that found its way onto it — can read them.
+      <p className="text-sm">
+        <Link className="font-medium text-action underline" href="/products">
+          Go to the catalog
+        </Link>{' '}
+        <span className="text-ink-muted">
+          — the first page that reads this organization&apos;s data.
+        </span>
+      </p>
+
+      <p className="border-t border-rule pt-4 text-xs text-ink-muted">
+        Your session is kept in secure cookies that scripts on this page cannot read.
       </p>
     </div>
   );

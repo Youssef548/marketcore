@@ -237,9 +237,10 @@ test.describe('web: the session in a real browser', () => {
     await page.getByLabel('Organization name').fill(organization);
     await page.getByRole('button', { name: 'Create organization' }).click();
 
-    // Creating it admits the session to the shell, with the new organization as the tenant.
+    // Creating it admits the session to the shell, with the new organization as the tenant —
+    // named in the top bar, which is where the shell keeps the tenant rather than the rail.
     await expect(page.getByRole('complementary')).toBeVisible();
-    await expect(page.getByRole('complementary')).toContainText(organization);
+    await expect(page.getByRole('banner')).toContainText(organization);
 
     // And the tenant it just made is real: the catalog is empty rather than unavailable.
     await expect(page.getByText('No products yet')).toBeVisible();

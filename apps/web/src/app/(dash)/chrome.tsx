@@ -32,7 +32,11 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
   }, [state.status, router]);
 
   if (state.status === 'loading') {
-    return <main className="p-10 text-sm text-ink-muted">Loading your session…</main>;
+    return (
+      <main role="status" aria-live="polite" className="p-10 text-sm text-ink-muted">
+        Loading your session…
+      </main>
+    );
   }
 
   if (state.status === 'anonymous') {
@@ -60,12 +64,22 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
 
   return (
     <ReadySessionProvider session={state.session} reload={reload}>
-      <div className="grid min-h-screen grid-cols-[15.75rem_minmax(0,1fr)]">
+      {/* One column below `lg`, so the rail is a full-width block above the content
+       * rather than a fixed 252px column that squeezed a 390px viewport to 138px. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-brand focus:border focus:border-control-edge focus:bg-panel focus:px-3 focus:py-2 focus:text-sm focus:text-ink"
+      >
+        Skip to content
+      </a>
+      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[15.75rem_minmax(0,1fr)]">
         <Rail appName={appName} />
 
         <div className="flex min-w-0 flex-col bg-canvas">
           <TopBar />
-          <main className="mx-auto w-full max-w-3xl px-6 py-8">{children}</main>
+          <main id="main-content" className="mx-auto w-full max-w-5xl px-6 py-8">
+            {children}
+          </main>
         </div>
       </div>
     </ReadySessionProvider>

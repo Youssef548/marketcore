@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react';
 import { ErrorEnvelopeSchema, type Organization, type UserSummary } from '@app/contracts';
+import { messageFrom } from '@/lib/http/browser';
 import { SessionViewSchema, type SessionView } from './session';
 
 export type SessionState =
@@ -145,9 +146,20 @@ export function useReadySession(): ReadySession {
   return value;
 }
 
-/** Ends the session. The server clears the cookies; the caller navigates. */
+/**
+ * Ends the session. The server clears the cookies; the caller navigates.
+ *
+ * A failure throws rather than being swallowed, because a sign-out that silently does
+ * nothing leaves the user signed in while believing otherwise. A 401 is not a
+ * failure: it means there was no session to end, which is the outcome the caller
+ * wanted anyway.
+ */
 export async function signOut(): Promise<void> {
-  await fetch('/api/auth/logout', { method: 'POST' }).catch(() => undefined);
+  const response = await fetch('/api/auth/logout', { method: 'POST' });
+
+  if (!response.ok && response.status !== 401) {
+    throw new Error('Could not sign out');
+  }
 }
 
 /** Remembers the chosen organization. The caller reloads the session afterwards. */
@@ -157,6 +169,29 @@ export async function selectOrganization(organizationId: string): Promise<void> 
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ organizationId }),
   });
+}
+
+/**
+ * Creates a product in the organization the session acts in.
+ *
+ * The browser names no tenant: the route handler adds `x-organization-id` from the
+ * session, so a page cannot create into an organization it does not belong to. A
+ * refusal arrives as the server's own message, read with the shared envelope.
+ */
+export async function createProduct(input: {
+  name: string;
+  priceMinor: number;
+  currency: string;
+}): Promise<void> {
+  const response = await fetch('/api/products', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    throw new Error(await messageFrom(response));
+  }
 }
 
 /**

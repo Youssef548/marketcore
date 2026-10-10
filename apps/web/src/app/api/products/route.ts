@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { ApiError } from '@app/api-client';
-import { ErrorCodes, ProductSchema } from '@app/contracts';
+import { CreateProductRequestSchema, ErrorCodes, ProductSchema } from '@app/contracts';
 import { createResources } from '@/lib/auth/resources';
-import { failure, noSession } from '@/lib/http/responses';
+import { parseBody, readJson } from '@/lib/http/body';
+import { failure, noSession, respondTo } from '@/lib/http/responses';
 import { newRequestId } from '@/lib/http/request-id';
 import { currentAccessToken, loadCurrentSession } from '@/lib/session/server';
 
@@ -44,6 +45,45 @@ export async function GET(): Promise<Response> {
     // Re-parsed with the contract on the way out as well as on the way in, so this
     // handler's response is the same shape the page will validate.
     return Response.json(z.array(ProductSchema).parse(products));
+  } catch (error) {
+    return failure(error, requestId);
+  }
+}
+
+/**
+ * Create a product in the organization the session acts in.
+ *
+ * The write side of the same rule: the tenant is taken from the session and added as
+ * `x-organization-id` here, never named by the browser, so a page cannot create into
+ * an organization it does not belong to. The body is parsed with the contract the API
+ * validates it with, so a malformed price is refused at this boundary with the same
+ * envelope the API would have produced.
+ */
+export async function POST(request: Request): Promise<Response> {
+  const requestId = newRequestId();
+
+  const body = parseBody(CreateProductRequestSchema, await readJson(request), requestId);
+  if (!body.ok) return respondTo(body.failure);
+
+  try {
+    const session = await loadCurrentSession();
+    if (session === null) return noSession(requestId);
+
+    const { activeOrganizationId } = session;
+    if (activeOrganizationId === null) {
+      return failure(
+        new ApiError(400, ErrorCodes.VALIDATION_ERROR, 'No organization selected'),
+        requestId,
+      );
+    }
+
+    const accessToken = await currentAccessToken();
+    const product = await createResources(accessToken).createProduct(
+      activeOrganizationId,
+      body.value,
+    );
+
+    return Response.json(ProductSchema.parse(product), { status: 201 });
   } catch (error) {
     return failure(error, requestId);
   }

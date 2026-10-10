@@ -6,7 +6,7 @@
  * drift. One entry per page that exists, rather than a second mechanism.
  */
 const TITLES: Record<string, string> = {
-  '/dashboard': 'Your session',
+  '/dashboard': 'Overview',
   '/products': 'Products',
 };
 

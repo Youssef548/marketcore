@@ -12,14 +12,16 @@ import { selectOrganization, useReadySession } from '@/lib/session/client';
  * being refused. It is held in a cookie rather than in component state because the
  * next data page is fetched by the server, which can only read a cookie.
  *
- * When a visitor belongs to several organizations and has not chosen, the control
- * shows a placeholder rather than silently selecting the first — the API would
- * refuse a request that named nothing, and guessing would hide that from the person
- * who has to choose.
+ * It sits in the top bar rather than the rail, because choosing the tenant gates
+ * every request and belongs on the strip that is always visible beside the page it
+ * applies to — and because that surface is the page's own panel, not the dark rail it
+ * used to render a light control on top of.
  *
- * It sits on the rail rather than a light surface, so its own plane and ink are
- * stated: a form control inherits nothing and would otherwise take the platform's
- * white, which is how an input becomes a slab on a dark rail.
+ * It shows a real control only when there is a choice. With one membership it states
+ * the organization and offers nothing: a one-option select is a control pretending to
+ * decide something. With several and none chosen it asks, rather than silently
+ * selecting the first — the API would refuse a request naming nothing, and a guess
+ * would hide that from the person who has to choose.
  */
 export function OrganizationSwitcher() {
   const { organizations, activeOrganization, reload } = useReadySession();
@@ -29,7 +31,6 @@ export function OrganizationSwitcher() {
   // No empty case: this renders inside the shell, and the shell is not reachable without an
   // organization — `chrome.tsx` shows the onboarding screen instead. A branch here could only
   // be dead code, and dead code that looks load-bearing is worse than none.
-
   async function choose(organizationId: string) {
     setPending(true);
     setError(null);
@@ -45,27 +46,36 @@ export function OrganizationSwitcher() {
   }
 
   return (
-    <div className="space-y-2">
-      <label className="block">
-        <span className="sr-only">Active organization</span>
-        <select
-          className="w-full rounded-brand border border-rail-active bg-rail px-2 py-1 text-xs text-ink-on-rail"
-          disabled={pending}
-          value={activeOrganization?.id ?? ''}
-          onChange={(event) => void choose(event.target.value)}
-        >
-          {activeOrganization === null && (
-            <option value="" disabled>
-              Choose an organization
-            </option>
-          )}
-          {organizations.map((organization) => (
-            <option key={organization.id} value={organization.id}>
-              {organization.name}
-            </option>
-          ))}
-        </select>
-      </label>
+    <div className="flex items-center gap-2">
+      <span className="text-xs font-medium text-ink-faint">Acting in</span>
+
+      {organizations.length < 2 ? (
+        <span className="text-xs font-medium text-ink">
+          {activeOrganization === null ? 'No organization' : activeOrganization.name}
+        </span>
+      ) : (
+        <label className="flex items-center gap-2">
+          <span className="sr-only">Active organization</span>
+          <select
+            className="rounded-brand border border-control-edge bg-panel px-2 py-1.5 text-xs text-ink"
+            disabled={pending}
+            value={activeOrganization?.id ?? ''}
+            onChange={(event) => void choose(event.target.value)}
+          >
+            {activeOrganization === null && (
+              <option value="" disabled>
+                Choose an organization
+              </option>
+            )}
+            {organizations.map((organization) => (
+              <option key={organization.id} value={organization.id}>
+                {organization.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
       <Alert>{error}</Alert>
     </div>
   );

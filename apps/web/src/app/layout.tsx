@@ -14,7 +14,7 @@ const appName = process.env.APP_NAME ?? 'app';
 
 export const metadata: Metadata = {
   title: appName,
-  description: `${appName} — a TypeScript monorepo.`,
+  description: `${appName} — a multi-tenant marketplace operations console.`,
 };
 
 export default async function RootLayout({

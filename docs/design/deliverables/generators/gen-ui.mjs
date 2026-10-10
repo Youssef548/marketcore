@@ -5,8 +5,13 @@ import { fileURLToPath } from 'node:url';
 // Writes beside this script: ui/design-board.html and ui/tokens.json.
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(HERE, '..', 'ui');
-fs.rmSync(OUT, { recursive: true, force: true });
+// Remove only this script's own outputs, never the directory. `ui/screens/` and
+// `before-after.html` are produced by other generators, and wiping `ui/` deleted them —
+// the kind of "cleanup" that destroys work it did not create.
 fs.mkdirSync(OUT, { recursive: true });
+for (const name of ['design-board.html', 'tokens.json']) {
+  fs.rmSync(path.join(OUT, name), { force: true });
+}
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const money = (m) => `E£${(m / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
@@ -670,7 +675,11 @@ SKINS.forEach((s) => {
 /* =============================================================== tokens.json */
 const T = (value, type) => ({ value, type });
 const tokens = {
-  $description: 'MarketCore — Quartz. Generated from generators/gen-ui.mjs; the same values the UI board and the code use.',
+  $description:
+    'MarketCore — the Quartz direction, as designed. NOT the tokens the shipped app uses: the ' +
+    'console is styled by packages/ui/src/tokens.css, whose names (action, positive, attention) ' +
+    'and radii differ from the Quartz board. This file is the unshipped design spec; see ' +
+    'docs/design/deliverables/README.md, "Not yet done". Generated from generators/gen-ui.mjs.',
   color: Object.fromEntries(Object.entries(SKINS[0].v)
     .filter(([k]) => !['r', 'rSm', 'shadow', 'grid', 'font', 'fontMono'].includes(k))
     .map(([k, v]) => [k, T(v, 'color')])),

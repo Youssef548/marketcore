@@ -12,7 +12,9 @@ scripts are the source, and a rerun rewrites the committed output in place.
 | `system-design/` | C4 context and containers, the module map, the entity map, and five sequence diagrams (refresh rotation, checkout race, webhook dedupe, outbox recovery, payout race). |
 | `ui/design-board.html` | **The UI, designed — the chosen direction, Quartz.** 13 screens × 2 skins (Quartz light, Graphite dark): sign in, register, dashboard, products, product detail, orders, order detail, refunds, payouts, members, operations, foundations, states. |
 | `ui/tokens.json` | The Quartz token set in Tokens Studio / W3C shape — 21 colour tokens, radius, type. Import into Figma so the design and the build share one vocabulary. |
-| `generators/` | The three Node scripts that produce the above. No dependencies; run with `node`. |
+| `ui/before-after.html` | **The shipped flow, before and after the responsive and accessibility pass** — 7 screens × 2 states, self-contained, with the layout numbers beside them. |
+| `ui/screens/` | The before/after PNGs and `metrics.json` — **not committed** (gitignored), captured on demand. See `ui/screens/README.md`. |
+| `generators/` | The Node scripts that produce the above. No dependencies; run with `node`. |
 
 ## The direction: Quartz
 
@@ -57,15 +59,20 @@ open docs/design/deliverables/ui/design-board.html
 node docs/design/deliverables/generators/gen-flows.mjs
 node docs/design/deliverables/generators/gen-system-design.mjs
 node docs/design/deliverables/generators/gen-ui.mjs
+node docs/design/deliverables/generators/gen-before-after.mjs
 ```
 
 Each script writes beside itself and deletes the previous output, so the committed files are always
-exactly what the current generator produces.
+exactly what the current generator produces. `gen-before-after.mjs` reads `ui/screens/` (the PNGs and
+their `metrics.json`), so the browser pass that produces those must run first — see
+`ui/screens/README.md`.
 
 ## Not committed
 
-Screenshot exports (`svg-export/`, `screens/`) are regenerated on demand rather than committed —
-they are megabytes of binary whose content is already in the SVG and HTML above.
+Screenshot exports (`svg-export/`, `ui/screens/`) are regenerated on demand rather than committed —
+they are megabytes of binary whose content is already in the SVG and HTML above. `ui/before-after.html`
+is self-contained for the same reason: it embeds its screenshots rather than linking the uncommitted
+files, so it opens and renders anywhere.
 
 ## Not yet done
 
