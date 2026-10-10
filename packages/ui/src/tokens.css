@@ -4,46 +4,44 @@
  *
  *   palette    raw OKLCH values, named by colour family — never by role
  *   semantic   what components reference — named for the job, never the hue
- *   direction  one set of palette values, and this is Quartz's
+ *   direction  one set of palette values, and this file carries two: Quartz light,
+ *              and Graphite dark under `[data-theme='dark']`
  *
  * A component that writes `bg-indigo-600` names a colour; one that writes
  * `bg-action` names what the colour is *for*. The second survives the direction
- * changing, and the first becomes a lie the moment it does.
+ * changing, and the first becomes a lie the moment it does. That is also what makes
+ * a second theme cheap: the components never learn either theme's hues, so a theme
+ * is a second value set for the same twenty-three names and nothing else.
  *
- * Tailwind 4 generates utilities from `--color-*` in `@theme`, so the semantic
- * names are the design system's public interface — `bg-canvas`, `text-ink`,
- * `border-rule`, `bg-attention-wash` — and this file is the one file that
- * changing the app's look means changing.
+ * Tailwind 4 generates utilities from `--color-*` in `@theme`, emitted as custom
+ * properties, so the dark values below override the light ones by cascade when
+ * `data-theme="dark"` is on `<html>`. The utilities resolve `var(--color-…)` at the
+ * point of use, so no utility is duplicated per theme.
  *
- * Values are literal rather than computed. `color-mix()` and relative colour
- * syntax are legitimate, but a colour computed at runtime cannot be
- * contrast-checked before it ships, and `test/tokens.spec.ts` has to read the
- * same values the browser will. That is why a wash is its own palette step
- * rather than a mix of the colour it belongs to.
+ * Values are literal rather than computed. `color-mix()` and relative colour syntax
+ * are legitimate, but a colour computed at runtime cannot be contrast-checked before
+ * it ships, and `test/tokens.spec.ts` has to read the same values the browser will.
+ * That is why a wash is its own palette step rather than a mix of the colour it
+ * belongs to — in both themes.
  *
- * Spacing is deliberately not redefined: Tailwind's default scale is already a
- * 4px step, and a second scale would be a second thing to keep in agreement.
+ * Spacing is deliberately not redefined: Tailwind's default scale is already a 4px
+ * step, and a second scale would be a second thing to keep in agreement.
  */
 
-/* Direction: Quartz — a dark navy rail, a cool near-white canvas, near-black
- * ink, one indigo action colour, crimson reserved for attention and emerald for
- * healthy.
+/* Direction: Quartz — a dark navy rail, a cool near-white canvas, near-black ink,
+ * one indigo action colour, crimson reserved for attention and emerald for healthy.
  *
- * The vivid values a designer reaches for do not survive measurement, and these
- * did not either. Drawn as intended, ten of the twenty-five text-on-surface pairs
- * the components actually paint fell short: the faint grey measured 2.3:1 on
- * `sunken`, emerald 3.0:1 on `panel`, crimson 4.1:1 on its own wash, and the
- * hover indigo 4.47:1 against white. Each was darkened along its own hue until it
- * cleared 4.5:1, which is why `ink-faint` is a mid grey rather than a light one.
- * The ramp stays ordered — `ink` darker than `ink-muted` darker than `ink-faint`
- * — because darkening the faint step alone would have made it indistinguishable
- * from the muted one and quietly erased the ramp.
- *
- * The twenty-three semantic names are unchanged from the previous direction, so
- * this is a change of values rather than of interface: no component moved. */
+ * The vivid values a designer reaches for do not survive measurement, and these did
+ * not either. Drawn as intended, ten of the twenty-five text-on-surface pairs the
+ * components actually paint fell short — the faint grey measured 2.3:1 on `sunken`,
+ * emerald 3.0:1 on `panel`, crimson 4.1:1 on its own wash, and the hover indigo
+ * 4.47:1 against white. Each was darkened along its own hue until it cleared 4.5:1,
+ * which is why `ink-faint` is a mid grey rather than a light one. The ramp stays
+ * ordered, because darkening the faint step alone would have made it
+ * indistinguishable from the muted one and quietly erased the ramp. */
 :root {
-  /* Palette — raw OKLCH, named by colour family. Never referenced by a
-   * component: a palette step is a colour, and a component needs a job. */
+  /* Palette — raw OKLCH, named by colour family. Never referenced by a component:
+   * a palette step is a colour, and a component needs a job. */
   --palette-slate-25: oklch(0.9765 0.0054 275);
   --palette-slate-50: oklch(0.9643 0.0083 271.3);
   --palette-slate-100: oklch(0.9315 0.0097 273.4);
@@ -72,9 +70,8 @@
   --radius-brand: 10px;
 }
 
-/* Semantic — the interface. Named for the job a colour does, so a component
- * never learns the direction's hue and a direction never has to edit a
- * component. */
+/* Semantic — the interface. Named for the job a colour does, so a component never
+ * learns the direction's hue and a direction never has to edit a component. */
 @theme {
   /* surface — the planes a screen is built from */
   --color-canvas: var(--palette-slate-25);
@@ -110,4 +107,75 @@
 
   /* control */
   --color-focus-ring: var(--palette-indigo-500);
+}
+
+/* Direction: Graphite — the same structure, dark. Not a media query: the OS does
+ * not get to decide, and the theme is a cookie the server reads, so a page arrives
+ * painted rather than flashing from one to the other.
+ *
+ * Every pair below is measured by the same test as the light set. Deriving it found
+ * one thing the light set hid: the active rail item carries a *light* accent in this
+ * theme, so `ink-on-rail` cannot be its text — the components use `ink-on-action`
+ * there, which is dark here and light there. That is the token layer working as
+ * intended: one class, two themes, no branch. */
+[data-theme='dark'] {
+  --palette-night-1000: oklch(0.1165 0.0142 272.6);
+  --palette-night-975: oklch(0.141 0.0159 270.3);
+  --palette-night-970: oklch(0.162 0.0239 271.9);
+  --palette-night-950: oklch(0.1593 0.0111 268);
+  --palette-night-900: oklch(0.1959 0.0149 266.8);
+  --palette-night-850: oklch(0.2222 0.0187 266.1);
+  --palette-night-800: oklch(0.2527 0.0281 266.4);
+  --palette-night-700: oklch(0.2562 0.0221 265.7);
+  --palette-night-650: oklch(0.3131 0.0287 265.2);
+
+  --palette-haze-50: oklch(0.9428 0.01 267.4);
+  --palette-haze-100: oklch(0.9398 0.01 267.4);
+  --palette-haze-400: oklch(0.7116 0.0341 266.1);
+  --palette-haze-500: oklch(0.6465 0.0396 266.5);
+  --palette-haze-600: oklch(0.6354 0.0355 264.3);
+
+  --palette-periwinkle-300: oklch(0.7263 0.1427 276.1);
+  --palette-periwinkle-400: oklch(0.6809 0.169 275);
+
+  --palette-coral-400: oklch(0.7192 0.169 13.4);
+  --palette-coral-900: oklch(0.2782 0.0435 1.2);
+
+  --palette-jade-400: oklch(0.7729 0.1535 163.2);
+  --palette-jade-900: oklch(0.283 0.0399 171.3);
+
+  /* surface */
+  --color-canvas: var(--palette-night-950);
+  --color-panel: var(--palette-night-900);
+  --color-sunken: var(--palette-night-850);
+  --color-rail: var(--palette-night-975);
+  --color-rail-edge: var(--palette-night-1000);
+  --color-rail-hover: var(--palette-night-800);
+  --color-rail-active: var(--palette-periwinkle-400);
+
+  /* text */
+  --color-ink: var(--palette-haze-50);
+  --color-ink-muted: var(--palette-haze-400);
+  --color-ink-faint: var(--palette-haze-600);
+  --color-ink-on-action: var(--palette-night-970);
+  --color-ink-on-rail: var(--palette-haze-100);
+  --color-ink-on-rail-muted: var(--palette-haze-500);
+
+  /* edge */
+  --color-rule: var(--palette-night-700);
+  --color-rule-strong: var(--palette-night-650);
+
+  /* action */
+  --color-action: var(--palette-periwinkle-400);
+  --color-action-hover: var(--palette-periwinkle-300);
+  --color-action-ink: var(--palette-night-970);
+
+  /* state */
+  --color-attention: var(--palette-coral-400);
+  --color-attention-wash: var(--palette-coral-900);
+  --color-positive: var(--palette-jade-400);
+  --color-positive-wash: var(--palette-jade-900);
+
+  /* control */
+  --color-focus-ring: var(--palette-periwinkle-300);
 }

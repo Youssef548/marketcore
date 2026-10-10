@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { DM_Mono, DM_Sans } from 'next/font/google';
+import { parseTheme, THEME_COOKIE } from '@/lib/theme/theme';
 import './globals.css';
 
 // DM Sans for the interface, DM Mono for anything that is a number or an identifier.
@@ -15,13 +17,18 @@ export const metadata: Metadata = {
   description: `${appName} — a TypeScript monorepo.`,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Read on the server so the first byte is already the right theme. Reading it here
+  // rather than in a client effect is the difference between a page that arrives
+  // painted and one that flashes the other theme before it is corrected.
+  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
+
   return (
-    <html lang="en">
+    <html lang="en" data-theme={theme}>
       <body className={`${dmSans.variable} ${dmMono.variable} antialiased`}>{children}</body>
     </html>
   );
