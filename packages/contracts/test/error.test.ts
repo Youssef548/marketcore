@@ -37,6 +37,7 @@ describe('error envelope', () => {
       'FORBIDDEN',
       'INTERNAL',
       'NOT_FOUND',
+      'TOO_MANY_REQUESTS',
       'UNAUTHORIZED',
       'VALIDATION_ERROR',
     ]);

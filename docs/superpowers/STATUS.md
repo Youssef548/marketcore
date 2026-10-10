@@ -583,3 +583,39 @@ are scoped to this API by an issuer and audience.
   neither varies per deployment. If a second consumer that must reject these tokens appears, that is
   when they move to configuration.
 
+---
+
+## Auth rate limiting — 2026-10-10 (hardening)
+
+**Claim:** the auth endpoints refuse a client that exceeds a per-endpoint request cap, in the shared
+error envelope, without touching ordinary sign-in traffic.
+**Branch:** `feat/auth-rate-limiting`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The cap is enforced | `pnpm --filter api exec jest --config ./test/jest-e2e.json --runInBand test/throttle.e2e-spec.ts` | 1 passed — the 21st login in a minute from one client is 429 with code `TOO_MANY_REQUESTS`; the first is an ordinary 401 |
+| The envelope carries the new code | `pnpm --filter @app/contracts test` | 35 passed |
+| Nothing existing trips it | `pnpm --filter api test:e2e` | 11 suites, 60 tests passed |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33 tasks** |
+
+### Notes
+
+- `@nestjs/throttler` throttles **this module's routes** (a controller-level `ThrottlerGuard`), not the
+  whole app, so no other route's behaviour changes.
+- The cap is 20 requests per minute, per endpoint, per client (`auth.constants.ts`) — deliberately
+  above what any suite or an ordinary sign-in does. The bound is on requests rather than on failures,
+  because a wrong password costs the same as a right one.
+- `TOO_MANY_REQUESTS` is a new `ErrorCodes` member plus a 429 arm in the filter, so a throttled
+  response uses the same envelope as every other failure and a client still branches on `code`.
+
+### Not proven / deferred
+
+- **No lockout or backoff after repeated failures.** The limiter bounds a rate; it does not lock an
+  account. That, and alerting on the `auth.login.failed` volume, remain later work.
+- **In-memory storage, one process.** A second instance counts separately, so the effective limit
+  scales with instance count. A shared store is phase 8/10 material.
+- **No `Retry-After` header.** The envelope names the code; it does not tell the client when to retry.
+
+

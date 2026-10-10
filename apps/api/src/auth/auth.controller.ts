@@ -1,5 +1,6 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import type { TokenPair, UserSummary } from '@app/contracts';
 import { Public } from '../security/decorators/public.decorator';
 import { AuthService } from './auth.service';
@@ -18,6 +19,7 @@ import {
  * `grep '@Public'` list is the complete set of routes reachable without a token.
  */
 @Public()
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

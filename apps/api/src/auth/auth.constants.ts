@@ -94,3 +94,21 @@ export const AUTH_LOGGER = Symbol('AUTH_LOGGER');
  */
 export const JWT_ISSUER = 'marketcore';
 export const JWT_AUDIENCE = 'marketcore-api';
+
+/**
+ * The window the auth rate limit is counted over, per client.
+ *
+ * One minute is the granularity a human notices: long enough that a normal sign-in
+ * is never touched, short enough that a script cannot get far.
+ */
+export const AUTH_THROTTLE_TTL_MS = 60_000;
+
+/**
+ * Requests a single client may make to one auth endpoint within the window.
+ *
+ * Deliberately above the ~10 an e2e suite makes, so the limit bounds a brute-force
+ * run without interfering with ordinary use — a lockout after repeated failures is a
+ * different mechanism (and still deferred). The bound is on requests, not attempts
+ * that succeed, which is the point: a wrong password costs the same as a right one.
+ */
+export const AUTH_THROTTLE_LIMIT = 20;
