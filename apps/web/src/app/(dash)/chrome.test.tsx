@@ -89,7 +89,7 @@ describe('the signed-in shell', () => {
     expect(rail.textContent).not.toContain('Nile Traders');
     expect(rail.textContent).not.toContain('owner@marketcore.test');
 
-    expect(screen.getByRole('heading', { name: 'Your session' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Overview' })).toBeTruthy();
   });
 
   it('offers a switcher only once there is more than one organization to choose from', async () => {

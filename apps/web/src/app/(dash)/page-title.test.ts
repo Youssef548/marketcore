@@ -3,7 +3,7 @@ import { pageTitle } from './page-title';
 
 describe('the page title', () => {
   it('names the page the path belongs to', () => {
-    expect(pageTitle('/dashboard')).toBe('Your session');
+    expect(pageTitle('/dashboard')).toBe('Overview');
   });
 
   it('says nothing rather than guessing for a path it does not know', () => {
