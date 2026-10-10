@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { OrganizationSchema, TokenPairSchema } from '@app/contracts';
 import { credentials, organizationPayload, TEST_PASSWORD, unique } from '../support/fixtures';
 
@@ -11,19 +11,61 @@ const API = '/api/v1';
  */
 const WEB = 'https://web.marketcore.test:8443';
 
-/** `rgb(r, g, b)` from `getComputedStyle`, as WCAG relative luminance. */
-function luminance(rgb: string): number {
-  const channels = (rgb.match(/\d+/g) ?? []).slice(0, 3).map(Number);
+/**
+ * A computed colour, as sRGB bytes.
+ *
+ * Read through a canvas rather than by parsing the string, because the browser
+ * serialises a colour in the space it was written in — the tokens are literal
+ * `oklch()`, so `getComputedStyle` returns `oklch(…)`, not `rgb(…)`. A regex over the
+ * string silently read the digits of an oklch value as three RGB channels, which is
+ * how the assertions below passed while measuring nothing. `fillStyle` parses any
+ * colour syntax and `getImageData` returns the bytes the screen would show.
+ */
+type Rgb = [number, number, number];
 
-  const [r, g, b] = channels.map((channel) => {
+function bodyColour(page: Page, property: 'backgroundColor' | 'color'): Promise<Rgb> {
+  return page.evaluate((prop) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    const context = canvas.getContext('2d');
+    if (context === null) throw new Error('no 2d context');
+
+    context.fillStyle = getComputedStyle(document.body)[prop as 'backgroundColor'];
+    context.fillRect(0, 0, 1, 1);
+    const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
+    return [r, g, b] as [number, number, number];
+  }, property);
+}
+
+function elementColour(locator: Locator, property: 'backgroundColor' | 'color'): Promise<Rgb> {
+  // Self-contained on purpose: this function is serialised and run in the page, so it
+  // cannot close over anything defined out here.
+  return locator.evaluate((element, prop) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    const context = canvas.getContext('2d');
+    if (context === null) throw new Error('no 2d context');
+
+    context.fillStyle = getComputedStyle(element)[prop as 'backgroundColor'];
+    context.fillRect(0, 0, 1, 1);
+    const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
+    return [r, g, b] as [number, number, number];
+  }, property);
+}
+
+/** WCAG relative luminance, from sRGB bytes. */
+function luminance([r, g, b]: Rgb): number {
+  const [red, green, blue] = [r, g, b].map((channel) => {
     const value = channel / 255;
     return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
   });
 
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 }
 
-function contrast(a: string, b: string): number {
+function contrast(a: Rgb, b: Rgb): number {
   const [lighter, darker] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (lighter + 0.05) / (darker + 0.05);
 }
@@ -67,10 +109,8 @@ test.describe('web: the session in a real browser', () => {
     // form controls it would otherwise paint itself.
     await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
 
-    const pageBackground = await page.evaluate(
-      () => getComputedStyle(document.body).backgroundColor,
-    );
-    const bodyText = await page.evaluate(() => getComputedStyle(document.body).color);
+    const pageBackground = await bodyColour(page, 'backgroundColor');
+    const bodyText = await bodyColour(page, 'color');
 
     // Measured as a property, not as a colour. The old assertion pinned
     // `rgb(255, 255, 255)`, which asserts *a colour* where the intent was *a
@@ -84,11 +124,45 @@ test.describe('web: the session in a real browser', () => {
       .toBeGreaterThanOrEqual(7);
 
     const button = page.getByRole('button', { name: 'Sign in' });
-    const buttonBackground = await button.evaluate(
-      (element) => getComputedStyle(element).backgroundColor,
-    );
-    expect(buttonBackground, 'the primary button has a background').not.toBe('rgba(0, 0, 0, 0)');
-    expect(buttonBackground, 'and is not the page it sits on').not.toBe(pageBackground);
+    const buttonBackground = await elementColour(button, 'backgroundColor');
+    // A transparent button paints the canvas, so comparing bytes is what catches the
+    // unstyled case: equal to the page means nothing was painted.
+    expect(buttonBackground, 'the primary button is not the page it sits on').not.toEqual(pageBackground);
+  });
+
+  test('ships a dark theme a person chooses, not one the operating system imposes', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+
+    await page.goto(`${WEB}/login`);
+    const lightBackground = await bodyColour(page, 'backgroundColor');
+
+    // The OS is dark and the page is not. The theme is a decision, and the default is
+    // light whatever the machine says — this is the assertion that would catch a
+    // palette quietly becoming a media query.
+    expect(luminance(lightBackground), 'a dark OS does not make a dark page').toBeGreaterThan(0.7);
+
+    const chosen = await page.evaluate(async () => {
+      const response = await fetch('/api/theme', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ theme: 'dark' }),
+      });
+      return response.status;
+    });
+    expect(chosen).toBe(204);
+
+    await page.reload();
+
+    // Reached offline in the other sense: the second palette is only exercised where a
+    // browser is interpreting it, which is here.
+    await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
+
+    const darkBackground = await bodyColour(page, 'backgroundColor');
+    const darkText = await bodyColour(page, 'color');
+
+    expect(luminance(darkBackground), 'the chosen theme is dark').toBeLessThan(0.3);
+    expect(contrast(darkBackground, darkText), 'body text clears 4.5:1 in the dark theme')
+      .toBeGreaterThanOrEqual(4.5);
   });
 
   test('creates an account, signs in, and is turned away once signed out', async ({ page }) => {

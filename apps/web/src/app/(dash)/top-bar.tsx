@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@app/ui';
 import { signOut, useReadySession } from '@/lib/session/client';
 import { pageTitle } from './page-title';
+import { ThemeToggle } from './theme-toggle';
 
 /**
  * The page title and who is signed in.
@@ -31,6 +32,7 @@ export function TopBar() {
           </span>
           <span className="text-xs font-medium text-ink">{user.email}</span>
         </span>
+        <ThemeToggle />
         <Button
           variant="secondary"
           size="sm"

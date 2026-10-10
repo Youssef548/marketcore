@@ -33,6 +33,14 @@
   color-scheme: light;
 }
 
+/* The one thing that is allowed to follow a person's choice rather than their
+ * operating system. The default is still light whatever the OS says — the theme is a
+ * cookie the server reads, so a page arrives painted and never flashes from one
+ * theme to the other on hydration. */
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
 @theme inline {
   --font-sans: var(--font-app-sans);
   --font-mono: var(--font-app-mono);

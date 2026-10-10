@@ -44,7 +44,7 @@ export function Rail({ appName }: { appName: string }) {
 
       <nav>
         <Link
-          className="block rounded-brand bg-rail-active px-2.5 py-2 text-sm font-semibold text-ink-on-rail"
+          className="block rounded-brand bg-rail-active px-2.5 py-2 text-sm font-semibold text-ink-on-action"
           href="/dashboard"
           aria-current="page"
         >
