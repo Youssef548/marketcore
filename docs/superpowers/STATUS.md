@@ -822,5 +822,56 @@ and carries a check that fails on a loose file.
    best-practices rule asked for the folder. Both had to be corrected together or the next module
    would have picked whichever the author happened to read.
 
+## The first-run flow — 2026-10-10
+
+**Claim:** a user who registers can get from "signed in, belongs to nothing" to a working shell,
+entirely through the UI.
+**Branch:** `feat/first-run-onboarding`
+**Plan:** `~/.commandcode/plans/marketcore-first-run-onboarding.md`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The gate and the loop | `pnpm --filter e2e test:behavioural` | **20/20** — register → sign in → the first-run screen → create → the shell, with that tenant's (empty) catalog |
+| It is a gate, not a hint | same | `/products` asked for directly still shows the first-run screen |
+| The shell is admitted by the reload | `pnpm --filter web test` | **73 passed** — a session with no organizations renders onboarding and not the rail |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33** |
+| The design matches | regenerate + headless check | **14 board screens**, `flows/` at 17 diagrams, no clipping, nothing out of frame |
+
+### Delivered
+
+- **`POST /api/organizations`** at the BFF — the first route in this app that can be called by someone
+  with **no tenant**, because the API's own create is `@TenantFree()` and it has to be: a request that
+  required a header could never create the first organization.
+- **`Onboarding`** — rendered *instead of* the shell, not inside it. A user with no tenant has no
+  working controls to be shown, so showing them the shell is the dead end this replaces.
+- **The dead branch removed** from `organization-switcher.tsx`: the gate makes "no organizations"
+  unreachable inside the shell, and dead code that looks load-bearing is worse than none.
+- **The board and the flows** carry the screen and the journey, so the design cannot drift from it.
+
+### Findings
+
+1. **The design had the same hole as the code**, which is why it went unnoticed for so long: the board
+   was drawn entirely against seeded data, and no seeded user lacks an organization. A mockup built on
+   fixtures cannot show a state the fixtures exclude.
+2. **A passing test can be a statement about the wrong behaviour.** The existing journey registered a
+   brand-new user and asserted they reached the shell — which is exactly what was broken. Adding the
+   gate made it fail, and the failure was the test being *right* about the bug and wrong about the
+   intent. It now creates an organization through the API first, because its subject is the session
+   and its cookies.
+3. **A screenshot-like assertion is easier to write than to scope.** `getByText('Nile Traders')` matched
+   twice — the rail and the switcher's `<option>` — the same ambiguity the design-system phase recorded.
+   Read from the rail instead.
+
+### Not proven / deferred
+
+- **Only the first organization can be created.** Creating a second for an existing user is not built
+  and not in this change.
+- **No invitation flow**, no member management from this screen — `POST /organizations/members` exists
+  and is `@OwnerOnly`, and it is unchanged.
+- **The new screen has no automated visual check**, the same gap the repository already records.
+
+
 
 
