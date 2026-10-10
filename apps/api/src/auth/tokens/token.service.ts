@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes } from 'node:crypto';
-import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_BYTES } from '../auth.constants';
+import { ACCESS_TOKEN_TTL, JWT_AUDIENCE, JWT_ISSUER, REFRESH_TOKEN_BYTES } from '../auth.constants';
 import type { AccessTokenPayload } from './access-token.interface';
 
 @Injectable()
@@ -9,11 +9,20 @@ export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
   signAccessToken(userId: string): Promise<string> {
-    return this.jwtService.signAsync({ sub: userId }, { expiresIn: ACCESS_TOKEN_TTL });
+    return this.jwtService.signAsync(
+      { sub: userId },
+      { expiresIn: ACCESS_TOKEN_TTL, issuer: JWT_ISSUER, audience: JWT_AUDIENCE },
+    );
   }
 
   verifyAccessToken(token: string): Promise<AccessTokenPayload> {
-    return this.jwtService.verifyAsync<AccessTokenPayload>(token);
+    // Verified against the same issuer and audience it is signed with, so a token
+    // minted for another service that shares the secret is refused rather than
+    // accepted as one of ours.
+    return this.jwtService.verifyAsync<AccessTokenPayload>(token, {
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    });
   }
 
   /**
