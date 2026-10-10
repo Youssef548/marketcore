@@ -1,0 +1,1305 @@
+c<!doctype html>
+<html lang="en" data-direction="a" data-state="default" data-density="comfortable">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarketCore — design directions</title>
+<style>
+/* ============================================================================
+   MarketCore — three directions for the operator console.
+
+   One token layer, one component structure, three token sets. The directions
+   differ in *premise*, not in accent:
+
+     A  Ruled ledger   no boxes at all. Hierarchy from weight, rules and aligned
+                       figures. Sharp corners. The primary action is ink, not a
+                       hue, so the single colour on the page means "attention".
+     B  Control room   a dark tenant rail, a status strip, bordered panels on a
+                       tinted canvas. Dense rows, small radii, signal amber.
+     C  Quiet catalog  air instead of grid. Softer surfaces, larger type, rows
+                       separated by one rule. Readable before it is dense.
+
+   Nothing here is wired to the app yet. The variable names match the ones
+   `packages/ui/src/tokens.css` will carry, so a chosen direction lands as a
+   palette swap plus component classes rather than as a rewrite.
+   ========================================================================= */
+
+:root {
+  --step--1: 0.75rem;   /* 12 — micro labels */
+  --step-0:  0.8125rem; /* 13 — dense body */
+  --step-1:  0.875rem;  /* 14 */
+  --step-2:  1rem;      /* 16 */
+  --step-3:  1.25rem;   /* 20 */
+  --step-4:  1.5rem;    /* 24 */
+  --step-5:  2rem;      /* 32 */
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-9: 36px;
+  --space-14: 56px;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --dur: 140ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1); /* expo-out: decelerates, never bounces */
+}
+
+/* -- Direction A — Ruled ledger ------------------------------------------ */
+[data-direction="a"] {
+  --surface:        oklch(0.985 0.004 85);
+  --surface-raised: oklch(0.995 0.003 85);
+  --surface-sunken: oklch(0.955 0.006 85);
+  --ink:            oklch(0.22 0.012 60);
+  --ink-muted:      oklch(0.42 0.012 60);
+  --ink-faint:      oklch(0.54 0.010 65);
+  --rule:           oklch(0.86 0.008 75);
+  --rule-strong:    oklch(0.68 0.010 70);
+  --action:         oklch(0.25 0.015 60);
+  --action-hover:   oklch(0.33 0.018 60);
+  --action-ink:     oklch(0.99 0.003 85);
+  --signal:         oklch(0.50 0.17 38);
+  --signal-wash:    oklch(0.96 0.03 40);
+  --ok:             oklch(0.42 0.07 155);
+  --ok-wash:        oklch(0.95 0.02 155);
+  --radius:         0px;
+  --radius-pill:    0px;
+  --row-h:          34px;
+  --body:           var(--step-0);
+  --label-tracking: 0.08em;
+  --shadow:         none;
+}
+
+/* -- Directions B, D and F — Control room palette, three structures ------
+   One palette shared by three compositions, so the difference you are judging
+   is structure rather than colour. D is B with a master–detail split; F is B
+   with the rail replaced by a search-led command bar. */
+[data-direction="b"],
+[data-direction="d"],
+[data-direction="f"] {
+  --surface:        oklch(0.965 0.004 250);
+  --surface-raised: oklch(1 0 0);
+  --surface-sunken: oklch(0.94 0.006 250);
+  --rail:           oklch(0.24 0.014 250);
+  --rail-ink:       oklch(0.96 0.004 250);
+  --rail-ink-muted: oklch(0.72 0.010 250);
+  --ink:            oklch(0.24 0.014 250);
+  --ink-muted:      oklch(0.42 0.012 250);
+  --ink-faint:      oklch(0.53 0.010 250);
+  --rule:           oklch(0.88 0.006 250);
+  --rule-strong:    oklch(0.72 0.010 250);
+  --action:         oklch(0.42 0.08 172);
+  --action-hover:   oklch(0.36 0.08 172);
+  --action-ink:     oklch(0.99 0.004 172);
+  --signal:         oklch(0.53 0.13 62);
+  --signal-wash:    oklch(0.95 0.04 70);
+  --ok:             oklch(0.48 0.09 168);
+  --ok-wash:        oklch(0.95 0.025 168);
+  --radius:         6px;
+  --radius-pill:    999px;
+  --row-h:          36px;
+  --body:           var(--step-0);
+  --label-tracking: 0.06em;
+  --shadow:         0 1px 0 oklch(0.88 0.006 250);
+}
+
+/* -- Direction C — Quiet catalog ----------------------------------------- */
+[data-direction="c"] {
+  --surface:        oklch(0.99 0.003 60);
+  --surface-raised: oklch(1 0 0);
+  --surface-sunken: oklch(0.965 0.005 60);
+  --ink:            oklch(0.26 0.014 50);
+  --ink-muted:      oklch(0.44 0.012 55);
+  --ink-faint:      oklch(0.55 0.010 55);
+  --rule:           oklch(0.91 0.007 55);
+  --rule-strong:    oklch(0.78 0.010 55);
+  --action:         oklch(0.52 0.13 42);
+  --action-hover:   oklch(0.46 0.13 42);
+  --action-ink:     oklch(0.99 0.005 60);
+  --signal:         oklch(0.50 0.16 30);
+  --signal-wash:    oklch(0.965 0.03 35);
+  --ok:             oklch(0.44 0.08 150);
+  --ok-wash:        oklch(0.96 0.02 150);
+  --radius:         12px;
+  --radius-pill:    999px;
+  --row-h:          56px;
+  --body:           var(--step-2);
+  --label-tracking: 0.01em;
+  --shadow:         0 1px 2px oklch(0.26 0.014 50 / 0.05);
+}
+
+/* -- Direction E — Dark console ------------------------------------------
+   B's structure with the lights off. The palette is chosen rather than
+   inverted: on a dark surface the legible range for small text is bounded
+   *below* (L >= 0.59 clears 4.5:1 here), so the text ramp is tighter and the
+   accent has to be light enough to read as a fill with dark text on it.
+   Deliberately not a terminal: proportional type, real panels, no glow. */
+[data-direction="e"] {
+  --surface:        oklch(0.185 0.012 250);
+  --surface-raised: oklch(0.235 0.012 250);
+  --surface-sunken: oklch(0.155 0.010 250);
+  --rail:           oklch(0.135 0.010 250);
+  --rail-ink:       oklch(0.95 0.004 250);
+  --rail-ink-muted: oklch(0.70 0.010 250);
+  --ink:            oklch(0.95 0.004 250);
+  --ink-muted:      oklch(0.78 0.010 250);
+  --ink-faint:      oklch(0.64 0.012 250);
+  --rule:           oklch(0.32 0.010 250);
+  --rule-strong:    oklch(0.46 0.012 250);
+  --action:         oklch(0.74 0.13 172);
+  --action-hover:   oklch(0.80 0.13 172);
+  --action-ink:     oklch(0.18 0.02 172);
+  --signal:         oklch(0.80 0.14 78);
+  --signal-wash:    oklch(0.30 0.06 72);
+  --ok:             oklch(0.78 0.11 165);
+  --ok-wash:        oklch(0.30 0.05 165);
+  --radius:         6px;
+  --radius-pill:    999px;
+  --row-h:          36px;
+  --body:           var(--step-0);
+  --label-tracking: 0.06em;
+  --shadow:         none;
+}
+
+/* Density is a real control in F, so it is scoped to F: toggling it should not
+   quietly resize the other directions. */
+[data-direction="f"][data-density="comfortable"] { --row-h: 40px; }
+[data-direction="f"][data-density="compact"] { --row-h: 28px; }
+[data-direction="f"] { --radius: 4px; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: oklch(0.22 0.008 250);
+  color: oklch(0.93 0.004 250);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------- review
+   chrome. Deliberately unlike the product: this is the switchboard, and it
+   should never be mistaken for a screen. */
+.chrome {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; flex-wrap: wrap; gap: var(--space-4);
+  align-items: center; justify-content: space-between;
+  padding: var(--space-3) var(--space-6);
+  background: oklch(0.18 0.008 250);
+  border-bottom: 1px solid oklch(0.30 0.008 250);
+}
+.chrome__title { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.72 0.008 250); }
+.chrome__group { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.chrome__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.55 0.008 250); }
+.chrome__btn {
+  font: inherit; font-size: 13px; padding: 6px 12px; cursor: pointer;
+  color: oklch(0.88 0.004 250); background: oklch(0.26 0.008 250);
+  border: 1px solid oklch(0.36 0.008 250); border-radius: 6px;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.chrome__btn:hover { background: oklch(0.32 0.008 250); }
+.chrome__btn:focus-visible { outline: 2px solid oklch(0.85 0.12 85); outline-offset: 2px; }
+.chrome__btn[aria-pressed="true"] { background: oklch(0.86 0.10 85); border-color: oklch(0.86 0.10 85); color: oklch(0.20 0.02 85); font-weight: 600; }
+
+.doc { max-width: 1180px; margin: 0 auto; padding: var(--space-9) var(--space-6) var(--space-14); }
+.doc__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin: 0 0 var(--space-4); }
+.doc__h2 { margin: 0; font-size: var(--step-3); font-weight: 600; letter-spacing: -0.01em; }
+.doc__note { margin: 0 0 var(--space-6); max-width: 68ch; color: oklch(0.70 0.006 250); }
+.doc__note strong { color: oklch(0.90 0.004 250); font-weight: 600; }
+.doc__rule { height: 1px; background: oklch(0.32 0.008 250); margin: var(--space-9) 0; }
+.mono { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: oklch(0.56 0.008 250); }
+
+/* The framed screen. Everything inside uses only product tokens. */
+.screen {
+  background: var(--surface);
+  color: var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 18px 48px oklch(0 0 0 / 0.35);
+}
+
+/* =========================================================== product type */
+.screen { font-size: var(--body); line-height: 1.45; }
+.eyebrow { font-size: var(--step--1); letter-spacing: var(--label-tracking); text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
+h1.p-title { margin: 0; font-size: var(--step-4); font-weight: 650; letter-spacing: -0.015em; }
+[data-direction="a"] h1.p-title { font-size: var(--step-4); font-weight: 700; letter-spacing: 0.01em; text-transform: uppercase; }
+.num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); letter-spacing: -0.01em; }
+.muted { color: var(--ink-muted); }
+.faint { color: var(--ink-faint); }
+
+/* ==================================================== sign in (Decide) ==
+   Narrow, one job, one action. The only surface allowed to be centred. */
+.signin { display: grid; place-items: center; padding: var(--space-14) var(--space-6); }
+.signin__box { width: 100%; max-width: 380px; }
+[data-direction="c"] .signin__box { max-width: 420px; }
+.signin__intro { margin-bottom: var(--space-6); }
+.signin__intro p { margin: var(--space-2) 0 0; color: var(--ink-muted); }
+.brandmark { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-6); font-weight: 650; letter-spacing: -0.01em; }
+.brandmark__dot { width: 10px; height: 10px; border-radius: var(--radius-pill); background: var(--action); }
+
+.form { display: grid; gap: var(--space-4); }
+.field { display: grid; gap: var(--space-1); }
+.field label { font-size: var(--step--1); font-weight: 600; letter-spacing: var(--label-tracking); text-transform: uppercase; color: var(--ink-muted); }
+[data-direction="c"] .field label { text-transform: none; font-size: var(--step-0); letter-spacing: 0; }
+
+.input {
+  font: inherit; color: var(--ink); background: var(--surface-raised);
+  width: 100%; padding: 9px var(--space-3); min-height: 36px;
+  border: 1px solid var(--rule-strong); border-radius: var(--radius);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+[data-direction="c"] .input { min-height: 44px; padding: 12px var(--space-4); }
+.input::placeholder { color: var(--ink-faint); }
+.input:hover { border-color: var(--ink-faint); }
+.input:focus-visible { outline: none; border-color: var(--action); box-shadow: 0 0 0 3px oklch(from var(--action) l c h / 0.22); }
+.input[aria-invalid="true"] { border-color: var(--signal); }
+.input:disabled { background: var(--surface-sunken); color: var(--ink-faint); cursor: not-allowed; }
+
+.msg { display: flex; gap: var(--space-2); align-items: flex-start; font-size: var(--step--1); line-height: 1.45; }
+.msg--error { color: var(--signal); }
+.msg--ok { color: var(--ok); }
+.msg__icon { flex: 0 0 auto; font-family: var(--font-mono); font-weight: 700; }
+.callout { padding: var(--space-3); border-radius: var(--radius); border: 1px solid; }
+.callout--error { color: var(--signal); background: var(--signal-wash); border-color: color-mix(in oklch, var(--signal) 30%, transparent); }
+.callout--ok { color: var(--ok); background: var(--ok-wash); border-color: color-mix(in oklch, var(--ok) 30%, transparent); }
+
+.btn {
+  font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 36px; padding: 0 var(--space-4);
+  border: 1px solid transparent; border-radius: var(--radius);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+[data-direction="c"] .btn { min-height: 44px; padding: 0 var(--space-6); }
+[data-direction="b"] .btn { border-radius: var(--radius-pill); }
+.btn:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.btn--primary { background: var(--action); color: var(--action-ink); width: 100%; }
+.btn--primary:hover { background: var(--action-hover); }
+.btn--primary:active { transform: translateY(1px); }
+.btn--quiet { background: transparent; color: var(--ink-muted); border-color: var(--rule); }
+.btn--quiet:hover { color: var(--ink); border-color: var(--rule-strong); background: var(--surface-sunken); }
+.btn[disabled] { cursor: not-allowed; }
+.btn--primary[disabled] { background: var(--surface-sunken); color: var(--ink-faint); }
+.btn--busy { background: var(--action-hover); color: var(--action-ink); width: 100%; }
+
+a { color: var(--action); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+
+/* ================================================== catalog (Compare) ==
+   The work surface. Density, alignment, and a scan path down the price and
+   stock columns. */
+/* Every track is `minmax(0, 1fr)` rather than `1fr`. A `1fr` track is sized with
+   `min-width: auto`, so one wide cell can push the whole layout past the viewport —
+   which is exactly what the detail pane's four columns did at 320px. */
+.shell { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 560px; }
+[data-direction="b"] .shell,
+[data-direction="e"] .shell { grid-template-columns: 208px minmax(0, 1fr); }
+/* D adds the detail pane, so the list gives up the width for it. */
+[data-direction="d"] .shell { grid-template-columns: 196px minmax(0, 1fr) 348px; }
+
+.rail { display: none; background: var(--rail); color: var(--rail-ink); padding: var(--space-4) var(--space-3); }
+[data-direction="b"] .rail,
+[data-direction="d"] .rail,
+[data-direction="e"] .rail { display: block; }
+.rail__brand { display: flex; align-items: center; gap: var(--space-2); font-weight: 650; padding: 0 var(--space-2) var(--space-4); }
+.rail__brand .brandmark__dot { background: oklch(0.78 0.12 172); }
+.rail__section { padding: var(--space-4) var(--space-2) var(--space-1); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rail-ink-muted); }
+.rail__item { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: 8px var(--space-2); border-radius: var(--radius); color: var(--rail-ink-muted); text-decoration: none; font-size: var(--step-0); }
+.rail__item:hover { background: oklch(0.30 0.014 250); color: var(--rail-ink); }
+.rail__item:focus-visible { outline: 2px solid oklch(0.78 0.12 172); outline-offset: 0; }
+.rail__item--on { background: oklch(0.32 0.018 250); color: var(--rail-ink); font-weight: 600; }
+.rail__item[aria-disabled="true"] { color: oklch(0.52 0.008 250); cursor: not-allowed; }
+.rail__tag { font-family: var(--font-mono); font-size: 10px; color: oklch(0.52 0.008 250); }
+
+.col { display: flex; flex-direction: column; min-width: 0; }
+
+.topbar {
+  display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;
+  padding: var(--space-3) var(--space-6);
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface-raised);
+}
+[data-direction="a"] .topbar { background: var(--surface); }
+[data-direction="c"] .topbar { padding: var(--space-4) var(--space-9); }
+.spacer { flex: 1 1 auto; }
+.who { color: var(--ink-muted); font-size: var(--step--1); }
+
+.orgpick {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font: inherit; color: var(--ink); font-weight: 600;
+  background: var(--surface-raised); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: 6px var(--space-3); min-height: 32px; cursor: pointer;
+}
+[data-direction="c"] .orgpick { min-height: 40px; padding: 0 var(--space-4); }
+[data-direction="b"] .orgpick { border-radius: var(--radius-pill); }
+.orgpick:hover { border-color: var(--rule-strong); }
+.orgpick:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.orgpick__role { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--ink-faint); }
+
+.strip { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--rule); }
+[data-direction="b"] .strip { background: var(--surface-raised); }
+.cell-stat { padding: var(--space-3) var(--space-6); border-right: 1px solid var(--rule); }
+[data-direction="c"] .cell-stat { padding: var(--space-4) var(--space-9); }
+.cell-stat__k { font-size: var(--step--1); letter-spacing: var(--label-tracking); text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
+.cell-stat__v { font-size: var(--step-3); font-weight: 650; margin-top: 2px; }
+.cell-stat__v small { font-size: var(--step--1); font-weight: 500; color: var(--ink-muted); margin-left: var(--space-1); }
+
+.work { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+[data-direction="c"] .work { padding: var(--space-9); gap: var(--space-6); }
+.work__head { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+.work__head .spacer { flex: 1 1 auto; }
+
+.toolbar { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.search { position: relative; flex: 1 1 240px; max-width: 340px; }
+.search .input { padding-left: 30px; }
+.search__icon { position: absolute; left: var(--space-3); top: 50%; transform: translateY(-50%); color: var(--ink-faint); font-size: 12px; }
+.chip {
+  font: inherit; font-size: var(--step--1); font-weight: 600; cursor: pointer;
+  padding: 5px var(--space-3); min-height: 30px;
+  border: 1px solid var(--rule); border-radius: var(--radius-pill);
+  background: transparent; color: var(--ink-muted);
+}
+.chip:hover { border-color: var(--rule-strong); color: var(--ink); }
+.chip:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+[data-direction="b"] .chip[aria-pressed="true"] { background: var(--action); border-color: var(--action); color: var(--action-ink); }
+
+/* -- the table ----------------------------------------------------------- */
+.panel { border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--surface-raised); box-shadow: var(--shadow); }
+[data-direction="a"] .panel { border: 0; border-radius: 0; background: transparent; box-shadow: none; border-top: 2px solid var(--ink); }
+[data-direction="c"] .panel { border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+
+table { width: 100%; border-collapse: collapse; }
+[data-direction="c"] table { border-collapse: separate; border-spacing: 0; }
+
+thead th {
+  text-align: left; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint);
+  padding: var(--space-3) var(--space-4); white-space: nowrap;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface-sunken);
+}
+[data-direction="a"] thead th { background: transparent; border-bottom: 1px solid var(--ink); padding-bottom: var(--space-2); }
+[data-direction="c"] thead th { background: transparent; border-bottom: 1px solid var(--rule-strong); padding: var(--space-2) var(--space-3); }
+th.r, td.r { text-align: right; }
+
+tbody td { padding: var(--space-2) var(--space-4); border-bottom: 1px solid var(--rule); vertical-align: middle; }
+[data-direction="a"] tbody tr:nth-child(even) td { background: var(--surface-sunken); }
+[data-direction="c"] tbody td { padding: var(--space-4) var(--space-3); border-bottom: 1px solid var(--rule); }
+tbody tr { height: var(--row-h); }
+[data-direction="c"] tbody tr { height: auto; }
+tbody tr:hover td { background: var(--surface-sunken); }
+[data-direction="a"] tbody tr:hover td { background: oklch(0.93 0.008 80); }
+
+.pname { font-weight: 600; }
+[data-direction="c"] .pname { font-size: var(--step-2); font-weight: 550; }
+.pmeta { display: block; color: var(--ink-faint); font-family: var(--font-mono); font-size: 11px; margin-top: 1px; }
+.trunc { display: block; max-width: 34ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: var(--step--1); font-weight: 600; white-space: nowrap; }
+.status__dot { width: 7px; height: 7px; border-radius: var(--radius-pill); flex: 0 0 auto; }
+.status--published { color: var(--ok); }
+.status--published .status__dot { background: var(--ok); }
+.status--draft { color: var(--ink-muted); }
+.status--draft .status__dot { background: transparent; border: 1px solid var(--rule-strong); }
+.status--out { color: var(--signal); }
+.status--out .status__dot { background: var(--signal); }
+.status--low { color: var(--signal); }
+.status--low .status__dot { background: transparent; border: 1px solid var(--signal); }
+
+.stock { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.stock b { font-weight: 700; }
+.stock span { color: var(--ink-faint); }
+
+.rowact { font: inherit; font-size: var(--step--1); font-weight: 600; background: none; border: 0; padding: 4px 6px; min-height: 28px; color: var(--action); cursor: pointer; border-radius: var(--radius); }
+.rowact:hover { background: var(--surface-sunken); }
+.rowact:focus-visible { outline: 2px solid var(--action); outline-offset: 1px; }
+[data-direction="a"] .rowact { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule-strong); }
+
+/* -- the selected row (D) ------------------------------------------------ */
+tbody tr.is-selected td { background: var(--surface-sunken); }
+tbody tr.is-selected td:first-child { box-shadow: inset 3px 0 0 var(--action); }
+tbody tr.is-selected .pname { font-weight: 700; }
+
+/* -- D · master and detail ----------------------------------------------
+   The list answers "which one", the pane answers "what is true about it, and
+   what do I do". Nothing is a modal: acting on a row and then seeing the next
+   row is the operator's loop, and a dialog breaks it. */
+.inspector { display: none; min-width: 0; padding: var(--space-4) var(--space-4) var(--space-6); border-left: 1px solid var(--rule); background: var(--surface-raised); }
+[data-direction="d"] .inspector { display: block; }
+.insp__title { margin: var(--space-1) 0 0; font-size: var(--step-2); font-weight: 650; line-height: 1.25; letter-spacing: -0.01em; }
+.insp__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-4); margin: var(--space-4) 0; padding: var(--space-4) 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.insp__grid .k { font-size: 10px; letter-spacing: var(--label-tracking); text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
+.insp__grid .v { font-size: var(--step-2); font-weight: 650; margin-top: 2px; }
+.insp__grid .v small { font-size: var(--step--1); font-weight: 500; color: var(--ink-muted); }
+.insp__note { margin: 0 0 var(--space-4); font-size: var(--step--1); color: var(--ink-muted); }
+.insp__actions { display: grid; gap: var(--space-2); }
+.insp__hint { margin-top: var(--space-4); font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); }
+
+/* -- F · command bar -----------------------------------------------------
+   Search leads, the rail is gone, and the counts live in a footer rather than
+   stealing the top of the page. Density is a control here, not a decision made
+   on the operator's behalf. */
+.command, .footerbar, .density { display: none; }
+[data-direction="f"] .command {
+  display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;
+  padding: var(--space-4) var(--space-6);
+  background: var(--surface-raised); border-bottom: 1px solid var(--rule);
+}
+[data-direction="f"] .command .search { position: relative; flex: 1 1 420px; max-width: none; }
+[data-direction="f"] .command .input { min-height: 46px; padding-left: var(--space-9); font-size: var(--step-2); border-radius: var(--radius-pill); }
+[data-direction="f"] .command .search .search__icon { left: var(--space-4); font-size: 15px; }
+[data-direction="f"] .command__hint { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); border: 1px solid var(--rule); border-radius: 4px; padding: 2px 6px; }
+[data-direction="f"] .strip { display: none; }
+[data-direction="f"] .work { padding: var(--space-4) var(--space-6) 0; gap: var(--space-3); }
+[data-direction="f"] thead th { position: sticky; top: 0; z-index: 2; }
+[data-direction="f"] .panel { border-left: 0; border-right: 0; }
+/* Always visible, emphasised on hover. An action that exists only under the
+   cursor does not exist for a keyboard or for a finger. */
+[data-direction="f"] .rowact { color: var(--ink-faint); }
+[data-direction="f"] tbody tr:hover .rowact,
+[data-direction="f"] tbody tr:focus-within .rowact { color: var(--action); }
+[data-direction="f"] .footerbar {
+  display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;
+  margin: var(--space-4) calc(var(--space-6) * -1) 0;
+  padding: var(--space-2) var(--space-6);
+  border-top: 1px solid var(--rule); background: var(--surface-raised);
+  font-size: var(--step--1); color: var(--ink-muted);
+}
+[data-direction="f"] .footerbar .spacer { flex: 1 1 auto; }
+[data-direction="f"] .density { display: inline-flex; gap: var(--space-1); }
+/* Compact earns its name by dropping the secondary line. `height` on a table row is
+   a floor, not a ceiling — the two-line product cell set it, so no amount of padding
+   arithmetic could make the row shorter while the slug sat under the name. Density is
+   a mode the operator chooses, and trading the slug for a third more rows is the trade
+   they are choosing. */
+[data-direction="f"][data-density="compact"] tbody td { padding-top: 2px; padding-bottom: 2px; }
+[data-direction="f"][data-density="compact"] .pmeta { display: none; }
+[data-direction="f"][data-density="compact"] .trunc { max-width: 46ch; }
+
+/* -- empty / loading / error -------------------------------------------- */
+.state { padding: var(--space-14) var(--space-6); text-align: center; }
+.state__k { font-weight: 650; font-size: var(--step-2); margin-bottom: var(--space-1); }
+.state__p { color: var(--ink-muted); max-width: 46ch; margin: 0 auto var(--space-4); }
+.state--error { border-left: 3px solid var(--signal); text-align: left; }
+.skeleton { height: 10px; border-radius: var(--radius); background: var(--surface-sunken); }
+[data-direction="a"] .skeleton { background: oklch(0.92 0.006 80); }
+.skeleton-row td { padding: var(--space-3) var(--space-4); }
+
+/* -- state switching ----------------------------------------------------
+   One attribute on the root shows one state; the rest stay in the DOM so the
+   mockup is a real page rather than a set of screenshots. */
+[data-state] .only-default,
+[data-state] .only-loading,
+[data-state] .only-empty,
+[data-state] .only-error { display: none; }
+[data-state="default"] .only-default { display: revert; }
+[data-state="loading"] .only-loading { display: revert; }
+[data-state="empty"] .only-empty { display: revert; }
+[data-state="error"] .only-error { display: revert; }
+
+/* The footer in F states counts, so it goes away when the counts are not
+   known. A status bar that keeps asserting "6 products" while the list is
+   still loading is worse than empty space. */
+[data-state="loading"] .footerbar,
+[data-state="empty"] .footerbar,
+[data-state="error"] .footerbar { display: none; }
+
+/* ================================================ component states sheet */
+.grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: var(--space-4); }
+.spec { background: var(--surface); color: var(--ink); border: 1px solid oklch(0.32 0.008 250); border-radius: var(--radius); padding: var(--space-4); }
+.spec__k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: var(--space-3); }
+.spec__row { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
+.spec__row:last-child { margin-bottom: 0; }
+.spec__tag { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); min-width: 62px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(112px, 100%), 1fr)); gap: 1px; background: oklch(0.32 0.008 250); border: 1px solid oklch(0.32 0.008 250); }
+.sw { background: var(--surface); color: var(--ink); padding: var(--space-3); }
+.sw__chip { height: 44px; border-radius: 3px; border: 1px solid oklch(0 0 0 / 0.08); }
+.sw__n { font-family: var(--font-mono); font-size: 10px; margin-top: var(--space-2); color: var(--ink-faint); }
+.sw__v { font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted); word-break: break-all; }
+.sw__r { font-family: var(--font-mono); font-size: 10px; margin-top: 2px; color: var(--ok); }
+
+.scale { display: grid; gap: var(--space-2); }
+.scale__row { display: grid; grid-template-columns: 88px 1fr; gap: var(--space-4); align-items: baseline; background: var(--surface); color: var(--ink); padding: var(--space-2) var(--space-3); border-radius: 4px; }
+.scale__l { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); }
+
+.dirs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: var(--space-4); margin-bottom: var(--space-6); }
+.dir { background: oklch(0.24 0.008 250); border: 1px solid oklch(0.34 0.008 250); border-radius: 8px; padding: var(--space-4); }
+.dir__h { display: flex; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-2); }
+.dir__h b { font-size: var(--step-1); }
+.dir__tag { font-family: var(--font-mono); font-size: 10px; color: oklch(0.60 0.008 250); }
+.dir p { margin: 0; color: oklch(0.76 0.006 250); font-size: 13px; }
+
+/* ================================================== responsive ==========
+   The viewport gauntlet. The layout changes composition rather than compressing:
+   the rail becomes a scrolling row of the same destinations, spacing tightens by
+   one step, and the table becomes stacked blocks.
+
+   The stacked view keeps every figure and labels it, because a number with no
+   column heading is not data. Hiding the Reserved column on a phone would have
+   been the easier edit and it is the one thing an operator must not lose — the
+   reservation is why the available count is lower than the stock they counted. */
+@media (max-width: 1180px) {
+  /* The detail pane moves under the list rather than being dropped: it holds the
+     actions, and a control that disappears on a laptop is a bug. */
+  [data-direction="d"] .shell { grid-template-columns: minmax(0, 1fr); }
+  [data-direction="d"] .rail,
+  [data-direction="d"] .inspector { grid-column: 1; }
+  [data-direction="d"] .inspector { border-left: 0; border-top: 1px solid var(--rule); }
+  [data-direction="d"] .insp__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  [data-direction="b"] .shell,
+  [data-direction="e"] .shell { grid-template-columns: minmax(0, 1fr); }
+  [data-direction="b"] .rail,
+  [data-direction="d"] .rail,
+  [data-direction="e"] .rail {
+    display: flex; align-items: center; gap: var(--space-1);
+    padding: var(--space-2) var(--space-3); overflow-x: auto;
+  }
+  [data-direction="b"] .rail__brand,
+  [data-direction="b"] .rail__section,
+  [data-direction="b"] .rail__item[aria-disabled="true"],
+  [data-direction="d"] .rail__brand,
+  [data-direction="d"] .rail__section,
+  [data-direction="d"] .rail__item[aria-disabled="true"],
+  [data-direction="e"] .rail__brand,
+  [data-direction="e"] .rail__section,
+  [data-direction="e"] .rail__item[aria-disabled="true"] { display: none; }
+  [data-direction="b"] .rail__item,
+  [data-direction="d"] .rail__item,
+  [data-direction="e"] .rail__item { white-space: nowrap; padding: 8px var(--space-3); }
+}
+
+@media (max-width: 720px) {
+  .chrome { padding: var(--space-2) var(--space-4); }
+  .doc { padding: var(--space-6) var(--space-4) var(--space-9); }
+  .work { padding: var(--space-4); gap: var(--space-3); }
+  [data-direction="c"] .work { padding: var(--space-6) var(--space-4); gap: var(--space-4); }
+  [data-direction="f"] .command { padding: var(--space-3) var(--space-4); }
+  [data-direction="f"] .work { padding: var(--space-3) var(--space-4) 0; }
+  [data-direction="f"] .footerbar { margin-left: calc(var(--space-4) * -1); margin-right: calc(var(--space-4) * -1); padding: var(--space-2) var(--space-4); }
+  /* Four figures across a phone is four columns of ellipsis. */
+  [data-direction="d"] .insp__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .topbar { padding: var(--space-3) var(--space-4); }
+  [data-direction="c"] .topbar { padding: var(--space-3) var(--space-4); }
+  .cell-stat { padding: var(--space-2) var(--space-4); }
+  [data-direction="c"] .cell-stat { padding: var(--space-2) var(--space-4); }
+  .cell-stat__v { font-size: var(--step-2); }
+  .signin { padding: var(--space-9) var(--space-4); }
+  .toolbar .search { max-width: none; }
+}
+
+@media (max-width: 640px) {
+  .panel table, .panel tbody, .panel tr, .panel td { display: block; width: 100%; }
+  .panel thead { display: none; }
+  .panel tbody tr { height: auto; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--rule); }
+  .panel tbody td { border: 0; padding: 2px 0; }
+  .panel tbody td.r { text-align: left; }
+  .panel tbody td:first-child { padding-bottom: var(--space-2); }
+  .panel tbody td[data-label]::before {
+    content: attr(data-label);
+    display: inline-block; min-width: 92px;
+    color: var(--ink-faint); font-size: var(--step--1); font-weight: 600;
+  }
+  /* The zebra moves from the cell to the block, or it stripes each line. */
+  [data-direction="a"] .panel tbody tr:nth-child(even) { background: var(--surface-sunken); }
+  [data-direction="a"] .panel tbody tr:nth-child(even) td { background: transparent; }
+  .work__head .btn { width: 100%; }
+  .trunc { max-width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+}
+
+/* ---- the app in each option ---------------------------------------------
+   One iframe per design system. Each carries its own :root token block, so the
+   page's direction switcher cannot reach them. */
+.gal { display:grid; gap:20px; grid-template-columns:repeat(auto-fill, 460px); justify-content:start; }
+.gal__card { border:1px solid oklch(0.32 0.008 250); border-radius:8px; overflow:hidden; background:oklch(0.24 0.008 250); }
+.gal__cap { display:flex; align-items:baseline; gap:10px; padding:10px 13px; border-bottom:1px solid oklch(0.32 0.008 250); flex-wrap:wrap; }
+.gal__cap b { font-size:13px; font-weight:650; color:oklch(0.92 0.004 250); }
+.gal__cap span { font-size:11px; color:oklch(0.64 0.008 250); }
+.gal__cap .tag { margin-left:auto; font-size:10px; padding:2px 7px; border-radius:99px; border:1px solid oklch(0.36 0.008 250); color:oklch(0.68 0.008 250); }
+.gal__shot { position:relative; height:344px; overflow:hidden; background:#000; }
+.gal__shot iframe { position:absolute; top:0; left:0; width:1280px; height:960px; border:0; transform:scale(0.3594); transform-origin:top left; }
+.gal--big { grid-template-columns:minmax(0, 1fr); }
+.gal--big .gal__shot { height:800px; }
+.gal--big .gal__shot iframe { position:static; width:100%; height:100%; transform:none; }
+.gal__bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
+.gal__bar button { font:inherit; font-size:12px; padding:5px 11px; border-radius:6px; border:1px solid oklch(0.36 0.008 250); background:oklch(0.26 0.008 250); color:oklch(0.86 0.004 250); cursor:pointer; }
+.gal__bar button:hover { background:oklch(0.32 0.008 250); }
+.gal__bar button:focus-visible { outline:2px solid oklch(0.85 0.12 85); outline-offset:2px; }
+.gal__bar button[aria-pressed="true"] { background:oklch(0.88 0.004 250); border-color:oklch(0.88 0.004 250); color:oklch(0.22 0.008 250); font-weight:600; }
+
+/* ---- the app in the navbar ----------------------------------------------
+   A full-width preview of the product in the selected design system, sitting
+   directly under the sticky bar so switching system and seeing the result are the
+   same gesture. The iframe is rendered at 1280x960 and scaled to the column. */
+.sp { padding:0 var(--space-6) var(--space-6); scroll-margin-top:68px; }
+.sp__k { font-size:12px; color:oklch(0.62 0.008 250); }
+.sp__sw { display:inline-flex; border:1px solid oklch(0.40 0.008 250); border-radius:4px; overflow:hidden; }
+.sp__sw i { display:block; width:18px; height:13px; }
+.sp[hidden] { display:none; }
+.sp__cap { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; padding:10px 2px 12px; }
+.sp__cap b { font-size:14px; font-weight:650; }
+.sp__cap .note { font-size:12px; color:oklch(0.70 0.006 250); }
+.sp__cap .sp__spacer { flex:1; }
+.sp__cap button { font:inherit; font-size:12px; padding:4px 10px; border-radius:5px; border:1px solid oklch(0.36 0.008 250); background:oklch(0.26 0.008 250); color:oklch(0.86 0.004 250); cursor:pointer; }
+.sp__cap button:hover { background:oklch(0.32 0.008 250); }
+.sp__cap button:focus-visible { outline:2px solid oklch(0.85 0.12 85); outline-offset:2px; }
+.sp__cap button[aria-pressed="true"] { background:oklch(0.88 0.004 250); border-color:oklch(0.88 0.004 250); color:oklch(0.22 0.008 250); font-weight:600; }
+.sp__shot { position:relative; overflow:hidden; max-width:1280px; margin:0 auto; border:1px solid oklch(0.36 0.008 250); border-radius:8px; background:#000; }
+.sp__shot iframe { position:absolute; top:0; left:0; width:1280px; height:960px; border:0; transform-origin:top left; }
+</style>
+</head>
+<body>
+
+<header class="chrome">
+  <div class="chrome__title">MarketCore · design directions</div>
+  <div class="chrome__group">
+    <span class="chrome__label">direction</span>
+    <button class="chrome__btn" data-set-direction="a" aria-pressed="true">A · Ruled ledger</button>
+    <button class="chrome__btn" data-set-direction="b" aria-pressed="false">B · Control room</button>
+    <button class="chrome__btn" data-set-direction="c" aria-pressed="false">C · Quiet catalog</button>
+    <button class="chrome__btn" data-set-direction="d" aria-pressed="false">D · Master &amp; detail</button>
+    <button class="chrome__btn" data-set-direction="e" aria-pressed="false">E · Dark console</button>
+    <button class="chrome__btn" data-set-direction="f" aria-pressed="false">F · Command bar</button>
+  </div>
+  <div class="chrome__group">
+    <span class="chrome__label">catalog state</span>
+    <button class="chrome__btn" data-set-state="default" aria-pressed="true">Populated</button>
+    <button class="chrome__btn" data-set-state="loading" aria-pressed="false">Loading</button>
+    <button class="chrome__btn" data-set-state="empty" aria-pressed="false">Empty</button>
+    <button class="chrome__btn" data-set-state="error" aria-pressed="false">Error</button>
+  <div class="chrome__group">
+    <span class="chrome__label">app in</span>
+    <button class="chrome__btn" data-gal-system="selvedge" aria-pressed="true">selvedge</button>
+    <button class="chrome__btn" data-gal-system="tally" aria-pressed="false">tally</button>
+    <button class="chrome__btn" data-gal-system="nightshift" aria-pressed="false">nightshift</button>
+    <button class="chrome__btn" data-gal-system="copperplate" aria-pressed="false">copperplate</button>
+    <button class="chrome__btn" data-gal-system="shadcn" aria-pressed="false">shadcn</button>
+    <button class="chrome__btn" id="spToggle" aria-pressed="true">hide</button>
+  </div>
+  </div>
+</header>
+
+<section class="sp" id="systemPreview">
+  <div class="sp__cap">
+    <span class="sp__k">showing</span>
+    <b id="spName">selvedge</b>
+    <span class="sp__sw" id="spSw"></span>
+    <span class="note" id="spNote"></span>
+    <span class="sp__spacer"></span>
+    <button type="button" data-sp-screen="catalog" aria-pressed="true">Catalog</button>
+    <button type="button" data-sp-screen="signin" aria-pressed="false">Sign in</button>
+  </div>
+  <div class="sp__shot" id="spShot"><iframe id="spFrame" sandbox="allow-same-origin" title="the app in the selected design system"></iframe></div>
+</section>
+
+<div class="doc">
+
+  <div class="dirs">
+    <div class="dir">
+      <div class="dir__h"><b>A · Ruled ledger</b><span class="dir__tag">weight + rules</span></div>
+      <p>No boxes. Hierarchy comes from weight, hairlines and aligned figures, so the eye reads down the price and stock columns. The primary action is ink rather than a hue, which leaves exactly one colour on the page meaning “attention”. Sharp corners.</p>
+    </div>
+    <div class="dir">
+      <div class="dir__h"><b>B · Control room</b><span class="dir__tag">rail + panels</span></div>
+      <p>A dark tenant rail, a status strip of live counts, and bordered panels on a tinted canvas. Navigation is spatial: the tenant is always on the left, the work is always to its right. Dense rows, small radii, one signal amber.</p>
+    </div>
+    <div class="dir">
+      <div class="dir__h"><b>C · Quiet catalog</b><span class="dir__tag">air + type</span></div>
+      <p>Air instead of grid. Larger type, softer surfaces, one rule between rows instead of a cell lattice, and a fuller touch target. Readable before it is dense — the bet is that a catalog is read more often than it is scanned at speed.</p>
+    </div>
+    <div class="dir">
+      <div class="dir__h"><b>D · Master &amp; detail</b><span class="dir__tag">B + a detail pane</span></div>
+      <p>B's rail, with the row you select opening beside it instead of on another page. The list answers “which one”; the pane answers “what is true about it, and what do I do”. Same palette as B on purpose, so what you are judging is the structure.</p>
+    </div>
+    <div class="dir">
+      <div class="dir__h"><b>E · Dark console</b><span class="dir__tag">B, lights off</span></div>
+      <p>B's structure on a dark canvas, for a screen that is open all day. The palette is chosen rather than inverted: on a dark surface the legible range for small text is bounded from below, so the accent becomes a light fill with dark text on it. Not a terminal — proportional type, real panels, no glow.</p>
+    </div>
+    <div class="dir">
+      <div class="dir__h"><b>F · Command bar</b><span class="dir__tag">search leads</span></div>
+      <p>The rail is gone, search is the widest thing on the page, counts move to a footer, and row density becomes a control rather than a decision made for you. Compacts to 28px rows. Try the Comfortable / Compact toggle — it works in this mockup.</p>
+    </div>
+  </div>
+
+  <div class="doc__head">
+    <h2 class="doc__h2">Tokens</h2>
+    <span class="mono">switches with the direction</span>
+  </div>
+  <p class="doc__note">Every value is a variable; no component hard-codes a colour. Contrast is <strong>computed from the tokens below with the standard OKLCH → sRGB conversion</strong>, so a token edit that breaks legibility reports itself here instead of waiting for review.</p>
+
+  <div class="swatches" id="swatches"></div>
+
+  <div class="doc__rule"></div>
+
+  <div class="doc__head"><h2 class="doc__h2">Type, space, corners</h2><span class="mono">one family, three densities</span></div>
+  <div class="scale" id="typescale"></div>
+
+  <div class="doc__rule"></div>
+
+  <div class="doc__head"><h2 class="doc__h2">Controls, in their states</h2><span class="mono">idle · hover · focus · busy · disabled</span></div>
+  <p class="doc__note">Focus is <strong>:focus-visible</strong> and drawn as a 2px ring at 2px offset, never removed. State is never carried by colour alone: a dot, a word, or a shape comes with it.</p>
+  <div class="grid-cards" id="controls"></div>
+
+  <div class="doc__rule"></div>
+
+  <div class="doc__head">
+    <h2 class="doc__h2">Sign in</h2>
+    <span class="mono">decide · one action</span>
+  </div>
+  <p class="doc__note">The one surface allowed to be centred: the visitor has a single job and no context to preserve. The refusal below is the API's own message, so what a person reads here is what the server said.</p>
+
+  <div class="screen">
+    <div class="signin">
+      <div class="signin__box">
+        <div class="brandmark"><span class="brandmark__dot"></span>MarketCore</div>
+        <div class="signin__intro">
+          <h1 class="p-title">Sign in</h1>
+          <p>Use the account you registered.</p>
+        </div>
+        <form class="form" onsubmit="return false">
+          <div class="field">
+            <label for="s-email">Email</label>
+            <input class="input" id="s-email" type="email" value="owner@marketcore.test" autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="s-pass">Password</label>
+            <input class="input" id="s-pass" type="password" value="correct-horse-battery" autocomplete="current-password" aria-invalid="true" aria-describedby="s-err">
+            <p class="msg msg--error" id="s-err"><span class="msg__icon" aria-hidden="true">!</span>Invalid credentials. Check the address and password, then try again.</p>
+          </div>
+          <button class="btn btn--primary" type="submit">Sign in</button>
+        </form>
+        <p class="muted" style="margin-top:var(--space-4);font-size:var(--step--1)">No account? <a href="#signin">Create one</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc__rule"></div>
+
+  <div class="doc__head">
+    <h2 class="doc__h2">Catalog</h2>
+    <span class="mono">compare · the work surface</span>
+  </div>
+  <p class="doc__note">The operator's actual job: what is published, what is priced, what is left. Figures are the hardest real content — a name long enough to truncate, a four-figure minor-unit price, and a product with nothing left, which is the row someone came here to find.</p>
+
+  <div class="screen">
+    <div class="shell">
+      <nav class="rail" aria-label="Sections">
+        <div class="rail__brand"><span class="brandmark__dot"></span>MarketCore</div>
+        <div class="rail__section">Operate</div>
+        <a class="rail__item rail__item--on" href="#catalog" aria-current="page">Catalog</a>
+        <a class="rail__item" href="#catalog" aria-disabled="true"><span>Orders</span><span class="rail__tag">phase 4</span></a>
+        <a class="rail__item" href="#catalog" aria-disabled="true"><span>Payouts</span><span class="rail__tag">phase 11</span></a>
+        <div class="rail__section">Tenant</div>
+        <a class="rail__item" href="#catalog">Members</a>
+        <a class="rail__item" href="#catalog">Settings</a>
+      </nav>
+
+      <div class="col">
+        <header class="topbar">
+          <button class="orgpick" type="button">
+            Nile Traders <span class="orgpick__role">OWNER</span>
+            <span aria-hidden="true" style="color:var(--ink-faint)">▾</span>
+          </button>
+          <div class="spacer"></div>
+          <span class="who">owner@marketcore.test</span>
+          <button class="btn btn--quiet" type="button">Sign out</button>
+        </header>
+
+        <div class="command">
+          <div class="search">
+            <span class="search__icon" aria-hidden="true">⌕</span>
+            <input class="input" type="search" placeholder="Search products, or paste a slug" aria-label="Search products">
+          </div>
+          <span class="command__hint">/ focuses search</span>
+          <div class="density" role="group" aria-label="Row density">
+            <button class="chip" type="button" data-set-density="comfortable" aria-pressed="true">Comfortable</button>
+            <button class="chip" type="button" data-set-density="compact" aria-pressed="false">Compact</button>
+          </div>
+        </div>
+
+        <div class="strip">
+          <div class="cell-stat"><div class="cell-stat__k">Published</div><div class="cell-stat__v num">4</div></div>
+          <div class="cell-stat"><div class="cell-stat__k">Drafts</div><div class="cell-stat__v num">2</div></div>
+          <div class="cell-stat"><div class="cell-stat__k">Out of stock</div><div class="cell-stat__v num" style="color:var(--signal)">1<small>needs attention</small></div></div>
+          <div class="cell-stat"><div class="cell-stat__k">Units available</div><div class="cell-stat__v num">37</div></div>
+        </div>
+
+        <div class="work">
+          <div class="work__head">
+            <div>
+              <div class="eyebrow">Nile Traders</div>
+              <h1 class="p-title">Catalog</h1>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn btn--primary" type="button" style="width:auto">New product</button>
+          </div>
+
+          <div class="toolbar">
+            <div class="search">
+              <span class="search__icon" aria-hidden="true">⌕</span>
+              <input class="input" type="search" placeholder="Search by name or slug" aria-label="Search products">
+            </div>
+            <button class="chip" type="button" aria-pressed="true">All</button>
+            <button class="chip" type="button" aria-pressed="false">Published</button>
+            <button class="chip" type="button" aria-pressed="false">Drafts</button>
+          </div>
+
+          <div class="panel only-default">
+            <table>
+              <caption class="mono" style="text-align:left;padding:0 0 var(--space-2)">6 products</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Product</th>
+                  <th scope="col">Status</th>
+                  <th scope="col" class="r">Price</th>
+                  <th scope="col" class="r">Available</th>
+                  <th scope="col" class="r">Reserved</th>
+                  <th scope="col"><span class="faint" style="font-weight:600">·</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="pname trunc">Hand-knotted Egyptian cotton runner, 300 × 80 cm, indigo</span><span class="pmeta">runner-indigo-300</span></td>
+                  <td data-label="Status"><span class="status status--published"><span class="status__dot"></span>Published</span></td>
+                  <td class="r num" data-label="Price">2,450.00 <span class="faint">EGP</span></td>
+                  <td class="r stock" data-label="Available"><b>12</b></td>
+                  <td class="r stock" data-label="Reserved"><span>0</span></td>
+                  <td class="r"><button class="rowact" type="button">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><span class="pname">Linen table runner</span><span class="pmeta">linen-runner</span></td>
+                  <td data-label="Status"><span class="status status--published"><span class="status__dot"></span>Published</span></td>
+                  <td class="r num" data-label="Price">1,299.00 <span class="faint">EGP</span></td>
+                  <td class="r stock" data-label="Available"><b>9</b></td>
+                  <td class="r stock" data-label="Reserved"><span>2</span></td>
+                  <td class="r"><button class="rowact" type="button">Edit</button></td>
+                </tr>
+                <tr class="is-selected" aria-current="true">
+                  <td><span class="pname">Cotton bath towel, set of four</span><span class="pmeta">towel-set-4</span></td>
+                  <td data-label="Status"><span class="status status--published"><span class="status__dot"></span>Published</span></td>
+                  <td class="r num" data-label="Price">899.00 <span class="faint">EGP</span></td>
+                  <td class="r stock" data-label="Available" style="color:var(--signal)"><b>0</b></td>
+                  <td class="r stock" data-label="Reserved"><span>1</span></td>
+                  <td class="r"><button class="rowact" type="button">Restock</button></td>
+                </tr>
+                <tr>
+                  <td><span class="pname">Hand-loomed wool throw</span><span class="pmeta">wool-throw</span></td>
+                  <td data-label="Status"><span class="status status--published"><span class="status__dot"></span>Published</span></td>
+                  <td class="r num" data-label="Price">3,100.00 <span class="faint">EGP</span></td>
+                  <td class="r stock" data-label="Available"><b>15</b></td>
+                  <td class="r stock" data-label="Reserved"><span>0</span></td>
+                  <td class="r"><button class="rowact" type="button">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><span class="pname">Jacquard tablecloth, 8 seats</span><span class="pmeta">tablecloth-jacquard-8</span></td>
+                  <td data-label="Status"><span class="status status--draft"><span class="status__dot"></span>Draft</span></td>
+                  <td class="r num" data-label="Price">1,750.00 <span class="faint">EGP</span></td>
+                  <td class="r stock" data-label="Available"><b>1</b></td>
+                  <td class="r stock" data-label="Reserved"><span>0</span></td>
+                  <td class="r"><button class="rowact" type="button">Publish</button></td>
+                </tr>
+                <tr>
+                  <td><span class="pname">Cotton cushion cover, plain</span><span class="pmeta">cushion-plain</span></td>
+                  <td data-label="Status"><span class="status status--draft"><span class="status__dot"></span>Draft</span></td>
+                  <td class="r num" data-label="Price">0.00 <span class="faint">EGP</span></td>
+                  <td class="r stock" data-label="Available"><span>0</span></td>
+                  <td class="r stock" data-label="Reserved"><span>0</span></td>
+                  <td class="r"><button class="rowact" type="button">Set price</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel only-loading">
+            <table aria-busy="true">
+              <caption class="mono" style="text-align:left;padding:0 0 var(--space-2)">Loading products…</caption>
+              <tbody>
+                <tr class="skeleton-row"><td><div class="skeleton" style="width:60%"></div></td><td><div class="skeleton" style="width:70%"></div></td><td class="r"><div class="skeleton" style="width:56px;margin-left:auto"></div></td><td class="r"><div class="skeleton" style="width:24px;margin-left:auto"></div></td><td class="r"><div class="skeleton" style="width:24px;margin-left:auto"></div></td><td></td></tr>
+                <tr class="skeleton-row"><td><div class="skeleton" style="width:44%"></div></td><td><div class="skeleton" style="width:70%"></div></td><td class="r"><div class="skeleton" style="width:56px;margin-left:auto"></div></td><td class="r"><div class="skeleton" style="width:24px;margin-left:auto"></div></td><td class="r"><div class="skeleton" style="width:24px;margin-left:auto"></div></td><td></td></tr>
+                <tr class="skeleton-row"><td><div class="skeleton" style="width:52%"></div></td><td><div class="skeleton" style="width:70%"></div></td><td class="r"><div class="skeleton" style="width:56px;margin-left:auto"></div></td><td class="r"><div class="skeleton" style="width:24px;margin-left:auto"></div></td><td class="r"><div class="skeleton" style="width:24px;margin-left:auto"></div></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel only-empty">
+            <div class="state">
+              <div class="state__k">No products yet</div>
+              <p class="state__p">A product is what customers see and what stock is counted against. Add the first one and it starts as a draft until you price it and publish.</p>
+              <button class="btn btn--primary" type="button" style="width:auto">New product</button>
+            </div>
+          </div>
+
+          <div class="panel only-error">
+            <div class="state state--error">
+              <div class="state__k">Could not load the catalog</div>
+              <p class="state__p">The API did not answer. Nothing has changed, so it is safe to try again. Quote <span class="num">req_7f41c9ae</span> if it keeps failing.</p>
+              <button class="btn btn--primary" type="button" style="width:auto">Try again</button>
+            </div>
+          </div>
+
+          <div class="footerbar">
+            <span>6 products</span>
+            <span>4 published · 2 drafts</span>
+            <span style="color:var(--signal)">1 out of stock</span>
+            <span class="spacer"></span>
+            <span class="num">inventory read just now</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="inspector" aria-label="Selected product">
+        <div class="eyebrow">Selected</div>
+        <h2 class="insp__title">Cotton bath towel, set of four</h2>
+        <div class="pmeta">towel-set-4</div>
+        <div style="margin-top:var(--space-3)">
+          <span class="status status--published"><span class="status__dot"></span>Published</span>
+        </div>
+
+        <div class="insp__grid">
+          <div><div class="k">Price</div><div class="v num">899.00 <small>EGP</small></div></div>
+          <div><div class="k">Available</div><div class="v num" style="color:var(--signal)">0</div></div>
+          <div><div class="k">Reserved</div><div class="v num">1</div></div>
+          <div><div class="k">Currency</div><div class="v">EGP</div></div>
+        </div>
+
+        <p class="insp__note">Nothing available to sell. This product is published with its price set, so it is visible and cannot be bought — the one unit on hand is held.</p>
+
+        <div class="insp__actions">
+          <button class="btn btn--primary" type="button">Restock</button>
+          <button class="btn btn--quiet" type="button">Unpublish</button>
+          <button class="btn btn--quiet" type="button">Edit price</button>
+        </div>
+
+        <div class="insp__hint">↑ ↓ move · Enter open · P publish</div>
+      </aside>
+    </div>
+  </div>
+
+  <p class="doc__note" style="margin-top:var(--space-6)">Products are the API's real surface today, so this screen is the app's actual destination rather than an invention. Orders and payouts are shown in the rail as planned, labelled with the phase that will bring them — a nav item that pretends to work is the kind of thing this repository refuses.</p>
+  <div class="doc__rule"></div>
+
+  <div class="doc__head">
+    <h2 class="doc__h2">The app, in each option</h2>
+    <span class="mono">catalog · sign in</span>
+  </div>
+  <p class="doc__note">The product rather than a component sheet: the tenant rail, the top bar, the counts, the six-product table with a name long enough to truncate and a published product at zero stock, and the sign-in screen. Every option renders identical markup and data, so the only thing that changes is the design system. Each one is drawn for this product — a platform that holds physical stock, seeded with Egyptian cotton textiles — rather than borrowed from another company's identity.</p>
+
+  <div class="gal__bar">
+    <button type="button" data-gal-screen="catalog" aria-pressed="true">Catalog</button>
+    <button type="button" data-gal-screen="signin" aria-pressed="false">Sign in</button>
+    <span style="flex:1"></span>
+    <button type="button" id="galBig" aria-pressed="false">Larger</button>
+  </div>
+  <div class="gal" id="appGallery"></div>
+
+</div>
+
+<script>
+const root = document.documentElement;
+
+/* ---- switching -------------------------------------------------------
+   Direction, catalog state and row density are all one attribute on the root,
+   which is why the switcher is a loop rather than three handlers. */
+for (const attribute of ['direction', 'state', 'density']) {
+  const key = `set${attribute[0].toUpperCase()}${attribute.slice(1)}`;
+
+  for (const button of document.querySelectorAll(`[data-set-${attribute}]`)) {
+    button.addEventListener('click', () => {
+      root.dataset[attribute] = button.dataset[key];
+
+      for (const sibling of document.querySelectorAll(`[data-set-${attribute}]`)) {
+        sibling.setAttribute('aria-pressed', String(sibling === button));
+      }
+
+      // Density is pure CSS; only the token sheet has to be redrawn.
+      if (attribute !== 'density') render();
+    });
+  }
+}
+
+/* ---- contrast ---------------------------------------------------------
+   Computed from the token values rather than read back from the rendered
+   pixels, because Chrome serialises these as `oklch(...)` and a naive parser
+   reads the three numbers as 0-255 channels — which reports every pair as
+   1.0:1 and hides a real failure behind a broken check.
+
+   OKLCH → OKLab → linear sRGB (Ottosson's matrices), then WCAG's luminance
+   coefficients, which are defined on linear sRGB. So these are the same
+   numbers a contrast checker would give for the same colours. */
+function parseOklch(css) {
+  const m = css.match(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/i);
+  return m ? { L: +m[1], C: +m[2], H: +m[3] } : null;
+}
+
+function luminance(css) {
+  const lch = parseOklch(css);
+  if (!lch) return null;
+
+  const h = (lch.H * Math.PI) / 180;
+  const a = lch.C * Math.cos(h);
+  const b = lch.C * Math.sin(h);
+
+  const lp = lch.L + 0.3963377774 * a + 0.2158037573 * b;
+  const mp = lch.L - 0.1055613458 * a - 0.0638541728 * b;
+  const sp = lch.L - 0.0894841775 * a - 1.291485548 * b;
+  const l = lp ** 3;
+  const m = mp ** 3;
+  const s = sp ** 3;
+
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const r = clamp(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s);
+  const g = clamp(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s);
+  const bl = clamp(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s);
+
+  return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+}
+
+function ratio(foreground, background) {
+  const [a, b] = [luminance(foreground), luminance(background)];
+  if (a === null || b === null) return null;
+  const [hi, lo] = [a, b].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+const PAIRS = [
+  ['ink on surface', '--ink', '--surface', 4.5],
+  ['muted on surface', '--ink-muted', '--surface', 4.5],
+  // 4.5, not 3: `faint` carries SKUs, currency and micro-labels at 10-12px, so it is
+  // small text. Every direction failed this when it was set at 3 — which is exactly
+  // the kind of thing a threshold that flatters the design would have hidden.
+  ['faint on surface', '--ink-faint', '--surface', 4.5],
+  ['action ink on action', '--action-ink', '--action', 4.5],
+  ['signal on surface', '--signal', '--surface', 4.5],
+  ['ok on surface', '--ok', '--surface', 4.5],
+  ['rule on surface', '--rule', '--surface', 1.2]
+];
+
+const TOKEN_LABELS = {
+  '--surface': 'surface', '--surface-raised': 'surface raised', '--surface-sunken': 'surface sunken',
+  '--ink': 'ink', '--ink-muted': 'ink muted', '--ink-faint': 'ink faint',
+  '--rule': 'rule', '--rule-strong': 'rule strong',
+  '--action': 'action', '--action-hover': 'action hover', '--action-ink': 'action ink',
+  '--signal': 'signal', '--signal-wash': 'signal wash', '--ok': 'ok', '--ok-wash': 'ok wash'
+};
+
+function render() {
+  const styles = getComputedStyle(document.body);
+  const styles2 = getComputedStyle(document.querySelector('.screen'));
+
+  /* swatches */
+  const swatches = document.getElementById('swatches');
+  swatches.innerHTML = '';
+  for (const variable of Object.keys(TOKEN_LABELS)) {
+    const color = styles2.getPropertyValue(variable).trim() || styles.getPropertyValue(variable).trim();
+    const sw = document.createElement('div');
+    sw.className = 'sw';
+    sw.innerHTML = `<div class="sw__chip" style="background:${color}"></div>
+      <div class="sw__n">${TOKEN_LABELS[variable]}</div>
+      <div class="sw__v">${color}</div>`;
+    swatches.append(sw);
+  }
+
+  /* contrast, from the tokens the screen actually resolved */
+  const read = (token) => styles2.getPropertyValue(token).trim();
+  for (const [name, fg, bg, min] of PAIRS) {
+    const value = ratio(read(fg), read(bg));
+    const el = document.createElement('div');
+    el.className = 'sw';
+    const verdict = value === null
+      ? 'not a colour'
+      : `${value.toFixed(2)} : 1 · ${value >= min ? 'passes' : 'BELOW'} ${min} : 1`;
+    el.innerHTML = `<div class="sw__n">${name}</div>
+      <div class="sw__r" style="${value !== null && value < min ? 'color:oklch(0.62 0.19 28)' : ''}">${verdict}</div>`;
+    swatches.append(el);
+  }
+
+  /* type scale */
+  const scale = document.getElementById('typescale');
+  scale.innerHTML = '';
+  const SAMPLES = [
+    ['--step-5', '32 / page title, rarely'],
+    ['--step-4', '24 / screen title'],
+    ['--step-3', '20 / section'],
+    ['--step-2', '16 / lead paragraph'],
+    ['--step-1', '14 / body'],
+    ['--step-0', '13 / dense body, table'],
+    ['--step--1', '12 / label, meta']
+  ];
+  for (const [token, note] of SAMPLES) {
+    const row = document.createElement('div');
+    row.className = 'scale__row';
+    row.innerHTML = `<div class="scale__l">${token}</div>
+      <div style="font-size:var(${token});font-weight:600">Nile Traders · 2,450.00 EGP <span style="font-weight:400;color:var(--ink-muted);font-size:12px">${note}</span></div>`;
+    scale.append(row);
+  }
+
+  /* controls */
+  const controls = document.getElementById('controls');
+  controls.innerHTML = `
+    <div class="spec">
+      <div class="spec__k">Button · primary</div>
+      <div class="spec__row"><span class="spec__tag">idle</span><button class="btn btn--primary" style="width:auto" type="button">New product</button></div>
+      <div class="spec__row"><span class="spec__tag">busy</span><button class="btn btn--busy" style="width:auto" type="button" aria-busy="true">Creating…</button></div>
+      <div class="spec__row"><span class="spec__tag">disabled</span><button class="btn btn--primary" style="width:auto" type="button" disabled>New product</button></div>
+      <div class="spec__row"><span class="spec__tag">focus</span><button class="btn btn--primary" style="width:auto;outline:2px solid var(--action);outline-offset:2px" type="button">New product</button></div>
+    </div>
+    <div class="spec">
+      <div class="spec__k">Button · secondary</div>
+      <div class="spec__row"><span class="spec__tag">idle</span><button class="btn btn--quiet" type="button">Sign out</button></div>
+      <div class="spec__row"><span class="spec__tag">pressed</span><button class="chip" type="button" aria-pressed="true">Published</button></div>
+      <div class="spec__row"><span class="spec__tag">idle</span><button class="chip" type="button" aria-pressed="false">Drafts</button></div>
+    </div>
+    <div class="spec">
+      <div class="spec__k">Input</div>
+      <div class="spec__row"><span class="spec__tag">idle</span><input class="input" value="linen-runner" aria-label="Slug"></div>
+      <div class="spec__row"><span class="spec__tag">error</span><input class="input" value="Linen Runner" aria-invalid="true" aria-label="Invalid slug"></div>
+      <div class="spec__row"><span class="spec__tag">disabled</span><input class="input" value="locked-by-policy" disabled aria-label="Disabled"></div>
+    </div>
+    <div class="spec">
+      <div class="spec__k">State, never colour alone</div>
+      <div class="spec__row"><span class="spec__tag">published</span><span class="status status--published"><span class="status__dot"></span>Published</span></div>
+      <div class="spec__row"><span class="spec__tag">draft</span><span class="status status--draft"><span class="status__dot"></span>Draft</span></div>
+      <div class="spec__row"><span class="spec__tag">out</span><span class="status status--out"><span class="status__dot"></span>Out of stock</span></div>
+      <div class="spec__row"><span class="spec__tag">low</span><span class="status status--low"><span class="status__dot"></span>1 left</span></div>
+    </div>
+    <div class="spec">
+      <div class="spec__k">Messages</div>
+      <div class="spec__row"><div class="callout callout--error msg msg--error" style="width:100%"><span class="msg__icon" aria-hidden="true">!</span>Invalid credentials. Check the address and password.</div></div>
+      <div class="spec__row"><div class="callout callout--ok msg msg--ok" style="width:100%"><span class="msg__icon" aria-hidden="true">✓</span>Account created. Sign in to continue.</div></div>
+    </div>`;
+}
+
+/* ---- the app in each option -----------------------------------------------
+   Reads the same OPTIONS and template that docs/design/app.html uses, so the two
+   pages cannot disagree about what a system looks like. */
+const GAL_OPTIONS = [{"id":"selvedge","note":"dye and thread · status is a structural edge, not a chip","dark":false,"tokens":{"--canvas":"#f4f1e9","--surface":"#fffdf9","--sunken":"#eae5d9","--rail":"#1c2a45","--rail-edge":"#101c33","--rail-ink":"#ffffff","--rail-muted":"#8e95a2","--rail-hover":"#2c3952","--rail-active":"#3c485f","--ink":"#23201a","--ink-muted":"#6a655b","--ink-faint":"#76736d","--rule":"#d5d2ca","--rule-strong":"#b1aea7","--action":"#2f4470","--action-hover":"#506287","--action-ink":"#ffffff","--ok":"#2f6b4f","--signal":"#9c3d2e","--radius":"7px","--stack":"ui-sans-serif,system-ui,-apple-system,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif","--thread-published":"#2f6b4f","--thread-draft":"#b8b0a0","--thread-out":"#9c3d2e","--meter-display":"flex"}},{"id":"tally","note":"counting first · no dark chrome, quantity drawn as length","dark":false,"tokens":{"--canvas":"#ffffff","--surface":"#ffffff","--sunken":"#f1f4f7","--rail":"#e6ebef","--rail-edge":"#ced4da","--rail-ink":"#1b1e24","--rail-muted":"#676b70","--rail-hover":"#d5dade","--rail-active":"#c2c7cd","--ink":"#14161a","--ink-muted":"#5c636e","--ink-faint":"#6e7277","--rule":"#dcdcdd","--rule-strong":"#b4b4b6","--action":"#24408e","--action-hover":"#475fa0","--action-ink":"#ffffff","--ok":"#0f6b3f","--signal":"#b45309","--radius":"7px","--stack":"ui-sans-serif,system-ui,-apple-system,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif","--meter-display":"flex"}},{"id":"nightshift","note":"warm dark for a screen left open · the rail is lighter, not darker","dark":true,"tokens":{"--canvas":"#16151a","--surface":"#201f26","--sunken":"#121116","--rail":"#2a2831","--rail-edge":"#1b1a20","--rail-ink":"#ffffff","--rail-muted":"#959498","--rail-hover":"#39373f","--rail-active":"#48464e","--ink":"#efece6","--ink-muted":"#a49e94","--ink-faint":"#8b8885","--rule":"#343338","--rule-strong":"#57575a","--action":"#ffb02e","--action-hover":"#d69427","--action-ink":"#141210","--ok":"#86d3a4","--signal":"#ff8a6b","--radius":"7px","--stack":"ui-sans-serif,system-ui,-apple-system,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif","--bevel":"rgba(255,255,255,.07)"}},{"id":"copperplate","note":"instrument panel · structure from borders, a hairline of light on top","dark":false,"tokens":{"--canvas":"#e7e5e0","--surface":"#f6f5f2","--sunken":"#ddd9d3","--rail":"#2b2a27","--rail-edge":"#1c1b19","--rail-ink":"#ffffff","--rail-muted":"#959593","--rail-hover":"#3a3936","--rail-active":"#494845","--ink":"#1d1b18","--ink-muted":"#5f5c55","--ink-faint":"#6e6c68","--rule":"#c9c7c2","--rule-strong":"#a6a4a0","--action":"#37506b","--action-hover":"#576c83","--action-ink":"#ffffff","--ok":"#2f6b4f","--signal":"#8a4b2a","--radius":"7px","--stack":"ui-sans-serif,system-ui,-apple-system,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif","--bevel":"rgba(255,255,255,.55)"}},{"id":"shadcn","note":"shadcn/ui default theme · zinc, 8px radius, separation from borders not fills","dark":false,"tokens":{"--canvas":"#f4f4f5","--surface":"#ffffff","--sunken":"#f4f4f5","--rail":"#f4f4f5","--rail-edge":"#e4e4e7","--rail-ink":"#09090b","--rail-muted":"#6b6b74","--rail-hover":"#e6e6e7","--rail-active":"#dadadb","--ink":"#09090b","--ink-muted":"#71717a","--ink-faint":"#75757a","--rule":"#e4e4e7","--rule-strong":"#cacacd","--action":"#18181b","--action-hover":"#38383b","--action-ink":"#fafafa","--ok":"#12823b","--signal":"#ae5f05","--danger":"#d73d3d","--radius":"8px","--stack":"\"Geist\",ui-sans-serif,system-ui,-apple-system,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif"}}];
+const GAL_APP = "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>MarketCore</title>\n<style>\n  *,*::before,*::after{box-sizing:border-box}\n  body{margin:0;background:var(--canvas);color:var(--ink);font:13px/1.45 var(--font);-webkit-font-smoothing:antialiased}\n  .num{font-variant-numeric:tabular-nums}\n  /* ---------- shell ---------- */\n  .shell{display:grid;grid-template-columns:206px minmax(0,1fr);min-height:100vh}\n  .rail{border-right:1px solid var(--rail-edge,var(--rule));background:var(--rail);color:var(--rail-ink);padding:16px 12px;display:flex;flex-direction:column;gap:2px}\n  .brand{display:flex;align-items:center;gap:8px;font-weight:650;font-size:14px;padding:4px 8px 16px}\n  .dot{width:9px;height:9px;border-radius:99px;background:var(--action)}\n  .rail .tenant{padding:8px;border-radius:var(--radius);background:var(--rail-hover);margin-bottom:12px}\n  .rail .tenant b{display:block;font-size:13px}\n  .rail .tenant span{font-size:11px;color:var(--rail-muted)}\n  .rail nav{margin-top:4px}\n  .rail a{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius);color:var(--rail-muted);text-decoration:none;font-size:13px}\n  .rail a:hover{background:var(--rail-hover);color:var(--rail-ink)}\n  .rail a[aria-current] {background:var(--rail-active);color:var(--rail-ink);font-weight:600}\n  .rail a[aria-disabled]{opacity:.55}\n  .rail .phase{font-size:10px;color:var(--rail-muted)}\n  .rail .me{margin-top:auto;padding:10px 8px 2px;border-top:1px solid var(--rail-hover);font-size:11px;color:var(--rail-muted)}\n  /* ---------- top bar ---------- */\n  .col{display:flex;flex-direction:column;min-width:0}\n  .top{display:flex;align-items:center;gap:12px;padding:12px 24px;background:var(--surface);border-bottom:1px solid var(--rule)}\n  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule);background:var(--surface);border-radius:99px;padding:6px 12px;font-weight:600;font-size:13px}\n  .pill small{color:var(--ink-faint);font-weight:500}\n  .spacer{flex:1}\n  .who{font-size:12px;color:var(--ink-muted)}\n  .btn{font:inherit;font-weight:600;border:0;border-radius:var(--radius);padding:9px 16px;cursor:pointer;background:var(--action);color:var(--action-ink)}\n  .btn.quiet{background:transparent;color:var(--ink-muted);border:1px solid var(--rule);padding:8px 14px}\n  .btn.quiet:hover{color:var(--ink);border-color:var(--rule-strong)}\n  /* ---------- counts: inline label+value, not a hero number ---------- */\n  .counts{display:flex;gap:22px;flex-wrap:wrap;padding:10px 24px;border-bottom:1px solid var(--rule);background:var(--surface);font-size:12px;color:var(--ink-muted)}\n  .counts b{color:var(--ink);font-weight:650;margin-left:6px}\n  .counts .attn b{color:var(--signal)}\n  /* ---------- work ---------- */\n  .work{padding:22px 24px 32px;display:flex;flex-direction:column;gap:14px}\n  h1{margin:0;font-size:20px;font-weight:650;letter-spacing:-.01em}\n  .sub{margin:3px 0 0;color:var(--ink-muted);font-size:12px}\n  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}\n  .search{position:relative;flex:1 1 260px;max-width:340px}\n  .search input{width:100%;font:inherit;padding:9px 12px 9px 30px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--surface);color:var(--ink)}\n  .search input:focus-visible{outline:2px solid var(--action);outline-offset:1px}\n  .search span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-faint)}\n  .chip{font:inherit;font-size:12px;font-weight:600;padding:6px 12px;border-radius:99px;border:1px solid var(--rule);background:transparent;color:var(--ink-muted);cursor:pointer}\n  .chip[aria-pressed=\"true\"]{background:var(--action);border-color:var(--action);color:var(--action-ink)}\n  /* ---------- table ---------- */\n  .panel{border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;background:var(--surface)}\n  table{width:100%;border-collapse:collapse}\n  th{text-align:left;font-size:11px;font-weight:600;color:var(--ink-faint);padding:10px 14px;border-bottom:1px solid var(--rule);background:var(--sunken);white-space:nowrap}\n  td{padding:10px 14px;border-bottom:1px solid var(--rule);height:46px;vertical-align:middle}\n  tr:last-child td{border-bottom:0}\n  tbody tr:hover td{background:var(--sunken)}\n  .r{text-align:right}\n  .name{font-weight:600}\n  .slug{display:block;color:var(--ink-faint);font-size:11px;margin-top:1px}\n  .clip{display:block;max-width:36ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}\n  .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;white-space:nowrap}\n  .status i{width:7px;height:7px;border-radius:99px;background:currentColor;font-style:normal}\n  .published{color:var(--ok)} .draft{color:var(--ink-muted)} .out{color:var(--signal)}\n  .link{font:inherit;font-size:12px;font-weight:600;background:none;border:0;color:var(--action);cursor:pointer;padding:4px 6px;border-radius:var(--radius)}\n  .link:hover{background:var(--sunken)}\n  /* ---------- sign in ---------- */\n  .signin{display:none;place-items:center;min-height:100vh;padding:40px 20px;background:var(--canvas)}\n  .sbox{width:100%;max-width:372px}\n  .sbox h1{font-size:22px;margin:0}\n  .sbox p.lead{margin:6px 0 22px;color:var(--ink-muted)}\n  .field{display:grid;gap:5px;margin-bottom:14px}\n  .field label{font-size:12px;font-weight:600;color:var(--ink-muted)}\n  .field input{font:inherit;padding:10px 12px;border:1px solid var(--rule-strong);border-radius:var(--radius);background:var(--surface);color:var(--ink)}\n  .field input:focus-visible{outline:2px solid var(--action);outline-offset:1px}\n  .field.bad input{border-color:var(--signal)}\n  .msg{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--signal);margin:0 0 14px}\n  .msg b{font-weight:700}\n  .sbox .btn{width:100%;padding:11px}\n  .foot{margin-top:18px;font-size:12px;color:var(--ink-muted)}\n  .foot a{color:var(--action)}\n  body.show-signin .shell{display:none}\n  body.show-signin .signin{display:grid}\n  body.show-catalog .signin{display:none}\n  /* --- signature moves. Present in the markup for every option; each system\n     reveals the one that carries its idea, via its own tokens. --- */\n  /* a 3px thread down the left edge of every row, coloured by status */\n  tbody td:first-child{box-shadow:inset 3px 0 0 transparent}\n  tr.is-published td:first-child{box-shadow:inset 3px 0 0 var(--thread-published,transparent)}\n  tr.is-draft td:first-child{box-shadow:inset 3px 0 0 var(--thread-draft,transparent)}\n  tr.is-out td:first-child{box-shadow:inset 3px 0 0 var(--thread-out,transparent)}\n  /* quantity as length: a track showing how much is actually sellable */\n  .meter{display:var(--meter-display,none);align-items:center;gap:8px;justify-content:flex-end}\n  .meter .track{position:relative;width:56px;height:5px;border-radius:99px;background:var(--rule);overflow:hidden}\n  .meter .fill{position:absolute;top:0;bottom:0;left:0;border-radius:99px;background:var(--ok)}\n  .meter .fill.none{background:var(--signal)}\n  .meter.is-empty .track{background:color-mix(in oklab, var(--signal) 30%, transparent)}\n  /* a hairline of light along the top edge, for a pressed-metal feel */\n  .btn{box-shadow:inset 0 1px 0 var(--bevel,transparent)}\n</style>\n</head>\n<body class=\"show-catalog\">\n\n<div class=\"shell\">\n  <aside class=\"rail\">\n    <div class=\"brand\"><span class=\"dot\"></span>MarketCore</div>\n    <div class=\"tenant\"><b>Nile Traders</b><span>Owner</span></div>\n    <nav>\n      <a href=\"#\" aria-current=\"page\">Catalog</a>\n      <a href=\"#\" aria-disabled=\"true\">Orders <span class=\"phase\">phase 4</span></a>\n      <a href=\"#\" aria-disabled=\"true\">Payouts <span class=\"phase\">phase 11</span></a>\n    </nav>\n    <div class=\"me\">owner@marketcore.test</div>\n  </aside>\n\n  <div class=\"col\">\n    <header class=\"top\">\n      <span class=\"pill\">Nile Traders <small>Owner</small></span>\n      <span class=\"spacer\"></span>\n      <span class=\"who\">owner@marketcore.test</span>\n      <button class=\"btn quiet\">Sign out</button>\n    </header>\n\n    <div class=\"counts\">\n      <span>Published<b class=\"num\">4</b></span>\n      <span>Drafts<b class=\"num\">2</b></span>\n      <span class=\"attn\">Out of stock<b class=\"num\">1</b></span>\n      <span>Units available<b class=\"num\">37</b></span>\n    </div>\n\n    <main class=\"work\">\n      <div>\n        <h1>Catalog</h1>\n        <p class=\"sub\">Six products in Nile Traders. One is published with nothing left to sell.</p>\n      </div>\n\n      <div class=\"row\">\n        <label class=\"search\"><span>&#9906;</span><input value=\"\" placeholder=\"Search products or paste a slug\" aria-label=\"Search products\"></label>\n        <button class=\"chip\" aria-pressed=\"true\">All</button>\n        <button class=\"chip\" aria-pressed=\"false\">Published</button>\n        <button class=\"chip\" aria-pressed=\"false\">Drafts</button>\n        <span class=\"spacer\"></span>\n        <button class=\"btn\">New product</button>\n      </div>\n\n      <div class=\"panel\">\n        <table>\n          <thead>\n            <tr>\n              <th>Product</th><th>Status</th><th class=\"r\">Price</th>\n              <th class=\"r\">Available</th><th class=\"r\">Reserved</th><th></th>\n            </tr>\n          </thead>\n          <tbody>\n            <tr class=\"is-published\">\n              <td><span class=\"name clip\">Hand-knotted Egyptian cotton runner, 300 &times; 80 cm, indigo</span><span class=\"slug\">runner-indigo-300</span></td>\n              <td><span class=\"status published\"><i></i>Published</span></td>\n              <td class=\"r num\">2,450.00 EGP</td>\n              <td class=\"r\"><span class=\"meter\"><span class=\"track\"><span class=\"fill\" style=\"width:80%\"></span></span></span><span class=\"num\">12</span></td>\n              <td class=\"r num\">0</td>\n              <td class=\"r\"><button class=\"link\">Edit</button></td>\n            </tr>\n            <tr class=\"is-published\">\n              <td><span class=\"name\">Linen table runner</span><span class=\"slug\">linen-runner</span></td>\n              <td><span class=\"status published\"><i></i>Published</span></td>\n              <td class=\"r num\">1,299.00 EGP</td>\n              <td class=\"r\"><span class=\"meter\"><span class=\"track\"><span class=\"fill\" style=\"width:60%\"></span></span></span><span class=\"num\">9</span></td>\n              <td class=\"r num\">2</td>\n              <td class=\"r\"><button class=\"link\">Edit</button></td>\n            </tr>\n            <tr class=\"is-out\">\n              <td><span class=\"name\">Cotton bath towel, set of four</span><span class=\"slug\">towel-set-4</span></td>\n              <td><span class=\"status published\"><i></i>Published</span></td>\n              <td class=\"r num\">899.00 EGP</td>\n              <td class=\"r\"><span class=\"meter is-empty\"><span class=\"track\"><span class=\"fill none\" style=\"width:0%\"></span></span></span><span class=\"num out\">0</span></td>\n              <td class=\"r num\">1</td>\n              <td class=\"r\"><button class=\"link\">Restock</button></td>\n            </tr>\n            <tr class=\"is-published\">\n              <td><span class=\"name\">Hand-loomed wool throw</span><span class=\"slug\">wool-throw</span></td>\n              <td><span class=\"status published\"><i></i>Published</span></td>\n              <td class=\"r num\">3,100.00 EGP</td>\n              <td class=\"r\"><span class=\"meter\"><span class=\"track\"><span class=\"fill\" style=\"width:100%\"></span></span></span><span class=\"num\">15</span></td>\n              <td class=\"r num\">0</td>\n              <td class=\"r\"><button class=\"link\">Edit</button></td>\n            </tr>\n            <tr class=\"is-draft\">\n              <td><span class=\"name\">Jacquard tablecloth, 8 seats</span><span class=\"slug\">tablecloth-jacquard-8</span></td>\n              <td><span class=\"status draft\"><i></i>Draft</span></td>\n              <td class=\"r num\">1,750.00 EGP</td>\n              <td class=\"r\"><span class=\"meter\"><span class=\"track\"><span class=\"fill\" style=\"width:7%\"></span></span></span><span class=\"num\">1</span></td>\n              <td class=\"r num\">0</td>\n              <td class=\"r\"><button class=\"link\">Publish</button></td>\n            </tr>\n            <tr class=\"is-draft\">\n              <td><span class=\"name\">Cotton cushion cover, plain</span><span class=\"slug\">cushion-cover</span></td>\n              <td><span class=\"status draft\"><i></i>Draft</span></td>\n              <td class=\"r num\">0.00 EGP</td>\n              <td class=\"r\"><span class=\"meter is-empty\"><span class=\"track\"><span class=\"fill none\" style=\"width:0%\"></span></span></span><span class=\"num out\">0</span></td>\n              <td class=\"r num\">0</td>\n              <td class=\"r\"><button class=\"link\">Set price</button></td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </main>\n  </div>\n</div>\n\n<div class=\"signin\">\n  <div class=\"sbox\">\n    <div class=\"brand\" style=\"color:var(--ink)\"><span class=\"dot\"></span>MarketCore</div>\n    <h1>Sign in</h1>\n    <p class=\"lead\">Use the account you registered.</p>\n    <div class=\"field\"><label for=\"e\">Email</label><input id=\"e\" value=\"owner@marketcore.test\"></div>\n    <div class=\"field bad\"><label for=\"p\">Password</label><input id=\"p\" type=\"password\" value=\"correct-horse-battery\"></div>\n    <p class=\"msg\"><b>!</b>Invalid credentials. Check the address and password, then try again.</p>\n    <button class=\"btn\">Sign in</button>\n    <p class=\"foot\">No account? <a href=\"#\">Create one</a></p>\n  </div>\n</div>\n\n</body>\n</html>\n";
+let galScreen = 'catalog';
+let galBig = false;
+
+function renderGallery() {
+  const grid = document.getElementById('appGallery');
+  grid.className = galBig ? 'gal gal--big' : 'gal';
+  const frag = document.createDocumentFragment();
+
+  for (const option of GAL_OPTIONS) {
+    const vars = Object.entries(option.tokens).map(([key, value]) => key + ':' + value).join(';');
+    const doc = GAL_APP
+      .replace('</head>', '<style>:root{' + vars + '}</style></head>')
+      .replace('class="show-catalog"', 'class="show-' + galScreen + '"');
+
+    const card = document.createElement('div');
+    card.className = 'gal__card';
+    card.innerHTML = '<div class="gal__cap"><b>' + option.id + '</b><span>' + option.note
+      + '</span><span class="tag">' + (option.dark ? 'dark' : 'light') + '</span></div>'
+      + '<div class="gal__shot"><iframe sandbox="allow-same-origin" title="' + option.id + '"></iframe></div>';
+    card.querySelector('iframe').srcdoc = doc;
+    frag.append(card);
+  }
+
+  grid.replaceChildren(frag);
+}
+
+for (const button of document.querySelectorAll('[data-gal-screen]')) {
+  button.addEventListener('click', () => {
+    galScreen = button.dataset.galScreen;
+    for (const sibling of document.querySelectorAll('[data-gal-screen]')) {
+      sibling.setAttribute('aria-pressed', String(sibling === button));
+    }
+    renderGallery();
+  });
+}
+document.getElementById('galBig').addEventListener('click', (event) => {
+  galBig = !galBig;
+  event.currentTarget.setAttribute('aria-pressed', String(galBig));
+  renderGallery();
+});
+renderGallery();
+
+/* ---- the app in the navbar -----------------------------------------------
+   Same token blocks and the same template the gallery below uses, so the preview
+   and the grid cannot disagree. */
+let spSystem = 'selvedge';
+let spScreen = 'catalog';
+
+function layoutSystemPreview() {
+  const shot = document.getElementById('spShot');
+  const frame = document.getElementById('spFrame');
+  const scale = Math.min(1, shot.clientWidth / 1280);
+  frame.style.transform = 'scale(' + scale + ')';
+  shot.style.height = Math.round(960 * scale) + 'px';
+}
+
+function renderSystemPreview() {
+  const option = GAL_OPTIONS.find((candidate) => candidate.id === spSystem);
+  if (!option) return;
+
+  const vars = Object.entries(option.tokens).map(([key, value]) => key + ':' + value).join(';');
+  document.getElementById('spFrame').srcdoc = GAL_APP
+    .replace('</head>', '<style>:root{' + vars + '}</style></head>')
+    .replace('class="show-catalog"', 'class="show-' + spScreen + '"');
+
+  document.getElementById('spName').textContent = option.id;
+  document.getElementById('spNote').textContent = option.note;
+  document.getElementById('spSw').replaceChildren(
+    ...['--canvas', '--rail', '--action', '--ok', '--signal'].map((key) => {
+      const chip = document.createElement('i');
+      chip.style.background = option.tokens[key];
+      return chip;
+    }),
+  );
+  layoutSystemPreview();
+}
+
+for (const button of document.querySelectorAll('[data-gal-system]')) {
+  button.addEventListener('click', () => {
+    spSystem = button.dataset.galSystem;
+    for (const sibling of document.querySelectorAll('[data-gal-system]')) {
+      sibling.setAttribute('aria-pressed', String(sibling === button));
+    }
+    document.getElementById('systemPreview').hidden = false;
+    document.getElementById('spToggle').setAttribute('aria-pressed', 'true');
+    document.getElementById('spToggle').textContent = 'hide';
+    renderSystemPreview();
+    // Without this the panel redraws off-screen and the click looks broken.
+    document.getElementById('systemPreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+for (const button of document.querySelectorAll('[data-sp-screen]')) {
+  button.addEventListener('click', () => {
+    spScreen = button.dataset.spScreen;
+    for (const sibling of document.querySelectorAll('[data-sp-screen]')) {
+      sibling.setAttribute('aria-pressed', String(sibling === button));
+    }
+    renderSystemPreview();
+  });
+}
+
+document.getElementById('spToggle').addEventListener('click', (event) => {
+  const section = document.getElementById('systemPreview');
+  const showing = !section.hidden;
+  section.hidden = showing;
+  event.currentTarget.setAttribute('aria-pressed', String(!showing));
+  event.currentTarget.textContent = showing ? 'show' : 'hide';
+  if (!showing) renderSystemPreview();
+});
+
+window.addEventListener('resize', layoutSystemPreview);
+renderSystemPreview();
+
+render();
+</script>
+</body>
+</html>
