@@ -331,7 +331,8 @@ requests, chooses an organization, signs out — and cannot read either token.
   each rotate; the API's reuse detection would catch it rather than lose the session silently, but a
   user could be signed out. Nothing runs more than one instance today.
 - **No multi-tab test.** The mechanism a second tab depends on is covered by the concurrency test;
-  the two-tab case itself is not.
+  the two-tab case itself is not. **(Closed 2026-10-10 — see "Closing the deferred list" below: two
+  tabs loading at once now assert one session rather than a replay.)**
 - **No tenant data page.** `/api/proxy/[...path]` has no caller yet and is deliberately absent (D34).
   `mc_org` is written and read for display; its first *authorizing* use arrives with the products
   page, which is where the header starts being attached.
@@ -742,9 +743,14 @@ closed, with a test that would fail if it reopened.
 
 ### Not proven / deferred
 
-- **No visual regression testing.** Still refused: no stable rendering environment, and a flaky visual
-  gate is worse than none. This is the one gap on the list that is a judgement rather than a backlog.
+- **The two-tab case is now tested.** Two tabs loading at once against one session assert one rotation
+  rather than a replay — the case the coordinator exists for and nothing exercised.
 - **No multi-instance story** — unchanged, and phase-10 material.
+- **No visual regression testing.** Refused again, and for the reason it was refused the first time:
+  the behavioural suite runs on the host against a containerised stack, so a committed screenshot
+  baseline would compare macOS and Ubuntu rendering and fail for a reason that is not the code.
+  Closing it properly means running the browser inside the same image — its own change, not a line in
+  this one.
 - **The products page is read-only**, and lists three fields. The rest of the catalog — create, edit,
   publish, inventory — is phase 3's remaining surface, not this change's.
 - **Everything in the Roadmap from phase 4 on.** Those are the plan, not gaps.

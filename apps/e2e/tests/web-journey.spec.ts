@@ -186,6 +186,29 @@ test.describe('web: the session in a real browser', () => {
     await expect(page.getByRole('cell', { name: 'Nile Cotton Shirt' })).toBeVisible();
   });
 
+  test('keeps one session across two tabs, without a rotation becoming a replay', async ({ context }) => {
+    // The case the rotation coordinator exists for, and the one nothing tested. The API
+    // revokes a session when a refresh token is replayed, so two tabs refreshing
+    // independently is not a slow logout — it is a *replay*, and it kills the session for
+    // both. Single-flight plus one step of memory is what makes a second tab safe.
+    const first = await context.newPage();
+    const second = await context.newPage();
+
+    await signIn(first, 'owner@marketcore.test');
+
+    // Both tabs load at once, which is the shape that leaks a rotation: each would hold
+    // the same refresh cookie and each would try to use it.
+    await Promise.all([first.goto(`${WEB}/dashboard`), second.goto(`${WEB}/dashboard`)]);
+
+    await expect(first.getByRole('banner').getByText('owner@marketcore.test')).toBeVisible();
+    await expect(second.getByRole('banner').getByText('owner@marketcore.test')).toBeVisible();
+
+    // Still signed in after the fact: the session was rotated, not revoked. A replay
+    // would have answered 401 here and sent both tabs to sign in.
+    await first.goto(`${WEB}/products`);
+    await expect(first.getByRole('cell', { name: 'Nile Cotton Shirt' })).toBeVisible();
+  });
+
   test('creates an account, signs in, and is turned away once signed out', async ({ page }) => {
     const email = `${unique('web')}@marketcore.test`;
 
