@@ -1,8 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useReadySession } from '@/lib/session/client';
 import { OrganizationSwitcher } from './organization-switcher';
+
+/**
+ * Where the session can go.
+ *
+ * Every entry is a route that exists — no section is listed ahead of its page, the
+ * same line this repository draws for tokens and models. The active item is derived
+ * from the pathname rather than passed down, so the rail cannot claim a page the
+ * router is not on.
+ */
+const NAV = [
+  { href: '/dashboard', label: 'Overview' },
+  { href: '/products', label: 'Products' },
+] as const;
 
 /**
  * The app's chrome: which tenant the session acts in, and where it can go.
@@ -17,6 +31,7 @@ import { OrganizationSwitcher } from './organization-switcher';
  */
 export function Rail({ appName }: { appName: string }) {
   const { activeOrganization } = useReadySession();
+  const pathname = usePathname();
 
   return (
     <aside className="flex flex-col gap-1 border-r border-rail-edge bg-rail px-3.5 py-4">
@@ -42,14 +57,25 @@ export function Rail({ appName }: { appName: string }) {
         <OrganizationSwitcher />
       </div>
 
-      <nav>
-        <Link
-          className="block rounded-brand bg-rail-active px-2.5 py-2 text-sm font-semibold text-ink-on-action"
-          href="/dashboard"
-          aria-current="page"
-        >
-          Overview
-        </Link>
+      <nav className="space-y-1">
+        {NAV.map(({ href, label }) => {
+          const active = pathname === href;
+
+          return (
+            <Link
+              key={href}
+              href={href}
+              aria-current={active ? 'page' : undefined}
+              className={`block rounded-brand px-2.5 py-2 text-sm ${
+                active
+                  ? 'bg-rail-active font-semibold text-ink-on-action'
+                  : 'text-ink-on-rail-muted hover:bg-rail-hover hover:text-ink-on-rail'
+              }`}
+            >
+              {label}
+            </Link>
+          );
+        })}
       </nav>
     </aside>
   );
