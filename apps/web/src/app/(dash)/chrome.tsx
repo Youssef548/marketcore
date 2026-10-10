@@ -66,7 +66,7 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
 
         <div className="flex min-w-0 flex-col bg-canvas">
           <TopBar />
-          <main id="main-content" className="mx-auto w-full max-w-3xl px-6 py-8">
+          <main id="main-content" className="mx-auto w-full max-w-5xl px-6 py-8">
             {children}
           </main>
         </div>
