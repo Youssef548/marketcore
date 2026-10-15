@@ -1,0 +1,393 @@
+<!-- {"title":"MarketCore Seller — Payouts (/admin/payouts)","screen":"projects/3383911874392417631/screens/cb892c21e17a4cd6b257e420c368a651","pass":"plain","w":1280,"h":1024,"frame":"height:1024px","links":[]} -->
+<style>.sx-payouts{position:relative;height:100%;font:400 16px/normal Times,serif;letter-spacing:normal;color:#000;-webkit-font-smoothing:auto;text-align:left}@font-face { font-family: "DM Mono sx-payouts"; font-style: italic; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTW7PB1QTsUX8KYth-gCKSIQq_0XmBO.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Mono sx-payouts"; font-style: italic; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTW7PB1QTsUX8KYth-gBqSIQq_0Xg.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Mono sx-payouts"; font-style: normal; font-weight: 300; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTR7PB1QTsUX8KYvrGyEY2tbYf-Vlh3uA.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Mono sx-payouts"; font-style: normal; font-weight: 300; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTR7PB1QTsUX8KYvrGyEYOtbYf-Vlg.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Mono sx-payouts"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTU7PB1QTsUX8KYthSQBK6PYK3EXw.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Mono sx-payouts"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTU7PB1QTsUX8KYthqQBK6PYK0.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Mono sx-payouts"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTR7PB1QTsUX8KYvumzEY2tbYf-Vlh3uA.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Mono sx-payouts"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTR7PB1QTsUX8KYvumzEYOtbYf-Vlg.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-payouts"; font-style: italic; font-weight: 100 1000; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Fp2ywxg089UriCZa4ET-DJF4e8BH9.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-payouts"; font-style: italic; font-weight: 100 1000; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Fp2ywxg089UriCZa4Hz-DJF4e8A.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-payouts"; font-style: normal; font-weight: 100 1000; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-payouts"; font-style: normal; font-weight: 100 1000; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "Material Symbols Outlined sx-payouts"; font-style: normal; font-weight: 100 700; font-display: swap; src: url("https://fonts.gstatic.com/s/materialsymbolsoutlined/v377/kJEPBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzBwG-RpA6RzaxHMPdY40KH8nGzv3fzfVJO1USv9ls.woff2") format("woff2"); }.sx-payouts .material-symbols-outlined,.sx-payouts.material-symbols-outlined{font-family: "Material Symbols Outlined sx-payouts"; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; overflow-wrap: normal; direction: ltr; font-feature-settings: "liga"; -webkit-font-smoothing: antialiased;}.sx-payouts,.sx-payouts *,.sx-payouts ::before,.sx-payouts ::after{--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;}.sx-payouts ::backdrop{--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;}.sx-payouts,.sx-payouts *,.sx-payouts ::after,.sx-payouts ::before{box-sizing: border-box; border-width: 0px; border-style: solid; border-color: #e5e7eb;}.sx-payouts ::after,.sx-payouts ::before{--tw-content: '';}.sx-payouts,.sx-payouts{line-height: 1.5; text-size-adjust: 100%; tab-size: 4; font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; font-feature-settings: normal; font-variation-settings: normal; -webkit-tap-highlight-color: transparent;}.sx-payouts > .sx-body{margin: 0px; line-height: inherit;}.sx-payouts hr{height: 0px; color: inherit; border-top-width: 1px;}.sx-payouts abbr:where([title]){text-decoration: underline dotted;}.sx-payouts h1,.sx-payouts h2,.sx-payouts h3,.sx-payouts h4,.sx-payouts h5,.sx-payouts h6{font-size: inherit; font-weight: inherit;}.sx-payouts a{color: inherit; text-decoration: inherit;}.sx-payouts b,.sx-payouts strong{font-weight: bolder;}.sx-payouts code,.sx-payouts kbd,.sx-payouts pre,.sx-payouts samp{font-family: "DM Mono sx-payouts"; font-feature-settings: normal; font-variation-settings: normal; font-size: 1em;}.sx-payouts small{font-size: 80%;}.sx-payouts sub,.sx-payouts sup{font-size: 75%; line-height: 0; position: relative; vertical-align: baseline;}.sx-payouts sub{bottom: -0.25em;}.sx-payouts sup{top: -0.5em;}.sx-payouts table{text-indent: 0px; border-color: inherit; border-collapse: collapse;}.sx-payouts button,.sx-payouts input,.sx-payouts optgroup,.sx-payouts select,.sx-payouts textarea{font-family: inherit; font-feature-settings: inherit; font-variation-settings: inherit; font-size: 100%; font-weight: inherit; line-height: inherit; letter-spacing: inherit; color: inherit; margin: 0px; padding: 0px;}.sx-payouts button,.sx-payouts select{text-transform: none;}.sx-payouts button,.sx-payouts input:where([type="button"]),.sx-payouts input:where([type="reset"]),.sx-payouts input:where([type="submit"]){appearance: button; background-color: transparent; background-image: none;}.sx-payouts progress{vertical-align: baseline;}.sx-payouts ::-webkit-inner-spin-button,.sx-payouts ::-webkit-outer-spin-button{height: auto;}.sx-payouts [type="search"],.sx-payouts[type="search"]{appearance: textfield; outline-offset: -2px;}.sx-payouts ::-webkit-search-decoration{appearance: none;}.sx-payouts ::-webkit-file-upload-button{appearance: button; font: inherit;}.sx-payouts summary{display: list-item;}.sx-payouts blockquote,.sx-payouts dd,.sx-payouts dl,.sx-payouts figure,.sx-payouts h1,.sx-payouts h2,.sx-payouts h3,.sx-payouts h4,.sx-payouts h5,.sx-payouts h6,.sx-payouts hr,.sx-payouts p,.sx-payouts pre{margin: 0px;}.sx-payouts fieldset{margin: 0px; padding: 0px;}.sx-payouts legend{padding: 0px;}.sx-payouts menu,.sx-payouts ol,.sx-payouts ul{list-style: none; margin: 0px; padding: 0px;}.sx-payouts dialog{padding: 0px;}.sx-payouts textarea{resize: vertical;}.sx-payouts input::placeholder,.sx-payouts textarea::placeholder{opacity: 1; color: #9ca3af;}.sx-payouts [role="button"],.sx-payouts[role="button"],.sx-payouts button{cursor: pointer;}.sx-payouts :disabled{cursor: default;}.sx-payouts audio,.sx-payouts canvas,.sx-payouts embed,.sx-payouts iframe,.sx-payouts img,.sx-payouts object,.sx-payouts svg,.sx-payouts video{display: block; vertical-align: middle;}.sx-payouts img,.sx-payouts video{max-width: 100%; height: auto;}.sx-payouts [hidden]:where(:not([hidden="until-found"])),.sx-payouts[hidden]:where(:not([hidden="until-found"])){display: none;}.sx-payouts [type="text"],.sx-payouts[type="text"],.sx-payouts input:where(:not([type])),.sx-payouts [type="email"],.sx-payouts[type="email"],.sx-payouts [type="url"],.sx-payouts[type="url"],.sx-payouts [type="password"],.sx-payouts[type="password"],.sx-payouts [type="number"],.sx-payouts[type="number"],.sx-payouts [type="date"],.sx-payouts[type="date"],.sx-payouts [type="datetime-local"],.sx-payouts[type="datetime-local"],.sx-payouts [type="month"],.sx-payouts[type="month"],.sx-payouts [type="search"],.sx-payouts[type="search"],.sx-payouts [type="tel"],.sx-payouts[type="tel"],.sx-payouts [type="time"],.sx-payouts[type="time"],.sx-payouts [type="week"],.sx-payouts[type="week"],.sx-payouts [multiple],.sx-payouts[multiple],.sx-payouts textarea,.sx-payouts select{appearance: none; background-color: #ffffff; border-color: #6b7280; border-width: 1px; border-radius: 0px; padding: 0.5rem 0.75rem; font-size: 1rem; line-height: 1.5rem; --tw-shadow: 0 0 #0000;}.sx-payouts [type="text"]:focus,.sx-payouts[type="text"]:focus,.sx-payouts input:where(:not([type])):focus,.sx-payouts [type="email"]:focus,.sx-payouts[type="email"]:focus,.sx-payouts [type="url"]:focus,.sx-payouts[type="url"]:focus,.sx-payouts [type="password"]:focus,.sx-payouts[type="password"]:focus,.sx-payouts [type="number"]:focus,.sx-payouts[type="number"]:focus,.sx-payouts [type="date"]:focus,.sx-payouts[type="date"]:focus,.sx-payouts [type="datetime-local"]:focus,.sx-payouts[type="datetime-local"]:focus,.sx-payouts [type="month"]:focus,.sx-payouts[type="month"]:focus,.sx-payouts [type="search"]:focus,.sx-payouts[type="search"]:focus,.sx-payouts [type="tel"]:focus,.sx-payouts[type="tel"]:focus,.sx-payouts [type="time"]:focus,.sx-payouts[type="time"]:focus,.sx-payouts [type="week"]:focus,.sx-payouts[type="week"]:focus,.sx-payouts [multiple]:focus,.sx-payouts[multiple]:focus,.sx-payouts textarea:focus,.sx-payouts select:focus{outline: transparent solid 2px; outline-offset: 2px; --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/); --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: #2563eb; --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color); --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color); box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow); border-color: #2563eb;}.sx-payouts input::placeholder,.sx-payouts textarea::placeholder{color: #6b7280; opacity: 1;}.sx-payouts ::-webkit-datetime-edit-fields-wrapper{padding: 0px;}.sx-payouts ::-webkit-date-and-time-value{min-height: 1.5em; text-align: inherit;}.sx-payouts ::-webkit-datetime-edit{display: inline-flex;}.sx-payouts ::-webkit-datetime-edit,.sx-payouts ::-webkit-datetime-edit-year-field,.sx-payouts ::-webkit-datetime-edit-month-field,.sx-payouts ::-webkit-datetime-edit-day-field,.sx-payouts ::-webkit-datetime-edit-hour-field,.sx-payouts ::-webkit-datetime-edit-minute-field,.sx-payouts ::-webkit-datetime-edit-second-field,.sx-payouts ::-webkit-datetime-edit-millisecond-field,.sx-payouts ::-webkit-datetime-edit-meridiem-field{padding-top: 0px; padding-bottom: 0px;}.sx-payouts select{background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; print-color-adjust: exact;}.sx-payouts [multiple],.sx-payouts[multiple],.sx-payouts [size]:where(select:not([size="1"])),.sx-payouts[size]:where(select:not([size="1"])){background-image: initial; background-position: initial; background-repeat: unset; background-size: initial; padding-right: 0.75rem; print-color-adjust: unset;}.sx-payouts [type="checkbox"],.sx-payouts[type="checkbox"],.sx-payouts [type="radio"],.sx-payouts[type="radio"]{appearance: none; padding: 0px; print-color-adjust: exact; display: inline-block; vertical-align: middle; background-origin: border-box; user-select: none; flex-shrink: 0; height: 1rem; width: 1rem; color: #2563eb; background-color: #ffffff; border-color: #6b7280; border-width: 1px; --tw-shadow: 0 0 #0000;}.sx-payouts [type="checkbox"],.sx-payouts[type="checkbox"]{border-radius: 0px;}.sx-payouts [type="radio"],.sx-payouts[type="radio"]{border-radius: 100%;}.sx-payouts [type="checkbox"]:focus,.sx-payouts[type="checkbox"]:focus,.sx-payouts [type="radio"]:focus,.sx-payouts[type="radio"]:focus{outline: transparent solid 2px; outline-offset: 2px; --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/); --tw-ring-offset-width: 2px; --tw-ring-offset-color: #fff; --tw-ring-color: #2563eb; --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color); --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color); box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);}.sx-payouts [type="checkbox"]:checked,.sx-payouts[type="checkbox"]:checked,.sx-payouts [type="radio"]:checked,.sx-payouts[type="radio"]:checked{border-color: transparent; background-color: currentcolor; background-size: 100% 100%; background-position: center center; background-repeat: no-repeat;}.sx-payouts [type="checkbox"]:checked,.sx-payouts[type="checkbox"]:checked{background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");}.sx-payouts [type="radio"]:checked,.sx-payouts[type="radio"]:checked{background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");}.sx-payouts [type="checkbox"]:checked:hover,.sx-payouts[type="checkbox"]:checked:hover,.sx-payouts [type="checkbox"]:checked:focus,.sx-payouts[type="checkbox"]:checked:focus,.sx-payouts [type="radio"]:checked:hover,.sx-payouts[type="radio"]:checked:hover,.sx-payouts [type="radio"]:checked:focus,.sx-payouts[type="radio"]:checked:focus{border-color: transparent; background-color: currentcolor;}.sx-payouts [type="checkbox"]:indeterminate,.sx-payouts[type="checkbox"]:indeterminate{background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 16'%3e%3cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M4 8h8'/%3e%3c/svg%3e"); border-color: transparent; background-color: currentcolor; background-size: 100% 100%; background-position: center center; background-repeat: no-repeat;}.sx-payouts [type="checkbox"]:indeterminate:hover,.sx-payouts[type="checkbox"]:indeterminate:hover,.sx-payouts [type="checkbox"]:indeterminate:focus,.sx-payouts[type="checkbox"]:indeterminate:focus{border-color: transparent; background-color: currentcolor;}.sx-payouts [type="file"],.sx-payouts[type="file"]{background: unset; border-color: inherit; border-width: 0px; border-radius: 0px; padding: 0px; font-size: unset; line-height: inherit;}.sx-payouts [type="file"]:focus,.sx-payouts[type="file"]:focus{outline: -webkit-focus-ring-color auto 1px;}.sx-payouts .fixed,.sx-payouts.fixed{position: absolute; will-change: transform;}.sx-payouts .absolute,.sx-payouts.absolute{position: absolute;}.sx-payouts .relative,.sx-payouts.relative{position: relative;}.sx-payouts .bottom-0,.sx-payouts.bottom-0{bottom: 0px;}.sx-payouts .left-0,.sx-payouts.left-0{left: 0px;}.sx-payouts .left-2\.5,.sx-payouts.left-2\.5{left: 0.625rem;}.sx-payouts .left-3,.sx-payouts.left-3{left: 0.75rem;}.sx-payouts .left-\[252px\],.sx-payouts.left-\[252px\]{left: 252px;}.sx-payouts .right-0,.sx-payouts.right-0{right: 0px;}.sx-payouts .right-1,.sx-payouts.right-1{right: 0.25rem;}.sx-payouts .top-0,.sx-payouts.top-0{top: 0px;}.sx-payouts .top-1,.sx-payouts.top-1{top: 0.25rem;}.sx-payouts .z-30,.sx-payouts.z-30{z-index: 30;}.sx-payouts .z-40,.sx-payouts.z-40{z-index: 40;}.sx-payouts .mx-6,.sx-payouts.mx-6{margin-left: 1.5rem; margin-right: 1.5rem;}.sx-payouts .mx-auto,.sx-payouts.mx-auto{margin-left: auto; margin-right: auto;}.sx-payouts .mb-2,.sx-payouts.mb-2{margin-bottom: 0.5rem;}.sx-payouts .mb-6,.sx-payouts.mb-6{margin-bottom: 1.5rem;}.sx-payouts .ml-1,.sx-payouts.ml-1{margin-left: 0.25rem;}.sx-payouts .ml-4,.sx-payouts.ml-4{margin-left: 1rem;}.sx-payouts .ml-\[252px\],.sx-payouts.ml-\[252px\]{margin-left: 252px;}.sx-payouts .mt-0\.5,.sx-payouts.mt-0\.5{margin-top: 0.125rem;}.sx-payouts .mt-1,.sx-payouts.mt-1{margin-top: 0.25rem;}.sx-payouts .mt-16,.sx-payouts.mt-16{margin-top: 4rem;}.sx-payouts .mt-2,.sx-payouts.mt-2{margin-top: 0.5rem;}.sx-payouts .mt-3,.sx-payouts.mt-3{margin-top: 0.75rem;}.sx-payouts .inline-block,.sx-payouts.inline-block{display: inline-block;}.sx-payouts .flex,.sx-payouts.flex{display: flex;}.sx-payouts .inline-flex,.sx-payouts.inline-flex{display: inline-flex;}.sx-payouts .grid,.sx-payouts.grid{display: grid;}.sx-payouts .hidden,.sx-payouts.hidden{display: none;}.sx-payouts .h-1\.5,.sx-payouts.h-1\.5{height: 0.375rem;}.sx-payouts .h-10,.sx-payouts.h-10{height: 2.5rem;}.sx-payouts .h-16,.sx-payouts.h-16{height: 4rem;}.sx-payouts .h-2,.sx-payouts.h-2{height: 0.5rem;}.sx-payouts .h-8,.sx-payouts.h-8{height: 2rem;}.sx-payouts .h-full,.sx-payouts.h-full{height: 100%;}.sx-payouts .min-h-screen,.sx-payouts.min-h-screen{min-height: 1024px;}.sx-payouts .w-1\.5,.sx-payouts.w-1\.5{width: 0.375rem;}.sx-payouts .w-2,.sx-payouts.w-2{width: 0.5rem;}.sx-payouts .w-20,.sx-payouts.w-20{width: 5rem;}.sx-payouts .w-8,.sx-payouts.w-8{width: 2rem;}.sx-payouts .w-\[252px\],.sx-payouts.w-\[252px\]{width: 252px;}.sx-payouts .w-\[calc\(100\%-252px\)\],.sx-payouts.w-\[calc\(100\%-252px\)\]{width: calc(100% - 252px);}.sx-payouts .w-full,.sx-payouts.w-full{width: 100%;}.sx-payouts .min-w-0,.sx-payouts.min-w-0{min-width: 0px;}.sx-payouts .max-w-3xl,.sx-payouts.max-w-3xl{max-width: 48rem;}.sx-payouts .max-w-7xl,.sx-payouts.max-w-7xl{max-width: 80rem;}.sx-payouts .max-w-md,.sx-payouts.max-w-md{max-width: 28rem;}.sx-payouts .flex-1,.sx-payouts.flex-1{flex: 1 1 0%;}.sx-payouts .flex-shrink-0,.sx-payouts.flex-shrink-0{flex-shrink: 0;}.sx-payouts .border-collapse,.sx-payouts.border-collapse{border-collapse: collapse;}@keyframes pulse { 
+  50% { opacity: 0.5; }
+}.sx-payouts .animate-pulse,.sx-payouts.animate-pulse{animation: 2s cubic-bezier(0.4, 0, 0.6, 1) 0s infinite normal none running pulse;}.sx-payouts .cursor-pointer,.sx-payouts.cursor-pointer{cursor: pointer;}.sx-payouts .grid-cols-1,.sx-payouts.grid-cols-1{grid-template-columns: repeat(1, minmax(0px, 1fr));}.sx-payouts .flex-col,.sx-payouts.flex-col{flex-direction: column;}.sx-payouts .items-start,.sx-payouts.items-start{align-items: flex-start;}.sx-payouts .items-center,.sx-payouts.items-center{align-items: center;}.sx-payouts .items-baseline,.sx-payouts.items-baseline{align-items: baseline;}.sx-payouts .justify-center,.sx-payouts.justify-center{justify-content: center;}.sx-payouts .justify-between,.sx-payouts.justify-between{justify-content: space-between;}.sx-payouts .gap-0\.5,.sx-payouts.gap-0\.5{gap: 0.125rem;}.sx-payouts .gap-1,.sx-payouts.gap-1{gap: 0.25rem;}.sx-payouts .gap-1\.5,.sx-payouts.gap-1\.5{gap: 0.375rem;}.sx-payouts .gap-2,.sx-payouts.gap-2{gap: 0.5rem;}.sx-payouts .gap-2\.5,.sx-payouts.gap-2\.5{gap: 0.625rem;}.sx-payouts .gap-3,.sx-payouts.gap-3{gap: 0.75rem;}.sx-payouts .gap-4,.sx-payouts.gap-4{gap: 1rem;}.sx-payouts .gap-space-lg,.sx-payouts.gap-space-lg{gap: 16px;}.sx-payouts .gap-space-md,.sx-payouts.gap-space-md{gap: 10px;}.sx-payouts .gap-y-4,.sx-payouts.gap-y-4{row-gap: 1rem;}.sx-payouts .divide-y > :not([hidden]) ~ :not([hidden]),.sx-payouts.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse: 0; border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse))); border-bottom-width: calc(1px * var(--tw-divide-y-reverse));}.sx-payouts .divide-line > :not([hidden]) ~ :not([hidden]),.sx-payouts.divide-line > :not([hidden]) ~ :not([hidden]){--tw-divide-opacity: 1; border-color: var(--line);}.sx-payouts .self-end,.sx-payouts.self-end{align-self: flex-end;}.sx-payouts .overflow-hidden,.sx-payouts.overflow-hidden{overflow: hidden;}.sx-payouts .overflow-visible,.sx-payouts.overflow-visible{overflow: visible;}.sx-payouts .overflow-x-auto,.sx-payouts.overflow-x-auto{overflow-x: auto;}.sx-payouts .truncate,.sx-payouts.truncate{overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}.sx-payouts .whitespace-nowrap,.sx-payouts.whitespace-nowrap{white-space: nowrap;}.sx-payouts .rounded,.sx-payouts.rounded{border-radius: 0.125rem;}.sx-payouts .rounded-\[12px\],.sx-payouts.rounded-\[12px\]{border-radius: 12px;}.sx-payouts .rounded-\[6px\],.sx-payouts.rounded-\[6px\]{border-radius: 6px;}.sx-payouts .rounded-\[8px\],.sx-payouts.rounded-\[8px\]{border-radius: 8px;}.sx-payouts .rounded-full,.sx-payouts.rounded-full{border-radius: 0.75rem;}.sx-payouts .rounded-lg,.sx-payouts.rounded-lg{border-radius: 0.25rem;}.sx-payouts .border,.sx-payouts.border{border-width: 1px;}.sx-payouts .border-b,.sx-payouts.border-b{border-bottom-width: 1px;}.sx-payouts .border-l,.sx-payouts.border-l{border-left-width: 1px;}.sx-payouts .border-r,.sx-payouts.border-r{border-right-width: 1px;}.sx-payouts .border-t,.sx-payouts.border-t{border-top-width: 1px;}.sx-payouts .border-accent\/40,.sx-payouts.border-accent\/40{border-color: color-mix(in srgb, var(--accent) 40%, transparent);}.sx-payouts .border-bad\/20,.sx-payouts.border-bad\/20{border-color: color-mix(in srgb, var(--bad) 20%, transparent);}.sx-payouts .border-controlEdge,.sx-payouts.border-controlEdge{--tw-border-opacity: 1; border-color: var(--controlEdge);}.sx-payouts .border-line,.sx-payouts.border-line{--tw-border-opacity: 1; border-color: var(--line);}.sx-payouts .border-lineStrong,.sx-payouts.border-lineStrong{--tw-border-opacity: 1; border-color: var(--lineStrong);}.sx-payouts .border-lineStrong\/20,.sx-payouts.border-lineStrong\/20{border-color: color-mix(in srgb, var(--lineStrong) 20%, transparent);}.sx-payouts .border-lineStrong\/30,.sx-payouts.border-lineStrong\/30{border-color: color-mix(in srgb, var(--lineStrong) 30%, transparent);}.sx-payouts .border-ok\/20,.sx-payouts.border-ok\/20{border-color: color-mix(in srgb, var(--ok) 20%, transparent);}.sx-payouts .border-outline-variant\/60,.sx-payouts.border-outline-variant\/60{border-color: rgba(199,196,216,0.6);}.sx-payouts .border-warn\/20,.sx-payouts.border-warn\/20{border-color: color-mix(in srgb, var(--warn) 20%, transparent);}.sx-payouts .bg-accent,.sx-payouts.bg-accent{--tw-bg-opacity: 1; background-color: var(--accent);}.sx-payouts .bg-accent\/20,.sx-payouts.bg-accent\/20{background-color: color-mix(in srgb, var(--accent) 20%, transparent);}.sx-payouts .bg-bad,.sx-payouts.bg-bad{--tw-bg-opacity: 1; background-color: var(--bad);}.sx-payouts .bg-badWash,.sx-payouts.bg-badWash{--tw-bg-opacity: 1; background-color: var(--badWash);}.sx-payouts .bg-badWash\/10,.sx-payouts.bg-badWash\/10{background-color: color-mix(in srgb, var(--badWash) 10%, transparent);}.sx-payouts .bg-canvas,.sx-payouts.bg-canvas{--tw-bg-opacity: 1; background-color: var(--canvas);}.sx-payouts .bg-ok,.sx-payouts.bg-ok{--tw-bg-opacity: 1; background-color: var(--ok);}.sx-payouts .bg-okWash,.sx-payouts.bg-okWash{--tw-bg-opacity: 1; background-color: var(--okWash);}.sx-payouts .bg-panel,.sx-payouts.bg-panel{--tw-bg-opacity: 1; background-color: #ffffff;}.sx-payouts .bg-panel2,.sx-payouts.bg-panel2{--tw-bg-opacity: 1; background-color: var(--panel2);}.sx-payouts .bg-panel2\/10,.sx-payouts.bg-panel2\/10{background-color: color-mix(in srgb, var(--panel2) 10%, transparent);}.sx-payouts .bg-panel2\/5,.sx-payouts.bg-panel2\/5{background-color: color-mix(in srgb, var(--panel2) 5%, transparent);}.sx-payouts .bg-panel2\/60,.sx-payouts.bg-panel2\/60{background-color: color-mix(in srgb, var(--panel2) 60%, transparent);}.sx-payouts .bg-rail,.sx-payouts.bg-rail{--tw-bg-opacity: 1; background-color: var(--rail);}.sx-payouts .bg-surface-container-high,.sx-payouts.bg-surface-container-high{--tw-bg-opacity: 1; background-color: #eae6f4;}.sx-payouts .bg-warn,.sx-payouts.bg-warn{--tw-bg-opacity: 1; background-color: var(--warn);}.sx-payouts .bg-warnWash,.sx-payouts.bg-warnWash{--tw-bg-opacity: 1; background-color: var(--warnWash);}.sx-payouts .p-1\.5,.sx-payouts.p-1\.5{padding: 0.375rem;}.sx-payouts .p-4,.sx-payouts.p-4{padding: 1rem;}.sx-payouts .p-6,.sx-payouts.p-6{padding: 1.5rem;}.sx-payouts .p-space-md,.sx-payouts.p-space-md{padding: 10px;}.sx-payouts .px-2,.sx-payouts.px-2{padding-left: 0.5rem; padding-right: 0.5rem;}.sx-payouts .px-2\.5,.sx-payouts.px-2\.5{padding-left: 0.625rem; padding-right: 0.625rem;}.sx-payouts .px-3,.sx-payouts.px-3{padding-left: 0.75rem; padding-right: 0.75rem;}.sx-payouts .px-4,.sx-payouts.px-4{padding-left: 1rem; padding-right: 1rem;}.sx-payouts .px-space-md,.sx-payouts.px-space-md{padding-left: 10px; padding-right: 10px;}.sx-payouts .px-space-sm,.sx-payouts.px-space-sm{padding-left: 6px; padding-right: 6px;}.sx-payouts .px-space-xl,.sx-payouts.px-space-xl{padding-left: 22px; padding-right: 22px;}.sx-payouts .px-space-xs,.sx-payouts.px-space-xs{padding-left: 4px; padding-right: 4px;}.sx-payouts .py-0\.5,.sx-payouts.py-0\.5{padding-top: 0.125rem; padding-bottom: 0.125rem;}.sx-payouts .py-1,.sx-payouts.py-1{padding-top: 0.25rem; padding-bottom: 0.25rem;}.sx-payouts .py-1\.5,.sx-payouts.py-1\.5{padding-top: 0.375rem; padding-bottom: 0.375rem;}.sx-payouts .py-2,.sx-payouts.py-2{padding-top: 0.5rem; padding-bottom: 0.5rem;}.sx-payouts .py-3,.sx-payouts.py-3{padding-top: 0.75rem; padding-bottom: 0.75rem;}.sx-payouts .py-3\.5,.sx-payouts.py-3\.5{padding-top: 0.875rem; padding-bottom: 0.875rem;}.sx-payouts .py-space-lg,.sx-payouts.py-space-lg{padding-top: 16px; padding-bottom: 16px;}.sx-payouts .py-space-sm,.sx-payouts.py-space-sm{padding-top: 6px; padding-bottom: 6px;}.sx-payouts .pb-2,.sx-payouts.pb-2{padding-bottom: 0.5rem;}.sx-payouts .pb-space-sm,.sx-payouts.pb-space-sm{padding-bottom: 6px;}.sx-payouts .pl-2,.sx-payouts.pl-2{padding-left: 0.5rem;}.sx-payouts .pl-7,.sx-payouts.pl-7{padding-left: 1.75rem;}.sx-payouts .pl-8,.sx-payouts.pl-8{padding-left: 2rem;}.sx-payouts .pl-9,.sx-payouts.pl-9{padding-left: 2.25rem;}.sx-payouts .pr-2,.sx-payouts.pr-2{padding-right: 0.5rem;}.sx-payouts .pr-2\.5,.sx-payouts.pr-2\.5{padding-right: 0.625rem;}.sx-payouts .pr-3,.sx-payouts.pr-3{padding-right: 0.75rem;}.sx-payouts .pt-space-xs,.sx-payouts.pt-space-xs{padding-top: 4px;}.sx-payouts .text-left,.sx-payouts.text-left{text-align: left;}.sx-payouts .text-right,.sx-payouts.text-right{text-align: right;}.sx-payouts .font-body,.sx-payouts.font-body{font-family: "DM Sans sx-payouts";}.sx-payouts .font-label,.sx-payouts.font-label{font-family: "DM Sans sx-payouts";}.sx-payouts .font-mono,.sx-payouts.font-mono{font-family: "DM Mono sx-payouts";}.sx-payouts .font-small,.sx-payouts.font-small{font-family: "DM Sans sx-payouts";}.sx-payouts .font-title,.sx-payouts.font-title{font-family: "DM Sans sx-payouts";}.sx-payouts .text-\[11px\],.sx-payouts.text-\[11px\]{font-size: 11px;}.sx-payouts .text-\[12px\],.sx-payouts.text-\[12px\]{font-size: 12px;}.sx-payouts .text-\[14px\],.sx-payouts.text-\[14px\]{font-size: 14px;}.sx-payouts .text-\[16px\],.sx-payouts.text-\[16px\]{font-size: 16px;}.sx-payouts .text-\[18px\],.sx-payouts.text-\[18px\]{font-size: 18px;}.sx-payouts .text-\[20px\],.sx-payouts.text-\[20px\]{font-size: 20px;}.sx-payouts .text-body,.sx-payouts.text-body{font-size: 14.5px; line-height: 1.5; font-weight: 400;}.sx-payouts .text-label,.sx-payouts.text-label{font-size: 12px; line-height: 1.2; letter-spacing: 0.02em; font-weight: 500;}.sx-payouts .text-metric,.sx-payouts.text-metric{font-size: 28px; line-height: 1.1; font-weight: 700;}.sx-payouts .text-mono,.sx-payouts.text-mono{font-size: 14px; line-height: 1.4; font-weight: 400;}.sx-payouts .text-small,.sx-payouts.text-small{font-size: 13px; line-height: 1.4; font-weight: 400;}.sx-payouts .text-title,.sx-payouts.text-title{font-size: 25px; line-height: 1.2; letter-spacing: -0.025em; font-weight: 600;}.sx-payouts .font-bold,.sx-payouts.font-bold{font-weight: 700;}.sx-payouts .font-medium,.sx-payouts.font-medium{font-weight: 500;}.sx-payouts .font-normal,.sx-payouts.font-normal{font-weight: 400;}.sx-payouts .font-semibold,.sx-payouts.font-semibold{font-weight: 600;}.sx-payouts .uppercase,.sx-payouts.uppercase{text-transform: uppercase;}.sx-payouts .leading-none,.sx-payouts.leading-none{line-height: 1;}.sx-payouts .leading-relaxed,.sx-payouts.leading-relaxed{line-height: 1.625;}.sx-payouts .leading-tight,.sx-payouts.leading-tight{line-height: 1.25;}.sx-payouts .tracking-tight,.sx-payouts.tracking-tight{letter-spacing: -0.025em;}.sx-payouts .tracking-wider,.sx-payouts.tracking-wider{letter-spacing: 0.05em;}.sx-payouts .text-accent,.sx-payouts.text-accent{--tw-text-opacity: 1; color: var(--accent);}.sx-payouts .text-accentInk,.sx-payouts.text-accentInk{--tw-text-opacity: 1; color: #ffffff;}.sx-payouts .text-accentWash,.sx-payouts.text-accentWash{--tw-text-opacity: 1; color: var(--accentWash);}.sx-payouts .text-bad,.sx-payouts.text-bad{--tw-text-opacity: 1; color: var(--bad);}.sx-payouts .text-faint,.sx-payouts.text-faint{--tw-text-opacity: 1; color: var(--faint);}.sx-payouts .text-ink,.sx-payouts.text-ink{--tw-text-opacity: 1; color: var(--ink);}.sx-payouts .text-muted,.sx-payouts.text-muted{--tw-text-opacity: 1; color: var(--muted);}.sx-payouts .text-ok,.sx-payouts.text-ok{--tw-text-opacity: 1; color: var(--ok);}.sx-payouts .text-panel,.sx-payouts.text-panel{--tw-text-opacity: 1; color: #ffffff;}.sx-payouts .text-railInk,.sx-payouts.text-railInk{--tw-text-opacity: 1; color: var(--railInk);}.sx-payouts .text-railMuted,.sx-payouts.text-railMuted{--tw-text-opacity: 1; color: var(--railMuted);}.sx-payouts .text-warn,.sx-payouts.text-warn{--tw-text-opacity: 1; color: var(--warn);}.sx-payouts .antialiased,.sx-payouts.antialiased{-webkit-font-smoothing: antialiased;}.sx-payouts .placeholder-muted::placeholder,.sx-payouts.placeholder-muted::placeholder{--tw-placeholder-opacity: 1; color: var(--muted);}.sx-payouts .placeholder-railMuted::placeholder,.sx-payouts.placeholder-railMuted::placeholder{--tw-placeholder-opacity: 1; color: var(--railMuted);}.sx-payouts .shadow-sm,.sx-payouts.shadow-sm{--tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color); box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);}.sx-payouts .transition-all,.sx-payouts.transition-all{transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms;}.sx-payouts .transition-colors,.sx-payouts.transition-colors{transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms;}.sx-payouts .duration-150,.sx-payouts.duration-150{transition-duration: 150ms;}.sx-payouts .selection\:bg-accentWash ::selection,.sx-payouts.selection\:bg-accentWash ::selection{--tw-bg-opacity: 1; background-color: var(--accentWash);}.sx-payouts .selection\:text-primary ::selection,.sx-payouts.selection\:text-primary ::selection{--tw-text-opacity: 1; color: #3525cd;}.sx-payouts .selection\:bg-accentWash::selection,.sx-payouts.selection\:bg-accentWash::selection{--tw-bg-opacity: 1; background-color: var(--accentWash);}.sx-payouts .selection\:text-primary::selection,.sx-payouts.selection\:text-primary::selection{--tw-text-opacity: 1; color: #3525cd;}.sx-payouts .hover\:bg-error:hover,.sx-payouts.hover\:bg-error:hover{--tw-bg-opacity: 1; background-color: #ba1a1a;}.sx-payouts .hover\:bg-panel2:hover,.sx-payouts.hover\:bg-panel2:hover{--tw-bg-opacity: 1; background-color: var(--panel2);}.sx-payouts .hover\:bg-panel2\/10:hover,.sx-payouts.hover\:bg-panel2\/10:hover{background-color: color-mix(in srgb, var(--panel2) 10%, transparent);}.sx-payouts .hover\:bg-panel2\/20:hover,.sx-payouts.hover\:bg-panel2\/20:hover{background-color: color-mix(in srgb, var(--panel2) 20%, transparent);}.sx-payouts .hover\:bg-primary:hover,.sx-payouts.hover\:bg-primary:hover{--tw-bg-opacity: 1; background-color: #3525cd;}.sx-payouts .hover\:text-ink:hover,.sx-payouts.hover\:text-ink:hover{--tw-text-opacity: 1; color: var(--ink);}.sx-payouts .hover\:text-primary:hover,.sx-payouts.hover\:text-primary:hover{--tw-text-opacity: 1; color: #3525cd;}.sx-payouts .hover\:text-railInk:hover,.sx-payouts.hover\:text-railInk:hover{--tw-text-opacity: 1; color: var(--railInk);}.sx-payouts .hover\:underline:hover,.sx-payouts.hover\:underline:hover{text-decoration-line: underline;}.sx-payouts .focus\:border-accent:focus,.sx-payouts.focus\:border-accent:focus{--tw-border-opacity: 1; border-color: var(--accent);}.sx-payouts .focus\:outline-none:focus,.sx-payouts.focus\:outline-none:focus{outline: transparent solid 2px; outline-offset: 2px;}.sx-payouts .focus\:ring-1:focus,.sx-payouts.focus\:ring-1:focus{--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color); --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color); box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);}.sx-payouts .focus\:ring-accent:focus,.sx-payouts.focus\:ring-accent:focus{--tw-ring-opacity: 1; --tw-ring-color: rgb(79 70 229 / var(--tw-ring-opacity, 1));}.sx-payouts .sm\:mt-0,.sx-payouts.sm\:mt-0{margin-top: 0px;}.sx-payouts .sm\:grid-cols-2,.sx-payouts.sm\:grid-cols-2{grid-template-columns: repeat(2, minmax(0px, 1fr));}.sx-payouts .sm\:flex-row,.sx-payouts.sm\:flex-row{flex-direction: row;}.sx-payouts .sm\:items-center,.sx-payouts.sm\:items-center{align-items: center;}.sx-payouts .md\:flex-row,.sx-payouts.md\:flex-row{flex-direction: row;}.sx-payouts .md\:items-center,.sx-payouts.md\:items-center{align-items: center;}.sx-payouts .md\:self-auto,.sx-payouts.md\:self-auto{align-self: auto;}.sx-payouts .lg\:grid-cols-4,.sx-payouts.lg\:grid-cols-4{grid-template-columns: repeat(4, minmax(0px, 1fr));}.sx-payouts .xl\:flex,.sx-payouts.xl\:flex{display: flex;}</style>
+<div class="sx-payouts h-full"><div class="sx-body bg-canvas text-ink font-body text-body antialiased min-h-screen flex flex-col selection:bg-accentWash selection:text-primary" style="">
+<aside aria-label="Main Navigation" class="fixed top-0 bottom-0 left-0 w-[252px] z-40 flex flex-col justify-between bg-rail border-r border-lineStrong flat no shadows">
+<div class="p-space-md flex flex-col gap-y-4">
+
+<div class="px-space-sm pt-space-xs pb-space-sm border-b border-lineStrong/20">
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 rounded-lg bg-accent/20 border border-accent/40 flex items-center justify-center text-accentInk">
+<span class="material-symbols-outlined text-[18px]" data-icon="storefront">storefront</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-title text-body font-semibold text-railInk truncate leading-tight">Nile Traders</span>
+<span class="font-label text-label text-railMuted truncate">Enterprise Seller</span>
+</div>
+</div>
+
+<button class="mt-3 w-full flex items-center justify-between px-space-md py-1.5 bg-panel2/10 hover:bg-panel2/20 text-railInk rounded-lg text-label font-medium transition-colors duration-150">
+<span class="truncate">Store Switcher</span>
+<span class="material-symbols-outlined text-label text-railMuted" data-icon="unfold_more">unfold_more</span>
+</button>
+</div>
+
+<div class="px-space-xs">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2.5 text-railMuted text-[16px]" data-icon="search">search</span>
+<input class="w-full bg-panel2/5 border border-lineStrong/30 rounded-lg pl-8 pr-2.5 py-1 text-label text-railInk placeholder-railMuted focus:outline-none focus:border-accent" placeholder="Jump to..." type="text"/>
+</div>
+</div>
+
+<nav class="flex flex-col gap-0.5">
+
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150 font-body text-body font-normal" href="#overview">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150 font-body text-body font-normal" href="#catalog">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">inventory_2</span>
+<span>Catalog</span>
+</a>
+
+<div class="flex flex-col">
+<a class="flex items-center justify-between px-space-md py-space-sm bg-accent text-accentInk rounded-lg font-medium transition-colors duration-150 font-body text-body" href="#money">
+<div class="flex items-center gap-space-md">
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+<span>Money</span>
+</div>
+<span class="material-symbols-outlined text-[16px]" data-icon="expand_more">expand_more</span>
+</a>
+
+<div class="pl-7 pr-2 py-1 flex flex-col gap-1 mt-0.5 border-l border-accent/40 ml-4">
+<a class="px-2 py-1 rounded text-label text-railMuted hover:text-railInk transition-colors" href="#overview-money">Balance summary</a>
+<a class="px-2 py-1 rounded text-label font-semibold text-accentWash bg-accent/20 transition-colors flex items-center justify-between" href="#payouts">
+<span>Payouts</span>
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+</a>
+<a class="px-2 py-1 rounded text-label text-railMuted hover:text-railInk transition-colors" href="#transactions">Settlements</a>
+<a class="px-2 py-1 rounded text-label text-railMuted hover:text-railInk transition-colors" href="#statements">Tax &amp; Invoices</a>
+</div>
+</div>
+
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150 font-body text-body font-normal" href="#admin">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span>Admin</span>
+</a>
+</nav>
+</div>
+
+<div class="p-space-md border-t border-lineStrong/20 flex flex-col gap-1">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 font-label text-label" href="#docs">
+<span class="material-symbols-outlined text-[18px]" data-icon="menu_book">menu_book</span>
+<span>Documentation</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 font-label text-label" href="#support">
+<span class="material-symbols-outlined text-[18px]" data-icon="headset_mic">headset_mic</span>
+<span>Support</span>
+</a>
+</div>
+</aside>
+
+
+
+<header class="fixed top-0 left-[252px] right-0 h-16 z-30 bg-panel border-b border-line flat no shadows flex items-center justify-between px-space-xl">
+
+<div class="flex items-center gap-3">
+<span class="font-title text-label font-bold text-ink">MarketCore</span>
+<span class="text-faint text-label font-normal">/</span>
+<span class="font-label text-label text-muted font-normal hover:text-ink cursor-pointer">Money</span>
+<span class="text-faint text-label font-normal">/</span>
+<span class="font-label text-label text-ink font-semibold">Payouts</span>
+</div>
+
+<div class="flex-1 max-w-md mx-6">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-muted text-[18px]" data-icon="search">search</span>
+<input class="w-full bg-panel2 border border-line rounded-lg pl-9 pr-3 py-1.5 text-small text-ink placeholder-muted focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-all duration-150" placeholder="Search payouts by ID, amount, reference..." type="text"/>
+</div>
+</div>
+
+<div class="flex items-center gap-space-md">
+<a class="flex items-center gap-1.5 px-2.5 py-1 text-muted hover:text-ink text-small font-medium transition-colors" href="#docs">
+<span class="material-symbols-outlined text-[18px]" data-icon="help">help</span>
+<span>Docs</span>
+</a>
+<button class="relative p-1.5 text-muted hover:text-ink rounded-lg transition-colors" title="Notifications">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-bad"></span>
+</button>
+
+<div class="flex items-center gap-2 pl-2 border-l border-line ml-1">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/60 flex items-center justify-center text-ink font-mono text-small font-semibold">
+          NT
+        </div>
+<div class="hidden xl:flex flex-col text-left">
+<span class="text-label font-medium text-ink leading-none">Amir S.</span>
+<span class="text-[11px] text-faint leading-none mt-1">Finance Lead</span>
+</div>
+</div>
+</div>
+</header>
+
+
+
+<main class="ml-[252px] mt-16 p-6 flex-1 flex flex-col">
+<div class="max-w-7xl w-full mx-auto flex-1 flex flex-col">
+
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-2">
+<div>
+<h1 class="font-title text-title font-semibold tracking-tight text-ink">Payouts</h1>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-mono text-small font-medium text-muted bg-panel2 px-2.5 py-1 rounded-[6px] border border-line">
+              INV-8 — a payout is executed at most once
+            </span>
+<span class="inline-flex items-center gap-1 text-small text-ok font-medium">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified_user">verified_user</span>
+              State Guard Armed
+            </span>
+</div>
+</div>
+
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-3 py-2 bg-panel border border-controlEdge text-ink font-label text-label font-medium rounded-lg hover:bg-panel2 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="tune">tune</span>
+<span>Payout Settings</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-accent text-accentInk font-label text-label font-medium rounded-[8px] shadow-sm hover:bg-primary transition-all duration-150">
+<span class="material-symbols-outlined text-[18px]" data-icon="add_circle">add_circle</span>
+<span>Request payout</span>
+</button>
+</div>
+</section>
+
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+<div class="rounded-[12px] border border-line bg-panel p-4 flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase tracking-wider text-faint font-medium">AVAILABLE BALANCE</span>
+<span class="material-symbols-outlined text-muted text-[18px]" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<div>
+<div class="font-mono text-metric font-bold text-ink tracking-tight">E£6,150.00</div>
+<div class="font-small text-small text-ok font-medium mt-1 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-ok inline-block"></span>
+              Withdrawable now to linked bank
+            </div>
+</div>
+</div>
+
+<div class="rounded-[12px] border border-line bg-panel p-4 flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase tracking-wider text-faint font-medium">PENDING SETTLEMENT</span>
+<span class="material-symbols-outlined text-muted text-[18px]" data-icon="hourglass_top">hourglass_top</span>
+</div>
+<div>
+<div class="font-mono text-metric font-bold text-ink tracking-tight">E£1,824.00</div>
+<div class="font-small text-small text-muted font-normal mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-faint" data-icon="schedule">schedule</span>
+              Clears in 2 business days
+            </div>
+</div>
+</div>
+
+<div class="rounded-[12px] border border-line bg-panel p-4 flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase tracking-wider text-faint font-medium">PAID OUT · ALL TIME</span>
+<span class="material-symbols-outlined text-muted text-[18px]" data-icon="trending_up">trending_up</span>
+</div>
+<div class="flex items-baseline justify-between gap-2">
+<div>
+<div class="font-mono text-metric font-bold text-ink tracking-tight">E£34,870.00</div>
+<div class="font-small text-small text-faint font-normal mt-1">Across 18 cycles</div>
+</div>
+
+<div class="w-20 h-10 flex-shrink-0">
+<svg class="w-full h-full overflow-visible" fill="none" viewbox="0 0 80 40">
+<path d="M 2 35 C 15 32, 25 24, 40 20 C 55 16, 65 10, 78 4" style="stroke:var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+<path d="M 2 35 C 15 32, 25 24, 40 20 C 55 16, 65 10, 78 4 L 78 40 L 2 40 Z" fill="url(#sparkline-grad)" opacity="0.15"></path>
+<defs>
+<lineargradient id="sparkline-grad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#4f46e5"></stop>
+<stop offset="100%" stop-color="#4f46e5" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</div>
+</div>
+
+<div class="rounded-[12px] border border-line bg-panel p-4 flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase tracking-wider text-faint font-medium">FAILED PAYOUTS</span>
+<span class="material-symbols-outlined text-bad text-[18px]" data-icon="error">error</span>
+</div>
+<div>
+<div class="font-mono text-metric font-bold text-bad tracking-tight">1</div>
+<div class="font-small text-small text-bad font-medium mt-1 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-bad inline-block"></span>
+              PO-0030 needs a retry
+            </div>
+</div>
+</div>
+</section>
+
+<section class="rounded-[12px] border border-line bg-panel overflow-hidden shadow-xs flex-1 flex flex-col">
+
+<div class="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-line bg-panel">
+<div class="flex items-center gap-2">
+<h2 class="font-title text-[18px] font-semibold text-ink">Payout history</h2>
+<span class="font-mono text-label text-muted bg-panel2 px-2 py-0.5 rounded border border-line">
+              3 transactions
+            </span>
+</div>
+
+<div class="flex items-center gap-2">
+<div class="flex items-center border border-line rounded-lg overflow-hidden bg-panel">
+<button class="px-2.5 py-1 text-label font-medium bg-accent text-accentInk">All</button>
+<button class="px-2.5 py-1 text-label font-medium text-muted hover:text-ink hover:bg-panel2 border-l border-line">Paid</button>
+<button class="px-2.5 py-1 text-label font-medium text-muted hover:text-ink hover:bg-panel2 border-l border-line">Processing</button>
+<button class="px-2.5 py-1 text-label font-medium text-muted hover:text-ink hover:bg-panel2 border-l border-line">Failed</button>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 text-label font-medium text-muted border border-controlEdge rounded-lg hover:bg-panel2 hover:text-ink transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="download">download</span>
+<span>Export CSV</span>
+</button>
+</div>
+</div>
+
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 text-[12px] font-label font-medium text-faint tracking-wider border-b border-line">
+<th class="py-3 px-4 uppercase">PAYOUT ID</th>
+<th class="py-3 px-4 uppercase text-right">AMOUNT</th>
+<th class="py-3 px-4 uppercase">STATUS</th>
+<th class="py-3 px-4 uppercase">PROVIDER REF</th>
+<th class="py-3 px-4 uppercase">REQUESTED</th>
+<th class="py-3 px-4 uppercase text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line text-body">
+
+<tr class="hover:bg-panel2 transition-colors duration-150">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-mono text-mono font-medium text-ink">PO-0031</span>
+<button class="text-faint hover:text-ink" title="Copy ID">
+<span class="material-symbols-outlined text-[14px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-semibold text-ink">E£2,241.00</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-okWash text-ok text-label font-medium border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                    PAID
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-mono text-small text-muted">po_tr_89210941</span>
+</td>
+<td class="py-3.5 px-4 font-small text-small text-muted">
+                  04 Oct 2026, 11:20
+                </td>
+<td class="py-3.5 px-4 text-right">
+<button class="text-accent hover:text-primary font-small font-medium text-small hover:underline">
+                    Receipt
+                  </button>
+</td>
+</tr>
+
+<tr class="hover:bg-panel2 transition-colors duration-150">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-mono text-mono font-medium text-ink">PO-0032</span>
+<button class="text-faint hover:text-ink" title="Copy ID">
+<span class="material-symbols-outlined text-[14px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-semibold text-ink">E£6,150.00</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-warnWash text-warn text-label font-medium border border-warn/20">
+<span class="w-1.5 h-1.5 rounded-full bg-warn animate-pulse"></span>
+                    PROCESSING
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-mono text-small text-muted">po_tr_89210998</span>
+</td>
+<td class="py-3.5 px-4 font-small text-small text-muted">
+                  Today, 09:15
+                </td>
+<td class="py-3.5 px-4 text-right">
+<button class="text-accent hover:text-primary font-small font-medium text-small hover:underline">
+                    Track
+                  </button>
+</td>
+</tr>
+
+<tr class="hover:bg-panel2 transition-colors duration-150 bg-badWash/10">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-mono text-mono font-medium text-ink">PO-0030</span>
+<button class="text-faint hover:text-ink" title="Copy ID">
+<span class="material-symbols-outlined text-[14px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-semibold text-ink">E£980.00</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-badWash text-bad text-label font-medium border border-bad/20">
+<span class="w-1.5 h-1.5 rounded-full bg-bad"></span>
+                    FAILED
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col">
+<span class="font-mono text-small text-muted">po_tr_89210812</span>
+<span class="text-[11px] text-bad font-medium">Reason: IBAN mismatch</span>
+</div>
+</td>
+<td class="py-3.5 px-4 font-small text-small text-muted">
+                  28 Sep 2026, 16:40
+                </td>
+<td class="py-3.5 px-4 text-right">
+<button class="px-2.5 py-1 text-label font-medium bg-bad text-panel rounded hover:bg-error transition-colors">
+                    Retry Payout
+                  </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="p-4 bg-panel2/60 border-t border-line text-small text-muted flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+<div class="flex items-start gap-2.5 max-w-3xl">
+<span class="material-symbols-outlined text-accent text-[20px] flex-shrink-0 mt-0.5" data-icon="verified_user">verified_user</span>
+<p class="font-body text-small leading-relaxed">
+<span class="font-semibold text-ink">System Guard (INV-8):</span> Two worker nodes may race one payout request. The idempotent database state predicate, not the worker, is the guard preventing double execution.
+            </p>
+</div>
+<div class="flex items-center gap-2 bg-panel px-3 py-1.5 rounded-lg border border-line text-ink font-mono text-small whitespace-nowrap self-end md:self-auto">
+<span class="material-symbols-outlined text-[16px] text-ok" data-icon="account_balance">account_balance</span>
+<span>Linked Account: CIB Egypt ····· 4019</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+
+
+
+<footer class="ml-[252px] w-[calc(100%-252px)] bg-panel border-t border-line flat no shadows flex flex-col sm:flex-row justify-between items-center px-space-xl py-space-lg text-small font-small">
+<div class="text-faint">
+      © 2025 MarketCore Technologies Inc. Nile Traders Enterprise Console. All rights reserved.
+    </div>
+<div class="flex items-center gap-space-lg mt-2 sm:mt-0">
+<a class="text-faint hover:text-ink transition-colors" href="#tos">Terms of Service</a>
+<a class="text-faint hover:text-ink transition-colors" href="#privacy">Privacy Policy</a>
+<a class="text-faint hover:text-ink transition-colors" href="#security">Security Compliance</a>
+<a class="text-accent hover:text-primary font-medium transition-colors" href="#api">API Reference</a>
+</div>
+</footer>
+</div></div>

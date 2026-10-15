@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore Seller Console — Order #1042</title>
+<!-- Google Fonts: DM Sans & DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration Script -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#fcf8ff",
+            "secondary-container": "#e3e1ec",
+            "muted": "#5a6272",
+            "primary-fixed-dim": "#c3c0ff",
+            "on-tertiary-fixed": "#351000",
+            "okWash": "#e8f7ee",
+            "accentWash": "#eef0ff",
+            "surface-container-low": "#f5f2ff",
+            "surface": "#fcf8ff",
+            "on-secondary-fixed-variant": "#46464f",
+            "panel": "#ffffff",
+            "on-surface-variant": "#464555",
+            "surface-container-lowest": "#ffffff",
+            "error": "#ba1a1a",
+            "on-error-container": "#93000a",
+            "faint": "#676e7a",
+            "inverse-surface": "#302f39",
+            "controlEdge": "#838b9a",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-tertiary": "#ffffff",
+            "on-surface": "#1b1b24",
+            "primary-container": "#4f46e5",
+            "railMuted": "#8b93a7",
+            "accentInk": "#ffffff",
+            "accent": "#4f46e5",
+            "surface-container-highest": "#e4e1ee",
+            "surface-tint": "#4d44e3",
+            "on-primary-fixed": "#0f0069",
+            "surface-container-high": "#eae6f4",
+            "primary-fixed": "#e2dfff",
+            "secondary": "#5d5e67",
+            "tertiary": "#7e3000",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-secondary": "#ffffff",
+            "inverse-on-surface": "#f3effc",
+            "railInk": "#eef1f7",
+            "ink": "#0a0b12",
+            "surface-dim": "#dcd8e5",
+            "outline": "#777587",
+            "inverse-primary": "#c3c0ff",
+            "surface-variant": "#e4e1ee",
+            "panel2": "#f1f3f9",
+            "info": "#097499",
+            "secondary-fixed": "#e3e1ec",
+            "on-secondary-fixed": "#1a1b23",
+            "ok": "#117f3a",
+            "lineStrong": "#d5d9e2",
+            "badWash": "#fdecef",
+            "secondary-fixed-dim": "#c7c5d0",
+            "line": "#e6e8ef",
+            "on-secondary-container": "#64646d",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#a44100",
+            "surface-container": "#f0ecf9",
+            "surface-bright": "#fcf8ff",
+            "warnWash": "#fdf3e4",
+            "bad": "#d11b43",
+            "on-background": "#1b1b24",
+            "canvas": "#f6f7fb",
+            "on-error": "#ffffff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "primary": "#3525cd",
+            "error-container": "#ffdad6",
+            "on-primary-container": "#dad7ff",
+            "tertiary-fixed": "#ffdbcc",
+            "rail": "#0b0d14",
+            "warn": "#a55a05",
+            "outline-variant": "#c7c4d8",
+            "on-tertiary-container": "#ffd2be"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xl": "22px",
+            "space-md": "10px",
+            "margin": "20px",
+            "space-xs": "4px",
+            "gutter": "16px",
+            "space-sm": "6px",
+            "space-xxl": "26px",
+            "space-lg": "16px"
+          },
+          "fontFamily": {
+            "metric": ["DM Sans"],
+            "body": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "label": ["DM Sans"],
+            "title": ["DM Sans"],
+            "display": ["DM Sans"],
+            "small": ["DM Sans"]
+          },
+          "fontSize": {
+            "metric": [
+              "28px",
+              {
+                "lineHeight": "1.1",
+                "fontWeight": "700"
+              }
+            ],
+            "body": [
+              "14.5px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "mono": [
+              "14px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ],
+            "label": [
+              "12px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "0.02em",
+                "fontWeight": "500"
+              }
+            ],
+            "title": [
+              "25px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "600"
+              }
+            ],
+            "display": [
+              "35px",
+              {
+                "lineHeight": "1.1",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "700"
+              }
+            ],
+            "small": [
+              "13px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="bg-canvas text-ink font-body text-body antialiased min-h-screen flex flex-col selection:bg-accent selection:text-accentInk">
+<!-- ========================================================================= -->
+<!-- SIDE NAVIGATION RAIL (Shared Component: SideNavBar)                       -->
+<!-- ========================================================================= -->
+<aside aria-label="Main Navigation" class="fixed top-0 bottom-0 left-0 w-[252px] z-40 flex flex-col justify-between bg-rail border-r border-lineStrong flat no shadows">
+<div class="p-space-md flex flex-col gap-space-lg">
+<!-- Merchant Store Switcher / Identity -->
+<div class="px-space-md py-space-sm bg-panel/5 rounded-lg border border-railMuted/20 hover:border-railMuted/40 transition-colors cursor-pointer group">
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 rounded-lg bg-accent/20 border border-accent/40 flex items-center justify-center text-accentInk">
+<span class="material-symbols-outlined text-accent" data-icon="storefront">storefront</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="font-title text-label font-semibold text-railInk truncate leading-tight">Nile Traders</div>
+<div class="font-small text-label text-railMuted truncate">Enterprise Seller</div>
+</div>
+<span class="material-symbols-outlined text-railMuted group-hover:text-railInk transition-colors" data-icon="unfold_more">unfold_more</span>
+</div>
+<div class="mt-2 pt-2 border-t border-railMuted/15 flex items-center justify-between text-railMuted font-label text-label">
+<span>Store Switcher</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Quick Search within console -->
+<div class="relative px-space-md">
+<span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-railMuted" data-icon="search">search</span>
+<input class="w-full pl-8 pr-3 py-1.5 bg-panel/5 border border-railMuted/20 rounded-lg text-railInk placeholder-railMuted font-small text-small focus:outline-none focus:border-accent" placeholder="Search orders, SKU..." type="text"/>
+</div>
+<!-- Navigation Tree -->
+<nav aria-label="Console Modules" class="flex flex-col gap-1 px-space-xs">
+<!-- Tab: Overview -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body text-body font-normal">Overview</span>
+</a>
+<!-- Tab: Catalog -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-body text-body font-normal">Catalog</span>
+</a>
+<!-- Tab: Money (Active Group) -->
+<div class="flex flex-col gap-1 mt-1">
+<div class="flex items-center gap-space-md px-space-md py-space-sm text-railInk font-medium">
+<span class="material-symbols-outlined text-accent" data-icon="payments">payments</span>
+<span class="font-body text-body">Money</span>
+</div>
+<!-- Nested Sub-items under Money -->
+<div class="pl-7 pr-space-xs flex flex-col gap-1 border-l border-railMuted/20 ml-5">
+<a class="flex items-center gap-space-md px-space-md py-space-sm bg-accent text-accentInk rounded-lg font-medium shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-body text-body font-medium">Orders</span>
+<span class="ml-auto text-label font-mono bg-accentInk/20 px-1.5 py-0.5 rounded">1042</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body text-body font-normal">Payouts</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="book">book</span>
+<span class="font-body text-body font-normal">Escrow Ledger</span>
+</a>
+</div>
+</div>
+<!-- Tab: Admin -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150 mt-1" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body text-body font-normal">Admin</span>
+</a>
+</nav>
+</div>
+<!-- Rail Footer -->
+<div class="p-space-md border-t border-railMuted/20 flex flex-col gap-1">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-small text-small">Documentation</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="headset_mic">headset_mic</span>
+<span class="font-small text-small">Support</span>
+</a>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- TOP APP BAR / BREADCRUMB HEADER (Shared Component: TopNavBar)              -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-[252px] right-0 h-16 z-30 bg-panel border-b border-line px-space-xl flex justify-between items-center flat no shadows">
+<!-- Breadcrumb & Product Identity -->
+<div class="flex items-center gap-space-md">
+<span class="font-title text-label font-semibold text-ink">MarketCore</span>
+<span class="text-muted font-small">/</span>
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 font-label text-label">
+<a class="text-muted hover:text-ink transition-colors" href="#">Money</a>
+<span class="text-muted">/</span>
+<a class="text-muted hover:text-ink transition-colors" href="#">Orders</a>
+<span class="text-muted">/</span>
+<span class="text-ink font-semibold">#1042</span>
+</nav>
+</div>
+<!-- Quick Search on Header -->
+<div class="flex-1 max-w-md mx-8">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted" data-icon="search">search</span>
+<input class="w-full bg-panel2 border border-line rounded-lg pl-9 pr-4 py-1.5 font-small text-small text-ink placeholder-muted focus:outline-none focus:border-accent" placeholder="Search orders, transactions, ledger keys..." type="search"/>
+</div>
+</div>
+<!-- Actions & User Profile -->
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line text-muted hover:text-ink hover:bg-panel2 font-label text-label transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Docs</span>
+</button>
+<button aria-label="Notifications" class="relative p-2 text-muted hover:text-ink hover:bg-panel2 rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full"></span>
+</button>
+<div class="h-6 w-px bg-line"></div>
+<!-- Merchant Profile Avatar -->
+<div class="flex items-center gap-2 cursor-pointer group">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/50 flex items-center justify-center text-ink font-mono text-small font-semibold">
+          NT
+        </div>
+<span class="material-symbols-outlined text-muted group-hover:text-ink transition-colors" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT CANVAS                                                       -->
+<!-- ========================================================================= -->
+<main class="ml-[252px] pt-16 flex-1 min-h-[calc(100vh-64px)] bg-canvas pb-12">
+<div class="max-w-7xl mx-auto p-6">
+<!-- Page Navigation Back Link -->
+<div class="mb-3">
+<a class="inline-flex items-center gap-1 font-small text-small text-muted hover:text-ink transition-colors" href="#">
+<span class="material-symbols-outlined text-[15px]" data-icon="arrow_back">arrow_back</span>
+<span>Orders</span>
+</a>
+</div>
+<!-- Page Header: Title, Status Pill, Metadata, Primary/Secondary CTA -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 pb-4 border-b border-line">
+<div>
+<div class="flex items-center gap-3">
+<h1 class="font-title text-title font-semibold tracking-tight text-ink">Order #1042</h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-okWash text-ok font-label text-label font-medium border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+              PAID
+            </span>
+</div>
+<p class="font-small text-small text-muted mt-1">
+            Placed 2 minutes ago · Nile Traders · Channel: <span class="text-ink font-medium">Storefront Web</span>
+</p>
+</div>
+<!-- Top Right Actions -->
+<div class="flex items-center gap-3">
+<button class="inline-flex items-center gap-2 px-4 py-2 bg-panel border border-controlEdge rounded-lg text-ink font-body text-body font-medium hover:bg-panel2 transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="print">print</span>
+<span>Print invoice</span>
+</button>
+<button class="inline-flex items-center gap-2 px-4 py-2 bg-accent text-accentInk rounded-lg font-body text-body font-medium hover:bg-accent/90 transition-all shadow-sm" type="button">
+<span>Fulfil order</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- 4-Step Order Flow Tracker Card -->
+<section aria-label="Order Status Progress" class="bg-panel border border-line rounded-xl p-5 mb-6 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+<!-- Step 1: Pending Payment (Completed) -->
+<div class="flex items-center gap-3 relative">
+<div class="w-8 h-8 rounded-full bg-okWash border border-ok/30 flex items-center justify-center text-ok shrink-0">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+</div>
+<div>
+<div class="font-label text-label font-medium text-ok">Step 1: Pending payment</div>
+<div class="font-small text-small text-muted">Cleared instant</div>
+</div>
+</div>
+<!-- Step 2: Paid (Completed & Verified) -->
+<div class="flex items-center gap-3 relative">
+<div class="w-8 h-8 rounded-full bg-ok text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px]" data-icon="done_all">done_all</span>
+</div>
+<div>
+<div class="font-label text-label font-medium text-ok">Step 2: Paid ✓</div>
+<div class="font-small text-small text-ok font-medium">Paid 2 mins ago</div>
+</div>
+</div>
+<!-- Step 3: Fulfilling (Current Action Step) -->
+<div class="flex items-center gap-3 relative">
+<div class="relative w-8 h-8 rounded-full bg-accent text-accentInk flex items-center justify-center shrink-0 ring-4 ring-accentWash">
+<span class="material-symbols-outlined text-[16px]" data-icon="package_2">package_2</span>
+</div>
+<div>
+<div class="font-label text-label font-semibold text-ink">Step 3: Fulfilling</div>
+<div class="font-small text-small text-accent font-medium">Action needed: Pack items</div>
+</div>
+</div>
+<!-- Step 4: Completed (Upcoming) -->
+<div class="flex items-center gap-3 relative opacity-60">
+<div class="w-8 h-8 rounded-full bg-panel2 border border-line flex items-center justify-center text-faint shrink-0">
+<span class="material-symbols-outlined text-[16px]" data-icon="hourglass_empty">hourglass_empty</span>
+</div>
+<div>
+<div class="font-label text-label font-medium text-faint">Step 4: Completed</div>
+<div class="font-small text-small text-faint">Pending fulfillment</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Asymmetric Two-Column Architecture: 65% Left / 35% Right -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- ================================================================= -->
+<!-- LEFT COLUMN: 65% Span (8 of 12 columns)                           -->
+<!-- ================================================================= -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- 1. ORDER ITEMS CARD -->
+<div class="bg-panel border border-line rounded-xl overflow-hidden shadow-sm">
+<!-- Header -->
+<div class="px-5 py-4 border-b border-line flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-label text-title text-[18px] font-semibold text-ink">Order items (1)</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-panel2 text-ink font-label text-label border border-line">
+<span class="material-symbols-outlined text-[14px] text-muted" data-icon="local_shipping">local_shipping</span>
+                Fulfillment: Merchant Dispatch
+              </span>
+</div>
+<!-- Table of Line Items -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line text-muted font-label text-label uppercase">
+<th class="py-3 px-5 font-medium">Item</th>
+<th class="py-3 px-4 font-medium text-right">Price</th>
+<th class="py-3 px-4 font-medium text-center">Qty</th>
+<th class="py-3 px-5 font-medium text-right">Total</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line">
+<tr class="hover:bg-panel2/60 transition-colors">
+<td class="py-4 px-5">
+<div class="flex items-center gap-3">
+<!-- Product thumbnail -->
+<div class="w-14 h-14 rounded-lg bg-panel2 border border-line overflow-hidden shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A clean, folded premium ecru Egyptian cotton shirt styled in an apparel product studio under soft daylight with subtle woven fabric textures visible." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnQloTouhvtyXjZi3sy3V3lLHh-XlCNlv62Kn2q1CNpx8wk-0XEFSiFsT-paRMpXcjV3hM46HDi5qDMA4_yCH_V6ohd6rhUOUxppeEtUp3FDtZ-oe9To4axM1ND7RQzxo5oeUotgpPkBU9LZ6nen2yDvrr5LRmx05tXM_BE7EqNk2LCWAq38NNhvklnIojWQxUjCweJSIhp6v4oS_5kBJ8EpqL6Hf5WlOo_0BNU48QFVa1mGDqsECJrvTUHTeFrKxuAZrB2tiuw6U"/>
+</div>
+<div>
+<div class="font-body text-body font-medium text-ink">Nile Cotton Shirt</div>
+<div class="font-mono text-small text-muted mt-0.5">Ecru / M · SKU: NLE-CTN-ECR-M</div>
+<span class="inline-block mt-1 font-label text-[11px] text-ok bg-okWash px-1.5 py-0.2 rounded border border-ok/20">In Stock (Warehouse A)</span>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 text-right font-mono text-mono text-ink">
+                      E£249.00
+                    </td>
+<td class="py-4 px-4 text-center font-mono text-mono text-ink">
+                      1
+                    </td>
+<td class="py-4 px-5 text-right font-mono text-mono font-medium text-ink">
+                      E£249.00
+                    </td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Financial Summary Rows Divided by Hairline Border -->
+<div class="border-t border-line bg-panel2/20 p-5 flex flex-col gap-2">
+<div class="flex justify-between items-center text-muted font-body text-small">
+<span>Subtotal</span>
+<span class="font-mono text-mono text-ink">E£249.00</span>
+</div>
+<div class="flex justify-between items-center text-muted font-body text-small">
+<span>Shipping</span>
+<span class="font-mono text-mono text-ok">Free</span>
+</div>
+<div class="flex justify-between items-center text-muted font-body text-small">
+<span class="flex items-center gap-1">
+                  Platform Fee (10% absorbed by seller)
+                  <span class="material-symbols-outlined text-[14px] text-muted cursor-pointer" data-icon="info">info</span>
+</span>
+<span class="font-mono text-mono text-bad">-E£24.90</span>
+</div>
+<div class="h-px bg-line my-1"></div>
+<div class="flex justify-between items-center text-ink font-body">
+<span class="font-semibold text-body">Total payable to seller</span>
+<span class="font-mono text-[16px] font-semibold text-ink">E£224.10</span>
+</div>
+</div>
+</div>
+<!-- 2. DOUBLE-ENTRY ESCROW LEDGER CARD -->
+<div class="bg-panel border border-line rounded-xl overflow-hidden shadow-sm">
+<div class="p-5 border-b border-line flex flex-wrap items-center justify-between gap-2">
+<div>
+<div class="flex items-center gap-2">
+<h2 class="font-label text-title text-[18px] font-semibold text-ink">Ledger entries</h2>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-okWash text-ok font-label text-label font-medium border border-ok/20">
+                    BALANCED ✓
+                  </span>
+</div>
+<p class="font-small text-small text-muted mt-0.5">Signed entries sum to zero, per currency</p>
+</div>
+<!-- Real-time Verification Badge -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-panel2 border border-line font-mono text-small text-muted">
+<span class="material-symbols-outlined text-ok text-[15px]" data-icon="verified">verified</span>
+<span>Audit Lock: #TXN-LEDGER-1042</span>
+</div>
+</div>
+<!-- Ledger Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line text-muted font-label text-label uppercase">
+<th class="py-3 px-5 font-medium">Account</th>
+<th class="py-3 px-5 font-medium text-right">Debit</th>
+<th class="py-3 px-5 font-medium text-right">Credit</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line">
+<!-- Row 1: Escrow Asset -->
+<tr class="hover:bg-panel2/40 transition-colors">
+<td class="py-3 px-5 font-body text-body text-ink flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-accent"></span>
+<span>Platform cash (Escrow)</span>
+</td>
+<td class="py-3 px-5 text-right font-mono text-mono text-ink font-medium">E£249.00</td>
+<td class="py-3 px-5 text-right font-mono text-mono text-muted">—</td>
+</tr>
+<!-- Row 2: Seller Payable -->
+<tr class="hover:bg-panel2/40 transition-colors">
+<td class="py-3 px-5 font-body text-body text-ink flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-ok"></span>
+<span>Seller payable (Nile Traders)</span>
+</td>
+<td class="py-3 px-5 text-right font-mono text-mono text-muted">—</td>
+<td class="py-3 px-5 text-right font-mono text-mono text-ink font-medium">E£224.10</td>
+</tr>
+<!-- Row 3: Platform Commission Revenue -->
+<tr class="hover:bg-panel2/40 transition-colors">
+<td class="py-3 px-5 font-body text-body text-ink flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-warn"></span>
+<span>Platform revenue (Commission)</span>
+</td>
+<td class="py-3 px-5 text-right font-mono text-mono text-muted">—</td>
+<td class="py-3 px-5 text-right font-mono text-mono text-ink font-medium">E£24.90</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Ledger Footer Row -->
+<div class="bg-panel2 border-t border-line px-5 py-3 flex items-center justify-between font-mono text-small font-medium text-muted">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-ok text-[16px]" data-icon="shield">shield</span>
+                Signed sum: 0.00 EGP (Balanced)
+              </span>
+<span class="text-ink">Net Zero Discrepancy</span>
+</div>
+</div>
+</div>
+<!-- ================================================================= -->
+<!-- RIGHT COLUMN: 35% Span (4 of 12 columns)                          -->
+<!-- ================================================================= -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- 1. PAYMENT CARD -->
+<div class="bg-panel border border-line rounded-xl p-5 shadow-sm">
+<div class="flex items-center justify-between pb-3 border-b border-line mb-4">
+<h3 class="font-title text-[17px] font-semibold text-ink">Payment details</h3>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-okWash text-ok font-label text-label font-medium border border-ok/20">
+                SUCCEEDED
+              </span>
+</div>
+<div class="flex flex-col gap-3 font-small text-small">
+<div class="flex justify-between items-center">
+<span class="text-muted">Attempts</span>
+<span class="font-mono text-ink font-medium">1</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-muted">Gateway</span>
+<span class="text-ink font-medium">MarketCore Escrow Vault</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-muted">Provider ref</span>
+<div class="flex items-center gap-1">
+<span class="font-mono text-ink bg-panel2 px-1.5 py-0.5 rounded text-[12px] border border-line">pi_3Qk7x9L2mK9d2</span>
+<button class="text-muted hover:text-ink p-1" title="Copy Reference" type="button">
+<span class="material-symbols-outlined text-[14px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+<div class="flex justify-between items-start">
+<span class="text-muted">Captured</span>
+<span class="font-mono text-ink text-right text-[12px]">E£249.00 on<br/>10 Oct 2026 14:30:12</span>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-line">
+<span class="text-muted">Method</span>
+<div class="flex items-center gap-1.5 font-medium text-ink">
+<span class="material-symbols-outlined text-[16px] text-muted" data-icon="credit_card">credit_card</span>
+<span>Visa ending in 4242</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. ORDER TIMELINE CARD -->
+<div class="bg-panel border border-line rounded-xl p-5 shadow-sm">
+<div class="flex items-center justify-between pb-3 border-b border-line mb-4">
+<h3 class="font-title text-[17px] font-semibold text-ink">Order timeline</h3>
+<span class="font-label text-label text-muted">Real-time</span>
+</div>
+<!-- Vertical Timeline Component -->
+<div class="relative pl-5 flex flex-col gap-5 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-line">
+<!-- Timeline Item 1 -->
+<div class="relative">
+<div class="absolute -left-5 top-1 w-2.5 h-2.5 rounded-full bg-ok ring-4 ring-okWash"></div>
+<div>
+<div class="flex items-baseline justify-between">
+<span class="font-body text-body font-medium text-ink">Payment captured</span>
+<span class="font-small text-[12px] text-muted">2 mins ago</span>
+</div>
+<p class="font-small text-small text-muted mt-0.5">
+                    E£249.00 secured in escrow via <span class="font-mono text-[12px] text-ink">pi_3Qk…9d2</span>
+</p>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative">
+<div class="absolute -left-5 top-1 w-2.5 h-2.5 rounded-full bg-accent ring-4 ring-accentWash"></div>
+<div>
+<div class="flex items-baseline justify-between">
+<span class="font-body text-body font-medium text-ink">Order created</span>
+<span class="font-small text-[12px] text-muted">3 mins ago</span>
+</div>
+<p class="font-small text-small text-muted mt-0.5">
+                    Order #1042 registered by buyer <span class="text-ink font-medium">Mariam Buyer</span>
+</p>
+</div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative">
+<div class="absolute -left-5 top-1 w-2.5 h-2.5 rounded-full bg-lineStrong"></div>
+<div>
+<div class="flex items-baseline justify-between">
+<span class="font-body text-body font-medium text-ink">Checkout initiated</span>
+<span class="font-small text-[12px] text-muted">4 mins ago</span>
+</div>
+<p class="font-small text-small text-muted mt-0.5">
+                    Cart converted with 1 item
+                  </p>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. ORDER ACTIONS CARD -->
+<div class="bg-panel border border-line rounded-xl p-5 shadow-sm">
+<h3 class="font-title text-[17px] font-semibold text-ink pb-3 border-b border-line mb-4">Manage order</h3>
+<div class="flex flex-col gap-2">
+<button class="w-full py-2 px-3 border border-controlEdge text-ink font-body text-body font-medium rounded-lg text-center hover:bg-panel2 transition-colors flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[16px] text-muted" data-icon="replay">replay</span>
+<span>Refund order</span>
+</button>
+<button class="w-full py-2 px-3 text-bad font-body text-body font-medium rounded-lg text-center hover:bg-badWash transition-colors flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="cancel">cancel</span>
+<span>Cancel order</span>
+</button>
+</div>
+<div class="mt-4 pt-3 border-t border-line text-center">
+<span class="font-small text-[11.5px] text-faint">
+                Cancellation requires buyer notification per SLA agreement.
+              </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- FOOTER (Shared Component: Footer)                                         -->
+<!-- ========================================================================= -->
+<footer class="ml-[252px] w-[calc(100%-252px)] bg-panel border-t border-line flat no shadows px-space-xl py-space-lg flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="font-small text-small font-normal text-muted">
+      © 2025 MarketCore Technologies Inc. Nile Traders Enterprise Console. All rights reserved.
+    </div>
+<div class="flex items-center gap-6">
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#">Terms of Service</a>
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#">Privacy Policy</a>
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#">Security Compliance</a>
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#">API Reference</a>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore — My orders</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "tertiary-fixed-dim": "#ffb695",
+            "inverse-on-surface": "#f3effc",
+            "on-error-container": "#93000a",
+            "on-secondary-fixed-variant": "#46464f",
+            "surface": "#fcf8ff",
+            "surface-container": "#f0ecf9",
+            "on-background": "#1b1b24",
+            "inverse-surface": "#302f39",
+            "railMuted": "#8b93a7",
+            "on-primary-container": "#dad7ff",
+            "background": "#fcf8ff",
+            "bad": "#d11b43",
+            "accentInk": "#ffffff",
+            "secondary-container": "#e3e1ec",
+            "lineStrong": "#d5d9e2",
+            "canvas": "#f6f7fb",
+            "tertiary": "#7e3000",
+            "surface-dim": "#dcd8e5",
+            "on-secondary-fixed": "#1a1b23",
+            "accent": "#4f46e5",
+            "okWash": "#e8f7ee",
+            "badWash": "#fdecef",
+            "accentWash": "#eef0ff",
+            "line": "#e6e8ef",
+            "secondary-fixed": "#e3e1ec",
+            "muted": "#5a6272",
+            "ink": "#0a0b12",
+            "faint": "#676e7a",
+            "surface-variant": "#e4e1ee",
+            "surface-container-low": "#f5f2ff",
+            "error-container": "#ffdad6",
+            "primary-fixed-dim": "#c3c0ff",
+            "panel": "#ffffff",
+            "inverse-primary": "#c3c0ff",
+            "on-primary-fixed-variant": "#3323cc",
+            "surface-bright": "#fcf8ff",
+            "surface-tint": "#4d44e3",
+            "on-surface-variant": "#464555",
+            "ok": "#117f3a",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "controlEdge": "#838b9a",
+            "panel2": "#f1f3f9",
+            "surface-container-highest": "#e4e1ee",
+            "on-tertiary": "#ffffff",
+            "warnWash": "#fdf3e4",
+            "surface-container-high": "#eae6f4",
+            "railInk": "#eef1f7",
+            "outline": "#777587",
+            "primary-fixed": "#e2dfff",
+            "outline-variant": "#c7c4d8",
+            "on-surface": "#1b1b24",
+            "surface-container-lowest": "#ffffff",
+            "secondary": "#5d5e67",
+            "error": "#ba1a1a",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "on-secondary-container": "#64646d",
+            "secondary-fixed-dim": "#c7c5d0",
+            "on-primary-fixed": "#0f0069",
+            "on-error": "#ffffff",
+            "primary": "#3525cd",
+            "primary-container": "#4f46e5",
+            "on-tertiary-fixed": "#351000",
+            "info": "#097499",
+            "on-tertiary-container": "#ffd2be",
+            "rail": "#0b0d14",
+            "warn": "#a55a05",
+            "tertiary-fixed": "#ffdbcc",
+            "tertiary-container": "#a44100"
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "card": "12px",
+            "control": "8px",
+            "pill": "999px",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          spacing: {
+            "space-md": "10px",
+            "margin": "20px",
+            "space-lg": "16px",
+            "space-sm": "6px",
+            "space-xxl": "26px",
+            "gutter": "16px",
+            "space-xs": "4px",
+            "space-xl": "22px"
+          },
+          fontFamily: {
+            "label": ["DM Sans", "sans-serif"],
+            "display": ["DM Sans", "sans-serif"],
+            "title": ["DM Sans", "sans-serif"],
+            "mono": ["DM Mono", "monospace"],
+            "metric": ["DM Sans", "sans-serif"],
+            "small": ["DM Sans", "sans-serif"],
+            "body": ["DM Sans", "sans-serif"]
+          },
+          fontSize: {
+            "label": ["12px", { lineHeight: "1.2", letterSpacing: "0.05em", fontWeight: "600" }],
+            "display": ["35px", { lineHeight: "1.1", letterSpacing: "-0.025em", fontWeight: "700" }],
+            "title": ["25px", { lineHeight: "1.2", letterSpacing: "-0.025em", fontWeight: "700" }],
+            "mono": ["14px", { lineHeight: "1.4", fontWeight: "400" }],
+            "mono-sm": ["13px", { lineHeight: "1.4", fontWeight: "400" }],
+            "mono-md": ["14.5px", { lineHeight: "1.4", fontWeight: "600" }],
+            "metric": ["28px", { lineHeight: "1.1", fontWeight: "700" }],
+            "small": ["13px", { lineHeight: "1.4", fontWeight: "400" }],
+            "body": ["14.5px", { lineHeight: "1.5", fontWeight: "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+  </style>
+</head>
+<body class="bg-canvas text-ink font-body text-body min-h-screen flex flex-col antialiased selection:bg-accentWash selection:text-accent">
+<!-- ==================== 1. STOREFRONT CHROME ==================== -->
+<!-- Top Public Bar: Exactly 64px -->
+<header class="w-full bg-panel border-b border-line h-[64px] sticky top-0 z-50">
+<div class="max-w-[1440px] h-full mx-auto px-margin flex items-center justify-between gap-6">
+<!-- Brand & Left Side -->
+<div class="flex items-center gap-8 shrink-0">
+<a class="flex items-center gap-2 group text-decoration-none" href="/">
+<div class="w-8 h-8 rounded-control bg-accent flex items-center justify-center text-accentInk font-title font-bold text-[18px] tracking-tight transition-transform group-hover:scale-105">
+            M
+          </div>
+<span class="font-title text-title font-bold text-ink tracking-tight text-[22px]">MarketCore</span>
+</a>
+</div>
+<!-- Search Input Center / On Left -->
+<div class="flex-1 max-w-[580px]">
+<div class="relative flex items-center w-full">
+<span class="material-symbols-outlined text-faint absolute left-3.5 pointer-events-none" data-icon="search">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-panel2 border border-line rounded-control font-body text-body text-ink placeholder:text-faint focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-all" placeholder="Search verified marketplace inventory..." type="search"/>
+<div class="absolute right-2.5 flex items-center gap-1 bg-panel border border-lineStrong px-1.5 py-0.5 rounded-[4px] pointer-events-none">
+<span class="font-mono text-[11px] text-faint">⌘K</span>
+</div>
+</div>
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-4 shrink-0">
+<!-- Wishlist -->
+<button class="relative p-2 text-muted hover:text-ink hover:bg-panel2 rounded-control transition-colors" title="Wishlist">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="absolute top-1 right-1 w-4 h-4 rounded-pill bg-accent text-accentInk font-mono text-[10px] font-semibold flex items-center justify-center">2</span>
+</button>
+<!-- Cart Action -->
+<button class="relative flex items-center gap-2 px-3 py-1.5 text-muted hover:text-ink hover:bg-panel2 rounded-control border border-line transition-colors" title="View Cart">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-label text-label uppercase tracking-wider text-ink font-semibold">Cart (3)</span>
+</button>
+<!-- Trailing Divider -->
+<div class="h-6 w-[1px] bg-line"></div>
+<!-- Buyer Profile Avatar Badge -->
+<div class="flex items-center gap-3 pl-1">
+<div class="relative">
+<img class="w-9 h-9 rounded-pill object-cover border border-lineStrong" data-alt="Close-up professional portrait of Mariam Buyer against a clean studio gradient background, soft natural lighting, warm and welcoming expression, representing high trust and dependability in a modern corporate commerce environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAnJpCi-v9pTEFd_kAN1lDvQkr4qXVEc3shLVVktrQf_Gx6rdnEl-YS7_F2onFpng5YWyOqM5lYv8eemNNdVksIzO9Sx8fbSo54XHvQn8n3L9IM0ks1gDS-D_cO4QkJxCF0uGcqR985OvWzfkELCNEo001h9Bhl9Qgd7bjIUMUx38gFyesIZvY0DVw9JZ8HYqyP0YqYA4oj0pP0-c6SA6bmNYR-d0tIszQV5we0n30ddmq34tA2EYI0cHKDvC2BVsULyGgMwhW5kU"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-pill bg-ok border-2 border-panel"></div>
+</div>
+<div class="hidden lg:flex flex-col text-left">
+<span class="font-body text-body font-medium text-ink leading-tight">Mariam Buyer</span>
+<span class="font-label text-[11px] uppercase tracking-wider text-muted font-medium">Buyer Account</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Category Bar: Exactly 44px -->
+<nav class="w-full bg-panel border-b border-line h-[44px]">
+<div class="max-w-[1440px] h-full mx-auto px-margin flex items-center justify-between">
+<div class="flex items-center gap-7 h-full">
+<a class="h-full flex items-center font-label text-label uppercase tracking-wider text-muted hover:text-ink transition-colors" href="#all">
+          All Categories
+        </a>
+<a class="h-full flex items-center font-label text-label uppercase tracking-wider text-muted hover:text-ink transition-colors" href="#textiles">
+          Textiles
+        </a>
+<a class="h-full flex items-center font-label text-label uppercase tracking-wider text-muted hover:text-ink transition-colors" href="#home">
+          Home
+        </a>
+<a class="h-full flex items-center font-label text-label uppercase tracking-wider text-muted hover:text-ink transition-colors" href="#food">
+          Food
+        </a>
+<a class="h-full flex items-center font-label text-label uppercase tracking-wider text-muted hover:text-ink transition-colors" href="#beauty">
+          Beauty
+        </a>
+<a class="h-full flex items-center font-label text-label uppercase tracking-wider text-muted hover:text-ink transition-colors" href="#deals">
+          Deals
+        </a>
+</div>
+<div class="flex items-center gap-4">
+<a class="h-full flex items-center font-label text-label uppercase tracking-wider text-accent border-b-2 border-accent pb-0.5 font-bold" href="#orders">
+          My Orders
+        </a>
+<span class="text-line">|</span>
+<a class="h-full flex items-center font-label text-label uppercase tracking-wider text-muted hover:text-ink transition-colors" href="#procurement">
+          Enterprise Direct
+        </a>
+</div>
+</div>
+</nav>
+<!-- Sub-bar / Account Breadcrumb -->
+<div class="w-full bg-panel2 border-b border-line py-2.5">
+<div class="max-w-[1440px] mx-auto px-margin flex items-center gap-2">
+<span class="font-small text-small text-faint">Storefront</span>
+<span class="material-symbols-outlined text-faint text-[14px]" data-icon="chevron_right">chevron_right</span>
+<span class="font-small text-small text-faint">Account</span>
+<span class="material-symbols-outlined text-faint text-[14px]" data-icon="chevron_right">chevron_right</span>
+<span class="font-small text-small text-ink font-medium">My orders</span>
+</div>
+</div>
+<!-- ==================== 2. MAIN CONTENT AREA ==================== -->
+<main class="flex-1 w-full max-w-[1440px] mx-auto px-margin py-8">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-3">
+<h1 class="font-title text-title font-bold text-ink">My orders</h1>
+<!-- Focal Metric / Counter Pill -->
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-accentWash text-accent font-label text-label uppercase tracking-wider font-semibold border border-accent/20">
+<span class="w-1.5 h-1.5 rounded-pill bg-accent"></span>
+            2 active orders
+          </span>
+</div>
+<p class="font-body text-body text-muted">Orders where you are the buyer — across every seller.</p>
+</div>
+<!-- Quick Action Filters -->
+<div class="flex items-center gap-2.5">
+<div class="relative">
+<select class="appearance-none bg-panel border border-controlEdge text-ink font-small text-small rounded-control pl-3 pr-8 py-2 focus:outline-none focus:ring-1 focus:ring-accent">
+<option>All Past Purchases (2026)</option>
+<option>Last 30 Days</option>
+<option>Last 6 Months</option>
+</select>
+<span class="material-symbols-outlined text-faint absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[18px]" data-icon="expand_more">expand_more</span>
+</div>
+<button class="flex items-center gap-1.5 bg-panel border border-controlEdge hover:bg-panel2 px-3 py-2 rounded-control font-small text-small text-ink font-medium transition-colors">
+<span class="material-symbols-outlined text-faint text-[18px]" data-icon="download">download</span>
+          Export CSV
+        </button>
+</div>
+</div>
+<!-- ==================== 3. ORDERS TABLE CARD ==================== -->
+<section class="bg-panel border border-line rounded-card shadow-sm overflow-hidden">
+<!-- Table Shell -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line">
+<th class="py-3 px-5 font-label text-label text-faint tracking-wider uppercase font-semibold" scope="col">
+                ORDER
+              </th>
+<th class="py-3 px-5 font-label text-label text-faint tracking-wider uppercase font-semibold" scope="col">
+                ITEM &amp; SELLER
+              </th>
+<th class="py-3 px-5 font-label text-label text-faint tracking-wider uppercase font-semibold" scope="col">
+                STATUS
+              </th>
+<th class="py-3 px-5 font-label text-label text-faint tracking-wider uppercase font-semibold" scope="col">
+                PLACED
+              </th>
+<th class="py-3 px-5 font-label text-label text-faint tracking-wider uppercase font-semibold text-right" scope="col">
+                TOTAL
+              </th>
+<th class="py-3 px-5 font-label text-label text-faint tracking-wider uppercase font-semibold text-right" scope="col">
+                ACTION
+              </th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line">
+<!-- Row 1: Order #1042 -->
+<tr class="hover:bg-panel2/60 transition-colors duration-150">
+<!-- Order ID -->
+<td class="py-4 px-5 align-middle">
+<span class="font-mono text-mono-md text-ink font-medium">#1042</span>
+</td>
+<!-- Item & Seller -->
+<td class="py-4 px-5 align-middle">
+<div class="flex items-center gap-3.5">
+<div class="w-11 h-11 rounded-control bg-panel2 border border-line overflow-hidden shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Elegantly folded pure Egyptian Nile cotton men's tailored shirt in pristine crisp white fabric, studio product photography with neutral soft shadows on an off-white background, highlighting tactile thread weave and quality craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-vwuSQiLc8MGx-ojUi_2ZJoia1ZnJrdVAd1kBM3zujldRiEsa88f9erSouKH1aAic07xeCpue6O8LEZdzxBQYH1FPDu8QvxJGOdVvJ1u_FbAvsTapsMRNZcCCa0CeZyaxG4cdo3gQ8isYSFwdYEZEYs_srVAbes56wY9rUw6Bx61NOSPAeD8yc5bCXu_AsJM44sOVchkL8aTz9qqF7ePACyt6bTITej3MXdpFeYnKmV7iwRVL7KKN8_7fx7QGpxvfdGxmR7V8QtM"/>
+</div>
+<div class="flex flex-col">
+<span class="font-body text-body font-medium text-ink hover:text-accent cursor-pointer transition-colors">
+                      Nile Cotton Shirt
+                    </span>
+<span class="font-small text-small text-muted flex items-center gap-1 mt-0.5">
+<span>Seller:</span>
+<span class="text-ink font-medium hover:underline cursor-pointer">Nile Traders</span>
+<span class="material-symbols-outlined text-ok text-[14px]" data-icon="verified" title="Verified Seller">verified</span>
+</span>
+</div>
+</div>
+</td>
+<!-- Status Pill (Warn) -->
+<td class="py-4 px-5 align-middle">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-warnWash text-warn font-label text-label uppercase tracking-wider font-semibold border border-warn/20">
+<span class="w-1.5 h-1.5 rounded-pill bg-warn"></span>
+                  Action needed
+                </span>
+</td>
+<!-- Placed Date -->
+<td class="py-4 px-5 align-middle">
+<span class="font-mono text-mono-sm text-muted">10 Oct 2026</span>
+</td>
+<!-- Total Amount -->
+<td class="py-4 px-5 align-middle text-right">
+<span class="font-mono text-mono-md text-ink font-bold">E£249.00</span>
+</td>
+<!-- Action Button -->
+<td class="py-4 px-5 align-middle text-right">
+<button class="inline-flex items-center justify-center px-4 py-1.5 rounded-control bg-panel border border-controlEdge hover:bg-panel2 hover:border-ink text-ink font-small text-small font-medium transition-all active:scale-[0.98]">
+                  Open
+                </button>
+</td>
+</tr>
+<!-- Row 2: Order #1031 -->
+<tr class="hover:bg-panel2/60 transition-colors duration-150">
+<!-- Order ID -->
+<td class="py-4 px-5 align-middle">
+<span class="font-mono text-mono-md text-ink font-medium">#1031</span>
+</td>
+<!-- Item & Seller -->
+<td class="py-4 px-5 align-middle">
+<div class="flex items-center gap-3.5">
+<div class="w-11 h-11 rounded-control bg-panel2 border border-line overflow-hidden shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Artisanal dark amber glass bottle of cold-pressed virgin Delta olive oil placed on a clean minimalist light stone surface with subtle olive branch shadows, studio high-key product composition with refined gold labeling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABSYD3ulfhgO-ND1buTFZi-M4UfLE8j97crnXOq1N7B6Mgk_WLK_ZX_HcMn260FTxf3wG6xSGXO0h1VucEPlWqM1C8t6Mz8tMNOOXiZVPBXSepTyiKiBIWltkrOCoM47Liy2EpespxD9Qy6-turA9Ceav5Oaszr8UyIAexZ6Yp6VqheIgS7Cy_HVyxhZUMylggn21oz6BZw8dnGq2px94HBYmx2uj7e--HfbfAFVnMewmBewBliABu8pM2tyHEboqFazfOkYuQiD0"/>
+</div>
+<div class="flex flex-col">
+<span class="font-body text-body font-medium text-ink hover:text-accent cursor-pointer transition-colors">
+                      Delta Olive Oil
+                    </span>
+<span class="font-small text-small text-muted flex items-center gap-1 mt-0.5">
+<span>Seller:</span>
+<span class="text-ink font-medium hover:underline cursor-pointer">Delta Goods</span>
+<span class="material-symbols-outlined text-ok text-[14px]" data-icon="verified" title="Verified Seller">verified</span>
+</span>
+</div>
+</div>
+</td>
+<!-- Status Pill (Ok) -->
+<td class="py-4 px-5 align-middle">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-pill bg-okWash text-ok font-label text-label uppercase tracking-wider font-semibold border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-pill bg-ok"></span>
+                  Completed
+                </span>
+</td>
+<!-- Placed Date -->
+<td class="py-4 px-5 align-middle">
+<span class="font-mono text-mono-sm text-muted">28 Sep 2026</span>
+</td>
+<!-- Total Amount -->
+<td class="py-4 px-5 align-middle text-right">
+<span class="font-mono text-mono-md text-ink font-bold">E£189.00</span>
+</td>
+<!-- Action Button -->
+<td class="py-4 px-5 align-middle text-right">
+<button class="inline-flex items-center justify-center px-4 py-1.5 rounded-control bg-panel border border-controlEdge hover:bg-panel2 hover:border-ink text-ink font-small text-small font-medium transition-all active:scale-[0.98]">
+                  Open
+                </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footnote Strip -->
+<div class="bg-panel2 px-5 py-3 border-t border-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+<div class="flex items-center gap-2 text-faint font-small text-small">
+<span class="material-symbols-outlined text-[16px] text-faint" data-icon="info">info</span>
+<span>
+            Scope: <code class="font-mono text-ink bg-panel px-1.5 py-0.5 rounded border border-line">buyerId = usr_892b1</code> (Mariam Buyer). Personal buyer orders across all regional artisans — independent of tenant or organization governance.
+          </span>
+</div>
+<div class="flex items-center gap-4 text-faint font-small text-small shrink-0">
+<span>Showing 2 of 2 entries</span>
+</div>
+</div>
+</section>
+<!-- Support Help Banner / Assurance Tile -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="p-4 bg-panel border border-line rounded-card flex items-start gap-3">
+<div class="w-9 h-9 rounded-control bg-accentWash text-accent flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<h4 class="font-body text-body font-semibold text-ink">Buyer Protection Escrow</h4>
+<p class="font-small text-small text-muted mt-0.5">Funds are held safely until you confirm receipt of authentic merchandise.</p>
+</div>
+</div>
+<div class="p-4 bg-panel border border-line rounded-card flex items-start gap-3">
+<div class="w-9 h-9 rounded-control bg-okWash text-ok flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+</div>
+<div>
+<h4 class="font-body text-body font-semibold text-ink">Integrated Regional Freight</h4>
+<p class="font-small text-small text-muted mt-0.5">Consolidated multi-seller parcel dispatch with live GPS milestones.</p>
+</div>
+</div>
+<div class="p-4 bg-panel border border-line rounded-card flex items-start gap-3">
+<div class="w-9 h-9 rounded-control bg-panel2 text-faint flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</div>
+<div>
+<h4 class="font-body text-body font-semibold text-ink">Dispute Mediation Desk</h4>
+<p class="font-small text-small text-muted mt-0.5">Resolution SLA guaranteed within 24 operational business hours.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- ==================== 4. FOOTER ==================== -->
+<footer class="w-full bg-panel border-t border-line mt-auto">
+<div class="max-w-[1440px] mx-auto px-margin py-8">
+<div class="flex flex-col md:flex-row items-center justify-between gap-6">
+<!-- Logo & Copyright -->
+<div class="flex items-center gap-3">
+<span class="font-title text-title font-bold text-ink tracking-tight text-[18px]">MarketCore</span>
+<span class="text-line">|</span>
+<span class="font-small text-small text-faint">
+            © 2025 MarketCore Marketplace, Inc. All rights reserved.
+          </span>
+</div>
+<!-- Footer Links -->
+<div class="flex flex-wrap items-center gap-6">
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#about">
+            About
+          </a>
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#standards">
+            Seller Standards
+          </a>
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#trust">
+            Trust &amp; Safety
+          </a>
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#api">
+            Developer API
+          </a>
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#privacy">
+            Privacy Policy
+          </a>
+<a class="font-small text-small text-faint hover:text-ink transition-colors" href="#terms">
+            Terms of Service
+          </a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

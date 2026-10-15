@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foundations — Quartz | MarketCore Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --canvas: #f6f7fb;
+      --panel: #ffffff;
+      --panel2: #f1f3f9;
+      --rail: #0b0d14;
+      --railInk: #eef1f7;
+      --railMuted: #8b93a7;
+      --ink: #0a0b12;
+      --muted: #5a6272;
+      --faint: #676e7a;
+      --line: #e6e8ef;
+      --lineStrong: #d5d9e2;
+      --controlEdge: #838b9a;
+      --accent: #4f46e5;
+      --accentInk: #ffffff;
+      --accentWash: #eef0ff;
+      --ok: #117f3a;
+      --okWash: #e8f7ee;
+      --bad: #d11b43;
+      --badWash: #fdecef;
+      --warn: #a55a05;
+      --warnWash: #fdf3e4;
+      --info: #097499;
+      --infoWash: #e0f2fe;
+    }
+
+    body {
+      background-color: var(--canvas);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-mono {
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* Strict Type Scale */
+    .text-display { font-size: 35px; line-height: 1.2; letter-spacing: -0.025em; font-weight: 700; }
+    .text-metric { font-size: 28px; line-height: 1.25; letter-spacing: -0.025em; font-weight: 700; }
+    .text-title { font-size: 25px; line-height: 1.3; letter-spacing: -0.025em; font-weight: 600; }
+    .text-body-scale { font-size: 14.5px; line-height: 1.5; }
+    .text-small-scale { font-size: 13px; line-height: 1.4; }
+    .text-label-scale { font-size: 12px; line-height: 1; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+
+    /* Focus ring contract */
+    *:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .swatch-card {
+      background-color: var(--panel);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(10, 11, 18, 0.04), 0 1px 2px rgba(10, 11, 18, 0.02);
+    }
+  </style>
+</head>
+<body class="min-h-screen py-12 px-6 sm:px-12 lg:px-20 max-w-[1440px] mx-auto">
+
+  <!-- Header & Architectural Overview -->
+  <header class="mb-14 pb-8 border-b" style="border-color: var(--line);">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+      <div class="flex items-center gap-3">
+        <span class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-[13px]" style="background-color: var(--accent);">MC</span>
+        <span class="text-label-scale text-faint tracking-wider" style="color: var(--faint);">Design System Spec · Quartz</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-1 rounded-full text-label-scale font-medium" style="background-color: var(--panel2); color: var(--muted); border: 1px solid var(--line);">Route: /design/foundations</span>
+        <span class="px-2.5 py-1 rounded-full text-label-scale font-medium" style="background-color: var(--okWash); color: var(--ok); border: 1px solid rgba(17,127,58,0.2);">WCAG 4.5:1 Verified</span>
+      </div>
+    </div>
+
+    <h1 class="text-display mb-4" style="color: var(--ink);">Foundations — Quartz</h1>
+    <p class="max-w-4xl text-body-scale leading-relaxed" style="color: var(--muted);">
+      MarketCore UI resolves into four deterministic layers: <strong style="color: var(--ink);">palette → semantic → components → screens</strong>. 
+      A component names an architectural <strong style="color: var(--ink);">role</strong> (<code class="font-mono text-small-scale px-1 py-0.5 rounded" style="background-color: var(--panel2); color: var(--accent);">var(--accent)</code>), never a hardcoded hue. Repointing token roles enables multi-theme parity between Light (Quartz) and Dark (Graphite) across both the Seller Console (252px tenant rail) and Buyer Storefront (no rail) without structural drift.
+    </p>
+  </header>
+
+  <!-- Section 1: Swatch Groups -->
+  <section class="mb-14">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="text-title" style="color: var(--ink);">1. Color Tokens & Contrast Contract</h2>
+      <span class="text-small-scale font-mono" style="color: var(--faint);">All ground pairs ≥ 4.5:1 · Controls ≥ 3:1</span>
+    </div>
+
+    <!-- Group: Surface -->
+    <div class="mb-8">
+      <div class="text-label-scale mb-3" style="color: var(--faint);">Surface Architecture</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Canvas -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full border-b" style="background-color: #f6f7fb; border-color: var(--line);"></div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--canvas</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">App background grounding</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#f6f7fb</div>
+          </div>
+        </div>
+        <!-- Panel -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full border-b" style="background-color: #ffffff; border-color: var(--line);"></div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--panel</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Cards, bars, raised planes</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#ffffff</div>
+          </div>
+        </div>
+        <!-- Panel2 -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full border-b" style="background-color: #f1f3f9; border-color: var(--line);"></div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--panel2</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Inset wells, table headers</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#f1f3f9</div>
+          </div>
+        </div>
+        <!-- Rail -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full border-b" style="background-color: #0b0d14; border-color: var(--line);"></div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--rail</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Seller console rail only</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#0b0d14</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group: Text -->
+    <div class="mb-8">
+      <div class="text-label-scale mb-3" style="color: var(--faint);">Text & Semantic Focus</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Ink -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center font-bold text-white text-metric" style="background-color: #0a0b12;">Aa</div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--ink</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Primary readable copy (18.3:1)</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#0a0b12</div>
+          </div>
+        </div>
+        <!-- Muted -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center font-bold text-white text-metric" style="background-color: #5a6272;">Aa</div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--muted</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Secondary copy (6.13:1)</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#5a6272</div>
+          </div>
+        </div>
+        <!-- Faint -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center font-bold text-white text-metric" style="background-color: #676e7a;">Aa</div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--faint</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Uppercase labels & table heads (5.1:1)</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#676e7a</div>
+          </div>
+        </div>
+        <!-- Accent -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center font-bold text-white text-metric" style="background-color: #4f46e5;">Aa</div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--accent</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">The one interactive focus (6.29:1)</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#4f46e5</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group: Edge -->
+    <div class="mb-8">
+      <div class="text-label-scale mb-3" style="color: var(--faint);">Edge & Boundaries</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Line -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center" style="background-color: var(--panel2);">
+            <div class="w-3/4 h-[1px]" style="background-color: #e6e8ef;"></div>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--line</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Hairline structural divider</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#e6e8ef</div>
+          </div>
+        </div>
+        <!-- LineStrong -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center" style="background-color: var(--panel2);">
+            <div class="w-3/4 h-[2px]" style="background-color: #d5d9e2;"></div>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--lineStrong</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Decorative border emphasis</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#d5d9e2</div>
+          </div>
+        </div>
+        <!-- ControlEdge -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center" style="background-color: var(--panel2);">
+            <div class="w-32 h-9 rounded bg-white border" style="border-color: #838b9a;"></div>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-small-scale font-semibold" style="color: var(--ink);">--controlEdge</span>
+              <span class="text-label-scale font-mono px-1.5 py-0.5 rounded" style="background-color: var(--panel2); color: var(--ok);">3:1 PASS</span>
+            </div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Control boundary · inputs & buttons</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#838b9a</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group: State -->
+    <div>
+      <div class="text-label-scale mb-3" style="color: var(--faint);">Semantic States</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- OK -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center gap-2" style="background-color: #e8f7ee; color: #117f3a;">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: #117f3a;"></span>
+            <span class="text-small-scale font-semibold">Active · 4.60:1</span>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--ok / --okWash</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Healthy, paid, in stock</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#117f3a / #e8f7ee</div>
+          </div>
+        </div>
+        <!-- Bad -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center gap-2" style="background-color: #fdecef; color: #d11b43;">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: #d11b43;"></span>
+            <span class="text-small-scale font-semibold">Failed · 4.66:1</span>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--bad / --badWash</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Failed, refunded, out of stock</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#d11b43 / #fdecef</div>
+          </div>
+        </div>
+        <!-- Warn -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center gap-2" style="background-color: #fdf3e4; color: #a55a05;">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: #a55a05;"></span>
+            <span class="text-small-scale font-semibold">Warning · 4.70:1</span>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--warn / --warnWash</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Needs attention, low stock</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#a55a05 / #fdf3e4</div>
+          </div>
+        </div>
+        <!-- Info -->
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center gap-2" style="background-color: #e0f2fe; color: #097499;">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: #097499;"></span>
+            <span class="text-small-scale font-semibold">Neutral · 4.77:1</span>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--info / --infoWash</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Informational, data series</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#097499 / #e0f2fe</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Strict Type Specimens -->
+  <section class="mb-14">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="text-title" style="color: var(--ink);">2. Strict Type Hierarchy</h2>
+      <span class="text-small-scale font-mono" style="color: var(--faint);">Floor is 12px · Exact steps</span>
+    </div>
+
+    <div class="bg-white rounded-xl border overflow-hidden p-6 lg:p-8" style="border-color: var(--line);">
+      <div class="divide-y" style="border-color: var(--line);">
+
+        <!-- Display (35px) -->
+        <div class="py-5 first:pt-0 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Display · 35px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Sans Bold / -0.025em</div>
+          </div>
+          <div class="grow text-display" style="color: var(--ink);">
+            Everything from every seller, one checkout
+          </div>
+        </div>
+
+        <!-- Metric (28px) -->
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Metric · 28px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Mono Bold</div>
+          </div>
+          <div class="grow text-metric font-mono" style="color: var(--ink);">
+            E£48,290.00 <span class="text-body-scale font-sans font-normal" style="color: var(--ok);">+14.2% QoQ</span>
+          </div>
+        </div>
+
+        <!-- Title (25px) -->
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Title · 25px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Sans SemiBold</div>
+          </div>
+          <div class="grow text-title" style="color: var(--ink);">
+            Nile Cotton Shirt — Artisan Inventory
+          </div>
+        </div>
+
+        <!-- Body (14.5px) -->
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Body · 14.5px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Sans Regular / 1.5lh</div>
+          </div>
+          <div class="grow text-body-scale max-w-2xl" style="color: var(--muted);">
+            A timeless bespoke button-down tailored from breathable, single-origin Egyptian cotton. Cut with clean lines and finished with mother-of-pearl buttons for daily durability.
+          </div>
+        </div>
+
+        <!-- Small (13px) -->
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Small · 13px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Sans Regular</div>
+          </div>
+          <div class="grow text-small-scale" style="color: var(--muted);">
+            Dispatched via Aramex Express · Guaranteed settlement within 24h of merchant verification.
+          </div>
+        </div>
+
+        <!-- Label (12px uppercase) -->
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Label · 12px Floor</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">Uppercase · 0.05em track</div>
+          </div>
+          <div class="grow text-label-scale" style="color: var(--faint);">
+            ORGANIZATION TENANT BOUNDARY: ORG_892B1
+          </div>
+        </div>
+
+        <!-- Mono Specimen -->
+        <div class="py-5 last:pb-0 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Monospace Specimen</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Mono tabular align</div>
+          </div>
+          <div class="grow flex flex-wrap gap-6 font-mono text-small-scale">
+            <span class="px-2.5 py-1 rounded" style="background-color: var(--panel2); color: var(--ink);">SKU: NLE-CTN-ECR-M</span>
+            <span class="px-2.5 py-1 rounded" style="background-color: var(--panel2); color: var(--ink);">REQ: req_01j7x9k2</span>
+            <span class="px-2.5 py-1 rounded font-semibold" style="background-color: var(--panel2); color: var(--accent);">PRICE: E£249.00</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Core Components -->
+  <section class="mb-14">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="text-title" style="color: var(--ink);">3. Component Library</h2>
+      <span class="text-small-scale font-mono" style="color: var(--faint);">Standardized Radii: 12px Card / 8px Control / 999px Pill</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Buttons & Inputs -->
+      <div class="bg-white rounded-xl border p-6 flex flex-col justify-between" style="border-color: var(--line);">
+        <div>
+          <div class="text-label-scale mb-4" style="color: var(--faint);">Interactive Controls</div>
+          <div class="space-y-4">
+            <!-- Buttons Row -->
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- Primary -->
+              <button class="h-9 px-4 rounded-lg font-medium text-body-scale transition-opacity hover:opacity-90 active:scale-[0.98]" style="background-color: var(--accent); color: var(--accentInk); border-radius: 8px;">
+                Primary action
+              </button>
+              <!-- Secondary -->
+              <button class="h-9 px-4 rounded-lg font-medium text-body-scale border transition-colors hover:bg-slate-50" style="background-color: var(--panel); border-color: var(--controlEdge); color: var(--ink); border-radius: 8px;">
+                Secondary control
+              </button>
+              <!-- Quiet -->
+              <button class="h-9 px-3 rounded-lg font-medium text-body-scale transition-colors hover:underline" style="color: var(--accent);">
+                Quiet action →
+              </button>
+            </div>
+
+            <!-- Form Field -->
+            <div class="pt-3">
+              <label class="block text-label-scale mb-1.5" style="color: var(--ink);">
+                ORGANIZATION SLUG <span style="color: var(--bad);">*</span>
+              </label>
+              <div class="relative">
+                <input type="text" value="nile-traders" class="w-full h-10 px-3 rounded-lg border font-mono text-body-scale" style="border-color: var(--controlEdge); border-radius: 8px; color: var(--ink); background-color: var(--panel);" readonly>
+              </div>
+              <span class="block mt-1 text-small-scale" style="color: var(--faint);">Must be lowercase alphanumeric and match tenant registry.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 mt-6 border-t text-small-scale font-mono" style="border-color: var(--line); color: var(--faint);">
+          Rule: Exactly one primary accent button per major screen region.
+        </div>
+      </div>
+
+      <!-- Status Pills & Delta Chips -->
+      <div class="bg-white rounded-xl border p-6 flex flex-col justify-between" style="border-color: var(--line);">
+        <div>
+          <div class="text-label-scale mb-4" style="color: var(--faint);">Status Indicators & Chips</div>
+          <div class="space-y-4">
+            
+            <!-- Pills -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-small-scale font-medium" style="background-color: var(--okWash); color: var(--ok);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--ok);"></span> Paid
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-small-scale font-medium" style="background-color: var(--warnWash); color: var(--warn);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--warn);"></span> Low stock
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-small-scale font-medium" style="background-color: var(--badWash); color: var(--bad);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--bad);"></span> Refunded
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-small-scale font-medium" style="background-color: var(--infoWash); color: var(--info);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--info);"></span> Processing
+              </span>
+            </div>
+
+            <!-- Delta Chips -->
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-small-scale font-mono font-medium" style="background-color: var(--okWash); color: var(--ok);">
+                ↑ +18.4%
+              </span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-small-scale font-mono font-medium" style="background-color: var(--badWash); color: var(--bad);">
+                ↓ -6.2%
+              </span>
+              <span class="text-small-scale" style="color: var(--muted);">Paired strictly with explanatory label</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 mt-6 border-t text-small-scale font-mono" style="border-color: var(--line); color: var(--faint);">
+          Rule: Never color alone. A status is always a glyph/dot AND a word.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Section 4: Data Motifs & Visualizations -->
+  <section class="mb-14">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="text-title" style="color: var(--ink);">4. Data Motifs</h2>
+      <span class="text-small-scale font-mono" style="color: var(--faint);">Proportional Share Bars & Ambient Sparklines</span>
+    </div>
+
+    <div class="bg-white rounded-xl border p-6 lg:p-8" style="border-color: var(--line);">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+
+        <!-- Share Bars -->
+        <div class="space-y-4">
+          <div class="text-label-scale" style="color: var(--faint);">Share Bars (6px Fixed Track)</div>
+
+          <!-- 85% -->
+          <div>
+            <div class="flex justify-between text-small-scale mb-1">
+              <span style="color: var(--ink);">Nile Cotton Shirt</span>
+              <span class="font-mono font-semibold" style="color: var(--ink);">85%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--panel2);">
+              <div class="h-full rounded-full" style="width: 85%; background-color: var(--accent);"></div>
+            </div>
+          </div>
+
+          <!-- 45% -->
+          <div>
+            <div class="flex justify-between text-small-scale mb-1">
+              <span style="color: var(--ink);">Giza Sheet Set</span>
+              <span class="font-mono font-semibold" style="color: var(--ink);">45%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--panel2);">
+              <div class="h-full rounded-full" style="width: 45%; background-color: var(--info);"></div>
+            </div>
+          </div>
+
+          <!-- 12% -->
+          <div>
+            <div class="flex justify-between text-small-scale mb-1">
+              <span style="color: var(--ink);">Delta Olive Oil</span>
+              <span class="font-mono font-semibold" style="color: var(--ink);">12%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--panel2);">
+              <div class="h-full rounded-full" style="width: 12%; background-color: var(--warn);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sparkline -->
+        <div class="p-6 rounded-lg border flex flex-col justify-between" style="background-color: var(--panel2); border-color: var(--line);">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-label-scale" style="color: var(--faint);">Ambient Sales Velocity</span>
+            <span class="text-small-scale font-mono font-semibold" style="color: var(--ok);">+24.1% 30d</span>
+          </div>
+
+          <div class="py-2">
+            <!-- Inline SVG Sparkline -->
+            <svg class="w-full h-16 overflow-visible" viewBox="0 0 300 60" fill="none" preserveAspectRatio="none">
+              <path d="M 0 50 Q 30 45, 60 48 T 120 30 T 180 35 T 240 18 T 300 8" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path d="M 0 50 Q 30 45, 60 48 T 120 30 T 180 35 T 240 18 T 300 8 L 300 60 L 0 60 Z" fill="rgba(79, 70, 229, 0.08)"/>
+            </svg>
+          </div>
+
+          <div class="flex justify-between items-center pt-2 text-small-scale font-mono" style="color: var(--faint);">
+            <span>01 Oct</span>
+            <span>15 Oct</span>
+            <span>30 Oct</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Architectural Footer -->
+  <footer class="pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-small-scale font-mono" style="border-color: var(--line); color: var(--faint);">
+    <div>MarketCore UI Foundation Specifications · Standard Viewport 1440px</div>
+    <div>Strict Typographic Floor: 12px · Pass Rate: 100% WCAG AA</div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore — Payouts Console (Nile Traders)</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#fcf8ff",
+            "secondary-container": "#e3e1ec",
+            "muted": "#5a6272",
+            "primary-fixed-dim": "#c3c0ff",
+            "on-tertiary-fixed": "#351000",
+            "okWash": "#e8f7ee",
+            "accentWash": "#eef0ff",
+            "surface-container-low": "#f5f2ff",
+            "surface": "#fcf8ff",
+            "on-secondary-fixed-variant": "#46464f",
+            "panel": "#ffffff",
+            "on-surface-variant": "#464555",
+            "surface-container-lowest": "#ffffff",
+            "error": "#ba1a1a",
+            "on-error-container": "#93000a",
+            "faint": "#676e7a",
+            "inverse-surface": "#302f39",
+            "controlEdge": "#838b9a",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-tertiary": "#ffffff",
+            "on-surface": "#1b1b24",
+            "primary-container": "#4f46e5",
+            "railMuted": "#8b93a7",
+            "accentInk": "#ffffff",
+            "accent": "#4f46e5",
+            "surface-container-highest": "#e4e1ee",
+            "surface-tint": "#4d44e3",
+            "on-primary-fixed": "#0f0069",
+            "surface-container-high": "#eae6f4",
+            "primary-fixed": "#e2dfff",
+            "secondary": "#5d5e67",
+            "tertiary": "#7e3000",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-secondary": "#ffffff",
+            "inverse-on-surface": "#f3effc",
+            "railInk": "#eef1f7",
+            "ink": "#0a0b12",
+            "surface-dim": "#dcd8e5",
+            "outline": "#777587",
+            "inverse-primary": "#c3c0ff",
+            "surface-variant": "#e4e1ee",
+            "panel2": "#f1f3f9",
+            "info": "#097499",
+            "secondary-fixed": "#e3e1ec",
+            "on-secondary-fixed": "#1a1b23",
+            "ok": "#117f3a",
+            "lineStrong": "#d5d9e2",
+            "badWash": "#fdecef",
+            "secondary-fixed-dim": "#c7c5d0",
+            "line": "#e6e8ef",
+            "on-secondary-container": "#64646d",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#a44100",
+            "surface-container": "#f0ecf9",
+            "surface-bright": "#fcf8ff",
+            "warnWash": "#fdf3e4",
+            "bad": "#d11b43",
+            "on-background": "#1b1b24",
+            "canvas": "#f6f7fb",
+            "on-error": "#ffffff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "primary": "#3525cd",
+            "error-container": "#ffdad6",
+            "on-primary-container": "#dad7ff",
+            "tertiary-fixed": "#ffdbcc",
+            "rail": "#0b0d14",
+            "warn": "#a55a05",
+            "outline-variant": "#c7c4d8",
+            "on-tertiary-container": "#ffd2be"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xl": "22px",
+            "space-md": "10px",
+            "margin": "20px",
+            "space-xs": "4px",
+            "gutter": "16px",
+            "space-sm": "6px",
+            "space-xxl": "26px",
+            "space-lg": "16px"
+          },
+          "fontFamily": {
+            "metric": ["DM Sans"],
+            "body": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "label": ["DM Sans"],
+            "title": ["DM Sans"],
+            "display": ["DM Sans"],
+            "small": ["DM Sans"]
+          },
+          "fontSize": {
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body text-body antialiased min-h-screen flex flex-col selection:bg-accentWash selection:text-primary">
+<!-- ========================================================================= -->
+<!-- SIDE NAV RAIL (Immutable Anchor Component: 252px, fixed)                 -->
+<!-- ========================================================================= -->
+<aside aria-label="Main Navigation" class="fixed top-0 bottom-0 left-0 w-[252px] z-40 flex flex-col justify-between bg-rail border-r border-lineStrong flat no shadows">
+<div class="p-space-md flex flex-col gap-y-4">
+<!-- Brand & Store Switcher Header -->
+<div class="px-space-sm pt-space-xs pb-space-sm border-b border-lineStrong/20">
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 rounded-lg bg-accent/20 border border-accent/40 flex items-center justify-center text-accentInk">
+<span class="material-symbols-outlined text-[18px]" data-icon="storefront">storefront</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-title text-body font-semibold text-railInk truncate leading-tight">Nile Traders</span>
+<span class="font-label text-label text-railMuted truncate">Enterprise Seller</span>
+</div>
+</div>
+<!-- Store Switcher CTA -->
+<button class="mt-3 w-full flex items-center justify-between px-space-md py-1.5 bg-panel2/10 hover:bg-panel2/20 text-railInk rounded-lg text-label font-medium transition-colors duration-150">
+<span class="truncate">Store Switcher</span>
+<span class="material-symbols-outlined text-label text-railMuted" data-icon="unfold_more">unfold_more</span>
+</button>
+</div>
+<!-- Quick Search input within Rail -->
+<div class="px-space-xs">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2.5 text-railMuted text-[16px]" data-icon="search">search</span>
+<input class="w-full bg-panel2/5 border border-lineStrong/30 rounded-lg pl-8 pr-2.5 py-1 text-label text-railInk placeholder-railMuted focus:outline-none focus:border-accent" placeholder="Jump to..." type="text"/>
+</div>
+</div>
+<!-- Primary Rail Navigation (Active Tab: Money -> Payouts) -->
+<nav class="flex flex-col gap-0.5">
+<!-- Overview -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150 font-body text-body font-normal" href="#overview">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Catalog -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150 font-body text-body font-normal" href="#catalog">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">inventory_2</span>
+<span>Catalog</span>
+</a>
+<!-- Money Accordion / Active Section -->
+<div class="flex flex-col">
+<a class="flex items-center justify-between px-space-md py-space-sm bg-accent text-accentInk rounded-lg font-medium transition-colors duration-150 font-body text-body" href="#money">
+<div class="flex items-center gap-space-md">
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+<span>Money</span>
+</div>
+<span class="material-symbols-outlined text-[16px]" data-icon="expand_more">expand_more</span>
+</a>
+<!-- Sub-navigation under Money -->
+<div class="pl-7 pr-2 py-1 flex flex-col gap-1 mt-0.5 border-l border-accent/40 ml-4">
+<a class="px-2 py-1 rounded text-label text-railMuted hover:text-railInk transition-colors" href="#overview-money">Balance summary</a>
+<a class="px-2 py-1 rounded text-label font-semibold text-accentWash bg-accent/20 transition-colors flex items-center justify-between" href="#payouts">
+<span>Payouts</span>
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+</a>
+<a class="px-2 py-1 rounded text-label text-railMuted hover:text-railInk transition-colors" href="#transactions">Settlements</a>
+<a class="px-2 py-1 rounded text-label text-railMuted hover:text-railInk transition-colors" href="#statements">Tax &amp; Invoices</a>
+</div>
+</div>
+<!-- Admin -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-panel2/10 rounded-lg transition-colors duration-150 font-body text-body font-normal" href="#admin">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span>Admin</span>
+</a>
+</nav>
+</div>
+<!-- Footer Utility Links inside Rail -->
+<div class="p-space-md border-t border-lineStrong/20 flex flex-col gap-1">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 font-label text-label" href="#docs">
+<span class="material-symbols-outlined text-[18px]" data-icon="menu_book">menu_book</span>
+<span>Documentation</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 font-label text-label" href="#support">
+<span class="material-symbols-outlined text-[18px]" data-icon="headset_mic">headset_mic</span>
+<span>Support</span>
+</a>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- TOP NAV BAR (Immutable Anchor Component: Header 64px)                    -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-[252px] right-0 h-16 z-30 bg-panel border-b border-line flat no shadows flex items-center justify-between px-space-xl">
+<!-- Breadcrumb & Product Reference -->
+<div class="flex items-center gap-3">
+<span class="font-title text-label font-bold text-ink">MarketCore</span>
+<span class="text-faint text-label font-normal">/</span>
+<span class="font-label text-label text-muted font-normal hover:text-ink cursor-pointer">Money</span>
+<span class="text-faint text-label font-normal">/</span>
+<span class="font-label text-label text-ink font-semibold">Payouts</span>
+</div>
+<!-- Center/Left Global Search Bar -->
+<div class="flex-1 max-w-md mx-6">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-muted text-[18px]" data-icon="search">search</span>
+<input class="w-full bg-panel2 border border-line rounded-lg pl-9 pr-3 py-1.5 text-small text-ink placeholder-muted focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-all duration-150" placeholder="Search payouts by ID, amount, reference..." type="text"/>
+</div>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-space-md">
+<a class="flex items-center gap-1.5 px-2.5 py-1 text-muted hover:text-ink text-small font-medium transition-colors" href="#docs">
+<span class="material-symbols-outlined text-[18px]" data-icon="help">help</span>
+<span>Docs</span>
+</a>
+<button class="relative p-1.5 text-muted hover:text-ink rounded-lg transition-colors" title="Notifications">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-bad"></span>
+</button>
+<!-- Merchant Profile Avatar -->
+<div class="flex items-center gap-2 pl-2 border-l border-line ml-1">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/60 flex items-center justify-center text-ink font-mono text-small font-semibold">
+          NT
+        </div>
+<div class="hidden xl:flex flex-col text-left">
+<span class="text-label font-medium text-ink leading-none">Amir S.</span>
+<span class="text-[11px] text-faint leading-none mt-1">Finance Lead</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT CANVAS                                                      -->
+<!-- ========================================================================= -->
+<main class="ml-[252px] mt-16 p-6 flex-1 flex flex-col">
+<div class="max-w-7xl w-full mx-auto flex-1 flex flex-col">
+<!-- PAGE HEADER -->
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-2">
+<div>
+<h1 class="font-title text-title font-semibold tracking-tight text-ink">Payouts</h1>
+<div class="flex items-center gap-2 mt-1">
+<span class="font-mono text-small font-medium text-muted bg-panel2 px-2.5 py-1 rounded-[6px] border border-line">
+              INV-8 — a payout is executed at most once
+            </span>
+<span class="inline-flex items-center gap-1 text-small text-ok font-medium">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified_user">verified_user</span>
+              State Guard Armed
+            </span>
+</div>
+</div>
+<!-- Top Right Action -->
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-3 py-2 bg-panel border border-controlEdge text-ink font-label text-label font-medium rounded-lg hover:bg-panel2 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="tune">tune</span>
+<span>Payout Settings</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-accent text-accentInk font-label text-label font-medium rounded-[8px] shadow-sm hover:bg-primary transition-all duration-150">
+<span class="material-symbols-outlined text-[18px]" data-icon="add_circle">add_circle</span>
+<span>Request payout</span>
+</button>
+</div>
+</section>
+<!-- 4 KPI CARDS ROW -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<!-- Card 1: Available Balance -->
+<div class="rounded-[12px] border border-line bg-panel p-4 flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase tracking-wider text-faint font-medium">AVAILABLE BALANCE</span>
+<span class="material-symbols-outlined text-muted text-[18px]" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+<div>
+<div class="font-mono text-metric font-bold text-ink tracking-tight">E£6,150.00</div>
+<div class="font-small text-small text-ok font-medium mt-1 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-ok inline-block"></span>
+              Withdrawable now to linked bank
+            </div>
+</div>
+</div>
+<!-- Card 2: Pending Settlement -->
+<div class="rounded-[12px] border border-line bg-panel p-4 flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase tracking-wider text-faint font-medium">PENDING SETTLEMENT</span>
+<span class="material-symbols-outlined text-muted text-[18px]" data-icon="hourglass_top">hourglass_top</span>
+</div>
+<div>
+<div class="font-mono text-metric font-bold text-ink tracking-tight">E£1,824.00</div>
+<div class="font-small text-small text-muted font-normal mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-faint" data-icon="schedule">schedule</span>
+              Clears in 2 business days
+            </div>
+</div>
+</div>
+<!-- Card 3: Paid Out All Time + Trend Curve Sparkline -->
+<div class="rounded-[12px] border border-line bg-panel p-4 flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase tracking-wider text-faint font-medium">PAID OUT · ALL TIME</span>
+<span class="material-symbols-outlined text-muted text-[18px]" data-icon="trending_up">trending_up</span>
+</div>
+<div class="flex items-baseline justify-between gap-2">
+<div>
+<div class="font-mono text-metric font-bold text-ink tracking-tight">E£34,870.00</div>
+<div class="font-small text-small text-faint font-normal mt-1">Across 18 cycles</div>
+</div>
+<!-- Clean SVG Sparkline -->
+<div class="w-20 h-10 flex-shrink-0">
+<svg class="w-full h-full overflow-visible" fill="none" viewbox="0 0 80 40">
+<path d="M 2 35 C 15 32, 25 24, 40 20 C 55 16, 65 10, 78 4" stroke="#4f46e5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+<path d="M 2 35 C 15 32, 25 24, 40 20 C 55 16, 65 10, 78 4 L 78 40 L 2 40 Z" fill="url(#sparkline-grad)" opacity="0.15"></path>
+<defs>
+<lineargradient id="sparkline-grad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#4f46e5"></stop>
+<stop offset="100%" stop-color="#4f46e5" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</div>
+</div>
+<!-- Card 4: Failed Payouts -->
+<div class="rounded-[12px] border border-line bg-panel p-4 flex flex-col justify-between shadow-xs">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase tracking-wider text-faint font-medium">FAILED PAYOUTS</span>
+<span class="material-symbols-outlined text-bad text-[18px]" data-icon="error">error</span>
+</div>
+<div>
+<div class="font-mono text-metric font-bold text-bad tracking-tight">1</div>
+<div class="font-small text-small text-bad font-medium mt-1 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-bad inline-block"></span>
+              PO-0030 needs a retry
+            </div>
+</div>
+</div>
+</section>
+<!-- PAYOUT HISTORY TABLE CARD -->
+<section class="rounded-[12px] border border-line bg-panel overflow-hidden shadow-xs flex-1 flex flex-col">
+<!-- Card Header -->
+<div class="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-line bg-panel">
+<div class="flex items-center gap-2">
+<h2 class="font-title text-[18px] font-semibold text-ink">Payout history</h2>
+<span class="font-mono text-label text-muted bg-panel2 px-2 py-0.5 rounded border border-line">
+              3 transactions
+            </span>
+</div>
+<!-- Table Filters & Actions -->
+<div class="flex items-center gap-2">
+<div class="flex items-center border border-line rounded-lg overflow-hidden bg-panel">
+<button class="px-2.5 py-1 text-label font-medium bg-accent text-accentInk">All</button>
+<button class="px-2.5 py-1 text-label font-medium text-muted hover:text-ink hover:bg-panel2 border-l border-line">Paid</button>
+<button class="px-2.5 py-1 text-label font-medium text-muted hover:text-ink hover:bg-panel2 border-l border-line">Processing</button>
+<button class="px-2.5 py-1 text-label font-medium text-muted hover:text-ink hover:bg-panel2 border-l border-line">Failed</button>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 text-label font-medium text-muted border border-controlEdge rounded-lg hover:bg-panel2 hover:text-ink transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="download">download</span>
+<span>Export CSV</span>
+</button>
+</div>
+</div>
+<!-- Table Responsive Container -->
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 text-[12px] font-label font-medium text-faint tracking-wider border-b border-line">
+<th class="py-3 px-4 uppercase">PAYOUT ID</th>
+<th class="py-3 px-4 uppercase text-right">AMOUNT</th>
+<th class="py-3 px-4 uppercase">STATUS</th>
+<th class="py-3 px-4 uppercase">PROVIDER REF</th>
+<th class="py-3 px-4 uppercase">REQUESTED</th>
+<th class="py-3 px-4 uppercase text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line text-body">
+<!-- Row 1: Paid -->
+<tr class="hover:bg-panel2 transition-colors duration-150">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-mono text-mono font-medium text-ink">PO-0031</span>
+<button class="text-faint hover:text-ink" title="Copy ID">
+<span class="material-symbols-outlined text-[14px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-semibold text-ink">E£2,241.00</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-okWash text-ok text-label font-medium border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                    PAID
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-mono text-small text-muted">po_tr_89210941</span>
+</td>
+<td class="py-3.5 px-4 font-small text-small text-muted">
+                  04 Oct 2026, 11:20
+                </td>
+<td class="py-3.5 px-4 text-right">
+<button class="text-accent hover:text-primary font-small font-medium text-small hover:underline">
+                    Receipt
+                  </button>
+</td>
+</tr>
+<!-- Row 2: Processing -->
+<tr class="hover:bg-panel2 transition-colors duration-150">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-mono text-mono font-medium text-ink">PO-0032</span>
+<button class="text-faint hover:text-ink" title="Copy ID">
+<span class="material-symbols-outlined text-[14px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-semibold text-ink">E£6,150.00</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-warnWash text-warn text-label font-medium border border-warn/20">
+<span class="w-1.5 h-1.5 rounded-full bg-warn animate-pulse"></span>
+                    PROCESSING
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<span class="font-mono text-small text-muted">po_tr_89210998</span>
+</td>
+<td class="py-3.5 px-4 font-small text-small text-muted">
+                  Today, 09:15
+                </td>
+<td class="py-3.5 px-4 text-right">
+<button class="text-accent hover:text-primary font-small font-medium text-small hover:underline">
+                    Track
+                  </button>
+</td>
+</tr>
+<!-- Row 3: Failed -->
+<tr class="hover:bg-panel2 transition-colors duration-150 bg-badWash/10">
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="font-mono text-mono font-medium text-ink">PO-0030</span>
+<button class="text-faint hover:text-ink" title="Copy ID">
+<span class="material-symbols-outlined text-[14px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-semibold text-ink">E£980.00</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-badWash text-bad text-label font-medium border border-bad/20">
+<span class="w-1.5 h-1.5 rounded-full bg-bad"></span>
+                    FAILED
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col">
+<span class="font-mono text-small text-muted">po_tr_89210812</span>
+<span class="text-[11px] text-bad font-medium">Reason: IBAN mismatch</span>
+</div>
+</td>
+<td class="py-3.5 px-4 font-small text-small text-muted">
+                  28 Sep 2026, 16:40
+                </td>
+<td class="py-3.5 px-4 text-right">
+<button class="px-2.5 py-1 text-label font-medium bg-bad text-panel rounded hover:bg-error transition-colors">
+                    Retry Payout
+                  </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- TABLE FOOTER / SYSTEM GUARD (INV-8) -->
+<div class="p-4 bg-panel2/60 border-t border-line text-small text-muted flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+<div class="flex items-start gap-2.5 max-w-3xl">
+<span class="material-symbols-outlined text-accent text-[20px] flex-shrink-0 mt-0.5" data-icon="verified_user">verified_user</span>
+<p class="font-body text-small leading-relaxed">
+<span class="font-semibold text-ink">System Guard (INV-8):</span> Two worker nodes may race one payout request. The idempotent database state predicate, not the worker, is the guard preventing double execution.
+            </p>
+</div>
+<div class="flex items-center gap-2 bg-panel px-3 py-1.5 rounded-lg border border-line text-ink font-mono text-small whitespace-nowrap self-end md:self-auto">
+<span class="material-symbols-outlined text-[16px] text-ok" data-icon="account_balance">account_balance</span>
+<span>Linked Account: CIB Egypt ····· 4019</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- FOOTER (Immutable Anchor Component: ml-[252px] standard)                 -->
+<!-- ========================================================================= -->
+<footer class="ml-[252px] w-[calc(100%-252px)] bg-panel border-t border-line flat no shadows flex flex-col sm:flex-row justify-between items-center px-space-xl py-space-lg text-small font-small">
+<div class="text-faint">
+      © 2025 MarketCore Technologies Inc. Nile Traders Enterprise Console. All rights reserved.
+    </div>
+<div class="flex items-center gap-space-lg mt-2 sm:mt-0">
+<a class="text-faint hover:text-ink transition-colors" href="#tos">Terms of Service</a>
+<a class="text-faint hover:text-ink transition-colors" href="#privacy">Privacy Policy</a>
+<a class="text-faint hover:text-ink transition-colors" href="#security">Security Compliance</a>
+<a class="text-accent hover:text-primary font-medium transition-colors" href="#api">API Reference</a>
+</div>
+</footer>
+</body></html>

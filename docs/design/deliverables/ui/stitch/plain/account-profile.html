@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore — Account — Profile &amp; security</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-surface": "#302f39",
+            "primary-container": "#4f46e5",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#e2dfff",
+            "on-secondary-fixed-variant": "#46464f",
+            "on-background": "#1b1b24",
+            "ok": "#117f3a",
+            "on-primary-container": "#dad7ff",
+            "inverse-primary": "#c3c0ff",
+            "rail": "#0b0d14",
+            "on-tertiary-container": "#ffd2be",
+            "primary-fixed-dim": "#c3c0ff",
+            "line": "#e6e8ef",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "on-tertiary": "#ffffff",
+            "surface-container": "#f0ecf9",
+            "outline-variant": "#c7c4d8",
+            "on-secondary-fixed": "#1a1b23",
+            "accentInk": "#ffffff",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-primary": "#ffffff",
+            "surface-dim": "#dcd8e5",
+            "on-surface": "#1b1b24",
+            "panel2": "#f1f3f9",
+            "warnWash": "#fdf3e4",
+            "info": "#097499",
+            "on-tertiary-fixed": "#351000",
+            "surface-bright": "#fcf8ff",
+            "warn": "#a55a05",
+            "secondary-fixed-dim": "#c7c5d0",
+            "railMuted": "#8b93a7",
+            "background": "#fcf8ff",
+            "primary": "#3525cd",
+            "badWash": "#fdecef",
+            "secondary-container": "#e3e1ec",
+            "surface-variant": "#e4e1ee",
+            "surface-container-highest": "#e4e1ee",
+            "panel": "#ffffff",
+            "accentWash": "#eef0ff",
+            "bad": "#d11b43",
+            "secondary-fixed": "#e3e1ec",
+            "tertiary-fixed": "#ffdbcc",
+            "surface-container-low": "#f5f2ff",
+            "error": "#ba1a1a",
+            "controlEdge": "#838b9a",
+            "on-secondary": "#ffffff",
+            "canvas": "#f6f7fb",
+            "faint": "#676e7a",
+            "on-surface-variant": "#464555",
+            "okWash": "#e8f7ee",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-secondary-container": "#64646d",
+            "surface-tint": "#4d44e3",
+            "on-error": "#ffffff",
+            "surface-container-high": "#eae6f4",
+            "lineStrong": "#d5d9e2",
+            "tertiary-container": "#a44100",
+            "secondary": "#5d5e67",
+            "railInk": "#eef1f7",
+            "accent": "#4f46e5",
+            "inverse-on-surface": "#f3effc",
+            "on-primary-fixed": "#0f0069",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "surface-container-lowest": "#ffffff",
+            "muted": "#5a6272",
+            "tertiary": "#7e3000",
+            "outline": "#777587",
+            "ink": "#0a0b12"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-sm": "6px",
+            "space-xs": "4px",
+            "space-md": "10px",
+            "space-lg": "16px",
+            "margin": "20px",
+            "space-xl": "22px",
+            "space-xxl": "26px",
+            "gutter": "16px"
+          },
+          "fontFamily": {
+            "metric": ["DM Sans"],
+            "display": ["DM Sans"],
+            "title": ["DM Sans"],
+            "small": ["DM Sans"],
+            "label": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "body": ["DM Sans"]
+          },
+          "fontSize": {
+            "metric": [
+              "28px",
+              { "lineHeight": "1.1", "fontWeight": "700" }
+            ],
+            "display": [
+              "35px",
+              { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }
+            ],
+            "title": [
+              "25px",
+              { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }
+            ],
+            "small": [
+              "13px",
+              { "lineHeight": "1.4", "fontWeight": "400" }
+            ],
+            "label": [
+              "12px",
+              { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }
+            ],
+            "mono": [
+              "14px",
+              { "lineHeight": "1.4", "fontWeight": "400" }
+            ],
+            "body": [
+              "14.5px",
+              { "lineHeight": "1.5", "fontWeight": "400" }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body antialiased selection:bg-accentWash selection:text-accent">
+<!-- Top Navigation Bar (64px) -->
+<header class="h-16 w-full bg-panel border-b border-line sticky top-0 z-50">
+<div class="max-w-[1440px] mx-auto h-full px-margin flex items-center justify-between gap-space-lg">
+<!-- Brand & Global Search -->
+<div class="flex items-center gap-space-xl flex-1 max-w-3xl">
+<a class="font-title text-title font-bold text-ink tracking-tight flex items-center gap-space-xs shrink-0" href="#storefront">
+<span class="w-7 h-7 rounded-xl bg-accent flex items-center justify-center text-accentInk">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+</span>
+          MarketCore
+        </a>
+<!-- Search Bar with cmd-K -->
+<div class="relative w-full max-w-lg">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full bg-panel2 border border-line pl-10 pr-16 py-2 text-body font-body text-ink placeholder:text-muted rounded-xl focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-150" placeholder="Search verified inventory across merchant tenants..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
+<kbd class="px-1.5 py-0.5 text-label font-mono text-faint bg-panel border border-lineStrong rounded-lg shadow-sm">⌘K</kbd>
+</div>
+</div>
+</div>
+<!-- Trailing Global Nav / Actions -->
+<div class="flex items-center gap-space-lg shrink-0">
+<nav class="hidden md:flex items-center gap-space-md text-body">
+<a class="font-body text-muted hover:text-ink font-medium px-space-sm py-1 transition-colors" href="#orders">Orders</a>
+<a class="flex items-center gap-1 font-body text-muted hover:text-ink font-medium px-space-sm py-1 transition-colors" href="#wishlist">
+<span>Wishlist</span>
+<span class="bg-panel2 font-mono text-small text-muted px-1.5 rounded-full">2</span>
+</a>
+</nav>
+<div class="h-5 w-px bg-line hidden md:block"></div>
+<div class="flex items-center gap-2">
+<!-- Notification / Help Icons -->
+<button aria-label="Notifications" class="p-2 text-muted hover:text-ink hover:bg-panel2 rounded-xl transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button aria-label="Help" class="p-2 text-muted hover:text-ink hover:bg-panel2 rounded-xl transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<!-- Cart Action -->
+<button class="flex items-center gap-2 bg-panel border border-line hover:bg-panel2 text-ink font-label px-3 py-2 rounded-xl transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+<span>Cart (3)</span>
+</button>
+<!-- Profile Badge -->
+<div class="flex items-center gap-2.5 pl-2 border-l border-line">
+<div class="relative w-8 h-8 rounded-full overflow-hidden bg-accentWash border border-lineStrong flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Close-up professional headshot portrait of Mariam Buyer against a pristine neutral architectural gradient studio backdrop, high contrast lighting, clean corporate minimalism, crisp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDugBBIDL05mH3nzbGEVpsNOeoKfmVD7C28-I8CBjq-27vrBMKNHr04_jXCEsMtOhihGq4Rn1p95jPDIeR_EWrffdf9Gw-yejZdwx8emEBJTkCLLA7-sSXEPfRdG5tL0O4bgblCiicqJl2rKQgheeDteL5xcZw4RzXav31tBxPhHkmEYbZT5JdVmFVcpT82gPcNjy-FfPDCq7VhnmnT5aBSOZ5mRhUyfpwxymi8BphNLiCy1BBvRIzxbKG51fOLgL-dCkT6FoyXcZ0"/>
+</div>
+<div class="hidden xl:flex flex-col text-left">
+<span class="text-label font-semibold text-ink leading-tight">Mariam Buyer</span>
+<span class="text-small font-mono text-muted leading-tight">mariam@shopper.test</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Category Secondary Bar (44px) -->
+<div class="h-11 w-full bg-panel border-b border-line">
+<div class="max-w-[1440px] mx-auto h-full px-margin flex items-center justify-between text-body">
+<div class="flex items-center gap-space-lg overflow-x-auto no-scrollbar py-1">
+<a class="font-label font-semibold text-ink flex items-center gap-1 hover:text-accent transition-colors shrink-0" href="#all">
+<span class="material-symbols-outlined text-[18px]">menu</span>
+          All Categories
+        </a>
+<a class="text-label text-muted hover:text-ink font-medium shrink-0 transition-colors" href="#textiles">Textiles</a>
+<a class="text-label text-muted hover:text-ink font-medium shrink-0 transition-colors" href="#home">Home</a>
+<a class="text-label text-muted hover:text-ink font-medium shrink-0 transition-colors" href="#food">Food</a>
+<a class="text-label text-muted hover:text-ink font-medium shrink-0 transition-colors" href="#beauty">Beauty</a>
+<a class="text-label text-accent font-semibold flex items-center gap-1 shrink-0 transition-colors" href="#deals">
+<span class="material-symbols-outlined text-[16px]">local_offer</span>
+          Deals
+        </a>
+</div>
+<div class="hidden sm:flex items-center gap-space-sm text-small font-mono text-faint">
+<span class="inline-block w-2 h-2 rounded-full bg-ok"></span>
+<span>Buyer Session Secured (TLS 1.3)</span>
+</div>
+</div>
+</div>
+<!-- Main Shell Container (1440px) -->
+<main class="max-w-[1440px] mx-auto px-margin pt-space-lg pb-space-xxl">
+<!-- Breadcrumbs -->
+<nav aria-label="Breadcrumb" class="mb-space-lg">
+<ol class="flex items-center gap-space-xs text-small font-body text-faint">
+<li>
+<a class="hover:text-ink transition-colors" href="#storefront">Storefront</a>
+</li>
+<li><span class="material-symbols-outlined text-[14px]">chevron_right</span></li>
+<li>
+<a class="hover:text-ink transition-colors" href="#account">Account</a>
+</li>
+<li><span class="material-symbols-outlined text-[14px]">chevron_right</span></li>
+<li aria-current="page" class="font-medium text-ink">Profile &amp; security</li>
+</ol>
+</nav>
+<!-- Account Layout Split: 246px Nav + Main Content -->
+<div class="flex flex-col lg:flex-row gap-space-xl items-start">
+<!-- Left Account Navigation (246px) -->
+<aside class="w-full lg:w-[246px] shrink-0 bg-panel border border-line rounded-xl p-space-md shadow-sm">
+<!-- User Badge Header -->
+<div class="p-space-sm pb-space-md border-b border-line flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-accentWash border border-lineStrong overflow-hidden shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Editorial profile portrait photograph of Mariam Buyer in high detail, soft diffused studio light with clean minimalist styling and modern corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmwjgUR9qx8hxPULylnb_sEuBE53qY5Ta0aQzMs26bsZZFd0fb5K3sdWLVDbwUpgRvVOGI9nCo-YxHtGOXR_g8wV9nhQc1_NMMf3bmcVQ93wYbORPwKXD6n4AS3xV-xIDdck3MuqdSMHpAA84xIhE94pKYUFsJ2Krq2rxKX3w99mL0n0Vbeq4gAMdc_Ws2vOu_92TBEY9wzzefpKDZ7VKT52uzI1BV_2Kb6eRhecf2rBRwyAmiVav2PIusu3rGTOp9Qhq7EaSjEXM"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="text-body font-semibold text-ink truncate leading-snug">Mariam Buyer</div>
+<div class="text-small font-mono text-muted truncate leading-tight">mariam@shopper.test</div>
+</div>
+</div>
+<!-- Navigation Tab List -->
+<nav class="mt-space-md flex flex-col gap-1">
+<!-- 1. Profile & security (Active) -->
+<a class="bg-accentWash text-accent font-medium rounded-lg px-space-md py-space-sm flex items-center justify-between text-body group transition-colors" href="#profile-security">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">shield_person</span>
+<span>Profile &amp; security</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+</a>
+<!-- 2. Addresses -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm text-body transition-colors" href="#addresses">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+<span>Addresses</span>
+</a>
+<!-- 3. Payment methods -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm text-body transition-colors" href="#payments">
+<span class="material-symbols-outlined text-[20px]">credit_card</span>
+<span>Payment methods</span>
+</a>
+<!-- 4. Orders -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center justify-between text-body transition-colors" href="#orders">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span>Orders</span>
+</div>
+</a>
+<!-- 5. Wishlist (badge 3) -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center justify-between text-body transition-colors" href="#wishlist">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+<span>Wishlist</span>
+</div>
+<span class="bg-panel2 font-mono text-small text-muted px-1.5 py-0.5 rounded-full border border-line">3</span>
+</a>
+<!-- 6. My reviews -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm text-body transition-colors" href="#reviews">
+<span class="material-symbols-outlined text-[20px]">rate_review</span>
+<span>My reviews</span>
+</a>
+<!-- 7. Returns -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm text-body transition-colors" href="#returns">
+<span class="material-symbols-outlined text-[20px]">assignment_return</span>
+<span>Returns</span>
+</a>
+</nav>
+<div class="my-space-md border-t border-line"></div>
+<!-- Quiet Sign Out -->
+<button class="w-full text-left text-muted hover:text-bad hover:bg-badWash rounded-lg px-space-md py-space-sm flex items-center gap-space-sm text-body transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span>Sign out</span>
+</button>
+</aside>
+<!-- Main Content Region -->
+<section class="flex-1 w-full min-w-0">
+<!-- Header Section -->
+<div class="mb-space-xl">
+<h1 class="font-title text-title text-ink font-semibold tracking-tight">Profile &amp; security</h1>
+<p class="font-body text-body text-muted mt-1">Your personal account — separate from any organization you belong to.</p>
+</div>
+<!-- Two-Column Grid Layout (Cards with 12px / rounded-xl) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- LEFT COLUMN (Span 7) -->
+<div class="lg:col-span-7 flex flex-col gap-space-xl">
+<!-- Card 1: Personal details -->
+<div class="bg-panel border border-line rounded-xl p-space-lg shadow-sm">
+<div class="flex items-baseline justify-between border-b border-line pb-space-md mb-space-lg">
+<div>
+<h2 class="font-body text-body font-bold text-ink">Personal details</h2>
+<p class="font-small text-small text-muted mt-0.5">Managed independently from tenant orgs</p>
+</div>
+<span class="font-mono text-label text-faint">ID: usr_892b1</span>
+</div>
+<form class="space-y-space-lg" onsubmit="event.preventDefault();">
+<!-- Two-Up: First & Last Name -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-lg">
+<div>
+<label class="block font-label text-label uppercase text-ink font-semibold tracking-wider mb-1.5" for="first-name">
+                      First name <span class="text-accent">*</span>
+</label>
+<input class="w-full bg-panel border border-controlEdge text-ink font-body rounded-lg px-3 py-2 focus:ring-1 focus:ring-accent focus:border-accent text-body" id="first-name" required="" type="text" value="Mariam"/>
+</div>
+<div>
+<label class="block font-label text-label uppercase text-ink font-semibold tracking-wider mb-1.5" for="last-name">
+                      Last name <span class="text-accent">*</span>
+</label>
+<input class="w-full bg-panel border border-controlEdge text-ink font-body rounded-lg px-3 py-2 focus:ring-1 focus:ring-accent focus:border-accent text-body" id="last-name" required="" type="text" value="Buyer"/>
+</div>
+</div>
+<!-- Field: Email -->
+<div>
+<label class="block font-label text-label uppercase text-ink font-semibold tracking-wider mb-1.5" for="email">
+                    Email <span class="text-accent">*</span>
+</label>
+<div class="relative">
+<input class="w-full bg-panel2 border border-controlEdge text-ink font-mono rounded-lg px-3 py-2 pr-10 focus:ring-1 focus:ring-accent focus:border-accent text-body" id="email" required="" type="email" value="mariam@shopper.test"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-muted">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+</div>
+<p class="font-small text-small text-muted mt-1.5">
+                    Changing your email requires a verification email that does not exist in the domain yet.
+                  </p>
+</div>
+<!-- Field: Phone (Optional) -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block font-label text-label uppercase text-ink font-semibold tracking-wider" for="phone">
+                      Phone
+                    </label>
+<span class="font-small text-small text-faint">Optional</span>
+</div>
+<input class="w-full bg-panel border border-controlEdge text-ink font-mono rounded-lg px-3 py-2 focus:ring-1 focus:ring-accent focus:border-accent text-body" id="phone" type="tel" value="+20 100 000 0000"/>
+</div>
+<!-- Action Footer -->
+<div class="pt-space-md border-t border-line flex items-center justify-end gap-space-md">
+<button class="px-4 py-2 bg-panel border border-controlEdge hover:bg-panel2 text-ink font-label rounded-lg transition-colors" type="button">
+                    Cancel
+                  </button>
+<button class="px-5 py-2 bg-accent hover:opacity-95 text-accentInk font-label font-medium rounded-lg shadow-sm transition-all" type="submit">
+                    Save changes
+                  </button>
+</div>
+</form>
+</div>
+<!-- Card 2: Password -->
+<div class="bg-panel border border-line rounded-xl p-space-lg shadow-sm">
+<div class="border-b border-line pb-space-md mb-space-lg">
+<h2 class="font-body text-body font-bold text-ink">Password</h2>
+<p class="font-small text-small text-muted mt-0.5">Manage authentication credentials for your personal identity</p>
+</div>
+<form class="space-y-space-lg" onsubmit="event.preventDefault();">
+<div>
+<label class="block font-label text-label uppercase text-ink font-semibold tracking-wider mb-1.5" for="curr-pw">
+                    Current password <span class="text-accent">*</span>
+</label>
+<input class="w-full bg-panel border border-controlEdge text-ink font-mono rounded-lg px-3 py-2 focus:ring-1 focus:ring-accent focus:border-accent text-body" id="curr-pw" required="" type="password" value="••••••••••••"/>
+</div>
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block font-label text-label uppercase text-ink font-semibold tracking-wider" for="new-pw">
+                      New password <span class="text-accent">*</span>
+</label>
+<span class="font-small text-small font-mono text-muted">12+ characters</span>
+</div>
+<input class="w-full bg-panel border border-controlEdge text-ink font-mono rounded-lg px-3 py-2 focus:ring-1 focus:ring-accent focus:border-accent text-body" id="new-pw" placeholder="Enter at least 12 characters" required="" type="password"/>
+</div>
+<div class="pt-space-md border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<span class="font-small text-small text-faint flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-muted">info</span>
+                    Signs out other active sessions
+                  </span>
+<button class="px-4 py-2 bg-panel border border-controlEdge hover:bg-panel2 text-ink font-label rounded-lg transition-colors whitespace-nowrap self-end sm:self-auto" type="submit">
+                    Update password
+                  </button>
+</div>
+</form>
+</div>
+</div>
+<!-- RIGHT COLUMN (Span 5) -->
+<div class="lg:col-span-5 flex flex-col gap-space-xl">
+<!-- Card 1: Security & Sessions -->
+<div class="bg-panel border border-line rounded-xl p-space-lg shadow-sm">
+<div class="border-b border-line pb-space-md mb-space-md">
+<h2 class="font-body text-body font-bold text-ink">Security &amp; Sessions</h2>
+</div>
+<div class="space-y-space-md divide-y divide-line">
+<!-- Row: 2FA -->
+<div class="pt-space-xs flex items-center justify-between">
+<div>
+<span class="block font-body text-body font-medium text-ink">Two-factor authentication</span>
+<span class="font-small text-small text-muted">Extra verification step upon login</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="px-2 py-0.5 bg-warnWash text-warn font-mono text-label rounded-md border border-warn/20 font-semibold">
+                      DISABLED
+                    </span>
+<button class="font-label text-accent hover:underline font-medium ml-1" type="button">
+                      Enable 2FA
+                    </button>
+</div>
+</div>
+<!-- Row: Active Sessions Count -->
+<div class="pt-space-md flex items-center justify-between">
+<span class="font-body text-body text-ink">Active sessions</span>
+<span class="font-mono text-body font-semibold text-ink bg-panel2 px-2.5 py-0.5 rounded-md border border-line">2</span>
+</div>
+<!-- Row: This Device -->
+<div class="pt-space-md">
+<div class="bg-okWash/60 border border-ok/20 rounded-lg p-space-md">
+<div class="flex items-start gap-space-sm">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-ok mt-1 shrink-0"></span>
+<div class="min-w-0">
+<div class="font-body text-body font-semibold text-ink">This device</div>
+<div class="font-small text-small text-muted mt-0.5 leading-snug">
+                          Chrome on macOS · Cairo, Egypt · <span class="text-ok font-medium">Current session</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-space-md">
+<button class="w-full py-2 bg-panel border border-controlEdge hover:bg-panel2 text-ink font-label rounded-lg transition-colors text-center" type="button">
+                    Sign out of all other sessions
+                  </button>
+</div>
+</div>
+</div>
+<!-- Card 2: Notification Preferences -->
+<div class="bg-panel border border-line rounded-xl p-space-lg shadow-sm">
+<div class="border-b border-line pb-space-md mb-space-md">
+<h2 class="font-body text-body font-bold text-ink">Notification preferences</h2>
+</div>
+<div class="space-y-space-md">
+<!-- Checkbox 1 -->
+<label class="flex items-start gap-space-md cursor-pointer group">
+<input checked="" class="w-4 h-4 mt-1 text-accent rounded border-controlEdge focus:ring-accent" type="checkbox"/>
+<div class="flex-1">
+<span class="block font-body text-body font-medium text-ink group-hover:text-accent transition-colors">Order updates</span>
+<span class="font-small text-small text-muted block leading-snug">Transactional status changes and delivery dispatch notices</span>
+</div>
+</label>
+<!-- Checkbox 2 -->
+<label class="flex items-start gap-space-md cursor-pointer group">
+<input checked="" class="w-4 h-4 mt-1 text-accent rounded border-controlEdge focus:ring-accent" type="checkbox"/>
+<div class="flex-1">
+<span class="block font-body text-body font-medium text-ink group-hover:text-accent transition-colors">Back-in-stock alerts</span>
+<span class="font-small text-small text-muted block leading-snug">Immediate notification when saved wishlist items restock</span>
+</div>
+</label>
+<!-- Checkbox 3 -->
+<label class="flex items-start gap-space-md cursor-pointer group">
+<input class="w-4 h-4 mt-1 text-accent rounded border-controlEdge focus:ring-accent" type="checkbox"/>
+<div class="flex-1">
+<span class="block font-body text-body font-medium text-ink group-hover:text-accent transition-colors">Price drops on wishlist</span>
+<span class="font-small text-small text-muted block leading-snug">When items drop by 10% or more</span>
+</div>
+</label>
+<!-- Checkbox 4 -->
+<label class="flex items-start gap-space-md cursor-pointer group">
+<input class="w-4 h-4 mt-1 text-accent rounded border-controlEdge focus:ring-accent" type="checkbox"/>
+<div class="flex-1">
+<span class="block font-body text-body font-medium text-ink group-hover:text-accent transition-colors">Seller marketing</span>
+<span class="font-small text-small text-muted block leading-snug">Promotions directly from verified regional sellers</span>
+</div>
+</label>
+<div class="pt-space-md border-t border-line flex justify-end">
+<button class="text-accent font-label hover:underline font-medium" type="button">
+                    Save preferences
+                  </button>
+</div>
+</div>
+</div>
+<!-- Card 3: Callout Card (Domain constraint & honest gap) -->
+<div class="bg-panel2 border border-line rounded-xl p-space-md">
+<div class="flex items-start gap-space-md">
+<span class="w-8 h-8 rounded-lg bg-panel border border-line flex items-center justify-center text-accent shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</span>
+<div>
+<h3 class="font-body text-small font-bold text-ink">Why personal accounts are separate</h3>
+<p class="font-body text-small text-muted mt-1 leading-relaxed">
+                    MarketCore strictly separates buyer identities from organization seller seats. Orders, delivery addresses, and personal payment tokens belong exclusively to you, <code class="font-mono text-ink font-semibold">usr_892b1</code>, ensuring zero data leakage to merchant tenants.
+                  </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-panel border-t border-line mt-space-xxl">
+<div class="max-w-[1440px] mx-auto px-margin py-space-xl flex flex-col md:flex-row justify-between items-center gap-space-lg text-small">
+<div class="flex items-center gap-space-md">
+<span class="font-title text-title font-bold text-ink tracking-tight flex items-center gap-1">
+<span class="w-5 h-5 rounded bg-accent flex items-center justify-center text-accentInk">
+<span class="material-symbols-outlined text-[12px]">hub</span>
+</span>
+          MarketCore
+        </span>
+<span class="text-faint font-body text-small">© 2025 MarketCore Enterprise Inc. All rights reserved.</span>
+</div>
+<nav class="flex flex-wrap items-center gap-space-lg font-body text-small">
+<a class="text-faint hover:text-ink transition-colors" href="#terms">Terms of Supply</a>
+<a class="text-faint hover:text-ink transition-colors" href="#procurement">Procurement Policy</a>
+<a class="text-faint hover:text-ink transition-colors" href="#privacy">Privacy Notice</a>
+<a class="text-faint hover:text-ink transition-colors" href="#security">Security &amp; Compliance</a>
+<a class="text-faint hover:text-ink transition-colors" href="#supplier">Supplier Portal</a>
+<a class="text-faint hover:text-ink transition-colors flex items-center gap-1" href="#status">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+          System Status
+        </a>
+</nav>
+</div>
+</footer>
+</body></html>

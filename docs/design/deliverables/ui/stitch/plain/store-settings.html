@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-canvas text-ink" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Store settings — Nile Traders Console</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed": "#e3e1ec",
+            "secondary-fixed-dim": "#c7c5d0",
+            "muted": "#5a6272",
+            "outline-variant": "#c7c4d8",
+            "on-error": "#ffffff",
+            "secondary-container": "#e3e1ec",
+            "faint": "#676e7a",
+            "panel2": "#f1f3f9",
+            "surface-container-highest": "#e4e1ee",
+            "primary": "#3525cd",
+            "warnWash": "#fdf3e4",
+            "info": "#097499",
+            "on-secondary": "#ffffff",
+            "surface-container-high": "#eae6f4",
+            "canvas": "#f6f7fb",
+            "accent": "#4f46e5",
+            "on-surface-variant": "#464555",
+            "railMuted": "#8b93a7",
+            "on-primary-fixed": "#0f0069",
+            "ink": "#0a0b12",
+            "primary-fixed-dim": "#c3c0ff",
+            "inverse-primary": "#c3c0ff",
+            "tertiary-fixed": "#ffdbcc",
+            "surface-container": "#f0ecf9",
+            "warn": "#a55a05",
+            "on-primary-fixed-variant": "#3323cc",
+            "badWash": "#fdecef",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "tertiary-container": "#a44100",
+            "on-background": "#1b1b24",
+            "secondary": "#5d5e67",
+            "panel": "#ffffff",
+            "bad": "#d11b43",
+            "outline": "#777587",
+            "on-primary": "#ffffff",
+            "okWash": "#e8f7ee",
+            "on-tertiary-container": "#ffd2be",
+            "on-secondary-fixed": "#1a1b23",
+            "ok": "#117f3a",
+            "surface-dim": "#dcd8e5",
+            "railInk": "#eef1f7",
+            "surface-variant": "#e4e1ee",
+            "line": "#e6e8ef",
+            "surface-bright": "#fcf8ff",
+            "primary-fixed": "#e2dfff",
+            "tertiary": "#7e3000",
+            "surface-tint": "#4d44e3",
+            "tertiary-fixed-dim": "#ffb695",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#351000",
+            "lineStrong": "#d5d9e2",
+            "on-secondary-container": "#64646d",
+            "accentInk": "#ffffff",
+            "on-primary-container": "#dad7ff",
+            "on-tertiary": "#ffffff",
+            "rail": "#0b0d14",
+            "controlEdge": "#838b9a",
+            "inverse-on-surface": "#f3effc",
+            "primary-container": "#4f46e5",
+            "accentWash": "#eef0ff",
+            "on-surface": "#1b1b24",
+            "error": "#ba1a1a",
+            "inverse-surface": "#302f39",
+            "on-secondary-fixed-variant": "#46464f",
+            "on-error-container": "#93000a",
+            "surface-container-lowest": "#ffffff",
+            "background": "#fcf8ff",
+            "surface": "#fcf8ff",
+            "surface-container-low": "#f5f2ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "16px",
+            "space-md": "10px",
+            "space-lg": "16px",
+            "margin": "20px",
+            "space-xxl": "26px",
+            "space-sm": "6px",
+            "space-xs": "4px",
+            "space-xl": "22px"
+          },
+          "fontFamily": {
+            "title": ["DM Sans"],
+            "display": ["DM Sans"],
+            "body": ["DM Sans"],
+            "label": ["DM Sans"],
+            "small": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "metric": ["DM Sans"]
+          },
+          "fontSize": {
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="h-full bg-canvas text-ink antialiased selection:bg-accent/20">
+<!-- ========================================================================= -->
+<!-- LEFT RAIL: SideNavBar                                                     -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 bottom-0 left-0 w-[252px] z-40 flex flex-col justify-between bg-rail border-r border-lineStrong">
+<div class="w-[252px] flex flex-col px-space-md py-space-lg">
+<!-- Brand & Merchant Identification -->
+<div class="flex items-center gap-space-md px-space-xs pb-space-lg border-b border-white/10 mb-space-md">
+<div class="w-9 h-9 rounded-lg bg-accent/20 border border-accent/40 flex items-center justify-center text-accentInk font-title font-semibold overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Official sleek geometric emblem logo for Nile Traders enterprise seller in a pristine minimalist dark console atmosphere with subtle indigo accents and high contrast sharp edges." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBvycP9qN41OT92L51tITwbitVIzVSEzdynuC3gXtdBwGVDpc7eyufjSF9ZJYF_gEZ7pvSaBgDGnMNEkDwzltLUqcLtScgUS-oiySgQ4dSH3w1df7NgcsywjAgvK86eVwTONINNohvWv6FP7d86xXSirEYa1opjCAYJ1mD6XP-Gwyy-Y9zPrT1GsZbl1VoNmK7f6zC5rE0E9UO_OzUNBlhNK4NW7r51nzdvVPQbbAhya899h6gq_rugA78tBSN2qt31DwGwUtRvPk"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title text-title font-semibold text-railInk truncate leading-tight">Nile Traders</span>
+<span class="font-small text-small text-railMuted truncate">Enterprise Seller</span>
+</div>
+</div>
+<!-- Navigation Tabs Cluster -->
+<nav class="flex flex-col gap-1 font-body text-body font-normal">
+<!-- Overview -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 hover:bg-panel2/10" href="#overview">
+<span class="material-symbols-outlined text-[19px]">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Catalog -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 hover:bg-panel2/10" href="#catalog">
+<span class="material-symbols-outlined text-[19px]">inventory_2</span>
+<span>Catalog</span>
+</a>
+<!-- Money -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 hover:bg-panel2/10" href="#money">
+<span class="material-symbols-outlined text-[19px]">payments</span>
+<span>Money</span>
+</a>
+<!-- Store Settings (ACTIVE) -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm bg-accent text-accentInk rounded-lg font-medium transition-colors duration-150" href="#settings">
+<span class="material-symbols-outlined text-[19px]" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<span>Store Settings</span>
+</a>
+<!-- Members -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 hover:bg-panel2/10" href="#members">
+<span class="material-symbols-outlined text-[19px]">group</span>
+<span>Members</span>
+</a>
+<!-- Operations -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 hover:bg-panel2/10" href="#operations">
+<span class="material-symbols-outlined text-[19px]">tune</span>
+<span>Operations</span>
+</a>
+</nav>
+</div>
+<!-- Rail Footer Actions -->
+<div class="px-space-md py-space-lg border-t border-white/10 flex flex-col gap-1">
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 hover:bg-panel2/10 font-body text-body" href="#support">
+<span class="material-symbols-outlined text-[19px]">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-bad rounded-lg transition-colors duration-150 hover:bg-badWash/10 font-body text-body" href="#logout">
+<span class="material-symbols-outlined text-[19px]">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- TOP APP BAR: TopNavBar                                                    -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 right-0 left-[252px] h-[64px] z-30 flex items-center justify-between bg-panel border-b border-line px-margin">
+<!-- Breadcrumb & Search Cluster -->
+<div class="flex items-center gap-space-lg">
+<nav class="flex items-center gap-2">
+<span class="font-title text-title font-semibold text-ink leading-none">MarketCore</span>
+<span class="text-lineStrong">/</span>
+<span class="font-body text-body text-muted">Admin</span>
+<span class="text-lineStrong">/</span>
+<span class="font-title text-body font-semibold text-ink">Store settings</span>
+</nav>
+<!-- Quick Search Bar -->
+<div class="relative w-64 ml-4">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-muted text-[17px]">search</span>
+<input class="w-full bg-panel2 border border-line rounded-lg pl-8 pr-3 py-1.5 font-small text-small text-ink placeholder-faint focus:outline-none focus:border-accent transition-colors" placeholder="⌘K Quick Search" type="text"/>
+<kbd class="absolute right-2 top-1/2 -translate-y-1/2 font-mono text-[11px] bg-panel text-faint px-1.5 py-0.5 rounded border border-line">⌘K</kbd>
+</div>
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-3">
+<!-- Trailing Action: Create Payout -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-line bg-panel hover:bg-panel2 text-ink font-label text-label font-medium transition-colors">
+<span class="material-symbols-outlined text-[16px] text-accent">add</span>
+<span>Create Payout</span>
+</button>
+<div class="h-4 w-[1px] bg-line mx-1"></div>
+<!-- Icon Actions -->
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-ink hover:bg-panel2 transition-colors relative">
+<span class="material-symbols-outlined text-[19px]">notifications</span>
+<span class="absolute top-2 right-2 w-1.5 h-1.5 bg-accent rounded-full"></span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-ink hover:bg-panel2 transition-colors">
+<span class="material-symbols-outlined text-[19px]">help_outline</span>
+</button>
+<!-- User Avatar -->
+<div class="flex items-center gap-2 pl-2">
+<div class="w-8 h-8 rounded-full border border-line bg-surface-container overflow-hidden flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Professional merchant account administrator headshot for Nile Traders console in a softly illuminated light-mode studio space with neutral balanced tones and corporate executive framing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Hks2Fmx528Hx8SgNOVBLA_1hpuCXGdINCuAnvqt3QUM4Y3cNGkcPsRhxBCwnpK_YNKyFlgs-ZggN6KXNAtcwZGQCt-zmdgNEdceNETxxLzLzKhdplZMaLEYoleEhter3leAvXyFhCWr785e_b1M2ZUz37zcrLJkLAcqdXbmCqGyAEo7YFwLGm7jBrGl6oDFPhN__oNVFa_vzBK9LplKO-CIzuibsr33y9uAwWV04xL8wU2oQCBG76-2BqE6glX9SKIceEasIRyk"/>
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT CANVAS                                                       -->
+<!-- ========================================================================= -->
+<main class="ml-[252px] pt-[64px] pb-16 min-h-screen bg-canvas">
+<div class="max-w-[1240px] mx-auto px-margin py-6">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-line">
+<div>
+<h1 class="font-title text-title font-semibold text-ink">Store settings</h1>
+<p class="font-small text-small text-muted mt-1">Nile Traders — the public face buyers see.</p>
+</div>
+<div class="flex items-center gap-3">
+<!-- Secondary Action -->
+<a class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-controlEdge bg-panel text-ink font-label text-label font-medium hover:bg-panel2 active:scale-[0.99] transition-all" href="/s/nile-traders" target="_blank">
+<span>View public store</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+<!-- Primary Action -->
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-accentInk font-label text-label font-medium hover:bg-accent/95 active:scale-[0.99] transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>Save changes</span>
+</button>
+</div>
+</div>
+<!-- Two Columns Bento Grid Layout: Left 7 cols / Right 5 cols -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 items-start">
+<!-- =================================================================== -->
+<!-- LEFT COLUMN (7 Cols): Store profile + Policies                     -->
+<!-- =================================================================== -->
+<div class="lg:col-span-7 flex flex-col gap-6">
+<!-- 1. Store profile section -->
+<div class="bg-panel border border-line rounded-xl overflow-hidden">
+<!-- Card Header -->
+<div class="px-5 py-4 border-b border-line flex items-center justify-between">
+<div>
+<h2 class="font-label text-label uppercase tracking-wider text-muted font-semibold">Store profile</h2>
+<p class="font-small text-small text-faint mt-0.5">Brand presence across the MarketCore global marketplace.</p>
+</div>
+<span class="font-mono text-[11px] px-2 py-0.5 bg-okWash text-ok rounded border border-ok/20 font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                Publicly Listed
+              </span>
+</div>
+<!-- Form Content with Hairline Dividers -->
+<div class="divide-y divide-line">
+<!-- Store name field -->
+<div class="p-5 flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink flex items-center justify-between" for="store-name">
+<span>Store name <span class="text-bad">*</span></span>
+<span class="font-small text-faint">Legal storefront identifier</span>
+</label>
+<input class="w-full bg-panel border border-line rounded-lg px-3.5 py-2 font-body text-body text-ink focus:border-accent focus:ring-0 transition-colors" id="store-name" type="text" value="Nile Traders"/>
+</div>
+<!-- Public slug field -->
+<div class="p-5 flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink flex items-center justify-between" for="store-slug">
+<span>Public slug <span class="text-bad">*</span></span>
+<span class="font-mono text-[12px] text-faint">marketcore.eg/s/...</span>
+</label>
+<div class="relative flex items-center">
+<span class="absolute left-3 font-mono text-small text-muted select-none">/s/</span>
+<input class="w-full bg-panel border border-line rounded-lg pl-8 pr-3.5 py-2 font-mono text-mono text-ink focus:border-accent focus:ring-0 transition-colors" id="store-slug" type="text" value="nile-traders"/>
+</div>
+<p class="font-small text-small text-faint mt-0.5">Buyers reach you at /s/nile-traders</p>
+</div>
+<!-- About textarea (optional) -->
+<div class="p-5 flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink flex items-center justify-between" for="store-about">
+<span>About <span class="text-faint font-normal">(optional)</span></span>
+<span class="font-small text-faint">Max 250 characters</span>
+</label>
+<textarea class="w-full bg-panel border border-line rounded-lg px-3.5 py-2 font-body text-body text-ink focus:border-accent focus:ring-0 transition-colors resize-none" id="store-about" rows="3">Long-staple Egyptian cotton, made in Cairo. On MarketCore since Sep 2026.</textarea>
+</div>
+<!-- Response time select -->
+<div class="p-5 flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink flex items-center justify-between" for="response-time">
+<span>Response time</span>
+<span class="font-small text-faint">Buyer message SLA badge</span>
+</label>
+<div class="relative">
+<select class="w-full appearance-none bg-panel border border-line rounded-lg px-3.5 py-2 font-body text-body text-ink pr-10 focus:border-accent focus:ring-0 transition-colors cursor-pointer" id="response-time">
+<option selected="" value="under_2h">Replies in under 2 hours</option>
+<option value="under_6h">Replies in under 6 hours</option>
+<option value="same_day">Replies within same business day</option>
+<option value="next_day">Replies in 24 to 48 hours</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Policies section -->
+<div class="bg-panel border border-line rounded-xl overflow-hidden">
+<div class="px-5 py-4 border-b border-line flex items-center justify-between">
+<div>
+<h2 class="font-label text-label uppercase tracking-wider text-muted font-semibold">Policies</h2>
+<p class="font-small text-small text-faint mt-0.5">Terms displayed at checkout and order confirmation.</p>
+</div>
+<span class="material-symbols-outlined text-muted text-[20px]">verified_user</span>
+</div>
+<div class="divide-y divide-line">
+<!-- Returns window -->
+<div class="p-5 flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink flex items-center justify-between" for="returns-window">
+<span>Returns window <span class="text-bad">*</span></span>
+<span class="font-small text-faint">Standard merchant protection</span>
+</label>
+<div class="relative">
+<select class="w-full appearance-none bg-panel border border-line rounded-lg px-3.5 py-2 font-body text-body text-ink pr-10 focus:border-accent focus:ring-0 transition-colors cursor-pointer" id="returns-window">
+<option selected="" value="14d">14 days hassle-free</option>
+<option value="30d">30 days standard</option>
+<option value="7d">7 days perishable/fabrics</option>
+<option value="none">Final sale (No returns)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- Dispatch promise -->
+<div class="p-5 flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink flex items-center justify-between" for="dispatch-promise">
+<span>Dispatch promise <span class="text-bad">*</span></span>
+<span class="font-small text-faint">Fulfillment cutoff rule</span>
+</label>
+<input class="w-full bg-panel border border-line rounded-lg px-3.5 py-2 font-body text-body text-ink focus:border-accent focus:ring-0 transition-colors" id="dispatch-promise" type="text" value="Ships in 24h from Cairo hub"/>
+</div>
+<!-- Domain note callout banner -->
+<div class="p-5 bg-panel2/50">
+<div class="flex items-start gap-3 p-3.5 rounded-lg bg-warnWash border border-warn/20 text-warn">
+<span class="material-symbols-outlined text-[19px] mt-0.5 flex-shrink-0">info</span>
+<div class="font-small text-small leading-relaxed">
+<span class="font-semibold text-ink">Honest domain note:</span> Multi-tier buyer returns require escrow lock v2. Currently buyer disputes are handled via operations desk.
+                  </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- =================================================================== -->
+<!-- RIGHT COLUMN (5 Cols): Shipping zones + Payout details             -->
+<!-- =================================================================== -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<!-- 1. Shipping zones card -->
+<div class="bg-panel border border-line rounded-xl overflow-hidden">
+<!-- Card Header with zone count & quiet action -->
+<div class="px-5 py-4 border-b border-line flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h2 class="font-label text-label uppercase tracking-wider text-muted font-semibold">Shipping zones</h2>
+<span class="font-mono text-[11px] px-1.5 py-0.5 bg-panel2 text-faint rounded border border-line">3 total</span>
+</div>
+<button class="font-label text-label font-medium text-accent hover:text-accent/80 transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">add</span>
+<span>Add zone</span>
+</button>
+</div>
+<!-- Table of Zones -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line font-label text-[11px] uppercase tracking-wider text-muted font-medium">
+<th class="py-2.5 px-4">Zone</th>
+<th class="py-2.5 px-3">Rate &amp; time</th>
+<th class="py-2.5 px-3">Status</th>
+<th class="py-2.5 px-4 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line font-body text-body">
+<!-- Row 1: Cairo & Giza -->
+<tr class="hover:bg-panel2/40 transition-colors">
+<td class="py-3 px-4 font-medium text-ink">
+                      Cairo &amp; Giza
+                    </td>
+<td class="py-3 px-3 font-mono text-[13px] text-muted">
+                      E£40.00 <span class="text-faint">· 1–2 days</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-okWash text-ok font-label text-[11px] font-medium border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                        Active
+                      </span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="font-label text-label font-medium text-muted hover:text-accent transition-colors">Edit</button>
+</td>
+</tr>
+<!-- Row 2: Rest of Egypt -->
+<tr class="hover:bg-panel2/40 transition-colors">
+<td class="py-3 px-4 font-medium text-ink">
+                      Rest of Egypt
+                    </td>
+<td class="py-3 px-3 font-mono text-[13px] text-muted">
+                      E£75.00 <span class="text-faint">· 3–5 days</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-okWash text-ok font-label text-[11px] font-medium border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                        Active
+                      </span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="font-label text-label font-medium text-muted hover:text-accent transition-colors">Edit</button>
+</td>
+</tr>
+<!-- Row 3: International -->
+<tr class="hover:bg-panel2/40 transition-colors">
+<td class="py-3 px-4 font-medium text-muted">
+                      International
+                    </td>
+<td class="py-3 px-3 font-small text-small text-faint">
+                      Not offered
+                    </td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-panel2 text-faint font-label text-[11px] font-medium border border-line">
+<span class="w-1.5 h-1.5 rounded-full bg-controlEdge"></span>
+                        Off
+                      </span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="font-label text-label font-medium text-accent hover:text-accent/80 transition-colors">Configure</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer note within zone -->
+<div class="p-3.5 bg-panel2/30 border-t border-line flex items-center justify-between text-faint font-small text-small">
+<span>National carrier API linked</span>
+<span class="font-mono text-[11px]">Bosta / Aramex EG</span>
+</div>
+</div>
+<!-- 2. Payout details card -->
+<div class="bg-panel border border-line rounded-xl overflow-hidden">
+<div class="px-5 py-4 border-b border-line flex items-center justify-between">
+<div>
+<h2 class="font-label text-label uppercase tracking-wider text-muted font-semibold">Payout details</h2>
+<p class="font-small text-small text-faint mt-0.5">Automated settlement credentials.</p>
+</div>
+<span class="font-mono text-[11px] px-2 py-0.5 bg-accentWash text-accent font-medium rounded border border-accent/20">
+                Direct Ledger
+              </span>
+</div>
+<div class="p-5 flex flex-col gap-4">
+<!-- Linked bank -->
+<div class="flex items-center justify-between p-3 rounded-lg border border-line bg-panel2/40">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded bg-panel border border-line flex items-center justify-center text-accent">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+</div>
+<div>
+<div class="font-label text-label font-semibold text-ink flex items-center gap-1.5">
+<span>CIB Egypt ····· 4019</span>
+<span class="material-symbols-outlined text-ok text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-small text-small text-faint">Commercial International Bank (EG)</span>
+</div>
+</div>
+<button class="font-label text-label font-medium text-muted hover:text-ink transition-colors">Change</button>
+</div>
+<!-- Key Value Metrics Grid -->
+<div class="grid grid-cols-1 gap-3 divide-y divide-line">
+<!-- Payout schedule -->
+<div class="pt-3 first:pt-0 flex items-center justify-between">
+<span class="font-small text-small text-muted">Payout schedule</span>
+<span class="font-body text-body font-medium text-ink">Weekly on Sundays (automated)</span>
+</div>
+<!-- Settlement currency -->
+<div class="pt-3 flex items-center justify-between">
+<span class="font-small text-small text-muted">Settlement currency</span>
+<span class="font-mono text-mono font-medium text-ink bg-panel2 px-2 py-0.5 rounded border border-line">
+                    Egyptian Pound (EGP · E£)
+                  </span>
+</div>
+<!-- State Guard Armed -->
+<div class="pt-3 flex items-center justify-between">
+<span class="font-small text-small text-muted">Status</span>
+<span class="inline-flex items-center gap-1.5 font-label text-[12px] font-medium text-ok bg-okWash px-2 py-0.5 rounded border border-ok/20">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+                    State Guard Armed (INV-8 idempotent payouts)
+                  </span>
+</div>
+</div>
+</div>
+<!-- Compliance Footer within Payouts -->
+<div class="px-5 py-3 bg-panel2/40 border-t border-line flex items-center justify-between">
+<span class="font-small text-[12px] text-faint">Next cycle: Sunday, 23:59 GMT+2</span>
+<span class="font-mono text-[11px] text-muted">Ref: NT-SETTL-0926</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- DOCKED BOTTOM FOOTER: Footer                                              -->
+<!-- ========================================================================= -->
+<footer class="fixed bottom-0 right-0 left-[252px] z-20 flex items-center justify-between px-margin py-space-sm h-10 bg-panel border-t border-line">
+<div class="font-small text-small font-normal text-muted truncate">
+      © 2025 MarketCore Inc. All rights reserved. Nile Traders Enterprise Console.
+    </div>
+<div class="flex items-center gap-4 flex-shrink-0">
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#privacy">Privacy Policy</a>
+<span class="text-lineStrong">·</span>
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#terms">Terms of Service</a>
+<span class="text-lineStrong">·</span>
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#compliance">Compliance &amp; Regulatory</a>
+<span class="text-lineStrong">·</span>
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#security">Security Audit</a>
+<span class="text-lineStrong">·</span>
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#agreement">Seller Agreement</a>
+</div>
+</footer>
+</body></html>

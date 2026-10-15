@@ -1,0 +1,266 @@
+<!-- {"title":"MarketCore — States (/design/states)","screen":"projects/3383911874392417631/screens/563bea9a80054ccfacd39035a9b23851","pass":"plain","w":1280,"h":1461,"frame":"height:1461px","links":[]} -->
+<style>.sx-states{position:relative;height:100%;font:400 16px/normal Times,serif;letter-spacing:normal;color:#000;-webkit-font-smoothing:auto;text-align:left}@font-face { font-family: "DM Mono sx-states"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTU7PB1QTsUX8KYthSQBK6PYK3EXw.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Mono sx-states"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTU7PB1QTsUX8KYthqQBK6PYK0.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Mono sx-states"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTR7PB1QTsUX8KYvumzEY2tbYf-Vlh3uA.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Mono sx-states"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTR7PB1QTsUX8KYvumzEYOtbYf-Vlg.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-states"; font-style: italic; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Wp2ywxg089UriCZaSExdy3sGt9zz86GPwyKK58UfivUw4aw.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-states"; font-style: italic; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Wp2ywxg089UriCZaSExdy3sGt9zz86GPwyKy58UfivUw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-states"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-states"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-states"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-states"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-states"; font-style: normal; font-weight: 600; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-states"; font-style: normal; font-weight: 600; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-states"; font-style: normal; font-weight: 700; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-states"; font-style: normal; font-weight: 700; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }.sx-states{  --panel2: #f1f3f9;           --accentInk: #ffffff;         --infoWash: #e0f2fe;}.sx-states > .sx-body{background-color: var(--canvas); color: var(--ink); font-family: "DM Sans sx-states", sans-serif; font-size: 14.5px; line-height: 1.5; -webkit-font-smoothing: antialiased;}.sx-states .font-mono,.sx-states.font-mono{font-family: "DM Mono sx-states", monospace;}.sx-states .text-display,.sx-states.text-display{font-size: 35px; line-height: 1.2; letter-spacing: -0.025em; font-weight: 700;}.sx-states .text-metric,.sx-states.text-metric{font-size: 28px; line-height: 1.25; letter-spacing: -0.025em; font-weight: 700;}.sx-states .text-title,.sx-states.text-title{font-size: 25px; line-height: 1.3; letter-spacing: -0.025em; font-weight: 600;}.sx-states .text-body-scale,.sx-states.text-body-scale{font-size: 14.5px; line-height: 1.5;}.sx-states .text-small-scale,.sx-states.text-small-scale{font-size: 13px; line-height: 1.4;}.sx-states .text-label-scale,.sx-states.text-label-scale{font-size: 12px; line-height: 1; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;}.sx-states :focus-visible{outline: 3px solid var(--accent); outline-offset: 2px;}.sx-states .state-card,.sx-states.state-card{background-color: var(--panel); border-radius: 12px; border: 1px solid var(--line); overflow: hidden; display: flex; flex-direction: column; box-shadow: color-mix(in srgb, var(--ink) 4%, transparent) 0px 1px 3px, color-mix(in srgb, var(--ink) 2%, transparent) 0px 1px 2px;}.sx-states .state-header,.sx-states.state-header{padding: 16px 20px 12px; border-bottom: 1px solid var(--line); background-color: var(--panel);}.sx-states .state-body,.sx-states.state-body{padding: 20px; background-color: #fafbfc; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; min-height: 220px;}@keyframes pulse-subtle { 
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}.sx-states .skeleton-bar,.sx-states.skeleton-bar{animation: 1.8s cubic-bezier(0.4, 0, 0.6, 1) 0s infinite normal none running pulse-subtle;}.sx-states,.sx-states *,.sx-states ::before,.sx-states ::after{--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;}.sx-states ::backdrop{--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;}.sx-states,.sx-states *,.sx-states ::after,.sx-states ::before{box-sizing: border-box; border-width: 0px; border-style: solid; border-color: #e5e7eb;}.sx-states ::after,.sx-states ::before{--tw-content: '';}.sx-states,.sx-states{line-height: 1.5; text-size-adjust: 100%; tab-size: 4; font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; font-feature-settings: normal; font-variation-settings: normal; -webkit-tap-highlight-color: transparent;}.sx-states > .sx-body{margin: 0px; line-height: inherit;}.sx-states hr{height: 0px; color: inherit; border-top-width: 1px;}.sx-states abbr:where([title]){text-decoration: underline dotted;}.sx-states h1,.sx-states h2,.sx-states h3,.sx-states h4,.sx-states h5,.sx-states h6{font-size: inherit; font-weight: inherit;}.sx-states a{color: inherit; text-decoration: inherit;}.sx-states b,.sx-states strong{font-weight: bolder;}.sx-states code,.sx-states kbd,.sx-states pre,.sx-states samp{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-feature-settings: normal; font-variation-settings: normal; font-size: 1em;}.sx-states small{font-size: 80%;}.sx-states sub,.sx-states sup{font-size: 75%; line-height: 0; position: relative; vertical-align: baseline;}.sx-states sub{bottom: -0.25em;}.sx-states sup{top: -0.5em;}.sx-states table{text-indent: 0px; border-color: inherit; border-collapse: collapse;}.sx-states button,.sx-states input,.sx-states optgroup,.sx-states select,.sx-states textarea{font-family: inherit; font-feature-settings: inherit; font-variation-settings: inherit; font-size: 100%; font-weight: inherit; line-height: inherit; letter-spacing: inherit; color: inherit; margin: 0px; padding: 0px;}.sx-states button,.sx-states select{text-transform: none;}.sx-states button,.sx-states input:where([type="button"]),.sx-states input:where([type="reset"]),.sx-states input:where([type="submit"]){appearance: button; background-color: transparent; background-image: none;}.sx-states progress{vertical-align: baseline;}.sx-states ::-webkit-inner-spin-button,.sx-states ::-webkit-outer-spin-button{height: auto;}.sx-states [type="search"],.sx-states[type="search"]{appearance: textfield; outline-offset: -2px;}.sx-states ::-webkit-search-decoration{appearance: none;}.sx-states ::-webkit-file-upload-button{appearance: button; font: inherit;}.sx-states summary{display: list-item;}.sx-states blockquote,.sx-states dd,.sx-states dl,.sx-states figure,.sx-states h1,.sx-states h2,.sx-states h3,.sx-states h4,.sx-states h5,.sx-states h6,.sx-states hr,.sx-states p,.sx-states pre{margin: 0px;}.sx-states fieldset{margin: 0px; padding: 0px;}.sx-states legend{padding: 0px;}.sx-states menu,.sx-states ol,.sx-states ul{list-style: none; margin: 0px; padding: 0px;}.sx-states dialog{padding: 0px;}.sx-states textarea{resize: vertical;}.sx-states input::placeholder,.sx-states textarea::placeholder{opacity: 1; color: #9ca3af;}.sx-states [role="button"],.sx-states[role="button"],.sx-states button{cursor: pointer;}.sx-states :disabled{cursor: default;}.sx-states audio,.sx-states canvas,.sx-states embed,.sx-states iframe,.sx-states img,.sx-states object,.sx-states svg,.sx-states video{display: block; vertical-align: middle;}.sx-states img,.sx-states video{max-width: 100%; height: auto;}.sx-states [hidden]:where(:not([hidden="until-found"])),.sx-states[hidden]:where(:not([hidden="until-found"])){display: none;}.sx-states .mx-auto,.sx-states.mx-auto{margin-left: auto; margin-right: auto;}.sx-states .mb-1,.sx-states.mb-1{margin-bottom: 0.25rem;}.sx-states .mb-12,.sx-states.mb-12{margin-bottom: 3rem;}.sx-states .mb-16,.sx-states.mb-16{margin-bottom: 4rem;}.sx-states .mb-2,.sx-states.mb-2{margin-bottom: 0.5rem;}.sx-states .mb-3,.sx-states.mb-3{margin-bottom: 0.75rem;}.sx-states .mb-4,.sx-states.mb-4{margin-bottom: 1rem;}.sx-states .mt-0\.5,.sx-states.mt-0\.5{margin-top: 0.125rem;}.sx-states .mt-1,.sx-states.mt-1{margin-top: 0.25rem;}.sx-states .mt-1\.5,.sx-states.mt-1\.5{margin-top: 0.375rem;}.sx-states .mt-3,.sx-states.mt-3{margin-top: 0.75rem;}.sx-states .block,.sx-states.block{display: block;}.sx-states .flex,.sx-states.flex{display: flex;}.sx-states .inline-flex,.sx-states.inline-flex{display: inline-flex;}.sx-states .grid,.sx-states.grid{display: grid;}.sx-states .h-1\.5,.sx-states.h-1\.5{height: 0.375rem;}.sx-states .h-10,.sx-states.h-10{height: 2.5rem;}.sx-states .h-12,.sx-states.h-12{height: 3rem;}.sx-states .h-2,.sx-states.h-2{height: 0.5rem;}.sx-states .h-2\.5,.sx-states.h-2\.5{height: 0.625rem;}.sx-states .h-3,.sx-states.h-3{height: 0.75rem;}.sx-states .h-3\.5,.sx-states.h-3\.5{height: 0.875rem;}.sx-states .h-4,.sx-states.h-4{height: 1rem;}.sx-states .h-6,.sx-states.h-6{height: 1.5rem;}.sx-states .h-7,.sx-states.h-7{height: 1.75rem;}.sx-states .h-8,.sx-states.h-8{height: 2rem;}.sx-states .h-9,.sx-states.h-9{height: 2.25rem;}.sx-states .min-h-screen,.sx-states.min-h-screen{min-height: 1461px;}.sx-states .w-1\.5,.sx-states.w-1\.5{width: 0.375rem;}.sx-states .w-1\/2,.sx-states.w-1\/2{width: 50%;}.sx-states .w-10,.sx-states.w-10{width: 2.5rem;}.sx-states .w-12,.sx-states.w-12{width: 3rem;}.sx-states .w-16,.sx-states.w-16{width: 4rem;}.sx-states .w-2,.sx-states.w-2{width: 0.5rem;}.sx-states .w-3\/4,.sx-states.w-3\/4{width: 75%;}.sx-states .w-5\/6,.sx-states.w-5\/6{width: 83.3333%;}.sx-states .w-6,.sx-states.w-6{width: 1.5rem;}.sx-states .w-7,.sx-states.w-7{width: 1.75rem;}.sx-states .w-full,.sx-states.w-full{width: 100%;}.sx-states .max-w-4xl,.sx-states.max-w-4xl{max-width: 56rem;}.sx-states .max-w-\[1440px\],.sx-states.max-w-\[1440px\]{max-width: 1440px;}.sx-states .max-w-\[200px\],.sx-states.max-w-\[200px\]{max-width: 200px;}.sx-states .max-w-\[220px\],.sx-states.max-w-\[220px\]{max-width: 220px;}.sx-states .shrink-0,.sx-states.shrink-0{flex-shrink: 0;}.sx-states .grow,.sx-states.grow{flex-grow: 1;}.sx-states .grid-cols-1,.sx-states.grid-cols-1{grid-template-columns: repeat(1, minmax(0px, 1fr));}.sx-states .flex-col,.sx-states.flex-col{flex-direction: column;}.sx-states .flex-wrap,.sx-states.flex-wrap{flex-wrap: wrap;}.sx-states .items-start,.sx-states.items-start{align-items: flex-start;}.sx-states .items-center,.sx-states.items-center{align-items: center;}.sx-states .justify-center,.sx-states.justify-center{justify-content: center;}.sx-states .justify-between,.sx-states.justify-between{justify-content: space-between;}.sx-states .gap-1\.5,.sx-states.gap-1\.5{gap: 0.375rem;}.sx-states .gap-2,.sx-states.gap-2{gap: 0.5rem;}.sx-states .gap-2\.5,.sx-states.gap-2\.5{gap: 0.625rem;}.sx-states .gap-3,.sx-states.gap-3{gap: 0.75rem;}.sx-states .gap-4,.sx-states.gap-4{gap: 1rem;}.sx-states .gap-6,.sx-states.gap-6{gap: 1.5rem;}.sx-states .space-y-1\.5 > :not([hidden]) ~ :not([hidden]),.sx-states.space-y-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse: 0; margin-top: calc(0.375rem * calc(1 - var(--tw-space-y-reverse))); margin-bottom: calc(0.375rem * var(--tw-space-y-reverse));}.sx-states .space-y-2 > :not([hidden]) ~ :not([hidden]),.sx-states.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse: 0; margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse))); margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));}.sx-states .space-y-3 > :not([hidden]) ~ :not([hidden]),.sx-states.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse: 0; margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse))); margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));}.sx-states .rounded,.sx-states.rounded{border-radius: 0.25rem;}.sx-states .rounded-full,.sx-states.rounded-full{border-radius: 9999px;}.sx-states .rounded-lg,.sx-states.rounded-lg{border-radius: 0.5rem;}.sx-states .rounded-xl,.sx-states.rounded-xl{border-radius: 0.75rem;}.sx-states .border,.sx-states.border{border-width: 1px;}.sx-states .border-b,.sx-states.border-b{border-bottom-width: 1px;}.sx-states .border-t,.sx-states.border-t{border-top-width: 1px;}.sx-states .border-rose-200\/60,.sx-states.border-rose-200\/60{border-color: rgba(254,205,211,0.6);}.sx-states .border-slate-100,.sx-states.border-slate-100{--tw-border-opacity: 1; border-color: #f1f5f9;}.sx-states .bg-slate-100,.sx-states.bg-slate-100{--tw-bg-opacity: 1; background-color: #f1f5f9;}.sx-states .bg-slate-200,.sx-states.bg-slate-200{--tw-bg-opacity: 1; background-color: #e2e8f0;}.sx-states .bg-white,.sx-states.bg-white{--tw-bg-opacity: 1; background-color: #ffffff;}.sx-states .p-2\.5,.sx-states.p-2\.5{padding: 0.625rem;}.sx-states .p-3,.sx-states.p-3{padding: 0.75rem;}.sx-states .p-3\.5,.sx-states.p-3\.5{padding: 0.875rem;}.sx-states .p-4,.sx-states.p-4{padding: 1rem;}.sx-states .px-2\.5,.sx-states.px-2\.5{padding-left: 0.625rem; padding-right: 0.625rem;}.sx-states .px-3,.sx-states.px-3{padding-left: 0.75rem; padding-right: 0.75rem;}.sx-states .px-4,.sx-states.px-4{padding-left: 1rem; padding-right: 1rem;}.sx-states .px-6,.sx-states.px-6{padding-left: 1.5rem; padding-right: 1.5rem;}.sx-states .py-0\.5,.sx-states.py-0\.5{padding-top: 0.125rem; padding-bottom: 0.125rem;}.sx-states .py-1,.sx-states.py-1{padding-top: 0.25rem; padding-bottom: 0.25rem;}.sx-states .py-12,.sx-states.py-12{padding-top: 3rem; padding-bottom: 3rem;}.sx-states .pb-8,.sx-states.pb-8{padding-bottom: 2rem;}.sx-states .pt-2,.sx-states.pt-2{padding-top: 0.5rem;}.sx-states .pt-2\.5,.sx-states.pt-2\.5{padding-top: 0.625rem;}.sx-states .pt-8,.sx-states.pt-8{padding-top: 2rem;}.sx-states .text-center,.sx-states.text-center{text-align: center;}.sx-states .font-mono,.sx-states.font-mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}.sx-states .text-\[13px\],.sx-states.text-\[13px\]{font-size: 13px;}.sx-states .text-\[18px\],.sx-states.text-\[18px\]{font-size: 18px;}.sx-states .font-bold,.sx-states.font-bold{font-weight: 700;}.sx-states .font-medium,.sx-states.font-medium{font-weight: 500;}.sx-states .font-semibold,.sx-states.font-semibold{font-weight: 600;}.sx-states .leading-relaxed,.sx-states.leading-relaxed{line-height: 1.625;}.sx-states .tracking-wider,.sx-states.tracking-wider{letter-spacing: 0.05em;}.sx-states .text-white,.sx-states.text-white{--tw-text-opacity: 1; color: #ffffff;}.sx-states .underline,.sx-states.underline{text-decoration-line: underline;}.sx-states .shadow-sm,.sx-states.shadow-sm{--tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color); box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);}.sx-states .transition-colors,.sx-states.transition-colors{transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms;}.sx-states .transition-opacity,.sx-states.transition-opacity{transition-property: opacity; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms;}.sx-states .hover\:bg-slate-50:hover,.sx-states.hover\:bg-slate-50:hover{--tw-bg-opacity: 1; background-color: #f8fafc;}.sx-states .hover\:opacity-80:hover,.sx-states.hover\:opacity-80:hover{opacity: 0.8;}.sx-states .hover\:opacity-90:hover,.sx-states.hover\:opacity-90:hover{opacity: 0.9;}.sx-states .sm\:flex-row,.sx-states.sm\:flex-row{flex-direction: row;}.sx-states .sm\:px-12,.sx-states.sm\:px-12{padding-left: 3rem; padding-right: 3rem;}.sx-states .md\:grid-cols-2,.sx-states.md\:grid-cols-2{grid-template-columns: repeat(2, minmax(0px, 1fr));}.sx-states .lg\:grid-cols-3,.sx-states.lg\:grid-cols-3{grid-template-columns: repeat(3, minmax(0px, 1fr));}.sx-states .lg\:px-20,.sx-states.lg\:px-20{padding-left: 5rem; padding-right: 5rem;}</style>
+<div class="sx-states "><div class="sx-body min-h-screen py-12 px-6 sm:px-12 lg:px-20 max-w-[1440px] mx-auto" style="">
+<header class="mb-12 pb-8 border-b" style="border-color: var(--line);">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+      <div class="flex items-center gap-3">
+        <span class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-[13px]" style="background-color: var(--accent);">MC</span>
+        <span class="text-label-scale tracking-wider" style="color: var(--faint);">Design System Spec · Architecture</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-1 rounded-full text-label-scale font-medium" style="background-color: var(--panel2); color: var(--muted); border: 1px solid var(--line);">Route: /design/states</span>
+        <span class="px-2.5 py-1 rounded-full text-label-scale font-medium font-mono" style="background-color: var(--panel2); color: var(--ink);">9 System Boundary States</span>
+      </div>
+    </div>
+
+    <h1 class="text-display mb-3" style="color: var(--ink);">States</h1>
+    <p class="max-w-4xl text-body-scale leading-relaxed" style="color: var(--muted);">
+      The shapes a screen takes <strong style="color: var(--ink);">before and instead of data</strong>. Every state maintains structural layout geometry without spinners that conceal flow, enforces cross-tenant security predicates (cross-org is 404, never 403), and provides actionable recovery paths for sellers and buyers.
+    </p>
+  </header>
+
+  
+  <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+
+    
+    <div class="state-card">
+      <div class="state-header">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-title text-[18px] font-semibold" style="color: var(--ink);">Loading</h2>
+          <span class="text-label-scale font-mono" style="color: var(--faint);">01</span>
+        </div>
+        <p class="text-small-scale" style="color: var(--muted);">Skeleton bars preserve layout geometry — never a blocking spinner.</p>
+      </div>
+      <div class="state-body">
+        <div class="w-full bg-white p-4 rounded-lg border border-slate-100 shadow-sm space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-slate-200 skeleton-bar shrink-0"></div>
+            <div class="grow space-y-1.5">
+              <div class="h-3.5 bg-slate-200 rounded skeleton-bar w-3/4"></div>
+              <div class="h-2.5 bg-slate-100 rounded skeleton-bar w-1/2"></div>
+            </div>
+            <div class="w-16 h-4 bg-slate-200 rounded skeleton-bar"></div>
+          </div>
+          <div class="pt-2 border-t border-slate-100 space-y-2">
+            <div class="h-3 bg-slate-100 rounded skeleton-bar w-full"></div>
+            <div class="h-3 bg-slate-100 rounded skeleton-bar w-5/6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="state-card">
+      <div class="state-header">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-title text-[18px] font-semibold" style="color: var(--ink);">Empty</h2>
+          <span class="text-label-scale font-mono" style="color: var(--faint);">02</span>
+        </div>
+        <p class="text-small-scale" style="color: var(--muted);">An emblem, plain prose, and the immediate action that populates it.</p>
+      </div>
+      <div class="state-body text-center items-center">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background-color: var(--panel2); border: 1px solid var(--line);">
+          <svg class="w-6 h-6" style="color: var(--muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+        </div>
+        <div class="text-body-scale font-semibold mb-1" style="color: var(--ink);">No products yet</div>
+        <p class="text-small-scale mb-4 max-w-[200px]" style="color: var(--muted);">Add your first product to generate SKUs and start trading.</p>
+        <button class="h-8 px-4 rounded-lg font-medium text-small-scale transition-opacity hover:opacity-90" style="background-color: var(--accent); color: var(--accentInk); border-radius: 8px;">
+          + New product
+        </button>
+      </div>
+    </div>
+
+    
+    <div class="state-card">
+      <div class="state-header">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-title text-[18px] font-semibold" style="color: var(--ink);">Error</h2>
+          <span class="text-label-scale font-mono" style="color: var(--faint);">03</span>
+        </div>
+        <p class="text-small-scale" style="color: var(--muted);">Every failure carries an error envelope, code, and monotonic request id.</p>
+      </div>
+      <div class="state-body">
+        <div class="p-4 rounded-lg border" style="background-color: var(--badWash); border-color: color-mix(in srgb, var(--bad) 20%, transparent);">
+          <div class="flex items-start gap-2.5 mb-2">
+            <span class="w-2 h-2 rounded-full mt-1.5 shrink-0" style="background-color: var(--bad);"></span>
+            <div>
+              <div class="text-body-scale font-semibold" style="color: var(--bad);">Query failed</div>
+              <p class="text-small-scale mt-0.5" style="color: #8b112d;">Database connection pool exhausted during serializable transaction check.</p>
+            </div>
+          </div>
+          <div class="mt-3 pt-2.5 border-t border-rose-200/60 flex items-center justify-between text-small-scale font-mono" style="color: var(--bad);">
+            <span>CODE: ERR_503_POOL</span>
+            <span>REQ: req_99x81a0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="state-card">
+      <div class="state-header">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-title text-[18px] font-semibold" style="color: var(--ink);">Form Validation</h2>
+          <span class="text-label-scale font-mono" style="color: var(--faint);">04</span>
+        </div>
+        <p class="text-small-scale" style="color: var(--muted);">Focusable summary linking to field, red outline, and inline explanation.</p>
+      </div>
+      <div class="state-body space-y-3">
+        
+        <div class="p-2.5 rounded-lg border text-small-scale flex items-center gap-2" style="background-color: var(--badWash); border-color: color-mix(in srgb, var(--bad) 20%, transparent); color: var(--bad);">
+          <span class="font-bold">1 error:</span>
+          <a href="#demo-email" class="underline hover:opacity-80">Work email address is malformed</a>
+        </div>
+        
+        <div>
+          <label class="block text-label-scale mb-1" style="color: var(--ink);">
+            WORK EMAIL <span style="color: var(--bad);">*</span>
+          </label>
+          <input id="demo-email" type="text" value="user@domain" class="w-full h-9 px-3 rounded-lg border font-mono text-small-scale" style="border-color: var(--bad); background-color: var(--panel);" readonly>
+          <span class="block mt-1 text-small-scale font-medium" style="color: var(--bad);">
+            Enter a valid domain name (e.g. name@organization.test).
+          </span>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="state-card">
+      <div class="state-header">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-title text-[18px] font-semibold" style="color: var(--ink);">Not Found</h2>
+          <span class="text-label-scale font-mono" style="color: var(--faint);">05</span>
+        </div>
+        <p class="text-small-scale" style="color: var(--muted);">Cross-tenant lookup answers 404 Not Found, never leaking tenant existence (403).</p>
+      </div>
+      <div class="state-body text-center items-center">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background-color: var(--panel2); border: 1px solid var(--line);">
+          <span class="font-mono text-title font-bold" style="color: var(--faint);">404</span>
+        </div>
+        <div class="text-body-scale font-semibold mb-1" style="color: var(--ink);">Product not found</div>
+        <p class="text-small-scale mb-4 max-w-[220px]" style="color: var(--muted);">
+          The requested record does not exist in your organization tenant scope.
+        </p>
+        <button class="h-8 px-4 rounded-lg border text-small-scale font-medium" style="background-color: var(--panel); border-color: var(--controlEdge); color: var(--ink); border-radius: 8px;">
+          Return to catalog
+        </button>
+      </div>
+    </div>
+
+    
+    <div class="state-card">
+      <div class="state-header">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-title text-[18px] font-semibold" style="color: var(--ink);">Zero Results</h2>
+          <span class="text-label-scale font-mono" style="color: var(--faint);">06</span>
+        </div>
+        <p class="text-small-scale" style="color: var(--muted);">Honest zero state with clear search term echoing and recovery chips.</p>
+      </div>
+      <div class="state-body">
+        <div class="p-3 rounded-lg border mb-3" style="background-color: var(--warnWash); border-color: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn);">
+          <div class="text-small-scale font-medium">No products match &ldquo;linen shirt&rdquo;</div>
+        </div>
+        <div class="text-small-scale mb-2" style="color: var(--muted);">Try broadening your query:</div>
+        <div class="flex flex-wrap gap-1.5">
+          <button class="px-2.5 py-1 rounded-full text-small-scale border bg-white hover:bg-slate-50 transition-colors" style="border-color: var(--lineStrong); color: var(--ink);">
+            All textiles
+          </button>
+          <button class="px-2.5 py-1 rounded-full text-small-scale border bg-white hover:bg-slate-50 transition-colors" style="border-color: var(--lineStrong); color: var(--ink);">
+            Nile Cotton Shirt
+          </button>
+          <button class="px-2.5 py-1 rounded-full text-small-scale border bg-white hover:bg-slate-50 transition-colors" style="border-color: var(--lineStrong); color: var(--ink);">
+            Clear filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="state-card">
+      <div class="state-header">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-title text-[18px] font-semibold" style="color: var(--ink);">Nothing Published Yet</h2>
+          <span class="text-label-scale font-mono" style="color: var(--faint);">07</span>
+        </div>
+        <p class="text-small-scale" style="color: var(--muted);">Honest empty public storefront before first merchant product is published.</p>
+      </div>
+      <div class="state-body text-center items-center">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background-color: var(--panel2); border: 1px solid var(--line);">
+          <svg class="w-6 h-6" style="color: var(--muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
+        </div>
+        <div class="text-body-scale font-semibold mb-1" style="color: var(--ink);">Catalogue is unpopulated</div>
+        <p class="text-small-scale mb-4 max-w-[220px]" style="color: var(--muted);">This seller has not approved any items for live marketplace indexing.</p>
+        <button class="h-8 px-4 rounded-lg font-medium text-small-scale" style="background-color: var(--accent); color: var(--accentInk); border-radius: 8px;">
+          Start selling
+        </button>
+      </div>
+    </div>
+
+    
+    <div class="state-card">
+      <div class="state-header">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-title text-[18px] font-semibold" style="color: var(--ink);">Buyer — No Orders</h2>
+          <span class="text-label-scale font-mono" style="color: var(--faint);">08</span>
+        </div>
+        <p class="text-small-scale" style="color: var(--muted);">A new buyer&rsquo;s clean initial account state with discovery CTA.</p>
+      </div>
+      <div class="state-body text-center items-center">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style="background-color: var(--panel2); border: 1px solid var(--line);">
+          <svg class="w-6 h-6" style="color: var(--muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+        </div>
+        <div class="text-body-scale font-semibold mb-1" style="color: var(--ink);">You have no orders yet</div>
+        <p class="text-small-scale mb-4 max-w-[220px]" style="color: var(--muted);">When you check out items from Nile Traders or Delta Goods, they will appear here.</p>
+        <button class="h-8 px-4 rounded-lg font-medium text-small-scale border" style="background-color: var(--panel); border-color: var(--controlEdge); color: var(--ink); border-radius: 8px;">
+          Explore storefront
+        </button>
+      </div>
+    </div>
+
+    
+    <div class="state-card">
+      <div class="state-header">
+        <div class="flex items-center justify-between mb-1">
+          <h2 class="text-title text-[18px] font-semibold" style="color: var(--ink);">Order — Pending Payment</h2>
+          <span class="text-label-scale font-mono" style="color: var(--faint);">09</span>
+        </div>
+        <p class="text-small-scale" style="color: var(--muted);">Honest dead-end boundary state awaiting synchronous gateway capture.</p>
+      </div>
+      <div class="state-body">
+        <div class="p-3.5 rounded-lg border bg-white space-y-3" style="border-color: var(--line);">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-small-scale font-medium" style="color: var(--ink);">Order #1042</span>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-small-scale font-medium" style="background-color: var(--warnWash); color: var(--warn);">
+              <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--warn);"></span> Awaiting payment
+            </span>
+          </div>
+          <p class="text-small-scale" style="color: var(--muted);">
+            Invoice generated. Stock holds will release in <span class="font-mono font-medium" style="color: var(--ink);">14:52</span> if settlement is not completed.
+          </p>
+          <div class="pt-2 border-t flex items-center justify-between" style="border-color: var(--line);">
+            <span class="font-mono text-small-scale font-bold" style="color: var(--ink);">Total: E£249.00</span>
+            <button class="h-7 px-3 rounded font-medium text-small-scale" style="background-color: var(--accent); color: var(--accentInk); border-radius: 6px;">
+              Pay now →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  
+  <footer class="pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-small-scale font-mono" style="border-color: var(--line); color: var(--faint);">
+    <div>MarketCore System States Contract · /design/states</div>
+    <div>Zero-Spinner Policy · RFC-7807 Error Envelopes · Security Isolated</div>
+  </footer>
+</div></div>

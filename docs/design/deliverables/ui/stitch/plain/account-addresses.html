@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore — Account — Addresses</title>
+<!-- Material Symbols Outlined font -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: DM Sans & DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS Play CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-surface": "#302f39",
+            "primary-container": "#4f46e5",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#e2dfff",
+            "on-secondary-fixed-variant": "#46464f",
+            "on-background": "#1b1b24",
+            "ok": "#117f3a",
+            "on-primary-container": "#dad7ff",
+            "inverse-primary": "#c3c0ff",
+            "rail": "#0b0d14",
+            "on-tertiary-container": "#ffd2be",
+            "primary-fixed-dim": "#c3c0ff",
+            "line": "#e6e8ef",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "on-tertiary": "#ffffff",
+            "surface-container": "#f0ecf9",
+            "outline-variant": "#c7c4d8",
+            "on-secondary-fixed": "#1a1b23",
+            "accentInk": "#ffffff",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-primary": "#ffffff",
+            "surface-dim": "#dcd8e5",
+            "on-surface": "#1b1b24",
+            "panel2": "#f1f3f9",
+            "warnWash": "#fdf3e4",
+            "info": "#097499",
+            "on-tertiary-fixed": "#351000",
+            "surface-bright": "#fcf8ff",
+            "warn": "#a55a05",
+            "secondary-fixed-dim": "#c7c5d0",
+            "railMuted": "#8b93a7",
+            "background": "#fcf8ff",
+            "primary": "#3525cd",
+            "badWash": "#fdecef",
+            "secondary-container": "#e3e1ec",
+            "surface-variant": "#e4e1ee",
+            "surface-container-highest": "#e4e1ee",
+            "panel": "#ffffff",
+            "accentWash": "#eef0ff",
+            "bad": "#d11b43",
+            "secondary-fixed": "#e3e1ec",
+            "tertiary-fixed": "#ffdbcc",
+            "surface-container-low": "#f5f2ff",
+            "error": "#ba1a1a",
+            "controlEdge": "#838b9a",
+            "on-secondary": "#ffffff",
+            "canvas": "#f6f7fb",
+            "faint": "#676e7a",
+            "on-surface-variant": "#464555",
+            "okWash": "#e8f7ee",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-secondary-container": "#64646d",
+            "surface-tint": "#4d44e3",
+            "on-error": "#ffffff",
+            "surface-container-high": "#eae6f4",
+            "lineStrong": "#d5d9e2",
+            "tertiary-container": "#a44100",
+            "secondary": "#5d5e67",
+            "railInk": "#eef1f7",
+            "accent": "#4f46e5",
+            "inverse-on-surface": "#f3effc",
+            "on-primary-fixed": "#0f0069",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "surface-container-lowest": "#ffffff",
+            "muted": "#5a6272",
+            "tertiary": "#7e3000",
+            "outline": "#777587",
+            "ink": "#0a0b12"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-sm": "6px",
+            "space-xs": "4px",
+            "space-md": "10px",
+            "space-lg": "16px",
+            "margin": "20px",
+            "space-xl": "22px",
+            "space-xxl": "26px",
+            "gutter": "16px"
+          },
+          "fontFamily": {
+            "metric": ["DM Sans"],
+            "display": ["DM Sans"],
+            "title": ["DM Sans"],
+            "small": ["DM Sans"],
+            "label": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "body": ["DM Sans"]
+          },
+          "fontSize": {
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body antialiased min-h-screen flex flex-col selection:bg-accentWash selection:text-accent">
+<!-- Top Navigation Bar (64px) & Category Bar (44px) -->
+<header class="bg-panel w-full border-b border-line shadow-sm shrink-0 z-30 sticky top-0">
+<!-- Main Header Bar -->
+<div class="max-w-[1440px] h-[64px] mx-auto px-margin flex items-center justify-between gap-space-lg">
+<!-- Left: Logo & Search -->
+<div class="flex items-center gap-space-xl flex-1 max-w-[620px]">
+<a class="font-title text-title font-bold text-ink tracking-tight flex items-center gap-space-xs shrink-0 select-none" href="/">
+<span class="w-7 h-7 rounded-lg bg-accent text-accentInk flex items-center justify-center font-title text-body font-bold shadow-sm">M</span>
+<span>MarketCore</span>
+</a>
+<!-- Search Bar -->
+<div class="relative w-full max-w-[440px]">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" style="font-size: 20px;">search</span>
+<input class="w-full bg-panel2 border border-line pl-10 pr-4 py-2 text-body rounded-lg text-ink placeholder:text-muted placeholder:font-body focus:outline-none focus:border-accent focus:bg-panel transition-all" placeholder="Search enterprise supplies, catalog items, SKUs..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions: Wishlist, Orders, Cart, Profile -->
+<div class="flex items-center gap-space-md shrink-0">
+<a class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-muted hover:text-ink hover:bg-panel2 transition-colors font-label text-label" href="/wishlist">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+<span class="hidden sm:inline">Wishlist</span>
+<span class="ml-0.5 px-1.5 py-0.2 bg-panel2 border border-lineStrong text-ink font-mono text-small rounded-full leading-tight font-medium">2</span>
+</a>
+<a class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-muted hover:text-ink hover:bg-panel2 transition-colors font-label text-label" href="/account/orders">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">inventory_2</span>
+<span class="hidden sm:inline">Orders</span>
+</a>
+<a class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accentWash text-accent hover:bg-panel2 transition-colors font-label text-label font-medium" href="/cart">
+<span class="material-symbols-outlined text-[20px]" data-icon="shopping_bag">shopping_bag</span>
+<span>Cart (3)</span>
+</a>
+<div class="h-5 w-px bg-line mx-1"></div>
+<!-- User Profile Pill -->
+<div class="flex items-center gap-2 pl-1 cursor-pointer">
+<img class="w-9 h-9 rounded-full object-cover border border-line shadow-xs" data-alt="A refined, well-lit studio headshot of Mariam Buyer, an executive procurement specialist dressed in smart professional attire, against an understated neutral office backdrop with natural, crisp daylighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkFKRgJe7Z6gNuXnVQ_rc0oILP6E_TWAgnskB3KDpCrBlJhHXKgfUDZ-1beZrxzBe3vSoEfNpBTaE4BUSiahq1GETWOGnhXl8ReNksGUJCDjnVfdhscoEwoV92gjOby-olk1iymM2Hiee-_FFbcCo26PuGsvIQcG-ylFks0ZYnQKYI-qz8Mi8ZICUG06cM2LuxAHy0Gfy-SGdxRtdAJQ_xTCdaqHaaUfhjzxAXJjXg3D91xDB5N6n6K3ErEKsKw7tj8xSopZQsNNE"/>
+<div class="hidden lg:flex flex-col text-left">
+<span class="font-label text-label font-semibold text-ink leading-tight">Mariam Buyer</span>
+<span class="font-small text-small text-muted leading-none">mariam@shopper.test</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Category Bar (44px) -->
+<div class="border-t border-line bg-panel">
+<div class="max-w-[1440px] h-[44px] mx-auto px-margin flex items-center gap-space-xl overflow-x-auto no-scrollbar font-label text-label">
+<a class="text-ink font-medium hover:text-accent transition-colors flex items-center gap-1 shrink-0" href="#">
+<span class="material-symbols-outlined text-[18px]">menu</span>
+<span>All Categories</span>
+</a>
+<a class="text-muted hover:text-ink transition-colors shrink-0" href="#">Textiles</a>
+<a class="text-muted hover:text-ink transition-colors shrink-0" href="#">Home</a>
+<a class="text-muted hover:text-ink transition-colors shrink-0" href="#">Food</a>
+<a class="text-muted hover:text-ink transition-colors shrink-0" href="#">Beauty</a>
+<a class="text-bad font-medium hover:opacity-85 transition-opacity shrink-0 flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">local_fire_department</span>
+<span>Deals</span>
+</a>
+</div>
+</div>
+</header>
+<!-- Page Body / Canvas Content -->
+<main class="flex-1 max-w-[1440px] w-full mx-auto px-margin py-space-xl">
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-2 text-small text-faint mb-space-lg font-small">
+<a class="hover:text-ink transition-colors" href="/">Storefront</a>
+<span class="text-lineStrong">/</span>
+<a class="hover:text-ink transition-colors" href="/account">Account</a>
+<span class="text-lineStrong">/</span>
+<span class="text-ink font-medium">Addresses</span>
+</nav>
+<!-- Account Layout Container -->
+<div class="flex flex-col lg:flex-row gap-space-xxl items-start">
+<!-- LEFT SIDEBAR: Account Navigation (246px) -->
+<aside class="w-full lg:w-[246px] shrink-0 bg-panel border border-line rounded-xl p-space-md shadow-xs">
+<!-- Sidebar User Header -->
+<div class="flex items-center gap-3 p-space-sm mb-space-sm pb-space-md border-b border-line">
+<img class="w-10 h-10 rounded-full object-cover border border-line" data-alt="A centered square portrait of user Mariam Buyer smiling warmly in a bright corporate environment with natural white lighting and crisp subtle details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvYvm_VBnDLyLQqBDj1KN_1ZIimDdDdeT0mauNWPgY5jabkMtYt14hjPKfboha0XvxIuGk30_JOTZviIqUVrqdKaiXSd291eJtg34azVDkPWywKC0wQhI-Y7iHxYX8EgQlJBXpeqrphBAeikTSEcCmP7CdO5EooSS4TePsX5Gys4YzCcAWZJkQ69-AdcgtmFZTmAsuo3deT4dd1G745pyh210rtpafqJLcceGKmh6iH_P49oUxUFbutTGgyN5Z2HvWCiPgdyiN3sA"/>
+<div class="overflow-hidden">
+<h3 class="font-body text-body font-semibold text-ink truncate leading-tight">Mariam Buyer</h3>
+<p class="font-small text-small text-muted truncate">mariam@shopper.test</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-1 font-body text-body">
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors" href="/account/profile">
+<span class="material-symbols-outlined text-[20px] text-faint" data-icon="shield_person">shield_person</span>
+<span>Profile &amp; security</span>
+</a>
+<!-- Selected: Addresses -->
+<a class="bg-accentWash text-accent font-medium rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors" href="/account/addresses">
+<span class="material-symbols-outlined text-[20px] text-accent" data-icon="location_on" data-weight="fill" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span>Addresses</span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors" href="/account/payments">
+<span class="material-symbols-outlined text-[20px] text-faint" data-icon="credit_card">credit_card</span>
+<span>Payment methods</span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors" href="/account/orders">
+<span class="material-symbols-outlined text-[20px] text-faint" data-icon="inventory_2">inventory_2</span>
+<span>Orders</span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center justify-between transition-colors" href="/account/wishlist">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-faint" data-icon="favorite">favorite</span>
+<span>Wishlist</span>
+</div>
+<span class="px-2 py-0.5 bg-panel2 text-ink border border-line font-mono text-small rounded-full leading-none font-medium">3</span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors" href="/account/reviews">
+<span class="material-symbols-outlined text-[20px] text-faint" data-icon="rate_review">rate_review</span>
+<span>My reviews</span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors" href="/account/returns">
+<span class="material-symbols-outlined text-[20px] text-faint" data-icon="assignment_return">assignment_return</span>
+<span>Returns</span>
+</a>
+</nav>
+<!-- Sidebar Divider & Sign Out -->
+<div class="pt-space-md mt-space-md border-t border-line">
+<button class="w-full text-muted hover:text-bad hover:bg-badWash rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors font-body text-body text-left">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+<span>Sign out</span>
+</button>
+</div>
+</aside>
+<!-- MAIN CONTENT REGION -->
+<section class="flex-1 w-full flex flex-col gap-space-xl">
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-lg border-b border-line gap-4">
+<div>
+<h1 class="font-title text-title font-semibold text-ink tracking-tight">Addresses</h1>
+<p class="font-body text-body text-muted mt-0.5">Where your orders go.</p>
+</div>
+<button class="inline-flex items-center justify-center gap-2 px-space-lg py-2.5 bg-accent text-accentInk rounded-lg font-body text-body font-medium shadow-xs hover:bg-primary transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>+ New address</span>
+</button>
+</div>
+<!-- Two-Column Layout (Left: Saved Addresses, Right: Add Form + Honest Gap Note) -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-xl items-start">
+<!-- LEFT COLUMN: Saved Addresses (7 cols on XL) -->
+<div class="xl:col-span-7 flex flex-col gap-space-lg">
+<div class="flex items-center justify-between">
+<span class="font-label text-label uppercase tracking-wider text-muted font-semibold">Saved Delivery Addresses (2)</span>
+<span class="font-small text-small text-faint">Default shipping selected automatically</span>
+</div>
+<!-- Address Card 1 (Default Address) -->
+<div class="bg-panel border border-line rounded-xl p-space-lg shadow-sm hover:border-lineStrong transition-colors relative">
+<div class="flex items-start justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="font-body text-body font-bold text-ink">Home</span>
+<!-- Default Pill with status dot -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-okWash text-ok font-label text-label font-medium border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                    DEFAULT
+                  </span>
+</div>
+<div class="p-1 rounded bg-panel2 text-muted">
+<span class="material-symbols-outlined text-[18px]">home</span>
+</div>
+</div>
+<!-- Content Stack -->
+<div class="space-y-1.5 mb-space-md">
+<div class="font-body text-body font-medium text-ink">Mariam Buyer</div>
+<div class="font-body text-body text-ink">12 Corniche El Nil, Cairo, 11511</div>
+<div class="font-body text-body text-muted flex items-center gap-1.5">
+<span>Cairo Governorate,</span>
+<span class="font-mono text-mono text-ink font-normal">11511</span>,
+                  <span>Egypt</span>
+</div>
+<div class="flex items-center gap-2 pt-1">
+<span class="material-symbols-outlined text-muted text-[16px]">call</span>
+<span class="font-mono text-mono text-ink">+20 100 000 0000</span>
+</div>
+</div>
+<!-- Delivery Instructions Tag -->
+<div class="mb-space-lg p-2.5 bg-panel2 rounded-lg border border-line flex items-start gap-2">
+<span class="material-symbols-outlined text-muted text-[18px] shrink-0 mt-0.5">doorbell</span>
+<div class="font-small text-small text-muted">
+<span class="font-medium text-ink">Delivery instructions:</span> Leave with doorman at building entrance
+                </div>
+</div>
+<!-- Actions Footer -->
+<div class="pt-space-md border-t border-line flex items-center justify-between">
+<div class="flex items-center gap-space-lg">
+<button class="font-body text-body text-accent hover:text-primary font-medium transition-colors inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Edit address</span>
+</button>
+<span class="text-faint font-small text-small italic">Default address cannot be deleted</span>
+</div>
+<span class="text-ok font-label text-label font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span> Verified
+                </span>
+</div>
+</div>
+<!-- Address Card 2 (Secondary Address) -->
+<div class="bg-panel border border-line rounded-xl p-space-lg shadow-sm hover:border-lineStrong transition-colors">
+<div class="flex items-start justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="font-body text-body font-bold text-ink">Work</span>
+</div>
+<button class="font-small text-small text-accent hover:underline font-medium">
+                  Set as default
+                </button>
+</div>
+<!-- Content Stack -->
+<div class="space-y-1.5 mb-space-lg">
+<div class="font-body text-body font-medium text-ink">Mariam Buyer (Office)</div>
+<div class="font-body text-body text-ink">4 Tahrir Square, Cairo, 11111</div>
+<div class="font-body text-body text-muted flex items-center gap-1.5">
+<span>Cairo Governorate,</span>
+<span class="font-mono text-mono text-ink font-normal">11111</span>,
+                  <span>Egypt</span>
+</div>
+<div class="flex items-center gap-2 pt-1">
+<span class="material-symbols-outlined text-muted text-[16px]">call</span>
+<span class="font-mono text-mono text-ink">+20 100 000 0000</span>
+</div>
+</div>
+<!-- Actions Footer -->
+<div class="pt-space-md border-t border-line flex items-center justify-between">
+<div class="flex items-center gap-space-xl">
+<button class="font-body text-body text-accent hover:text-primary font-medium transition-colors inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Edit address</span>
+</button>
+<button class="font-body text-body text-bad hover:opacity-80 font-medium transition-opacity inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+<span>Remove</span>
+</button>
+</div>
+<span class="text-faint font-small text-small">Commercial zone</span>
+</div>
+</div>
+<!-- Additional Help / Micro banner -->
+<div class="p-space-md bg-panel rounded-lg border border-line flex items-center justify-between text-small text-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-info text-[20px]">local_shipping</span>
+<span>Need orders shipped internationally outside Egypt?</span>
+</div>
+<a class="text-accent hover:underline font-medium" href="#">Global shipping policy</a>
+</div>
+</div>
+<!-- RIGHT COLUMN: Add New Address Form & Honest Gap Note (5 cols on XL) -->
+<div class="xl:col-span-5 flex flex-col gap-space-lg">
+<!-- Card 1: 'New address' form -->
+<div class="bg-panel border border-line rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between pb-space-md mb-space-md border-b border-line">
+<h2 class="font-body text-body font-bold text-ink">Add delivery address</h2>
+<span class="font-label text-label uppercase text-muted font-medium">* Required</span>
+</div>
+<form class="space-y-space-md" onsubmit="event.preventDefault();">
+<!-- Label (optional) -->
+<div>
+<label class="block font-label text-label text-muted mb-1 font-medium">
+                    Label <span class="text-faint font-normal">(optional)</span>
+</label>
+<input class="w-full bg-panel border border-controlEdge/40 focus:border-accent rounded-lg px-3 py-2 text-body text-ink placeholder:text-muted focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. Summer House, Studio" type="text"/>
+</div>
+<!-- Recipient full name * -->
+<div>
+<label class="block font-label text-label text-muted mb-1 font-medium">
+                    Recipient full name <span class="text-bad font-semibold">*</span>
+</label>
+<input class="w-full bg-panel border border-controlEdge/40 focus:border-accent rounded-lg px-3 py-2 text-body text-ink placeholder:text-muted focus:ring-1 focus:ring-accent outline-none transition-all font-medium" type="text" value="Mariam Buyer"/>
+</div>
+<!-- Street address * -->
+<div>
+<label class="block font-label text-label text-muted mb-1 font-medium">
+                    Street address <span class="text-bad font-semibold">*</span>
+</label>
+<input class="w-full bg-panel border border-controlEdge/40 focus:border-accent rounded-lg px-3 py-2 text-body text-ink placeholder:text-muted focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="Street name, building number, apartment/suite" type="text"/>
+</div>
+<!-- Two-up row: City * and Postal code * -->
+<div class="grid grid-cols-2 gap-space-md">
+<div>
+<label class="block font-label text-label text-muted mb-1 font-medium">
+                      City <span class="text-bad font-semibold">*</span>
+</label>
+<input class="w-full bg-panel border border-controlEdge/40 focus:border-accent rounded-lg px-3 py-2 text-body text-ink placeholder:text-muted focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="Cairo" type="text"/>
+</div>
+<div>
+<label class="block font-label text-label text-muted mb-1 font-medium">
+                      Postal code <span class="text-bad font-semibold">*</span>
+</label>
+<input class="w-full bg-panel border border-controlEdge/40 focus:border-accent rounded-lg px-3 py-2 font-mono text-mono text-ink placeholder:text-muted focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="11511" type="text"/>
+</div>
+</div>
+<!-- Phone number * -->
+<div>
+<label class="block font-label text-label text-muted mb-1 font-medium">
+                    Phone number <span class="text-bad font-semibold">*</span>
+</label>
+<div class="relative">
+<input class="w-full bg-panel border border-controlEdge/40 focus:border-accent rounded-lg px-3 py-2 font-mono text-mono text-ink placeholder:text-muted focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="+20 100 ..." type="tel"/>
+</div>
+<p class="font-small text-small text-faint mt-1">Used by local courier for delivery scheduling and gated entry confirmation.</p>
+</div>
+<!-- Checkbox control -->
+<div class="pt-1">
+<label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
+<input checked="" class="w-4 h-4 rounded text-accent focus:ring-accent border-controlEdge/60 bg-panel cursor-pointer" type="checkbox"/>
+<span class="font-body text-body text-ink">Make this my default address</span>
+</label>
+</div>
+<!-- Action button -->
+<div class="pt-2">
+<button class="w-full py-2.5 px-4 bg-accent text-accentInk rounded-[9px] font-body text-body font-medium shadow-xs hover:bg-primary transition-all active:scale-[0.98] text-center" type="submit">
+                    Save address
+                  </button>
+</div>
+</form>
+</div>
+<!-- Card 2: Honest Gap callout card (--panel2 background) -->
+<div class="bg-panel2 border border-line rounded-xl p-space-lg shadow-xs">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-lg bg-accentWash text-info flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]" data-icon="info">info</span>
+</div>
+<div>
+<h3 class="font-body text-body font-semibold text-ink leading-snug">
+                    Domain Constraint — Address Storage
+                  </h3>
+<p class="font-small text-small text-muted mt-1 leading-relaxed">
+                    Address book records are stored locally for checkout convenience. The backend fulfillment domain currently consumes single-order delivery metadata passed at checkout (<code class="font-mono text-small bg-panel px-1 py-0.5 rounded border border-line">/checkout</code>) and does not yet synchronize an organization-wide address registry.
+                  </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Site Footer (Docked full-width) -->
+<footer class="bg-panel border-t border-line mt-auto shrink-0">
+<div class="max-w-[1440px] w-full px-margin py-space-xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-3">
+<span class="font-title text-title font-bold text-ink tracking-tight">MarketCore</span>
+<span class="text-lineStrong">|</span>
+<span class="font-small text-small text-faint">© 2025 MarketCore Enterprise Inc. All rights reserved.</span>
+</div>
+<nav class="flex flex-wrap gap-x-6 gap-y-2 items-center font-small text-small">
+<a class="text-faint hover:text-ink transition-colors" href="#">Terms of Supply</a>
+<a class="text-faint hover:text-ink transition-colors" href="#">Procurement Policy</a>
+<a class="text-faint hover:text-ink transition-colors" href="#">Privacy Notice</a>
+<a class="text-faint hover:text-ink transition-colors" href="#">Security &amp; Compliance</a>
+<a class="text-faint hover:text-ink transition-colors" href="#">Supplier Portal</a>
+<a class="text-faint hover:text-ink transition-colors" href="#">System Status</a>
+</nav>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign in — MarketCore</title>
+<!-- Google Fonts: DM Sans & DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Verbatim Tailwind Config Injection -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary": "#3525cd",
+            "on-tertiary-fixed": "#351000",
+            "okWash": "#e8f7ee",
+            "on-surface": "#1b1b24",
+            "line": "#e6e8ef",
+            "tertiary-fixed": "#ffdbcc",
+            "muted": "#5a6272",
+            "inverse-primary": "#c3c0ff",
+            "on-secondary-fixed-variant": "#46464f",
+            "ink": "#0a0b12",
+            "surface-container-highest": "#e4e1ee",
+            "info": "#097499",
+            "lineStrong": "#d5d9e2",
+            "on-primary": "#ffffff",
+            "on-error": "#ffffff",
+            "secondary-fixed": "#e3e1ec",
+            "error": "#ba1a1a",
+            "surface-container": "#f0ecf9",
+            "surface-container-lowest": "#ffffff",
+            "inverse-on-surface": "#f3effc",
+            "outline": "#777587",
+            "surface-variant": "#e4e1ee",
+            "faint": "#676e7a",
+            "warnWash": "#fdf3e4",
+            "on-secondary-container": "#64646d",
+            "secondary-container": "#e3e1ec",
+            "primary-fixed-dim": "#c3c0ff",
+            "on-error-container": "#93000a",
+            "tertiary-fixed-dim": "#ffb695",
+            "panel2": "#f1f3f9",
+            "on-tertiary-container": "#ffd2be",
+            "controlEdge": "#838b9a",
+            "surface-tint": "#4d44e3",
+            "on-secondary-fixed": "#1a1b23",
+            "tertiary": "#7e3000",
+            "canvas": "#f6f7fb",
+            "railMuted": "#8b93a7",
+            "warn": "#a55a05",
+            "on-primary-fixed": "#0f0069",
+            "background": "#fcf8ff",
+            "ok": "#117f3a",
+            "primary-fixed": "#e2dfff",
+            "bad": "#d11b43",
+            "surface-dim": "#dcd8e5",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f5f2ff",
+            "surface": "#fcf8ff",
+            "on-secondary": "#ffffff",
+            "primary-container": "#4f46e5",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "on-primary-fixed-variant": "#3323cc",
+            "accent": "#4f46e5",
+            "outline-variant": "#c7c4d8",
+            "on-surface-variant": "#464555",
+            "error-container": "#ffdad6",
+            "badWash": "#fdecef",
+            "surface-container-high": "#eae6f4",
+            "on-primary-container": "#dad7ff",
+            "on-background": "#1b1b24",
+            "inverse-surface": "#302f39",
+            "tertiary-container": "#a44100",
+            "secondary-fixed-dim": "#c7c5d0",
+            "panel": "#ffffff",
+            "accentInk": "#ffffff",
+            "rail": "#0b0d14",
+            "accentWash": "#eef0ff",
+            "railInk": "#eef1f7",
+            "surface-bright": "#fcf8ff",
+            "secondary": "#5d5e67"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xl": "22px",
+            "space-lg": "16px",
+            "gutter": "16px",
+            "margin": "20px",
+            "space-xxl": "26px",
+            "space-sm": "6px",
+            "space-md": "10px",
+            "space-xs": "4px"
+          },
+          "fontFamily": {
+            "metric": ["DM Sans", "sans-serif"],
+            "label": ["DM Sans", "sans-serif"],
+            "display": ["DM Sans", "sans-serif"],
+            "title": ["DM Sans", "sans-serif"],
+            "mono": ["DM Mono", "monospace"],
+            "body": ["DM Sans", "sans-serif"],
+            "small": ["DM Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "metric": [
+              "28px",
+              {
+                "lineHeight": "1.1",
+                "fontWeight": "700"
+              }
+            ],
+            "label": [
+              "12px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "0.02em",
+                "fontWeight": "500"
+              }
+            ],
+            "display": [
+              "35px",
+              {
+                "lineHeight": "1.1",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "700"
+              }
+            ],
+            "title": [
+              "25px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "600"
+              }
+            ],
+            "mono": [
+              "14px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ],
+            "body": [
+              "14.5px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "small": [
+              "13px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-canvas text-on-surface antialiased font-body text-body min-h-full flex flex-col justify-between selection:bg-accentWash selection:text-accent">
+<!-- TopNavBar (Shared Component from JSON) -->
+<header class="w-full bg-panel border-b border-line">
+<div class="w-full h-16 px-space-lg md:px-margin flex items-center justify-between mx-auto max-w-7xl">
+<!-- Brand Logo / Product Name -->
+<a class="flex items-center gap-space-sm group" href="/">
+<div class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-accentInk">
+<span class="material-symbols-outlined text-[20px]" data-icon="hub">hub</span>
+</div>
+<span class="font-title text-title font-semibold tracking-tight text-ink group-hover:text-primary transition-colors duration-150">MarketCore</span>
+</a>
+<!-- Center Navigation Links -->
+<nav class="hidden md:flex items-center gap-space-xl">
+<a class="text-muted font-body text-body py-2 hover:text-primary transition-colors duration-150" href="#status">Platform Status</a>
+<a class="text-muted font-body text-body py-2 hover:text-primary transition-colors duration-150" href="#docs">Documentation</a>
+<a class="text-muted font-body text-body py-2 hover:text-primary transition-colors duration-150" href="#support">Support</a>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-space-md">
+<a class="px-space-md py-space-sm font-label text-label text-muted hover:text-ink transition-colors duration-150" href="#help">Help</a>
+<a class="text-primary font-semibold border-b-2 border-primary py-2 font-label text-label transition-colors duration-150 active:scale-[0.99]" href="/signin">Sign In</a>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas: Centered 392px Authentication Card -->
+<main class="flex-grow flex items-center justify-center px-space-lg py-12 md:py-16">
+<div class="w-full max-w-[392px] bg-panel rounded-[12px] border border-line p-[24px] shadow-[0_2px_8px_rgba(10,11,18,0.04),0_1px_2px_rgba(10,11,18,0.02)]">
+<!-- Brand Mark Emblem -->
+<div class="flex items-center gap-space-sm mb-space-lg">
+<div class="w-7 h-7 rounded-lg bg-accent flex items-center justify-center text-accentInk">
+<span class="material-symbols-outlined text-[18px]" data-icon="polyline">polyline</span>
+</div>
+<span class="font-title text-[18px] font-semibold tracking-tight text-ink">MarketCore</span>
+</div>
+<!-- Header & Subtitle -->
+<div class="mb-space-lg">
+<h1 class="font-title text-title font-bold tracking-tight text-ink mb-1.5">Sign in</h1>
+<p class="font-body text-body text-muted leading-snug">Use your organization account to continue.</p>
+</div>
+<!-- Inline Error Banner -->
+<div class="mb-space-lg bg-badWash border border-[rgba(209,27,67,0.3)] rounded-[8px] p-[10px_12px] flex items-start gap-2.5">
+<span class="material-symbols-outlined text-bad text-[18px] shrink-0 mt-0.5" data-icon="error">error</span>
+<div class="font-small text-small font-medium text-bad leading-tight">
+          That email and password don't match an account.
+        </div>
+</div>
+<!-- Authentication Form -->
+<form action="#" class="space-y-space-lg" method="POST" onsubmit="event.preventDefault();">
+<!-- Field 1: Email Address -->
+<div>
+<div class="flex justify-between items-center mb-1.5">
+<label class="block font-label text-label uppercase tracking-wider text-faint" for="email">
+              EMAIL
+            </label>
+<span aria-hidden="true" class="font-small text-small text-faint">*</span>
+</div>
+<div class="relative">
+<input class="w-full h-10 px-3 bg-panel text-ink font-mono text-mono border border-controlEdge rounded-[8px] focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors" id="email" name="email" required="" type="email" value="owner@marketcore.test"/>
+</div>
+</div>
+<!-- Field 2: Password -->
+<div>
+<div class="flex justify-between items-center mb-1.5">
+<label class="block font-label text-label uppercase tracking-wider text-faint" for="password">
+              PASSWORD
+            </label>
+<a class="font-small text-small text-accent hover:underline" href="#reset-password">Forgot?</a>
+</div>
+<div class="relative flex items-center">
+<input class="w-full h-10 pl-3 pr-10 bg-panel text-ink font-body text-body tracking-widest border border-controlEdge rounded-[8px] focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition-colors" id="password" name="password" required="" type="password" value="secretcredentials"/>
+<button aria-label="Toggle password visibility" class="absolute right-2.5 flex items-center justify-center text-muted hover:text-ink transition-colors p-1" id="toggle-password" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Primary Action Button -->
+<div class="pt-1">
+<button class="w-full h-10 bg-accent hover:bg-primary-container text-accentInk font-body text-body font-medium rounded-[8px] flex items-center justify-center gap-space-xs transition-colors duration-150 active:scale-[0.99] shadow-sm cursor-pointer" type="submit">
+<span>Sign in</span>
+</button>
+</div>
+<!-- Single Sign-On / Alternative Divider -->
+<div class="relative flex py-1 items-center">
+<div class="flex-grow border-t border-line"></div>
+<span class="flex-shrink mx-3 font-label text-label text-faint uppercase tracking-wider">or</span>
+<div class="flex-grow border-t border-line"></div>
+</div>
+<!-- Enterprise SSO Secondary Button -->
+<button class="w-full h-10 bg-panel border border-lineStrong hover:bg-panel2 text-ink font-body text-body font-medium rounded-[8px] flex items-center justify-center gap-space-sm transition-colors duration-150 cursor-pointer" type="button">
+<span class="material-symbols-outlined text-[18px] text-muted" data-icon="domain">domain</span>
+<span>Sign in with Enterprise SSO</span>
+</button>
+</form>
+<!-- Card Footer Registration Callout -->
+<div class="mt-space-xl pt-space-lg border-t border-line text-center">
+<p class="font-body text-body text-muted">
+          No account? 
+          <a class="text-accent font-medium hover:underline transition-colors ml-1" href="/register">Create one</a>
+</p>
+</div>
+</div>
+</main>
+<!-- Footer (Shared Component from JSON) -->
+<footer class="w-full bg-canvas border-t border-line">
+<div class="w-full py-space-lg px-space-lg md:px-margin flex flex-col md:flex-row justify-between items-center gap-space-md max-w-7xl mx-auto">
+<div class="font-small text-small text-muted">
+        © 2025 MarketCore Enterprise Marketplace Inc. All rights reserved.
+      </div>
+<div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+<a class="text-muted font-small text-small hover:text-ink transition-colors duration-150" href="#privacy">Privacy Policy</a>
+<a class="text-muted font-small text-small hover:text-ink transition-colors duration-150" href="#terms">Terms of Service</a>
+<a class="text-muted font-small text-small hover:text-ink transition-colors duration-150" href="#security">Security Architecture</a>
+<a class="text-muted font-small text-small hover:text-ink transition-colors duration-150" href="#compliance">Compliance</a>
+<a class="text-muted font-small text-small hover:text-ink transition-colors duration-150" href="#status">Status</a>
+</div>
+</div>
+</footer>
+<!-- Micro-interaction script for Password Visibility Toggle -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('toggle-password');
+      const passwordInput = document.getElementById('password');
+      
+      if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', () => {
+          const iconSpan = toggleBtn.querySelector('span');
+          if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordInput.classList.remove('tracking-widest');
+            passwordInput.classList.add('font-mono');
+            if (iconSpan) {
+              iconSpan.textContent = 'visibility_off';
+              iconSpan.setAttribute('data-icon', 'visibility_off');
+            }
+          } else {
+            passwordInput.type = 'password';
+            passwordInput.classList.add('tracking-widest');
+            passwordInput.classList.remove('font-mono');
+            if (iconSpan) {
+              iconSpan.textContent = 'visibility';
+              iconSpan.setAttribute('data-icon', 'visibility');
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body></html>

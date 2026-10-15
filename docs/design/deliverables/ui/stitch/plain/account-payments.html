@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-canvas text-ink" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Payment methods — MarketCore</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-surface": "#302f39",
+            "primary-container": "#4f46e5",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#e2dfff",
+            "on-secondary-fixed-variant": "#46464f",
+            "on-background": "#1b1b24",
+            "ok": "#117f3a",
+            "on-primary-container": "#dad7ff",
+            "inverse-primary": "#c3c0ff",
+            "rail": "#0b0d14",
+            "on-tertiary-container": "#ffd2be",
+            "primary-fixed-dim": "#c3c0ff",
+            "line": "#e6e8ef",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "on-tertiary": "#ffffff",
+            "surface-container": "#f0ecf9",
+            "outline-variant": "#c7c4d8",
+            "on-secondary-fixed": "#1a1b23",
+            "accentInk": "#ffffff",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-primary": "#ffffff",
+            "surface-dim": "#dcd8e5",
+            "on-surface": "#1b1b24",
+            "panel2": "#f1f3f9",
+            "warnWash": "#fdf3e4",
+            "info": "#097499",
+            "on-tertiary-fixed": "#351000",
+            "surface-bright": "#fcf8ff",
+            "warn": "#a55a05",
+            "secondary-fixed-dim": "#c7c5d0",
+            "railMuted": "#8b93a7",
+            "background": "#fcf8ff",
+            "primary": "#3525cd",
+            "badWash": "#fdecef",
+            "secondary-container": "#e3e1ec",
+            "surface-variant": "#e4e1ee",
+            "surface-container-highest": "#e4e1ee",
+            "panel": "#ffffff",
+            "accentWash": "#eef0ff",
+            "bad": "#d11b43",
+            "secondary-fixed": "#e3e1ec",
+            "tertiary-fixed": "#ffdbcc",
+            "surface-container-low": "#f5f2ff",
+            "error": "#ba1a1a",
+            "controlEdge": "#838b9a",
+            "on-secondary": "#ffffff",
+            "canvas": "#f6f7fb",
+            "faint": "#676e7a",
+            "on-surface-variant": "#464555",
+            "okWash": "#e8f7ee",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-secondary-container": "#64646d",
+            "surface-tint": "#4d44e3",
+            "on-error": "#ffffff",
+            "surface-container-high": "#eae6f4",
+            "lineStrong": "#d5d9e2",
+            "tertiary-container": "#a44100",
+            "secondary": "#5d5e67",
+            "railInk": "#eef1f7",
+            "accent": "#4f46e5",
+            "inverse-on-surface": "#f3effc",
+            "on-primary-fixed": "#0f0069",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "surface-container-lowest": "#ffffff",
+            "muted": "#5a6272",
+            "tertiary": "#7e3000",
+            "outline": "#777587",
+            "ink": "#0a0b12"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-sm": "6px",
+            "space-xs": "4px",
+            "space-md": "10px",
+            "space-lg": "16px",
+            "margin": "20px",
+            "space-xl": "22px",
+            "space-xxl": "26px",
+            "gutter": "16px"
+          },
+          "fontFamily": {
+            "metric": ["DM Sans"],
+            "display": ["DM Sans"],
+            "title": ["DM Sans"],
+            "small": ["DM Sans"],
+            "label": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "body": ["DM Sans"]
+          },
+          "fontSize": {
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-full flex flex-col font-body text-body bg-canvas antialiased text-ink">
+<!-- TOP PUBLIC NAVIGATION BAR (64px) -->
+<header class="w-full bg-panel border-b border-line shadow-sm shrink-0 sticky top-0 z-40">
+<div class="max-w-[1440px] h-[64px] mx-auto px-margin flex items-center justify-between gap-space-lg">
+<!-- Brand & Search cluster -->
+<div class="flex items-center gap-space-xl flex-1 max-w-[680px]">
+<a class="font-title text-title font-bold text-ink tracking-tight flex items-center gap-space-xs shrink-0 select-none" href="/">
+<span class="w-8 h-8 rounded-lg bg-accent text-accentInk flex items-center justify-center font-bold text-lg">M</span>
+<span>MarketCore</span>
+</a>
+<!-- Search Bar -->
+<div class="relative w-full">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted">
+<span class="material-symbols-outlined text-[19px]">search</span>
+</span>
+<input class="w-full h-10 pl-10 pr-4 bg-panel2 rounded-xl border border-line text-body text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent text-small transition-all" placeholder="Search products, suppliers, SKU or specs..." type="search"/>
+</div>
+</div>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-space-lg shrink-0">
+<a class="text-muted hover:text-ink font-body text-body font-medium transition-colors" href="/orders">
+          Orders
+        </a>
+<a class="flex items-center gap-1.5 text-muted hover:text-ink font-body text-body font-medium transition-colors" href="/wishlist">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+<span>Wishlist</span>
+<span class="bg-panel2 text-ink border border-line px-1.5 py-0.2 rounded-full font-label text-label text-[11px] font-semibold">2</span>
+</a>
+<a class="flex items-center gap-1.5 bg-panel2 hover:bg-line border border-line px-3 py-1.5 rounded-xl font-label text-label text-ink transition-colors" href="/cart">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+<span class="font-semibold text-body">Cart (3)</span>
+</a>
+<div class="h-6 w-[1px] bg-line"></div>
+<!-- Mariam Buyer Profile Avatar Menu -->
+<a class="flex items-center gap-2.5 group" href="/account">
+<img class="w-9 h-9 rounded-full object-cover border border-line shadow-sm group-hover:ring-2 group-hover:ring-accent transition-all" data-alt="Editorial close-up corporate portrait of Mariam Buyer wearing professional minimalist apparel against an architectural studio interior in crisp natural bright light, refined modern corporate color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBL_ijlEa-alf_QWxgtKhmwHnspBjOatid3E7XgqZP1Rp-xIAwYtS3m9FdbddQ3mlAMaKzkY_z0Z-Ua8p6PuJNORyMYlg1rxkQmiK8LoazOspsOPOLptKSQsYAcsQR7Z17Rzc_64maPdPbrckD2_97ozY0BaB7fRSDMRU5jYQtLko5tIEW4T_mh4QKEssNJwqgUbjpbbB8kVSRnXnNWTWnGIayPoGr3Ni6gkGiKACNJp5oNnEMXixKSPfhCn4fXzYQPWIFVsEOKCTQ"/>
+<div class="hidden lg:flex flex-col text-left leading-tight">
+<span class="font-label text-label font-semibold text-ink group-hover:text-accent transition-colors">Mariam Buyer</span>
+<span class="font-small text-small text-muted text-[11px]">Enterprise Tier</span>
+</div>
+</a>
+</div>
+</div>
+</header>
+<!-- CATEGORY BAR (44px) -->
+<nav class="w-full bg-panel border-b border-line shadow-sm shrink-0">
+<div class="max-w-[1440px] h-[44px] mx-auto px-margin flex items-center gap-space-xl overflow-x-auto text-small font-label">
+<a class="flex items-center gap-1 text-ink font-semibold hover:text-accent shrink-0" href="/categories">
+<span class="material-symbols-outlined text-[18px]">menu</span>
+<span>All Categories</span>
+</a>
+<a class="text-muted hover:text-ink transition-colors shrink-0" href="/textiles">Textiles</a>
+<a class="text-muted hover:text-ink transition-colors shrink-0" href="/home">Home</a>
+<a class="text-muted hover:text-ink transition-colors shrink-0" href="/food">Food</a>
+<a class="text-muted hover:text-ink transition-colors shrink-0" href="/beauty">Beauty</a>
+<a class="text-accent font-semibold flex items-center gap-1 hover:text-primary shrink-0" href="/deals">
+<span class="material-symbols-outlined text-[16px]">local_offer</span>
+<span>Deals</span>
+</a>
+</div>
+</nav>
+<!-- BREADCRUMB STRIP -->
+<section class="max-w-[1440px] w-full mx-auto px-margin pt-space-lg pb-space-sm">
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-small font-small text-muted">
+<a class="hover:text-ink transition-colors" href="/">Storefront</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-ink transition-colors" href="/account">Account</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-ink font-medium">Payment methods</span>
+</nav>
+</section>
+<!-- WORKSPACE CANVASS (1440px) -->
+<main class="max-w-[1440px] w-full mx-auto px-margin pb-space-xxl flex-1 flex flex-col md:flex-row gap-space-xxl items-start">
+<!-- LEFT ACCOUNT NAVIGATION (246px) -->
+<aside class="w-full md:w-[246px] shrink-0 bg-panel border border-line rounded-xl p-space-md shadow-sm">
+<!-- Profile Header Summary -->
+<div class="p-space-md border-b border-line mb-space-sm flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover border border-line shrink-0" data-alt="Square modern headshot of Mariam Buyer bathed in soft studio lighting with a neutral gray background in high resolution, wearing high quality executive attire matching modern minimal aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_gRcpxiYFjT3BcrCf_NxUZEnjnAh4qsvvA-0WGnU6AB-ozXeXQ0SDqV_Hbs-TTKboaxEQfV1LhrHdiNxWRlAgHtDUSF-z2B17dVgO59EYH58mKG7Lp6F1mDmyhFaWZcWksVe3StqAfYn12DUbvtXpOc9aNZxq8i19unNqd9L2YPROcp4qSbzytWFwu6EMhNUD_DVU2co8ASA4HjRw-Mvb0gd3DzLOdBe2Y0LD0syhZpTjf8-a_ja2Yz45LmJhxB7iz-XRVL59Mu8"/>
+<div class="min-w-0 flex-1">
+<p class="font-label text-label font-bold text-ink truncate">Mariam Buyer</p>
+<p class="font-small text-small text-muted text-[11px] truncate">mariam@shopper.test</p>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="space-y-1">
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-body" href="/account/profile">
+<span class="material-symbols-outlined text-[19px]">shield_person</span>
+<span>Profile &amp; security</span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-body" href="/account/addresses">
+<span class="material-symbols-outlined text-[19px]">location_on</span>
+<span>Addresses</span>
+</a>
+<!-- SELECTED TAB -->
+<a class="bg-accentWash text-accent font-medium rounded-lg px-space-md py-space-sm flex items-center justify-between transition-colors text-body" href="/account/payments">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[19px]" style="font-variation-settings: 'FILL' 1;">credit_card</span>
+<span>Payment methods</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-body" href="/account/orders">
+<span class="material-symbols-outlined text-[19px]">inventory_2</span>
+<span>Orders</span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center justify-between transition-colors text-body" href="/account/wishlist">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[19px]">favorite</span>
+<span>Wishlist</span>
+</div>
+<span class="bg-panel2 text-muted px-2 py-0.5 rounded-full font-label text-label text-[11px] font-semibold">3</span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-body" href="/account/reviews">
+<span class="material-symbols-outlined text-[19px]">rate_review</span>
+<span>My reviews</span>
+</a>
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-body" href="/account/returns">
+<span class="material-symbols-outlined text-[19px]">assignment_return</span>
+<span>Returns</span>
+</a>
+</nav>
+<!-- Account Sign Out Footer -->
+<div class="mt-space-md pt-space-sm border-t border-line">
+<a class="text-muted hover:text-bad hover:bg-badWash rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-body" href="/logout">
+<span class="material-symbols-outlined text-[19px]">logout</span>
+<span>Sign out</span>
+</a>
+</div>
+</aside>
+<!-- MAIN CONTENT REGION -->
+<div class="flex-1 w-full space-y-space-xl">
+<!-- Header Banner -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md border-b border-line pb-space-lg">
+<div>
+<h1 class="font-title text-title text-ink font-semibold tracking-tight">Payment methods</h1>
+<p class="font-body text-body text-muted mt-1">Used at checkout. Card numbers never touch this app.</p>
+</div>
+<div>
+<a class="inline-flex items-center gap-1.5 bg-accent hover:bg-primary text-accentInk px-4 py-2 rounded-lg font-label text-label font-semibold shadow-sm transition-transform active:scale-[0.98]" href="#add-card-section">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>+ Add card</span>
+</a>
+</div>
+</div>
+<!-- TWO-COLUMN SECTION -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xxl items-start">
+<!-- LEFT COLUMN: SAVED PAYMENT CARDS (7 Cols) -->
+<div class="lg:col-span-7 space-y-space-lg">
+<div class="bg-panel border border-line rounded-xl shadow-sm overflow-hidden">
+<div class="px-space-lg py-space-md bg-panel2 border-b border-line flex items-center justify-between">
+<h2 class="font-label text-label font-semibold uppercase tracking-wider text-faint">Saved cards (2)</h2>
+<span class="font-small text-small text-faint flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-ok">verified_user</span>
+                Encrypted Vault
+              </span>
+</div>
+<!-- Card 1: Default Visa Card -->
+<div class="p-space-lg border-b border-line hover:bg-panel2/50 transition-colors">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<!-- Visa Glyph Tile -->
+<div class="w-12 h-9 rounded bg-[#1A1F71] flex items-center justify-center text-white shrink-0 shadow-xs px-1">
+<span class="font-display font-extrabold italic tracking-tighter text-sm text-[#ffffff] select-none">VISA</span>
+</div>
+<div>
+<div class="flex items-center gap-2.5">
+<p class="font-body text-body font-semibold text-ink">
+                        Visa ending <span class="font-mono text-mono text-ink">4242</span>
+</p>
+<!-- Status Pill (DEFAULT) -->
+<span class="inline-flex items-center gap-1.5 bg-okWash text-ok px-2 py-0.5 rounded-full font-label text-label text-[11px] font-semibold border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok animate-pulse"></span>
+                        DEFAULT
+                      </span>
+</div>
+<p class="font-small text-small text-muted mt-0.5">
+                      Expires <span class="font-mono text-mono text-muted text-[13px]">09 / 2028</span>
+</p>
+<div class="mt-2 flex items-center gap-3 text-small font-small text-faint">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-muted">person</span>
+                        Mariam Buyer
+                      </span>
+<span>·</span>
+<span class="text-muted">Primary auto-charge</span>
+</div>
+</div>
+</div>
+<!-- Trailing Actions (Quiet Buttons) -->
+<div class="flex items-center gap-1 shrink-0">
+<button class="px-2.5 py-1 text-muted hover:text-ink font-label text-label font-medium rounded hover:bg-panel2 transition-colors" type="button">
+                    Edit
+                  </button>
+<button class="px-2.5 py-1 text-faint hover:text-bad font-label text-label font-medium rounded hover:bg-badWash transition-colors" type="button">
+                    Remove
+                  </button>
+</div>
+</div>
+</div>
+<!-- Card 2: Backup Mastercard -->
+<div class="p-space-lg border-b border-line hover:bg-panel2/50 transition-colors">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<!-- Stylized Mastercard Badge Tile -->
+<div class="w-12 h-9 rounded bg-[#252525] flex items-center justify-center shrink-0 shadow-xs relative overflow-hidden">
+<div class="flex items-center -space-x-2">
+<span class="w-4 h-4 rounded-full bg-[#EB001B] opacity-90 inline-block"></span>
+<span class="w-4 h-4 rounded-full bg-[#F79E1B] opacity-90 inline-block"></span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2.5">
+<p class="font-body text-body font-semibold text-ink">
+                        Mastercard ending <span class="font-mono text-mono text-ink">5100</span>
+</p>
+<!-- Status Pill (BACKUP) -->
+<span class="inline-flex items-center gap-1 bg-panel2 text-secondary px-2 py-0.5 rounded-full font-label text-label text-[11px] font-semibold border border-line">
+                        BACKUP
+                      </span>
+</div>
+<p class="font-small text-small text-muted mt-0.5">
+                      Expires <span class="font-mono text-mono text-muted text-[13px]">03 / 2027</span>
+</p>
+<div class="mt-2 flex items-center gap-3 text-small font-small text-faint">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-muted">person</span>
+                        Mariam Buyer
+                      </span>
+<span>·</span>
+<span class="text-muted">Secondary failover</span>
+</div>
+</div>
+</div>
+<!-- Trailing Actions (Quiet Buttons) -->
+<div class="flex items-center gap-1 shrink-0">
+<button class="px-2.5 py-1 text-accent hover:text-primary font-label text-label font-medium rounded hover:bg-accentWash transition-colors" type="button">
+                    Make default
+                  </button>
+<button class="px-2.5 py-1 text-muted hover:text-ink font-label text-label font-medium rounded hover:bg-panel2 transition-colors" type="button">
+                    Edit
+                  </button>
+<button class="px-2.5 py-1 text-faint hover:text-bad font-label text-label font-medium rounded hover:bg-badWash transition-colors" type="button">
+                    Remove
+                  </button>
+</div>
+</div>
+</div>
+<!-- Escrow & Buyer Guarantee Banner -->
+<div class="p-space-lg bg-surface-container-low/60 flex items-start gap-space-md">
+<span class="material-symbols-outlined text-accent text-[22px] shrink-0 mt-0.5">verified</span>
+<div>
+<h3 class="font-body text-body font-semibold text-ink">Buyer Protection Guarantee</h3>
+<p class="font-small text-small text-muted mt-1 leading-relaxed">
+                  All transactions are backed by MarketCore Escrow Protection. Payments are held until you confirm receipt of authentic merchandise.
+                </p>
+</div>
+</div>
+</div>
+<!-- Accepted Cards Trust Strip -->
+<div class="p-space-md bg-panel border border-line rounded-xl flex items-center justify-between text-faint text-small">
+<span class="font-label text-label uppercase tracking-wider">Accepted Gateways</span>
+<div class="flex items-center gap-space-md text-[13px] font-mono">
+<span class="bg-panel2 px-2 py-1 rounded border border-line">VISA</span>
+<span class="bg-panel2 px-2 py-1 rounded border border-line">MASTERCARD</span>
+<span class="bg-panel2 px-2 py-1 rounded border border-line">AMEX</span>
+<span class="bg-panel2 px-2 py-1 rounded border border-line">DISCOVER</span>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: ADD CARD FORM & ARCHITECTURAL GAP NOTE (5 Cols) -->
+<div class="lg:col-span-5 space-y-space-lg" id="add-card-section">
+<!-- Card 1: 'Add a card' Form -->
+<div class="bg-panel border border-line rounded-xl p-space-lg shadow-sm">
+<div class="border-b border-line pb-space-md mb-space-lg flex items-center justify-between">
+<div>
+<h2 class="font-title text-title text-[20px] font-semibold text-ink">Add payment method</h2>
+<p class="font-small text-small text-muted mt-0.5">Connect a new corporate or individual card</p>
+</div>
+<span class="material-symbols-outlined text-muted text-[22px]">credit_card</span>
+</div>
+<form class="space-y-space-md" onsubmit="event.preventDefault();">
+<!-- Field: Cardholder Name -->
+<div>
+<label class="block font-label text-label font-semibold uppercase tracking-wider text-muted mb-1.5" for="cardholder-name">
+                  Cardholder name *
+                </label>
+<input class="w-full h-11 px-3.5 bg-panel border border-line rounded-lg text-body text-ink placeholder:text-muted focus:ring-1 focus:ring-accent focus:border-accent text-body transition-colors" id="cardholder-name" name="cardholder-name" placeholder="Mariam Buyer" required="" type="text" value="Mariam Buyer"/>
+<p class="font-small text-small text-faint mt-1">Name precisely as printed on the card surface</p>
+</div>
+<!-- Field: Card Number with Icon -->
+<div>
+<label class="block font-label text-label font-semibold uppercase tracking-wider text-muted mb-1.5" for="card-number">
+                  Card number *
+                </label>
+<div class="relative">
+<input class="w-full h-11 pl-3.5 pr-10 bg-panel border border-line rounded-lg font-mono text-mono text-ink placeholder:text-muted focus:ring-1 focus:ring-accent focus:border-accent transition-colors" id="card-number" name="card-number" placeholder="•••• •••• •••• ••••" required="" type="text"/>
+<span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</span>
+</div>
+</div>
+<!-- Two-Up Row: Expiry and CVC -->
+<div class="grid grid-cols-2 gap-space-md">
+<div>
+<label class="block font-label text-label font-semibold uppercase tracking-wider text-muted mb-1.5" for="expiry">
+                    Expiry *
+                  </label>
+<input class="w-full h-11 px-3.5 bg-panel border border-line rounded-lg font-mono text-mono text-ink placeholder:text-muted focus:ring-1 focus:ring-accent focus:border-accent transition-colors" id="expiry" maxlength="7" name="expiry" placeholder="MM / YY" required="" type="text"/>
+</div>
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block font-label text-label font-semibold uppercase tracking-wider text-muted" for="cvc">
+                      CVC *
+                    </label>
+<span class="material-symbols-outlined text-muted text-[16px] cursor-pointer" title="3-digit security code on the back of your card (4 digits on Amex)">help</span>
+</div>
+<input class="w-full h-11 px-3.5 bg-panel border border-line rounded-lg font-mono text-mono text-ink placeholder:text-muted focus:ring-1 focus:ring-accent focus:border-accent transition-colors" id="cvc" maxlength="4" name="cvc" placeholder="•••" required="" type="text"/>
+</div>
+</div>
+<!-- Checkbox: Default selection -->
+<div class="pt-1">
+<label class="flex items-center gap-2.5 cursor-pointer select-none">
+<input checked="" class="w-4 h-4 rounded text-accent border-line focus:ring-accent focus:ring-offset-0" type="checkbox"/>
+<span class="font-body text-body text-ink text-[13.5px]">Use as my default card for all purchases</span>
+</label>
+</div>
+<!-- Primary Submit Button -->
+<div class="pt-2">
+<button class="w-full h-11 bg-accent hover:bg-primary text-accentInk rounded-[9px] font-label text-label font-semibold flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-[0.98]" type="submit">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+<span>Save card</span>
+</button>
+</div>
+<!-- Security Badges Row -->
+<div class="pt-space-sm border-t border-line flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-faint font-small text-small text-[11.5px]">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-ok">shield</span>
+                  256-bit TLS Encryption
+                </span>
+<span>·</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-info">verified</span>
+                  PCI-DSS Compliant
+                </span>
+<span>·</span>
+<span>Tokenized vault</span>
+</div>
+</form>
+</div>
+<!-- Card 2: Honest Gap Architecture Notice Callout -->
+<div class="bg-panel2 border border-line rounded-xl p-space-lg">
+<div class="flex items-start gap-space-md">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center shrink-0 border border-outline-variant/40 text-accent">
+<span class="material-symbols-outlined text-[19px]">token</span>
+</div>
+<div class="space-y-1.5">
+<h3 class="font-label text-label font-bold uppercase tracking-wider text-ink">
+                  Architectural Notice — Card Tokenization
+                </h3>
+<p class="font-small text-small text-muted leading-relaxed">
+                  MarketCore stores an opaque provider payment token, never raw PAN or CVV data. The client-side card vaulting adapter is planned for a subsequent phase; payment validation currently executes during checkout staging.
+                </p>
+<div class="pt-1">
+<span class="inline-flex items-center gap-1 font-mono text-mono text-[11px] text-faint bg-panel px-2 py-0.5 rounded border border-line">
+                    TOKEN_ADAPTER_STUB: v0.9-staged
+                  </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- STOREFRONT FOOTER -->
+<footer class="w-full bg-panel border-t border-line mt-auto">
+<div class="max-w-[1440px] w-full px-margin py-space-xl mx-auto flex flex-col md:flex-row justify-between items-center gap-space-md text-small">
+<div class="flex items-center gap-space-md">
+<span class="font-title text-[18px] font-bold text-ink tracking-tight">MarketCore</span>
+<span class="text-faint font-small text-small">© 2025 MarketCore Enterprise Inc. All rights reserved.</span>
+</div>
+<div class="flex flex-wrap items-center gap-x-space-lg gap-y-2 text-faint">
+<a class="hover:text-ink transition-colors font-small text-small" href="/terms">Terms of Supply</a>
+<a class="hover:text-ink transition-colors font-small text-small" href="/procurement">Procurement Policy</a>
+<a class="hover:text-ink transition-colors font-small text-small" href="/privacy">Privacy Notice</a>
+<a class="hover:text-ink transition-colors font-small text-small" href="/security">Security &amp; Compliance</a>
+<a class="hover:text-ink transition-colors font-small text-small" href="/supplier-portal">Supplier Portal</a>
+<a class="hover:text-ink transition-colors font-small text-small flex items-center gap-1" href="/status">
+<span class="w-2 h-2 rounded-full bg-ok"></span>
+          System Status
+        </a>
+</div>
+</div>
+</footer>
+</body></html>

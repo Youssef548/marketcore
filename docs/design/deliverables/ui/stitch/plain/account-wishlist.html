@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-canvas" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore — Account — Wishlist</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-surface": "#302f39",
+            "primary-container": "#4f46e5",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#e2dfff",
+            "on-secondary-fixed-variant": "#46464f",
+            "on-background": "#1b1b24",
+            "ok": "#117f3a",
+            "on-primary-container": "#dad7ff",
+            "inverse-primary": "#c3c0ff",
+            "rail": "#0b0d14",
+            "on-tertiary-container": "#ffd2be",
+            "primary-fixed-dim": "#c3c0ff",
+            "line": "#e6e8ef",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "on-tertiary": "#ffffff",
+            "surface-container": "#f0ecf9",
+            "outline-variant": "#c7c4d8",
+            "on-secondary-fixed": "#1a1b23",
+            "accentInk": "#ffffff",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-primary": "#ffffff",
+            "surface-dim": "#dcd8e5",
+            "on-surface": "#1b1b24",
+            "panel2": "#f1f3f9",
+            "warnWash": "#fdf3e4",
+            "info": "#097499",
+            "on-tertiary-fixed": "#351000",
+            "surface-bright": "#fcf8ff",
+            "warn": "#a55a05",
+            "secondary-fixed-dim": "#c7c5d0",
+            "railMuted": "#8b93a7",
+            "background": "#fcf8ff",
+            "primary": "#3525cd",
+            "badWash": "#fdecef",
+            "secondary-container": "#e3e1ec",
+            "surface-variant": "#e4e1ee",
+            "surface-container-highest": "#e4e1ee",
+            "panel": "#ffffff",
+            "accentWash": "#eef0ff",
+            "bad": "#d11b43",
+            "secondary-fixed": "#e3e1ec",
+            "tertiary-fixed": "#ffdbcc",
+            "surface-container-low": "#f5f2ff",
+            "error": "#ba1a1a",
+            "controlEdge": "#838b9a",
+            "on-secondary": "#ffffff",
+            "canvas": "#f6f7fb",
+            "faint": "#676e7a",
+            "on-surface-variant": "#464555",
+            "okWash": "#e8f7ee",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-secondary-container": "#64646d",
+            "surface-tint": "#4d44e3",
+            "on-error": "#ffffff",
+            "surface-container-high": "#eae6f4",
+            "lineStrong": "#d5d9e2",
+            "tertiary-container": "#a44100",
+            "secondary": "#5d5e67",
+            "railInk": "#eef1f7",
+            "accent": "#4f46e5",
+            "inverse-on-surface": "#f3effc",
+            "on-primary-fixed": "#0f0069",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "surface-container-lowest": "#ffffff",
+            "muted": "#5a6272",
+            "tertiary": "#7e3000",
+            "outline": "#777587",
+            "ink": "#0a0b12"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-sm": "6px",
+            "space-xs": "4px",
+            "space-md": "10px",
+            "space-lg": "16px",
+            "margin": "20px",
+            "space-xl": "22px",
+            "space-xxl": "26px",
+            "gutter": "16px"
+          },
+          "fontFamily": {
+            "metric": ["DM Sans"],
+            "display": ["DM Sans"],
+            "title": ["DM Sans"],
+            "small": ["DM Sans"],
+            "label": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "body": ["DM Sans"]
+          },
+          "fontSize": {
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col font-body text-body text-ink antialiased bg-canvas selection:bg-accentWash selection:text-accent">
+<!-- Top Navigation Shell -->
+<header class="w-full bg-panel border-b border-line shadow-sm z-30 sticky top-0">
+<!-- Primary Top Bar (64px) -->
+<div class="max-w-[1440px] h-[64px] mx-auto px-margin flex items-center justify-between gap-space-lg">
+<!-- Brand & Search cluster -->
+<div class="flex items-center gap-space-xl flex-1 max-w-2xl">
+<a class="flex items-center gap-2 group cursor-pointer focus:outline-none" href="/">
+<div class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-accentInk shadow-sm transition-transform group-hover:scale-105">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">inventory_2</span>
+</div>
+<span class="font-title text-title font-bold text-ink tracking-tight">MarketCore</span>
+</a>
+<!-- Search Bar -->
+<div class="relative w-full hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[18px]" data-icon="search">search</span>
+<input class="w-full pl-9 pr-4 py-2 bg-panel2 border border-line rounded-lg font-body text-small text-ink placeholder:text-muted focus:outline-none focus:border-accent focus:bg-panel transition-all" placeholder="Search wholesale textiles, artisan home, pantry goods..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions Cluster -->
+<div class="flex items-center gap-space-md sm:gap-space-lg shrink-0">
+<!-- Icon Utilities -->
+<div class="flex items-center gap-1 border-r border-line pr-space-md">
+<button aria-label="Help & Documentation" class="p-2 text-muted hover:text-ink hover:bg-panel2 rounded-lg transition-colors" title="Support">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+</button>
+<button aria-label="Notifications" class="relative p-2 text-muted hover:text-ink hover:bg-panel2 rounded-lg transition-colors" title="Notifications">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent"></span>
+</button>
+<a aria-label="Wishlist" class="relative p-2 text-accent bg-accentWash rounded-lg transition-colors flex items-center gap-1" href="/account/wishlist" title="Saved Wishlist">
+<span class="material-symbols-outlined fill-icon text-[20px]" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-mono text-label font-bold text-accent px-1">3</span>
+</a>
+</div>
+<!-- Orders & Cart Actions -->
+<a class="hidden md:inline-flex items-center gap-1 font-label text-label text-muted hover:text-ink font-medium px-2 py-1.5 rounded-lg hover:bg-panel2 transition-colors" href="/account/orders">
+<span>Orders</span>
+</a>
+<a class="inline-flex items-center gap-2 bg-panel2 border border-line hover:border-lineStrong px-3 py-1.5 rounded-lg text-ink font-label text-label font-medium transition-colors" href="/cart">
+<span class="material-symbols-outlined text-[18px] text-accent" data-icon="shopping_bag">shopping_bag</span>
+<span>Cart (3)</span>
+</a>
+<!-- Buyer Profile Chip -->
+<a class="flex items-center gap-2.5 pl-1 pr-2 py-1 rounded-lg hover:bg-panel2 transition-colors" href="/account">
+<img class="w-8 h-8 rounded-full object-cover border border-line" data-alt="Close-up professional portrait of Mariam Buyer wearing a clean neutral linen top against an architectural modern studio wall with warm directional light, natural soft skin texture, minimalist modern corporate executive aesthetic with deep subtle indigo accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs5b7A6nMUJXGWE5HUsP95mJs0Ps6JV5y9LYNfxQjUiMS6qBSfqlOiwSWJ0cUZjNGNm3MMQmMS5nwu7_Au3KB7WFkQqkFZXaOJtDgacIgNr-SRElQRYDD_Mhc84mDmILhVmucVIUu_X6RK_iSPRWQ7DgwMH2ZVNp9dRqDUV8t3tFCR-20IyY7oxOe-8OhDfiT3IDP7-BMJCCamAfhgBUOWrAgdyXN7zhH3lA2YRpcpFTA0FwkzODPLlWgj2f9Hd2Da_4jUmAZuzio"/>
+<span class="hidden lg:inline font-body text-small font-semibold text-ink">Mariam Buyer</span>
+</a>
+</div>
+</div>
+<!-- Category Bar (44px) -->
+<div class="border-t border-line bg-panel">
+<div class="max-w-[1440px] h-[44px] mx-auto px-margin flex items-center gap-space-lg overflow-x-auto text-small font-label">
+<a class="flex items-center gap-1.5 font-medium text-ink hover:text-accent shrink-0 transition-colors" href="/categories">
+<span class="material-symbols-outlined text-[18px]" data-icon="menu">menu</span>
+<span>All Categories</span>
+</a>
+<div class="h-4 w-px bg-line"></div>
+<a class="text-accent font-medium border-b-2 border-accent h-[44px] flex items-center shrink-0" href="/category/textiles">Textiles</a>
+<a class="text-muted hover:text-ink font-medium h-[44px] flex items-center shrink-0 transition-colors" href="/category/home">Home</a>
+<a class="text-muted hover:text-ink font-medium h-[44px] flex items-center shrink-0 transition-colors" href="/category/food">Food</a>
+<a class="text-muted hover:text-ink font-medium h-[44px] flex items-center shrink-0 transition-colors" href="/category/beauty">Beauty</a>
+<a class="text-muted hover:text-ink font-medium h-[44px] flex items-center shrink-0 transition-colors" href="/category/deals">Deals</a>
+</div>
+</div>
+</header>
+<!-- Breadcrumbs Bar -->
+<div class="w-full bg-canvas border-b border-line">
+<div class="max-w-[1440px] mx-auto px-margin py-3 flex items-center gap-2 font-small text-small text-muted">
+<a class="hover:text-ink transition-colors" href="/">Storefront</a>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-ink transition-colors" href="/account">Account</a>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<span class="font-medium text-ink">Wishlist</span>
+</div>
+</div>
+<!-- Primary Account Page Workspace -->
+<main class="flex-1 max-w-[1440px] w-full mx-auto px-margin py-space-xl flex flex-col md:flex-row items-start gap-space-xxl">
+<!-- Left Account Navigation (Fixed 246px) -->
+<aside class="w-full md:w-[246px] bg-panel border border-line rounded-lg p-space-md shrink-0 shadow-sm">
+<!-- User Summary Card -->
+<div class="p-space-md pb-space-lg border-b border-line flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover border border-line" data-alt="A portrait shot of Mariam Buyer framed cleanly within a corporate light-mode buyer directory, crisp daylight illuminating soft minimalist attire, polished architectural lines with neutral off-white tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFp4I1qzIJz1O2XMM_KBjYQp7O_qE-LUDpCpCIki4BPkXcsQlJTgI7qVlvarvnc6GPUbzZjL_ysIwpNqnlLIb7HpRbhrmizgNvWJBcKS1GKKxoy7OTJr3elrwCxK2h6QNFXDXflWOoQncwKPrDSZc7hT9MjHgYsOW-Y6faseEChYRDjIE4KpixgCppO0JXe9w91Ghv0KQqrTDksDEyBH7pN6b5ekm2dyAw4Xn-WzX-JY6v0uVDETdxy9DGDODP2xaUftCz3GJTl3Y"/>
+<div class="min-w-0">
+<p class="font-body text-small font-semibold text-ink truncate">Mariam Buyer</p>
+<p class="font-mono text-label text-muted truncate">mariam@shopper.test</p>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="py-space-md space-y-1">
+<!-- 1. Profile & security -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-small font-label" href="/account/security">
+<span class="material-symbols-outlined text-[18px]" data-icon="shield_person">shield_person</span>
+<span>Profile & security</span>
+</a>
+<!-- 2. Addresses -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-small font-label" href="/account/addresses">
+<span class="material-symbols-outlined text-[18px]" data-icon="location_on">location_on</span>
+<span>Addresses</span>
+</a>
+<!-- 3. Payment methods -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-small font-label" href="/account/payments">
+<span class="material-symbols-outlined text-[18px]" data-icon="credit_card">credit_card</span>
+<span>Payment methods</span>
+</a>
+<!-- 4. Orders -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-small font-label" href="/account/orders">
+<span class="material-symbols-outlined text-[18px]" data-icon="inventory_2">inventory_2</span>
+<span>Orders</span>
+</a>
+<!-- 5. Wishlist (SELECTED) -->
+<a class="bg-accentWash text-accent font-medium rounded-lg px-space-md py-space-sm flex items-center justify-between transition-colors text-small font-label" href="/account/wishlist">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[18px] fill-icon text-accent" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-semibold">Wishlist</span>
+</div>
+<span class="bg-panel border border-accent/20 text-accent font-mono text-[11px] font-bold px-1.5 py-0.5 rounded-full">3</span>
+</a>
+<!-- 6. My reviews -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-small font-label" href="/account/reviews">
+<span class="material-symbols-outlined text-[18px]" data-icon="rate_review">rate_review</span>
+<span>My reviews</span>
+</a>
+<!-- 7. Returns -->
+<a class="text-muted hover:text-ink hover:bg-panel2 rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-small font-label" href="/account/returns">
+<span class="material-symbols-outlined text-[18px]" data-icon="assignment_return">assignment_return</span>
+<span>Returns</span>
+</a>
+</nav>
+<!-- Account Footer Action -->
+<div class="pt-space-md border-t border-line mt-space-md">
+<a class="text-muted hover:text-bad hover:bg-badWash rounded-lg px-space-md py-space-sm flex items-center gap-space-sm transition-colors text-small font-label" href="/logout">
+<span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
+<span>Sign out</span>
+</a>
+</div>
+</aside>
+<!-- Wishlist Main Canvas -->
+<section class="flex-1 min-w-0 w-full space-y-space-xl">
+<!-- Header & Collection Utility Strip -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-lg border-b border-line gap-4">
+<div>
+<div class="flex items-center gap-3">
+<h1 class="font-title text-title font-semibold text-ink tracking-tight">Wishlist</h1>
+<span class="bg-panel2 text-ink font-mono text-label px-2 py-0.5 rounded-full font-bold border border-line">3 items</span>
+</div>
+<p class="font-body text-body text-muted mt-1">3 saved products across 1 seller.</p>
+</div>
+<div class="flex items-center gap-space-md shrink-0">
+<button class="inline-flex items-center gap-1.5 px-3 py-2 bg-panel border border-controlEdge/40 hover:border-ink text-ink font-label text-label font-medium rounded-lg transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined text-[16px]" data-icon="share">share</span>
+<span>Share wishlist</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-accentInk font-label text-label font-semibold rounded-lg shadow-sm hover:opacity-95 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[16px]" data-icon="shopping_cart_checkout">shopping_cart_checkout</span>
+<span>Move all to cart</span>
+</button>
+</div>
+</div>
+<!-- Filters & Sorting Row -->
+<div class="flex flex-wrap items-center justify-between gap-space-md py-1">
+<div class="flex items-center gap-2">
+<span class="font-label text-label uppercase text-muted tracking-wide font-medium">Filter by seller:</span>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-panel border border-line text-ink font-label text-small">
+<span class="material-symbols-outlined text-[14px] text-accent fill-icon" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>Nile Traders (3)</span>
+<span class="material-symbols-outlined text-[14px] text-muted cursor-pointer hover:text-ink" data-icon="close">close</span>
+</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label text-label text-muted font-medium">Sort by:</span>
+<select class="py-1 px-3 bg-panel border border-line rounded-lg font-body text-small text-ink focus:outline-none focus:border-accent">
+<option>Recently Added</option>
+<option>Price: Low to High</option>
+<option>Price: High to Low</option>
+<option>Highest Rated</option>
+</select>
+</div>
+</div>
+<!-- 4-Column Responsive Product Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-gutter">
+<!-- Card 1: Giza Sheet Set -->
+<article class="bg-panel border border-line rounded-lg flex flex-col justify-between overflow-hidden shadow-sm hover:border-lineStrong hover:shadow transition-all group">
+<div>
+<!-- Media Container -->
+<div class="relative w-full aspect-square bg-panel2 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Editorial product photograph of an Egyptian Giza long-staple cotton luxury bedding sheet set folded immaculately on a light wood surface, natural unbleached ecru linen textures, pristine soft morning shadows, modern refined commercial packaging aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD0jdp4AR5YWKxZ71ea2CmwIPWKSZ3wJI-ClNBbMq70bdhzPSzIdA690i2nUiaU2BAOIjHufdBFFThJTGQJYXrytzdjsgisjKmzLOrjjMlosZ6FZOlKZJGWAK_JYrolNAdBX1Knklc9KBetmD9Kp7-PTf5Rq7BdfCF65B4Bs0ZYJy9LFFp72Gus2g5pHgzW9mndcCCfjd0ay1Bi-9k4RTdIdTkT4-DKcSJ4TGJX8G4U-PKOAfMPlsSc-NZsOGPC1vT-jOIqbpoc0o"/>
+<!-- Stock Badge -->
+<div class="absolute top-2.5 left-2.5">
+<span class="inline-flex items-center gap-1.5 bg-okWash text-ok font-label text-[11px] font-semibold px-2 py-0.5 rounded-full border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>IN STOCK</span>
+</span>
+</div>
+<!-- Floating Quick Dismiss -->
+<button class="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-panel/90 backdrop-blur-sm border border-line flex items-center justify-center text-muted hover:text-bad hover:bg-badWash transition-colors" title="Remove item">
+<span class="material-symbols-outlined text-[16px]" data-icon="close">close</span>
+</button>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg space-y-2">
+<!-- Seller Row -->
+<div class="flex items-center gap-1 font-small text-small text-muted">
+<span>Nile Traders</span>
+<span class="material-symbols-outlined text-[14px] text-accent fill-icon" data-icon="verified" style="font-variation-settings: 'FILL' 1;" title="Verified Seller">verified</span>
+</div>
+<!-- Title -->
+<h3 class="font-body text-body font-semibold text-ink line-clamp-1 group-hover:text-accent transition-colors">
+                Giza Sheet Set
+              </h3>
+<!-- Rating -->
+<div class="flex items-center gap-1 text-small">
+<span class="text-warn text-[13px] font-medium">★ 4.8</span>
+<span class="text-faint font-small">(85)</span>
+</div>
+<!-- Price Container -->
+<div class="pt-1 flex items-baseline gap-2">
+<span class="font-mono text-[18px] font-bold text-ink">E£1,250.00</span>
+<span class="font-mono text-small text-faint line-through">E£1,350.00</span>
+</div>
+<!-- Alert Pill: Price Drop -->
+<div class="pt-1">
+<span class="inline-flex items-center gap-1 text-[11px] font-label font-medium bg-okWash text-ok px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[13px]" data-icon="trending_down">trending_down</span>
+<span>Price dropped by E£100</span>
+</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="p-space-lg pt-0 flex items-center gap-2 border-t border-line/60 mt-3 pt-3">
+<button class="flex-1 inline-flex items-center justify-center gap-1.5 bg-accent hover:opacity-95 text-accentInk font-label text-label font-medium py-2 px-3 rounded-lg transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[16px]" data-icon="shopping_cart">shopping_cart</span>
+<span>Add to cart</span>
+</button>
+<button class="p-2 text-muted hover:text-bad hover:bg-panel2 rounded-lg transition-colors" title="Remove from wishlist">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+</button>
+</div>
+</article>
+<!-- Card 2: Ramie Table Runner -->
+<article class="bg-panel border border-line rounded-lg flex flex-col justify-between overflow-hidden shadow-sm hover:border-lineStrong hover:shadow transition-all group">
+<div>
+<!-- Media Container -->
+<div class="relative w-full aspect-square bg-panel2 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Commercial studio shot of a raw natural fiber hand-woven artisanal ramie table runner draped elegantly over pale sandstone, detailed weave patterns visible under soft neutral gallery lighting, minimalist clean styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWyv9xOLZzBSyC-ezm2UL1tY0-e9KoZTZLsoOlttMnL1oudycbSlYIPAzTWpPjpeFUu6xyqNjXyjq786O7Old9X2FZdLkUZt6fx1-hzHzLfnEANz2Gez12q7oPe1_kahfd-Q23nYT1A3_Yw3S-O-y_X5HN_V7koWaiBD8H3ZaAyrUVDrZPJ50DtrlVo2HT1NhKZo8WwNTw4L08Kkq4f88EZ_hugMkgY5FKM9j6g67N-zlOlTuoVAh0tr_EffL56l-fyIvxzairvU8"/>
+<!-- Stock Badge -->
+<div class="absolute top-2.5 left-2.5">
+<span class="inline-flex items-center gap-1.5 bg-okWash text-ok font-label text-[11px] font-semibold px-2 py-0.5 rounded-full border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>IN STOCK</span>
+</span>
+</div>
+<button class="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-panel/90 backdrop-blur-sm border border-line flex items-center justify-center text-muted hover:text-bad hover:bg-badWash transition-colors" title="Remove item">
+<span class="material-symbols-outlined text-[16px]" data-icon="close">close</span>
+</button>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg space-y-2">
+<div class="flex items-center gap-1 font-small text-small text-muted">
+<span>Nile Traders</span>
+<span class="material-symbols-outlined text-[14px] text-accent fill-icon" data-icon="verified" style="font-variation-settings: 'FILL' 1;" title="Verified Seller">verified</span>
+</div>
+<h3 class="font-body text-body font-semibold text-ink line-clamp-1 group-hover:text-accent transition-colors">
+                Ramie Table Runner
+              </h3>
+<div class="flex items-center gap-1 text-small">
+<span class="text-warn text-[13px] font-medium">★ 4.7</span>
+<span class="text-faint font-small">(19)</span>
+</div>
+<div class="pt-1 flex items-baseline gap-2">
+<span class="font-mono text-[18px] font-bold text-ink">E£180.00</span>
+</div>
+<!-- Feature Pill: Handcrafted -->
+<div class="pt-1">
+<span class="inline-flex items-center gap-1 text-[11px] font-label font-medium bg-panel2 text-faint px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[13px]" data-icon="eco">eco</span>
+<span>100% Organic Bast Fiber</span>
+</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="p-space-lg pt-0 flex items-center gap-2 border-t border-line/60 mt-3 pt-3">
+<button class="flex-1 inline-flex items-center justify-center gap-1.5 bg-accent hover:opacity-95 text-accentInk font-label text-label font-medium py-2 px-3 rounded-lg transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[16px]" data-icon="shopping_cart">shopping_cart</span>
+<span>Add to cart</span>
+</button>
+<button class="p-2 text-muted hover:text-bad hover:bg-panel2 rounded-lg transition-colors" title="Remove from wishlist">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+</button>
+</div>
+</article>
+<!-- Card 3: Fayoum Wool Throw -->
+<article class="bg-panel border border-line rounded-lg flex flex-col justify-between overflow-hidden shadow-sm hover:border-lineStrong hover:shadow transition-all group">
+<div>
+<!-- Media Container -->
+<div class="relative w-full aspect-square bg-panel2 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Editorial close-up of a warm artisanal Fayoum hand-spun wool throw blanket with delicate fringe detailing, draped across an architectural ivory concrete bench, soft diffuse lighting highlighting textured weaves in warm oatmeal and charcoal tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPYTf-LEnnNAfPMSqn7YvqrRQrbXRDNQKxJodJNwwkkmzLBJWQac2U2NocsX0e6I0jrgOdD01m1Rvo0WPyWw985ungssxoZLqAIKi2aDHXdcTBYRjgKQtwlYZ0T_uj-M5Zt0ikC7qSoz5cTt5wb7_r2PCX7yfgp5FG5cIi7nD5RHhQ7GhDiZ5y4qDeE1ljkVImWHJ4roZucHq3sbC1QXuRBoXdB6o8dlVl3Z7i87_TULwGTGbO0zPM-xmdM9r5PtYjU_-FLtGaASM"/>
+<!-- Low Stock Badge -->
+<div class="absolute top-2.5 left-2.5">
+<span class="inline-flex items-center gap-1.5 bg-warnWash text-warn font-label text-[11px] font-semibold px-2 py-0.5 rounded-full border border-warn/20">
+<span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+<span>LOW STOCK</span>
+</span>
+</div>
+<button class="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-panel/90 backdrop-blur-sm border border-line flex items-center justify-center text-muted hover:text-bad hover:bg-badWash transition-colors" title="Remove item">
+<span class="material-symbols-outlined text-[16px]" data-icon="close">close</span>
+</button>
+</div>
+<!-- Content Area -->
+<div class="p-space-lg space-y-2">
+<div class="flex items-center gap-1 font-small text-small text-muted">
+<span>Nile Traders</span>
+<span class="material-symbols-outlined text-[14px] text-accent fill-icon" data-icon="verified" style="font-variation-settings: 'FILL' 1;" title="Verified Seller">verified</span>
+</div>
+<h3 class="font-body text-body font-semibold text-ink line-clamp-1 group-hover:text-accent transition-colors">
+                Fayoum Wool Throw
+              </h3>
+<div class="flex items-center gap-1 text-small">
+<span class="text-warn text-[13px] font-medium">★ 4.9</span>
+<span class="text-faint font-small">(42)</span>
+</div>
+<div class="pt-1 flex items-baseline gap-2">
+<span class="font-mono text-[18px] font-bold text-ink">E£460.00</span>
+</div>
+<!-- Alert Pill: Low Stock -->
+<div class="pt-1">
+<span class="inline-flex items-center gap-1 text-[11px] font-label font-medium bg-warnWash text-warn px-2 py-0.5 rounded">
+<span class="material-symbols-outlined text-[13px]" data-icon="schedule">schedule</span>
+<span>Only 2 left in stock</span>
+</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="p-space-lg pt-0 flex items-center gap-2 border-t border-line/60 mt-3 pt-3">
+<button class="flex-1 inline-flex items-center justify-center gap-1.5 bg-accent hover:opacity-95 text-accentInk font-label text-label font-medium py-2 px-3 rounded-lg transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[16px]" data-icon="shopping_cart">shopping_cart</span>
+<span>Add to cart</span>
+</button>
+<button class="p-2 text-muted hover:text-bad hover:bg-panel2 rounded-lg transition-colors" title="Remove from wishlist">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+</button>
+</div>
+</article>
+<!-- Card 4: Empty Slot / Proactive Suggestion Bento Card -->
+<div class="bg-panel/60 border-2 border-dashed border-lineStrong rounded-lg p-space-lg flex flex-col justify-between items-center text-center hover:bg-panel hover:border-accent transition-all group">
+<div class="my-auto space-y-3 py-6">
+<div class="w-12 h-12 rounded-full bg-accentWash text-accent flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[24px]" data-icon="bookmark">bookmark</span>
+</div>
+<div class="space-y-1">
+<h3 class="font-title text-[18px] font-semibold text-ink">Save products you love</h3>
+<p class="font-body text-small text-muted max-w-[210px] mx-auto">
+                Click the heart icon on any product page or search result to track availability.
+              </p>
+</div>
+</div>
+<a class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 border border-controlEdge/50 rounded-lg text-ink font-label text-label font-medium hover:border-ink hover:bg-panel2 transition-colors" href="/category/textiles">
+<span>Explore textiles</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Honest Gap & Architectural Callout Well -->
+<div class="p-space-lg bg-panel2 border border-line rounded-lg flex items-start gap-3">
+<span class="material-symbols-outlined text-muted text-[20px] mt-0.5 shrink-0" data-icon="info">info</span>
+<div class="space-y-1">
+<span class="font-label text-label uppercase tracking-wide text-ink font-bold">Domain note</span>
+<p class="font-body text-small text-faint leading-relaxed">
+            Saved products and wishlist collections are a proposed addition. Back-in-stock notifications and price-drop alerts are why wishlists earn their keep in multi-vendor marketplaces.
+          </p>
+</div>
+</div>
+</section>
+</main>
+<!-- MarketCore Global Public Footer -->
+<footer class="mt-auto bg-panel border-t border-line">
+<div class="max-w-[1440px] mx-auto px-margin py-space-xl flex flex-col md:flex-row justify-between items-center gap-space-lg">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded bg-accent flex items-center justify-center text-accentInk">
+<span class="material-symbols-outlined text-[16px]" data-icon="inventory_2">inventory_2</span>
+</div>
+<span class="font-small text-small text-faint">
+          © 2025 MarketCore Enterprise Inc. All rights reserved.
+        </span>
+</div>
+<div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-small font-label">
+<a class="text-faint hover:text-ink transition-colors" href="/terms">Terms of Supply</a>
+<a class="text-faint hover:text-ink transition-colors" href="/procurement">Procurement Policy</a>
+<a class="text-faint hover:text-ink transition-colors" href="/privacy">Privacy Notice</a>
+<a class="text-faint hover:text-ink transition-colors" href="/security">Security & Compliance</a>
+<a class="text-faint hover:text-ink transition-colors" href="/supplier-portal">Supplier Portal</a>
+<a class="text-faint hover:text-ink transition-colors" href="/status">System Status</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore — Refunds Console</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: DM Sans & DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS Play CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration verbatim from instructions -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#fcf8ff",
+            "secondary-container": "#e3e1ec",
+            "muted": "#5a6272",
+            "primary-fixed-dim": "#c3c0ff",
+            "on-tertiary-fixed": "#351000",
+            "okWash": "#e8f7ee",
+            "accentWash": "#eef0ff",
+            "surface-container-low": "#f5f2ff",
+            "surface": "#fcf8ff",
+            "on-secondary-fixed-variant": "#46464f",
+            "panel": "#ffffff",
+            "on-surface-variant": "#464555",
+            "surface-container-lowest": "#ffffff",
+            "error": "#ba1a1a",
+            "on-error-container": "#93000a",
+            "faint": "#676e7a",
+            "inverse-surface": "#302f39",
+            "controlEdge": "#838b9a",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-tertiary": "#ffffff",
+            "on-surface": "#1b1b24",
+            "primary-container": "#4f46e5",
+            "railMuted": "#8b93a7",
+            "accentInk": "#ffffff",
+            "accent": "#4f46e5",
+            "surface-container-highest": "#e4e1ee",
+            "surface-tint": "#4d44e3",
+            "on-primary-fixed": "#0f0069",
+            "surface-container-high": "#eae6f4",
+            "primary-fixed": "#e2dfff",
+            "secondary": "#5d5e67",
+            "tertiary": "#7e3000",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-secondary": "#ffffff",
+            "inverse-on-surface": "#f3effc",
+            "railInk": "#eef1f7",
+            "ink": "#0a0b12",
+            "surface-dim": "#dcd8e5",
+            "outline": "#777587",
+            "inverse-primary": "#c3c0ff",
+            "surface-variant": "#e4e1ee",
+            "panel2": "#f1f3f9",
+            "info": "#097499",
+            "secondary-fixed": "#e3e1ec",
+            "on-secondary-fixed": "#1a1b23",
+            "ok": "#117f3a",
+            "lineStrong": "#d5d9e2",
+            "badWash": "#fdecef",
+            "secondary-fixed-dim": "#c7c5d0",
+            "line": "#e6e8ef",
+            "on-secondary-container": "#64646d",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#a44100",
+            "surface-container": "#f0ecf9",
+            "surface-bright": "#fcf8ff",
+            "warnWash": "#fdf3e4",
+            "bad": "#d11b43",
+            "on-background": "#1b1b24",
+            "canvas": "#f6f7fb",
+            "on-error": "#ffffff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "primary": "#3525cd",
+            "error-container": "#ffdad6",
+            "on-primary-container": "#dad7ff",
+            "tertiary-fixed": "#ffdbcc",
+            "rail": "#0b0d14",
+            "warn": "#a55a05",
+            "outline-variant": "#c7c4d8",
+            "on-tertiary-container": "#ffd2be"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xl": "22px",
+            "space-md": "10px",
+            "margin": "20px",
+            "space-xs": "4px",
+            "gutter": "16px",
+            "space-sm": "6px",
+            "space-xxl": "26px",
+            "space-lg": "16px"
+          },
+          "fontFamily": {
+            "metric": [
+              "DM Sans"
+            ],
+            "body": [
+              "DM Sans"
+            ],
+            "mono": [
+              "DM Mono"
+            ],
+            "label": [
+              "DM Sans"
+            ],
+            "title": [
+              "DM Sans"
+            ],
+            "display": [
+              "DM Sans"
+            ],
+            "small": [
+              "DM Sans"
+            ]
+          },
+          "fontSize": {
+            "metric": [
+              "28px",
+              {
+                "lineHeight": "1.1",
+                "fontWeight": "700"
+              }
+            ],
+            "body": [
+              "14.5px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "mono": [
+              "14px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ],
+            "label": [
+              "12px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "0.02em",
+                "fontWeight": "500"
+              }
+            ],
+            "title": [
+              "25px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "600"
+              }
+            ],
+            "display": [
+              "35px",
+              {
+                "lineHeight": "1.1",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "700"
+              }
+            ],
+            "small": [
+              "13px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body text-body min-h-screen flex flex-col antialiased selection:bg-accent selection:text-accentInk">
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT: SideNavBar (Fixed 252px Dark Navigation Rail)           -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 bottom-0 left-0 w-[252px] z-40 flex flex-col justify-between bg-rail border-r border-lineStrong font-body text-body font-normal select-none">
+<div class="p-space-md flex flex-col gap-5">
+<!-- Store Switcher & Brand Header -->
+<div class="px-space-sm pt-2 pb-1 border-b border-panel2/10">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-accent flex items-center justify-center text-accentInk font-title font-semibold shadow-inner">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-title text-[15px] font-semibold text-railInk truncate leading-tight">Nile Traders</span>
+<span class="font-label text-[11px] text-railMuted uppercase tracking-wider mt-0.5">Enterprise Seller</span>
+</div>
+<button class="text-railMuted hover:text-railInk transition-colors p-1" title="Store Switcher" type="button">
+<span class="material-symbols-outlined text-[18px]">unfold_more</span>
+</button>
+</div>
+</div>
+<!-- Quick Search input within rail -->
+<div class="px-space-sm">
+<div class="relative flex items-center bg-railInk/5 rounded-lg px-2.5 py-1.5 border border-railMuted/20 focus-within:border-accent">
+<span class="material-symbols-outlined text-[16px] text-railMuted mr-2">search</span>
+<input class="bg-transparent border-0 p-0 text-[13px] text-railInk placeholder-railMuted focus:ring-0 w-full" placeholder="Search console..." type="text"/>
+<kbd class="font-mono text-[10px] text-railMuted bg-panel2/10 px-1.5 py-0.5 rounded">⌘K</kbd>
+</div>
+</div>
+<!-- Navigation Hierarchy -->
+<nav class="flex flex-col gap-1 px-space-xs mt-1">
+<!-- Tab: Overview -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#overview">
+<span class="material-symbols-outlined text-[19px]">dashboard</span>
+<span class="font-label text-label font-medium">Overview</span>
+</a>
+<!-- Tab: Catalog -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#catalog">
+<span class="material-symbols-outlined text-[19px]">inventory_2</span>
+<span class="font-label text-label font-medium">Catalog</span>
+</a>
+<!-- Section: Money (Active Section tree) -->
+<div class="pt-2">
+<div class="flex items-center justify-between px-space-md py-1">
+<span class="font-label text-[11px] font-semibold uppercase tracking-wider text-railMuted/70">Money</span>
+</div>
+<div class="flex flex-col gap-0.5 mt-1">
+<!-- Nested: Payouts -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#payouts">
+<span class="material-symbols-outlined text-[19px]">payments</span>
+<span class="font-label text-label font-medium">Payouts</span>
+</a>
+<!-- Nested: Refunds (ACTIVE NAVIGATION) -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm bg-accent text-accentInk rounded-lg font-medium shadow-sm" href="#refunds">
+<span class="material-symbols-outlined text-[19px]" style="font-variation-settings: 'FILL' 1;">assignment_return</span>
+<span class="font-label text-label font-medium flex-1">Refunds</span>
+<span class="font-mono text-[11px] bg-accentWash/20 text-accentInk px-1.5 py-0.2 rounded font-medium">INV-5</span>
+</a>
+<!-- Nested: Invoices -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#invoices">
+<span class="material-symbols-outlined text-[19px]">receipt_long</span>
+<span class="font-label text-label font-medium">Invoices</span>
+</a>
+</div>
+</div>
+<!-- Tab: Admin -->
+<div class="pt-2">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#admin">
+<span class="material-symbols-outlined text-[19px]">settings</span>
+<span class="font-label text-label font-medium">Admin</span>
+</a>
+</div>
+</nav>
+</div>
+<!-- Rail Footer -->
+<div class="p-space-md border-t border-panel2/10 flex flex-col gap-1">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#documentation">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+<span class="font-label text-label font-medium">Documentation</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#support">
+<span class="material-symbols-outlined text-[18px]">headset_mic</span>
+<span class="font-label text-label font-medium">Support</span>
+</a>
+<div class="mt-2 px-space-md pt-2 flex items-center justify-between text-[11px] font-mono text-railMuted/60">
+<span>v4.19-core</span>
+<span class="inline-block w-2 h-2 rounded-full bg-ok" title="Operational"></span>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT: TopNavBar (Fixed 64px Header)                           -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-[252px] right-0 h-16 z-30 bg-panel border-b border-line flex justify-between items-center px-space-xl">
+<!-- Left: Breadcrumb Anchor & Context -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 text-muted font-label text-label">
+<span class="font-title text-title font-semibold text-ink">MarketCore</span>
+<span class="text-controlEdge">/</span>
+<span class="text-muted">Console</span>
+<span class="text-controlEdge">/</span>
+<span class="text-muted">Nile Traders</span>
+<span class="text-controlEdge">/</span>
+<span class="text-muted">Money</span>
+<span class="text-controlEdge">/</span>
+<span class="text-ink font-semibold">Refunds</span>
+</div>
+</div>
+<!-- Center: Search input -->
+<div class="w-80 hidden md:block">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-[18px] text-muted">search</span>
+<input class="w-full bg-panel2 border border-line rounded-lg pl-9 pr-3 py-1.5 text-small placeholder-muted focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent" placeholder="Search refunds by RF-ID, order, customer..." type="search"/>
+</div>
+</div>
+<!-- Right: Navigation Icons, Trailing Actions & Profile -->
+<div class="flex items-center gap-3 font-label text-label">
+<a class="text-muted hover:text-ink flex items-center gap-1.5 px-2 py-1 rounded transition-colors" href="#docs">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+<span class="font-medium">Docs</span>
+</a>
+<button class="relative text-muted hover:text-ink p-1.5 rounded-lg transition-colors" title="Notifications" type="button">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full ring-2 ring-panel"></span>
+</button>
+<button class="text-muted hover:text-ink p-1.5 rounded-lg transition-colors" title="Help" type="button">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="h-5 w-[1px] bg-line mx-1"></div>
+<!-- Merchant Avatar & Profile Action -->
+<button class="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-panel2 transition-colors" type="button">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-fixed font-title text-small font-semibold">
+          NT
+        </div>
+<div class="flex flex-col text-left leading-tight">
+<span class="font-title text-[13px] font-semibold text-ink">Nile Traders</span>
+<span class="font-label text-[11px] text-faint">Enterprise Admin</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-muted">expand_more</span>
+</button>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT CANVAS (Left pad 252px, Top pad 64px)                        -->
+<!-- ========================================================================= -->
+<main class="pl-[252px] pt-16 flex-1 w-full">
+<div class="max-w-7xl mx-auto p-6 flex flex-col gap-6">
+<!-- PAGE HEADER -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+<div>
+<div class="flex items-center gap-3">
+<h1 class="font-title text-title font-semibold tracking-tight text-ink">Refunds</h1>
+<span class="font-mono text-small font-medium text-muted bg-panel2 border border-line px-2.5 py-0.5 rounded-[6px]">
+              INV-5 — a refund never exceeds what was captured
+            </span>
+</div>
+<p class="font-body text-small text-muted mt-1">
+            Review ledger disbursements, issue synchronous partial/full refunds, and enforce multi-request invariant caps.
+          </p>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-panel border border-controlEdge text-ink font-body text-small font-medium px-3.5 py-2 rounded-[8px] hover:bg-panel2 transition-colors flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-muted">file_download</span>
+<span>Export CSV</span>
+</button>
+<button class="bg-accent text-accentInk rounded-[8px] px-4 py-2 font-medium font-body text-small shadow-sm hover:opacity-95 transition-all flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>New refund</span>
+</button>
+</div>
+</div>
+<!-- TWO COLUMN LAYOUT (Left 62%, Right 38%) -->
+<div class="grid grid-cols-1 lg:grid-cols-100 gap-6 items-start">
+<!-- LEFT COLUMN (62%) -->
+<div class="lg:col-span-62 flex flex-col gap-4">
+<!-- Operational Metric Badges Row -->
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-panel border border-line rounded-[12px] p-3.5 flex flex-col gap-1">
+<span class="font-label text-[11px] font-semibold text-muted uppercase tracking-wider">Settled (30d)</span>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-metric font-medium text-ink">E£249.00</span>
+<span class="font-mono text-[12px] text-ok font-medium bg-okWash px-1.5 py-0.2 rounded">100% cap</span>
+</div>
+</div>
+<div class="bg-panel border border-line rounded-[12px] p-3.5 flex flex-col gap-1">
+<span class="font-label text-[11px] font-semibold text-muted uppercase tracking-wider">Pending Release</span>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-metric font-medium text-warn">E£50.00</span>
+<span class="font-mono text-[12px] text-muted">1 order</span>
+</div>
+</div>
+<div class="bg-panel border border-line rounded-[12px] p-3.5 flex flex-col gap-1">
+<span class="font-label text-[11px] font-semibold text-muted uppercase tracking-wider">Failed / Reverted</span>
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-metric font-medium text-bad">E£90.00</span>
+<span class="font-mono text-[12px] text-bad font-medium bg-badWash px-1.5 py-0.2 rounded">Card closed</span>
+</div>
+</div>
+</div>
+<!-- REFUNDS TABLE CARD -->
+<section class="rounded-[12px] border border-line bg-panel overflow-hidden shadow-sm">
+<div class="px-5 py-3 border-b border-line flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-title text-[15px] font-semibold text-ink">Disbursement Ledger</span>
+<span class="font-mono text-[11px] bg-panel2 text-muted px-2 py-0.5 rounded font-medium">3 records</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-muted hover:text-ink p-1 rounded hover:bg-panel2" title="Filter list" type="button">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+</button>
+<button class="text-muted hover:text-ink p-1 rounded hover:bg-panel2" title="Refresh" type="button">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+</button>
+</div>
+</div>
+<!-- Responsive Table View -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line text-muted">
+<th class="py-3 px-4 font-label text-label font-semibold uppercase tracking-wider text-muted" scope="col">REFUND ID</th>
+<th class="py-3 px-4 font-label text-label font-semibold uppercase tracking-wider text-muted" scope="col">ORDER</th>
+<th class="py-3 px-4 font-label text-label font-semibold uppercase tracking-wider text-muted text-right" scope="col">AMOUNT</th>
+<th class="py-3 px-4 font-label text-label font-semibold uppercase tracking-wider text-muted" scope="col">STATUS</th>
+<th class="py-3 px-4 font-label text-label font-semibold uppercase tracking-wider text-muted" scope="col">SETTLED SHARE</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line font-body text-body">
+<!-- Row 1: RF-0042 -->
+<tr class="hover:bg-panel2 transition-colors duration-150">
+<td class="py-3.5 px-4 whitespace-nowrap">
+<div class="flex flex-col">
+<span class="font-mono text-mono font-medium text-ink">RF-0042</span>
+<span class="font-body text-small text-faint">10 Oct 2026</span>
+</div>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap">
+<a class="font-mono text-mono text-accent font-medium hover:underline inline-flex items-center gap-1" href="#order-1039">
+                        #1039
+                        <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap text-right">
+<span class="font-mono text-mono font-medium text-ink">E£249.00</span>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap">
+<!-- Status Pill: OK Wash -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-medium bg-okWash text-ok">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                        SUCCEEDED
+                      </span>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap">
+<div class="flex items-center gap-2.5">
+<div class="w-24 bg-panel2 rounded-full h-2 overflow-hidden border border-line">
+<div class="bg-ok h-2 rounded-full w-full"></div>
+</div>
+<span class="font-mono text-[12px] text-muted font-medium">100%</span>
+</div>
+</td>
+</tr>
+<!-- Row 2: RF-0041 -->
+<tr class="hover:bg-panel2 transition-colors duration-150">
+<td class="py-3.5 px-4 whitespace-nowrap">
+<div class="flex flex-col">
+<span class="font-mono text-mono font-medium text-ink">RF-0041</span>
+<span class="font-body text-small text-faint">08 Oct 2026</span>
+</div>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap">
+<a class="font-mono text-mono text-accent font-medium hover:underline inline-flex items-center gap-1" href="#order-1036">
+                        #1036
+                        <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap text-right">
+<span class="font-mono text-mono font-medium text-ink">E£90.00</span>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap">
+<!-- Status Pill: Bad Wash -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-medium bg-badWash text-bad">
+<span class="w-1.5 h-1.5 rounded-full bg-bad"></span>
+                        FAILED
+                      </span>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap">
+<div class="flex items-center gap-2.5">
+<div class="w-24 bg-panel2 rounded-full h-2 overflow-hidden border border-line">
+<div class="bg-bad h-2 rounded-full w-0"></div>
+</div>
+<span class="font-mono text-[12px] text-bad font-medium">0%</span>
+<span class="font-body text-[11px] text-faint italic ml-1">Card closed</span>
+</div>
+</td>
+</tr>
+<!-- Row 3: RF-0040 -->
+<tr class="hover:bg-panel2 transition-colors duration-150">
+<td class="py-3.5 px-4 whitespace-nowrap">
+<div class="flex flex-col">
+<span class="font-mono text-mono font-medium text-ink">RF-0040</span>
+<span class="font-body text-small text-faint">05 Oct 2026</span>
+</div>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap">
+<a class="font-mono text-mono text-accent font-medium hover:underline inline-flex items-center gap-1" href="#order-1032">
+                        #1032
+                        <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap text-right">
+<span class="font-mono text-mono font-medium text-ink">E£50.00</span>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap">
+<!-- Status Pill: Warn Wash -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-medium bg-warnWash text-warn">
+<span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+                        PROCESSING
+                      </span>
+</td>
+<td class="py-3.5 px-4 whitespace-nowrap">
+<div class="flex items-center gap-2.5">
+<div class="w-24 bg-panel2 rounded-full h-2 overflow-hidden border border-line">
+<div class="bg-warn h-2 rounded-full w-1/2"></div>
+</div>
+<span class="font-mono text-[12px] text-warn font-medium">50%</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer -->
+<div class="p-3.5 bg-panel2/60 border-t border-line font-small text-small text-muted flex items-center justify-between">
+<span class="font-medium text-ink">Total refunded: <span class="font-mono text-ink">E£299.00</span> across 3 requests</span>
+<span>Showing 3 of 3 refunds</span>
+</div>
+</section>
+<!-- Reconciliation Context Well -->
+<div class="p-4 rounded-[12px] border border-line bg-panel flex items-start gap-3">
+<span class="material-symbols-outlined text-accent text-[20px] mt-0.5">verified_user</span>
+<div class="text-small text-muted">
+<span class="font-semibold text-ink">Automated Gateway Sync:</span> Every approved refund row synchronizes within 120ms with PayMob &amp; CIB settlement networks. In event of gateway transmission failures, settlement status automatically pivots to <span class="font-mono text-[12px] text-bad font-medium">FAILED</span> without debiting the merchant reserve.
+            </div>
+</div>
+</div>
+<!-- RIGHT COLUMN (38%) -->
+<div class="lg:col-span-38 flex flex-col gap-6">
+<!-- 1. "Request a refund" FORM CARD -->
+<div class="rounded-[12px] border border-line bg-panel p-5 shadow-sm">
+<div class="flex items-center justify-between mb-4 pb-2 border-b border-line">
+<h2 class="font-title text-[16px] font-semibold text-ink">Request a refund</h2>
+<span class="font-mono text-[11px] bg-panel2 text-faint px-2 py-0.5 rounded">Action: POST /v1/refunds</span>
+</div>
+<form class="flex flex-col gap-4" onsubmit="event.preventDefault();">
+<!-- Field 1: Target Order -->
+<div>
+<label class="block font-label text-[12px] font-semibold uppercase tracking-wider text-ink mb-1.5" for="order-select">
+                  Target Order <span class="text-bad">*</span>
+</label>
+<div class="relative">
+<select class="w-full bg-panel border border-controlEdge rounded-lg px-3 py-2 text-small text-ink focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent appearance-none pr-8" id="order-select">
+<option selected="">#1042 — Mariam Buyer (E£249.00)</option>
+<option>#1040 — Tareq Fahmy (E£680.00)</option>
+<option>#1038 — Ziad Mansoor (E£120.00)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-[18px] text-muted pointer-events-none">unfold_more</span>
+</div>
+</div>
+<!-- Field 2: Refund Amount -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="font-label text-[12px] font-semibold uppercase tracking-wider text-ink" for="refund-amount">
+                    Refund amount <span class="text-bad">*</span>
+</label>
+<button class="text-[11px] font-mono text-accent hover:underline font-medium" type="button">Max (249.00)</button>
+</div>
+<div class="relative flex items-center">
+<span class="absolute left-3 font-mono text-muted text-small">E£</span>
+<input class="w-full pl-9 pr-3 py-2 bg-panel border border-controlEdge rounded-lg font-mono text-mono text-ink focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent" id="refund-amount" type="text" value="249.00"/>
+</div>
+<p class="font-body text-small text-faint mt-1 font-mono text-[12px]">
+                  captured: 249.00 EGP · available to refund: 249.00 EGP
+                </p>
+</div>
+<!-- Field 3: Reason Dropdown -->
+<div>
+<label class="block font-label text-[12px] font-semibold uppercase tracking-wider text-ink mb-1.5" for="refund-reason">
+                  Reason <span class="text-bad">*</span>
+</label>
+<div class="relative">
+<select class="w-full bg-panel border border-controlEdge rounded-lg px-3 py-2 text-small text-ink focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent appearance-none pr-8" id="refund-reason">
+<option selected="">Item damaged / quality issue</option>
+<option>Customer returned parcel</option>
+<option>Out of stock fulfillment cancel</option>
+<option>Duplicate charge adjustment</option>
+<option>Other / Courtesy goodwill credit</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-[18px] text-muted pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Invariant Warning Callout Banner -->
+<div class="bg-badWash border border-bad/30 p-3.5 rounded-[8px] text-bad font-body text-small leading-snug">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[18px] text-bad shrink-0 mt-0.5">lock_clock</span>
+<div>
+<strong class="font-semibold block text-[13px] mb-0.5">Invariant Guard (INV-5):</strong>
+                    A refund exceeding the captured order total is rejected synchronously at the API boundary before any payment provider is invoked. Multi-refund accumulations are strictly constrained.
+                  </div>
+</div>
+</div>
+<!-- Full-width CTA button -->
+<button class="bg-accent text-accentInk rounded-[8px] py-2.5 px-4 font-medium font-body text-small w-full text-center hover:opacity-95 transition-all shadow-sm flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-[18px]">currency_exchange</span>
+<span>Request refund</span>
+</button>
+</form>
+</div>
+<!-- 2. "Ledger effect" CARD -->
+<div class="rounded-[12px] border border-line bg-panel p-5 shadow-sm flex flex-col gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-accent">account_balance_wallet</span>
+<h3 class="font-title text-[15px] font-semibold text-ink">Ledger Effect &amp; Audit</h3>
+</div>
+<p class="font-body text-[13px] text-muted leading-relaxed">
+              A refund posts a reversing transaction to the immutable ledger and never edits or mutates the original capture row. Platform cash is credited and Seller payable is debited. System invariant INV-5 guarantees non-negative balances.
+            </p>
+<!-- Mini Ledger visualization breakdown -->
+<div class="mt-1 p-3 bg-panel2 rounded-lg border border-line flex flex-col gap-2 font-mono text-[12px]">
+<div class="flex justify-between items-center text-ink">
+<span class="text-faint">CR Platform Cash (01-1000)</span>
+<span class="text-ok font-medium">+249.00 EGP</span>
+</div>
+<div class="flex justify-between items-center text-ink">
+<span class="text-faint">DR Seller Payable (02-2100)</span>
+<span class="text-bad font-medium">-249.00 EGP</span>
+</div>
+<div class="border-t border-lineStrong/50 pt-1.5 flex justify-between items-center text-[11px] text-muted font-body">
+<span>Verification Hash:</span>
+<span class="font-mono text-faint">SHA256: 8f4c...91b0</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT: Footer (Docked full-width pl-[252px])                  -->
+<!-- ========================================================================= -->
+<footer class="ml-[252px] w-[calc(100%-252px)] bg-panel border-t border-line text-small font-small font-normal select-none">
+<div class="flex justify-between items-center px-space-xl py-space-lg">
+<div class="flex items-center gap-3">
+<span class="font-label text-label font-semibold text-muted">
+          © 2025 MarketCore Technologies Inc. Nile Traders Enterprise Console. All rights reserved.
+        </span>
+</div>
+<div class="flex items-center gap-6">
+<a class="text-faint hover:text-ink transition-colors font-small text-small" href="#terms">Terms of Service</a>
+<a class="text-faint hover:text-ink transition-colors font-small text-small" href="#privacy">Privacy Policy</a>
+<a class="text-faint hover:text-ink transition-colors font-small text-small" href="#security">Security Compliance</a>
+<a class="text-faint hover:text-ink transition-colors font-small text-small" href="#api">API Reference</a>
+</div>
+</div>
+</footer>
+</body></html>

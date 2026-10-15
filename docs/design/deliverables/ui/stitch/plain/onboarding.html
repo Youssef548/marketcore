@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore — Organization Setup</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- DM Sans & DM Mono Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim from Design System -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary": "#3525cd",
+            "on-tertiary-fixed": "#351000",
+            "okWash": "#e8f7ee",
+            "on-surface": "#1b1b24",
+            "line": "#e6e8ef",
+            "tertiary-fixed": "#ffdbcc",
+            "muted": "#5a6272",
+            "inverse-primary": "#c3c0ff",
+            "on-secondary-fixed-variant": "#46464f",
+            "ink": "#0a0b12",
+            "surface-container-highest": "#e4e1ee",
+            "info": "#097499",
+            "lineStrong": "#d5d9e2",
+            "on-primary": "#ffffff",
+            "on-error": "#ffffff",
+            "secondary-fixed": "#e3e1ec",
+            "error": "#ba1a1a",
+            "surface-container": "#f0ecf9",
+            "surface-container-lowest": "#ffffff",
+            "inverse-on-surface": "#f3effc",
+            "outline": "#777587",
+            "surface-variant": "#e4e1ee",
+            "faint": "#676e7a",
+            "warnWash": "#fdf3e4",
+            "on-secondary-container": "#64646d",
+            "secondary-container": "#e3e1ec",
+            "primary-fixed-dim": "#c3c0ff",
+            "on-error-container": "#93000a",
+            "tertiary-fixed-dim": "#ffb695",
+            "panel2": "#f1f3f9",
+            "on-tertiary-container": "#ffd2be",
+            "controlEdge": "#838b9a",
+            "surface-tint": "#4d44e3",
+            "on-secondary-fixed": "#1a1b23",
+            "tertiary": "#7e3000",
+            "canvas": "#f6f7fb",
+            "railMuted": "#8b93a7",
+            "warn": "#a55a05",
+            "on-primary-fixed": "#0f0069",
+            "background": "#fcf8ff",
+            "ok": "#117f3a",
+            "primary-fixed": "#e2dfff",
+            "bad": "#d11b43",
+            "surface-dim": "#dcd8e5",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f5f2ff",
+            "surface": "#fcf8ff",
+            "on-secondary": "#ffffff",
+            "primary-container": "#4f46e5",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "on-primary-fixed-variant": "#3323cc",
+            "accent": "#4f46e5",
+            "outline-variant": "#c7c4d8",
+            "on-surface-variant": "#464555",
+            "error-container": "#ffdad6",
+            "badWash": "#fdecef",
+            "surface-container-high": "#eae6f4",
+            "on-primary-container": "#dad7ff",
+            "on-background": "#1b1b24",
+            "inverse-surface": "#302f39",
+            "tertiary-container": "#a44100",
+            "secondary-fixed-dim": "#c7c5d0",
+            "panel": "#ffffff",
+            "accentInk": "#ffffff",
+            "rail": "#0b0d14",
+            "accentWash": "#eef0ff",
+            "railInk": "#eef1f7",
+            "surface-bright": "#fcf8ff",
+            "secondary": "#5d5e67"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xl": "22px",
+            "space-lg": "16px",
+            "gutter": "16px",
+            "margin": "20px",
+            "space-xxl": "26px",
+            "space-sm": "6px",
+            "space-md": "10px",
+            "space-xs": "4px"
+          },
+          "fontFamily": {
+            "metric": ["DM Sans"],
+            "label": ["DM Sans"],
+            "display": ["DM Sans"],
+            "title": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "body": ["DM Sans"],
+            "small": ["DM Sans"]
+          },
+          "fontSize": {
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body min-h-screen flex flex-col justify-between antialiased selection:bg-accentWash selection:text-primary">
+<!-- Shared Component: TopNavBar (Transactional / First Run mode - no side rail present) -->
+<header class="w-full bg-panel border-b border-line sticky top-0 z-50">
+<div class="w-full h-16 px-space-lg md:px-margin flex items-center justify-between mx-auto max-w-7xl">
+<!-- Brand Anchor -->
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-accentInk shadow-sm">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+</div>
+<span class="font-title text-title font-semibold tracking-tight text-ink">MarketCore</span>
+<span class="ml-space-xs text-[11px] font-mono uppercase px-2 py-0.5 rounded-lg bg-panel2 text-faint border border-line">v4.1</span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-space-xl">
+<a class="text-muted font-body text-body py-2 hover:text-primary transition-colors duration-150" href="#platform-status">Platform Status</a>
+<a class="text-muted font-body text-body py-2 hover:text-primary transition-colors duration-150" href="#docs">Documentation</a>
+<a class="text-muted font-body text-body py-2 hover:text-primary transition-colors duration-150" href="#support">Support</a>
+</nav>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-space-md">
+<a class="hidden sm:inline-flex items-center gap-1 font-label text-label text-muted hover:text-ink px-space-md py-1.5 rounded-xl transition-colors duration-150" href="#help">
+<span class="material-symbols-outlined text-[16px]">help</span>
+          Help
+        </a>
+<div class="h-4 w-[1px] bg-line hidden sm:block"></div>
+<div class="flex items-center gap-2 pl-1">
+<div class="w-7 h-7 rounded-full bg-accentWash text-primary flex items-center justify-center font-label text-label font-bold border border-line">
+            U
+          </div>
+<span class="font-small text-small text-muted hidden md:inline">usr_892b1</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Viewport: Centered Onboarding Stage (NO RAIL) -->
+<main class="flex-grow flex items-center justify-center px-space-lg py-space-xxl">
+<div class="w-full max-w-[460px] bg-panel rounded-[12px] border border-line p-8 shadow-[0_4px_20px_-4px_rgba(10,11,18,0.05),0_2px_6px_-2px_rgba(10,11,18,0.03)] transition-all">
+<!-- Distinctive Emblem / Badge -->
+<div class="flex justify-center mb-space-xl">
+<div class="w-16 h-16 rounded-full bg-accentWash flex items-center justify-center border border-lineStrong/40 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[30px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">corporate_fare</span>
+</div>
+</div>
+<!-- Title & Value Narrative -->
+<div class="text-center mb-6">
+<h1 class="font-title text-title font-bold tracking-tight text-ink mb-2.5">
+          You're not in an organization yet
+        </h1>
+<p class="font-body text-body text-muted leading-relaxed">
+          MarketCore keeps products, orders and money inside an organization. Creating one makes you its owner and sets up your seller workspace.
+        </p>
+</div>
+<!-- Single Intent Form -->
+<form class="space-y-space-lg" onsubmit="event.preventDefault();">
+<div class="space-y-space-xs">
+<label class="block font-label text-label tracking-wider uppercase text-faint" for="org-name">
+            ORGANIZATION NAME *
+          </label>
+<div class="relative">
+<input class="w-full h-11 px-3.5 bg-panel border border-controlEdge rounded-[8px] font-body text-body text-ink placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-150" id="org-name" name="org-name" placeholder="e.g. Nile Traders" required="" type="text" value="Nile Traders"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-muted">
+<span class="material-symbols-outlined text-[18px]">store</span>
+</div>
+</div>
+<p class="font-small text-small text-muted pt-1 leading-snug">
+            This will be the legal tenant name for your catalogue, payouts, and team members.
+          </p>
+</div>
+<!-- Tenant Deployment Specs Pill -->
+<div class="p-3 bg-panel2 border border-line rounded-[8px] flex items-start gap-2.5">
+<span class="material-symbols-outlined text-accent text-[18px] mt-0.5">verified_user</span>
+<div class="text-left">
+<span class="font-label text-label font-medium text-ink block">Automatic Root Ownership</span>
+<span class="font-small text-small text-muted block leading-tight">Your account will instantly receive full billing and administrative governance privileges.</span>
+</div>
+</div>
+<!-- Primary Call to Action -->
+<div class="pt-2">
+<button class="w-full h-10 px-4 rounded-[8px] bg-accent text-accentInk font-body text-body font-medium flex items-center justify-center gap-2 hover:bg-primary transition-colors duration-150 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-accent/40 shadow-sm" type="submit">
+<span>Create organization</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</form>
+<!-- Account Switcher Link -->
+<div class="mt-6 pt-5 border-t border-line text-center">
+<p class="font-small text-small text-muted">
+          Wrong account? 
+          <a class="font-small text-small font-medium text-muted hover:text-bad ml-1 underline decoration-line hover:decoration-bad transition-colors duration-150" href="#signout">
+            Sign out
+          </a>
+</p>
+</div>
+</div>
+</main>
+<!-- Shared Component: Footer -->
+<footer class="w-full bg-canvas border-t border-line py-space-lg">
+<div class="w-full px-space-lg md:px-margin flex flex-col md:flex-row justify-between items-center gap-space-md max-w-7xl mx-auto">
+<div class="flex items-center gap-2">
+<span class="font-small text-small text-muted">
+          © 2025 MarketCore Enterprise Marketplace Inc. All rights reserved.
+        </span>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-space-lg font-small text-small text-muted">
+<a class="hover:text-ink transition-colors duration-150" href="#privacy">Privacy Policy</a>
+<a class="hover:text-ink transition-colors duration-150" href="#terms">Terms of Service</a>
+<a class="hover:text-ink transition-colors duration-150" href="#security">Security Architecture</a>
+<a class="hover:text-ink transition-colors duration-150" href="#compliance">Compliance</a>
+<a class="hover:text-ink transition-colors duration-150 flex items-center gap-1.5" href="#status">
+<span class="w-1.5 h-1.5 rounded-full bg-ok inline-block"></span>
+          Status
+        </a>
+</div>
+</div>
+</footer>
+</body></html>

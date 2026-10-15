@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore Checkout</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: DM Sans and DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS Play CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "warn": "#a55a05",
+            "on-tertiary-fixed": "#351000",
+            "on-tertiary-container": "#ffd2be",
+            "tertiary-fixed": "#ffdbcc",
+            "bad": "#d11b43",
+            "on-secondary-container": "#64646d",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#a44100",
+            "railInk": "#eef1f7",
+            "surface-container-highest": "#e4e1ee",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-secondary-fixed": "#1a1b23",
+            "secondary-fixed": "#e3e1ec",
+            "secondary-container": "#e3e1ec",
+            "tertiary": "#7e3000",
+            "accentInk": "#ffffff",
+            "ink": "#0a0b12",
+            "surface": "#fcf8ff",
+            "outline-variant": "#c7c4d8",
+            "primary-container": "#4f46e5",
+            "info": "#097499",
+            "secondary-fixed-dim": "#c7c5d0",
+            "surface-tint": "#4d44e3",
+            "primary-fixed": "#e2dfff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "on-surface-variant": "#464555",
+            "error": "#ba1a1a",
+            "inverse-primary": "#c3c0ff",
+            "surface-container-low": "#f5f2ff",
+            "inverse-on-surface": "#f3effc",
+            "on-primary-container": "#dad7ff",
+            "canvas": "#f6f7fb",
+            "accent": "#4f46e5",
+            "on-tertiary": "#ffffff",
+            "inverse-surface": "#302f39",
+            "on-error-container": "#93000a",
+            "ok": "#117f3a",
+            "background": "#fcf8ff",
+            "controlEdge": "#838b9a",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#eae6f4",
+            "primary-fixed-dim": "#c3c0ff",
+            "surface-dim": "#dcd8e5",
+            "on-surface": "#1b1b24",
+            "on-background": "#1b1b24",
+            "muted": "#5a6272",
+            "faint": "#676e7a",
+            "secondary": "#5d5e67",
+            "panel2": "#f1f3f9",
+            "primary": "#3525cd",
+            "accentWash": "#eef0ff",
+            "panel": "#ffffff",
+            "line": "#e6e8ef",
+            "surface-variant": "#e4e1ee",
+            "outline": "#777587",
+            "warnWash": "#fdf3e4",
+            "tertiary-fixed-dim": "#ffb695",
+            "lineStrong": "#d5d9e2",
+            "railMuted": "#8b93a7",
+            "okWash": "#e8f7ee",
+            "surface-container": "#f0ecf9",
+            "error-container": "#ffdad6",
+            "surface-bright": "#fcf8ff",
+            "on-error": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-primary-fixed": "#0f0069",
+            "badWash": "#fdecef",
+            "on-secondary-fixed-variant": "#46464f",
+            "rail": "#0b0d14"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem",
+            "8": "8px",
+            "9": "9px",
+            "12": "12px",
+            "pill": "9999px"
+          },
+          "spacing": {
+            "space-xs": "4px",
+            "space-xl": "22px",
+            "space-xxl": "26px",
+            "space-sm": "6px",
+            "gutter": "16px",
+            "space-md": "10px",
+            "space-lg": "16px",
+            "margin": "20px"
+          },
+          "fontFamily": {
+            "title": ["DM Sans"],
+            "display": ["DM Sans"],
+            "body": ["DM Sans"],
+            "label": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "small": ["DM Sans"],
+            "metric": ["DM Sans"]
+          },
+          "fontSize": {
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body text-body min-h-screen flex flex-col antialiased selection:bg-accentWash selection:text-accent">
+<!-- TOP NAV BAR (Shared Component: Storefront Header) -->
+<header class="w-full sticky top-0 z-50 flex flex-col bg-panel border-b border-line">
+<!-- Main Header Bar (64px) -->
+<div class="h-16 px-6 max-w-7xl w-full mx-auto flex items-center justify-between gap-6">
+<!-- Brand Logo & Left Search Bar Group -->
+<div class="flex items-center gap-8 flex-1 max-w-2xl">
+<a class="text-title font-title font-bold text-ink tracking-tight flex items-center gap-2 shrink-0" href="/">
+<span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-accent text-accentInk">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</span>
+          MarketCore
+        </a>
+<!-- Search Bar on Left -->
+<div class="relative w-full max-w-md hidden sm:block">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</span>
+<input class="w-full pl-9 pr-4 py-2 bg-panel2 border border-line rounded-8 text-small font-small text-ink placeholder:text-faint focus:outline-none focus:border-accent focus:bg-panel transition-all" placeholder="Search verified artisan goods, textiles, kitchenware..." type="text"/>
+</div>
+</div>
+<!-- Trailing Action Icons & User Profile -->
+<div class="flex items-center gap-4 shrink-0">
+<!-- Icon Actions -->
+<button aria-label="Favorites" class="p-2 text-muted hover:text-ink hover:bg-panel2 rounded-8 transition-colors" type="button">
+<span class="material-symbols-outlined text-[22px]">favorite</span>
+</button>
+<button aria-label="Shopping Cart" class="p-2 text-muted hover:text-ink hover:bg-panel2 rounded-8 transition-colors relative" type="button">
+<span class="material-symbols-outlined text-[22px]">shopping_cart</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent"></span>
+</button>
+<div class="h-6 w-px bg-line"></div>
+<!-- User Profile -->
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-panel2 border border-line flex items-center justify-center font-title font-semibold text-accent text-small">
+            MB
+          </div>
+<div class="hidden md:flex flex-col text-left">
+<span class="font-label text-label font-medium text-ink leading-tight">Mariam Buyer</span>
+<span class="font-small text-small text-muted leading-none">Buyer Account</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Category Bar (44px) -->
+<div class="h-11 border-t border-line bg-panel overflow-x-auto no-scrollbar">
+<div class="max-w-7xl mx-auto px-6 h-full flex items-center gap-7">
+<a class="text-muted font-normal hover:text-ink font-label text-label transition-colors shrink-0" href="#">All Categories</a>
+<a class="text-accent font-medium border-b-2 border-accent pb-1 font-label text-label shrink-0" href="#">Textiles</a>
+<a class="text-muted font-normal hover:text-ink font-label text-label transition-colors shrink-0" href="#">Home</a>
+<a class="text-muted font-normal hover:text-ink font-label text-label transition-colors shrink-0" href="#">Food</a>
+<a class="text-muted font-normal hover:text-ink font-label text-label transition-colors shrink-0" href="#">Beauty</a>
+<a class="text-muted font-normal hover:text-ink font-label text-label transition-colors shrink-0" href="#">Deals</a>
+</div>
+</div>
+</header>
+<!-- MAIN CONTAINER CANVAS -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-6 py-8">
+<!-- Page Head & Breadcrumb Stepper Status -->
+<div class="mb-8">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-line">
+<div>
+<div class="flex items-center gap-3">
+<h1 class="text-title font-title text-ink font-bold">Checkout</h1>
+<span class="text-label font-label uppercase font-semibold tracking-wider text-accent bg-accentWash px-3 py-1 rounded-pill border border-line">
+              Step 2 of 3
+            </span>
+</div>
+<p class="text-small font-small text-muted mt-1.5 flex items-center gap-1.5">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-ok"></span>
+            Signed in as Mariam Buyer · belongs to no organization
+          </p>
+</div>
+<!-- Three-step progress row -->
+<div class="flex items-center gap-3 self-start sm:self-auto bg-panel px-4 py-2 rounded-12 border border-line">
+<!-- Step 1 -->
+<div class="flex items-center gap-1.5 text-ok font-label text-label font-medium">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>Cart</span>
+</div>
+<div class="w-6 h-px bg-line"></div>
+<!-- Step 2 -->
+<div class="flex items-center gap-1.5 text-accent font-label text-label font-semibold">
+<span class="material-symbols-outlined text-[16px]">radio_button_checked</span>
+<span>Details</span>
+</div>
+<div class="w-6 h-px bg-line"></div>
+<!-- Step 3 -->
+<div class="flex items-center gap-1.5 text-muted font-label text-label font-normal">
+<span class="material-symbols-outlined text-[16px]">radio_button_unchecked</span>
+<span>Payment</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 2-Column Checkout Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT COLUMN (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- "Your order" table card -->
+<section class="bg-panel border border-line rounded-12 p-6 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-body font-body font-semibold text-ink">Your order (1 item)</h2>
+<span class="text-small font-small text-muted">Estimated dispatch: Within 24 hrs</span>
+</div>
+<div class="overflow-x-auto border border-line rounded-8">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line">
+<th class="py-2.5 px-4 text-label font-label text-faint uppercase font-semibold">ITEM</th>
+<th class="py-2.5 px-4 text-label font-label text-faint uppercase font-semibold">SELLER</th>
+<th class="py-2.5 px-4 text-label font-label text-faint uppercase font-semibold text-center">QTY</th>
+<th class="py-2.5 px-4 text-label font-label text-faint uppercase font-semibold text-right">TOTAL</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line">
+<tr class="hover:bg-panel2 transition-colors">
+<td class="py-3 px-4">
+<div class="flex items-center gap-3.5">
+<img class="w-16 h-16 rounded-8 object-cover border border-line shrink-0" data-alt="A meticulously folded artisanal Nile Cotton Shirt in an ecru ivory shade resting on a minimalist studio marble pedestal. The fabric displays clear woven breathable linen-cotton fiber textures under soft natural diffuse morning lighting. Modern commercial apparel presentation with neutral background palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjG9tBgyDxvLNGo4lBhONRI3_0p5zgHolSAmOyl6zrbmGHgK4GPojbd1OnhlbPqggQatPwp0h6T7LlhQrqMtu9B9NgBiehMy5FxF_b-qg0F5v8MnBp59a9B864YYc6jAhDF0YzJJMtxPCqpu2CUndLDuIYv5_OGNwcMWFg1TS1LIdKj_42oLmENRBrWjuMEf3m2lXfwoZzit6_qzXKjvvYMLQWR8g3vDYWCjCLBBfal_-qeEKNE4H0iFOvPAu2BaQjFTygR5JPNG0"/>
+<div>
+<div class="text-body font-body font-medium text-ink">Nile Cotton Shirt</div>
+<div class="text-small font-small text-muted mt-0.5">Variant: Ecru / M</div>
+<div class="text-label font-mono text-faint mt-1">SKU: NLE-CTN-ECR-M</div>
+</div>
+</div>
+</td>
+<td class="py-3 px-4 align-middle">
+<div class="flex items-center gap-1.5">
+<span class="text-body font-body text-ink font-medium">Nile Traders</span>
+<span class="inline-flex items-center text-ok font-medium" title="Verified Artisan Merchant">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+</span>
+</div>
+<span class="text-small font-small text-muted block mt-0.5">Artisan Fulfillment</span>
+</td>
+<td class="py-3 px-4 text-center align-middle">
+<span class="font-mono text-body text-ink font-medium bg-panel2 border border-line px-2.5 py-1 rounded-lg">1</span>
+</td>
+<td class="py-3 px-4 text-right align-middle font-mono text-body text-ink font-semibold">
+                    E£249.00
+                  </td>
+</tr>
+</tbody>
+<tfoot class="bg-panel2 border-t border-line text-small font-small">
+<tr>
+<td class="py-2 px-4 text-right text-muted font-normal" colspan="3">Subtotal</td>
+<td class="py-2 px-4 text-right font-mono text-ink">E£249.00</td>
+</tr>
+<tr>
+<td class="py-1.5 px-4 text-right text-muted font-normal" colspan="3">Delivery</td>
+<td class="py-1.5 px-4 text-right font-mono text-ok font-medium">Free</td>
+</tr>
+<tr class="border-t border-lineStrong">
+<td class="py-3 px-4 text-right text-ink font-semibold text-body" colspan="3">Order total</td>
+<td class="py-3 px-4 text-right font-mono text-body font-bold text-ink">E£249.00</td>
+</tr>
+</tfoot>
+</table>
+</div>
+</section>
+<!-- "Delivery details" card -->
+<section class="bg-panel border border-line rounded-12 p-6 shadow-sm">
+<div class="mb-5">
+<h2 class="text-body font-body font-semibold text-ink">Delivery details</h2>
+<p class="text-small font-small text-muted mt-0.5">Required fields are marked with an asterisk (*). All others are optional.</p>
+</div>
+<form class="space-y-4" onsubmit="event.preventDefault();">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Full Name * -->
+<div>
+<label class="block text-label font-label text-ink mb-1" for="fullName">
+                  Full name <span class="text-bad">*</span>
+</label>
+<input class="w-full h-10 px-3.5 bg-panel border border-controlEdge rounded-8 text-body font-body text-ink focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" id="fullName" type="text" value="Mariam Buyer"/>
+</div>
+<!-- Email * -->
+<div>
+<label class="block text-label font-label text-ink mb-1" for="email">
+                  Email <span class="text-bad">*</span>
+</label>
+<input class="w-full h-10 px-3.5 bg-panel border border-controlEdge rounded-8 text-body font-body text-ink focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" id="email" type="email" value="mariam.buyer@example.test"/>
+</div>
+</div>
+<!-- Address * -->
+<div>
+<label class="block text-label font-label text-ink mb-1" for="address">
+                Address <span class="text-bad">*</span>
+</label>
+<input class="w-full h-10 px-3.5 bg-panel border border-controlEdge rounded-8 text-body font-body text-ink placeholder:text-faint focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" id="address" placeholder="Street address, building, apartment" type="text"/>
+<p class="text-small font-small text-faint mt-1.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-warn">info</span>
+                Not in the domain yet — a checkout with no address is not a checkout.
+              </p>
+</div>
+<!-- Phone (optional) -->
+<div>
+<label class="block text-label font-label text-ink mb-1" for="phone">
+                Phone <span class="text-muted font-normal">(optional — used only for delivery updates)</span>
+</label>
+<input class="w-full h-10 px-3.5 bg-panel border border-controlEdge rounded-8 text-body font-body text-ink placeholder:text-faint focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" id="phone" placeholder="+20 100 000 0000" type="tel"/>
+</div>
+<!-- Dispatch Note Banner -->
+<div class="mt-4 p-3.5 bg-panel2 border border-line rounded-8 flex items-center gap-2.5">
+<span class="material-symbols-outlined text-accent text-[20px] shrink-0">local_shipping</span>
+<p class="text-small font-small text-ink">
+<span class="font-medium">Dispatch Note:</span> Dispatched from Cairo hub via Nile Traders artisan fulfillment.
+              </p>
+</div>
+</form>
+</section>
+</div>
+<!-- RIGHT COLUMN (4 cols) -->
+<aside class="lg:col-span-4 flex flex-col gap-6">
+<!-- "Summary" card -->
+<div class="bg-panel border border-line rounded-12 p-6 shadow-sm">
+<h2 class="text-body font-body font-semibold text-ink mb-4">Order Summary</h2>
+<div class="space-y-3 pb-4 border-b border-line">
+<div class="flex items-center justify-between text-body font-body">
+<span class="text-muted">Subtotal</span>
+<span class="font-mono text-ink">E£249.00</span>
+</div>
+<div class="flex items-center justify-between text-body font-body">
+<span class="text-muted">Delivery</span>
+<span class="font-mono text-ok font-medium">Free</span>
+</div>
+</div>
+<div class="py-4 flex items-baseline justify-between">
+<span class="text-body font-body font-semibold text-ink">Total</span>
+<span class="text-title font-mono font-bold text-ink">E£249.00</span>
+</div>
+<!-- Platform fee clarity callout -->
+<div class="bg-panel2 p-3 rounded-8 border border-line text-small font-small text-muted flex gap-2.5 items-start">
+<span class="material-symbols-outlined text-[18px] text-info shrink-0 mt-0.5">policy</span>
+<p class="leading-snug">
+              The 10% platform fee is absorbed directly from the seller's proceeds, so you pay the listed price — adding a buyer fee line here would be a lie.
+            </p>
+</div>
+<!-- Primary CTA Button -->
+<button class="w-full mt-4 h-11 bg-accent hover:bg-primary-container text-accentInk font-medium text-body rounded-9 transition-all duration-150 flex items-center justify-center gap-2 shadow-sm active:scale-[0.99]" type="button">
+<span>Place order</span>
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</button>
+<div class="mt-3 text-center">
+<span class="text-small font-small text-faint flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+              Protected by MarketCore Buyer Guarantee
+            </span>
+</div>
+</div>
+<!-- Honest Gap Card -->
+<div class="bg-panel2 border border-line rounded-12 p-5">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-warn text-[16px]">terminal</span>
+<h3 class="text-label font-label uppercase font-semibold text-faint tracking-wider">
+              NOT BUILT YET — BE HONEST ABOUT IT
+            </h3>
+</div>
+<p class="text-small font-small text-muted leading-relaxed">
+            Payment methods and tokenized card vaults are unbuilt in the domain; clicking 'Place order' creates the order record in 'unpaid' state. Guest checkout is deliberately omitted to enforce tenant-free buyer identity.
+          </p>
+</div>
+</aside>
+</div>
+</main>
+<!-- STOREFRONT FOOTER (Shared Component) -->
+<footer class="w-full border-t border-line mt-auto bg-panel">
+<div class="max-w-7xl mx-auto px-6 py-12">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-line">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-accent text-accentInk">
+<span class="material-symbols-outlined text-[18px]">storefront</span>
+</span>
+<span class="text-title font-title font-bold text-ink">MarketCore</span>
+</div>
+<nav class="flex flex-wrap items-center gap-x-6 gap-y-2 text-label font-label">
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#">About MarketCore</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#">Seller Standards</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#">Trust &amp; Safety</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#">Developer API</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#">Privacy Policy</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#">Terms of Service</a>
+</nav>
+</div>
+<div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-small font-small text-muted">
+<p>© 2025 MarketCore Marketplace, Inc. All rights reserved.</p>
+<div class="flex items-center gap-4 text-faint">
+<span class="flex items-center gap-1">
+<span class="inline-block w-2 h-2 rounded-full bg-ok"></span>
+            All systems operational
+          </span>
+<span>·</span>
+<span>Route: /checkout</span>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Your cart — MarketCore</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with custom config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "warn": "#a55a05",
+            "on-tertiary-fixed": "#351000",
+            "on-tertiary-container": "#ffd2be",
+            "tertiary-fixed": "#ffdbcc",
+            "bad": "#d11b43",
+            "on-secondary-container": "#64646d",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#a44100",
+            "railInk": "#eef1f7",
+            "surface-container-highest": "#e4e1ee",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-secondary-fixed": "#1a1b23",
+            "secondary-fixed": "#e3e1ec",
+            "secondary-container": "#e3e1ec",
+            "tertiary": "#7e3000",
+            "accentInk": "#ffffff",
+            "ink": "#0a0b12",
+            "surface": "#fcf8ff",
+            "outline-variant": "#c7c4d8",
+            "primary-container": "#4f46e5",
+            "info": "#097499",
+            "secondary-fixed-dim": "#c7c5d0",
+            "surface-tint": "#4d44e3",
+            "primary-fixed": "#e2dfff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "on-surface-variant": "#464555",
+            "error": "#ba1a1a",
+            "inverse-primary": "#c3c0ff",
+            "surface-container-low": "#f5f2ff",
+            "inverse-on-surface": "#f3effc",
+            "on-primary-container": "#dad7ff",
+            "canvas": "#f6f7fb",
+            "accent": "#4f46e5",
+            "on-tertiary": "#ffffff",
+            "inverse-surface": "#302f39",
+            "on-error-container": "#93000a",
+            "ok": "#117f3a",
+            "background": "#fcf8ff",
+            "controlEdge": "#838b9a",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#eae6f4",
+            "primary-fixed-dim": "#c3c0ff",
+            "surface-dim": "#dcd8e5",
+            "on-surface": "#1b1b24",
+            "on-background": "#1b1b24",
+            "muted": "#5a6272",
+            "faint": "#676e7a",
+            "secondary": "#5d5e67",
+            "panel2": "#f1f3f9",
+            "primary": "#3525cd",
+            "accentWash": "#eef0ff",
+            "panel": "#ffffff",
+            "line": "#e6e8ef",
+            "surface-variant": "#e4e1ee",
+            "outline": "#777587",
+            "warnWash": "#fdf3e4",
+            "tertiary-fixed-dim": "#ffb695",
+            "lineStrong": "#d5d9e2",
+            "railMuted": "#8b93a7",
+            "okWash": "#e8f7ee",
+            "surface-container": "#f0ecf9",
+            "error-container": "#ffdad6",
+            "surface-bright": "#fcf8ff",
+            "on-error": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-primary-fixed": "#0f0069",
+            "badWash": "#fdecef",
+            "on-secondary-fixed-variant": "#46464f",
+            "rail": "#0b0d14"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem",
+            "8": "8px",
+            "9": "9px",
+            "12": "12px"
+          },
+          "spacing": {
+            "space-xs": "4px",
+            "space-xl": "22px",
+            "space-xxl": "26px",
+            "space-sm": "6px",
+            "gutter": "16px",
+            "space-md": "10px",
+            "space-lg": "16px",
+            "margin": "20px"
+          },
+          "fontFamily": {
+            "title": ["DM Sans", "sans-serif"],
+            "display": ["DM Sans", "sans-serif"],
+            "body": ["DM Sans", "sans-serif"],
+            "label": ["DM Sans", "sans-serif"],
+            "mono": ["DM Mono", "monospace"],
+            "small": ["DM Sans", "sans-serif"],
+            "metric": ["DM Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "title": [
+              "25px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "600"
+              }
+            ],
+            "display": [
+              "35px",
+              {
+                "lineHeight": "1.1",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "700"
+              }
+            ],
+            "body": [
+              "14.5px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "label": [
+              "12px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "0.02em",
+                "fontWeight": "500"
+              }
+            ],
+            "mono": [
+              "14px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ],
+            "small": [
+              "13px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ],
+            "metric": [
+              "28px",
+              {
+                "lineHeight": "1.1",
+                "fontWeight": "700"
+              }
+            ]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body min-h-full flex flex-col selection:bg-accentWash selection:text-accent">
+<!-- Shared TopNavBar Component -->
+<header class="w-full sticky top-0 z-50 flex flex-col bg-panel border-b border-line">
+<!-- Main 64px Public Navigation Bar -->
+<div class="h-16 px-6 max-w-7xl mx-auto w-full flex items-center justify-between gap-6">
+<!-- Brand & Search cluster -->
+<div class="flex items-center gap-8 flex-1 max-w-2xl">
+<a class="text-title font-title font-bold text-ink tracking-tight flex items-center gap-2 flex-shrink-0" href="/">
+<span class="w-8 h-8 rounded-8 bg-accent text-accentInk flex items-center justify-center font-mono font-bold text-body">M</span>
+<span>MarketCore</span>
+</a>
+<!-- Search bar -->
+<div class="relative w-full max-w-lg hidden sm:block">
+<span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</span>
+<input class="w-full pl-10 pr-4 py-2 bg-panel2 border border-line rounded-8 text-body text-ink placeholder:text-muted focus:outline-none focus:border-accent focus:bg-panel transition-all duration-150" placeholder="Search products and sellers..." type="search"/>
+</div>
+</div>
+<!-- Trailing Actions: Wishlist, Cart (Active), Profile -->
+<div class="flex items-center gap-3">
+<!-- Wishlist link -->
+<a class="relative p-2 rounded-8 text-muted hover:text-ink hover:bg-panel2 transition-colors duration-150 flex items-center justify-center" href="#wishlist" title="Wishlist">
+<span class="material-symbols-outlined text-[22px]" data-icon="favorite">favorite</span>
+<span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-panel2 border border-line text-ink font-mono text-[11px] rounded-full flex items-center justify-center px-1 font-semibold">2</span>
+</a>
+<!-- Cart action (Active route) -->
+<a aria-current="page" class="relative p-2 rounded-8 text-accent bg-accentWash transition-colors duration-150 flex items-center justify-center" href="/cart" title="Cart">
+<span class="material-symbols-outlined text-[22px]" data-icon="shopping_cart" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-accent text-accentInk font-mono text-[11px] rounded-full flex items-center justify-center px-1 font-semibold">2</span>
+</a>
+<div class="h-5 w-px bg-line mx-1"></div>
+<!-- User profile indicator -->
+<a class="flex items-center gap-2 p-1.5 rounded-8 hover:bg-panel2 transition-colors duration-150" href="#profile">
+<div class="w-8 h-8 rounded-full bg-accentWash border border-line overflow-hidden flex items-center justify-center flex-shrink-0">
+<span class="font-semibold text-accent text-label">MB</span>
+</div>
+<div class="hidden md:flex flex-col text-left">
+<span class="text-label font-medium text-ink leading-none">Mariam Buyer</span>
+<span class="text-[11px] text-muted leading-tight mt-0.5">Cairo, EG</span>
+</div>
+</a>
+</div>
+</div>
+<!-- Sub-header 44px category bar -->
+<div class="border-t border-line bg-panel">
+<nav class="h-11 px-6 max-w-7xl mx-auto flex items-center space-x-6 text-label overflow-x-auto no-scrollbar">
+<a class="text-muted font-normal hover:text-ink transition-colors duration-150 whitespace-nowrap" href="#categories">All Categories</a>
+<a class="text-muted font-normal hover:text-ink transition-colors duration-150 whitespace-nowrap" href="#textiles">Textiles</a>
+<a class="text-muted font-normal hover:text-ink transition-colors duration-150 whitespace-nowrap" href="#home">Home</a>
+<a class="text-muted font-normal hover:text-ink transition-colors duration-150 whitespace-nowrap" href="#food">Food</a>
+<a class="text-muted font-normal hover:text-ink transition-colors duration-150 whitespace-nowrap" href="#beauty">Beauty</a>
+<a class="text-muted font-normal hover:text-ink transition-colors duration-150 whitespace-nowrap flex items-center gap-1" href="#deals">
+<span>Deals</span>
+<span class="w-1.5 h-1.5 rounded-full bg-bad"></span>
+</a>
+</nav>
+</div>
+</header>
+<!-- Main Content Stage -->
+<main class="flex-1 max-w-7xl mx-auto px-6 py-8 w-full">
+<!-- Breadcrumbs / back link -->
+<div class="mb-4">
+<a class="inline-flex items-center text-small font-small text-accent hover:underline gap-1.5 font-medium transition-colors" href="/shop">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span>Continue shopping</span>
+</a>
+</div>
+<!-- Page Title & Top-level status banner -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-line">
+<div>
+<h1 class="text-title font-title font-bold text-ink tracking-tight">Your cart</h1>
+<p class="text-body font-body text-muted mt-1">2 items from 2 sellers</p>
+</div>
+<!-- Top-level badge/status -->
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-okWash border border-ok/20 text-ok text-label font-medium self-start md:self-auto">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span>
+<span>Free delivery unlocked (orders over E£500)</span>
+</div>
+</div>
+<!-- 2-Column Grid Layout -->
+<div class="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column (8 cols): Items Surface -->
+<section class="lg:col-span-8 bg-panel border border-line rounded-12 p-6 shadow-sm">
+<!-- Card Header -->
+<div class="flex items-center justify-between border-b border-line pb-4 mb-5">
+<h2 class="text-body font-body font-semibold text-ink">Items in cart (2)</h2>
+<button class="text-small font-small text-accent hover:underline font-medium transition-colors cursor-pointer" type="button">
+            Save all for later
+          </button>
+</div>
+<!-- Row 1: Nile Cotton Shirt -->
+<article class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2" id="cart-item-1">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-16 h-16 rounded-8 border border-line overflow-hidden flex-shrink-0 bg-panel2">
+<img class="w-full h-full object-cover" data-alt="Premium folded ecru linen and Egyptian cotton button-down shirt resting elegantly on a neutral stone slab. High-key studio lighting with soft diffused shadows, showcasing tactile woven textile textures in a clean, modern Scandinavian-inspired composition with pristine ivory and subdued warm gray tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsZ5DbITOQtaJm9ezjBNgmt0qQ7APPTPRANjlMo7bxe2HFBlFVp5td8hJJLOPdqw09lBfraNwT7JBZpkJQmiDMYlUBQES5FLI0IyANRuX_beCix8IlmeI9Ymn7LXqnvy7lrW0zkr3iRJHo0ff0jOstn-9mOVSss-Cu2ImXVZgGVapTMv1OJ46rrzI0KekOEh_0RxYGtgPN2f22EouhzNq_HnkLAXsw8ghBG1CDbSLRojg6bwn1GzUUXRvgrsTq9WQxctQwHw6oV-4"/>
+</div>
+<div class="flex flex-col gap-1 min-w-0">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-body font-body font-medium text-ink truncate">Nile Cotton Shirt</span>
+<span class="inline-flex items-center gap-1.5 bg-okWash text-ok text-label font-medium px-2 py-0.5 rounded-full border border-ok/10">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>In stock</span>
+</span>
+</div>
+<p class="text-small font-small text-muted">Nile Traders · Ecru / M</p>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-6 self-stretch sm:self-auto pt-2 sm:pt-0">
+<!-- Quantity Stepper -->
+<div class="inline-flex items-center border border-controlEdge rounded-8 min-h-[36px] bg-panel">
+<button aria-label="Decrease quantity of Nile Cotton Shirt" class="px-2.5 h-9 text-muted hover:text-ink active:bg-panel2 transition-colors flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<span class="font-mono text-body font-medium px-3 text-ink select-none min-w-[28px] text-center">1</span>
+<button aria-label="Increase quantity of Nile Cotton Shirt" class="px-2.5 h-9 text-muted hover:text-ink active:bg-panel2 transition-colors flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+<!-- Line Total -->
+<div class="text-right min-w-[90px]">
+<span class="text-body font-mono font-medium text-ink">E£249.00</span>
+</div>
+<!-- Remove Button -->
+<button aria-label="Remove Nile Cotton Shirt" class="w-9 h-9 rounded-8 flex items-center justify-center text-muted hover:text-bad hover:bg-badWash transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</article>
+<!-- Internal Divider -->
+<hr class="border-t border-line my-5"/>
+<!-- Row 2: Delta Olive Oil -->
+<article class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2" id="cart-item-2">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-16 h-16 rounded-8 border border-line overflow-hidden flex-shrink-0 bg-panel2">
+<img class="w-full h-full object-cover" data-alt="Artisanal dark green glass bottle of cold-pressed extra virgin olive oil with minimalist beige typography label set on a polished white ceramic surface. Illuminated by bright morning window daylight, crisp contrast with amber reflections and clean graphic corporate composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwzinZDN9qml_ynRiohIXrJshtcAlvdmpftRswoO9y44ZoDGkXQOYZUuPn6rDSKp80cjCOp9vPG8f7dV17mVkgicjtMWVLh4qH0LzwM3OQegzBg8_kjOW0An5idI0yKcEpwjZ4fQdY89HG4aIRHAxwj7A7-KeumL8mSJGd7-KmvxxKba9c_IlndZqll-DfRkJMZQ2zKWHhj84iA91qC3RCQ5XFKUCRl6svdCrXacNnimMIPN0iTrC3OPMshsj3GonhwSwmWkhWxFs"/>
+</div>
+<div class="flex flex-col gap-1 min-w-0">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-body font-body font-medium text-ink truncate">Delta Olive Oil</span>
+<span class="inline-flex items-center gap-1.5 bg-okWash text-ok text-label font-medium px-2 py-0.5 rounded-full border border-ok/10">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>In stock</span>
+</span>
+</div>
+<p class="text-small font-small text-muted">Delta Goods · 500ml Extra Virgin</p>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-6 self-stretch sm:self-auto pt-2 sm:pt-0">
+<!-- Quantity Stepper -->
+<div class="inline-flex items-center border border-controlEdge rounded-8 min-h-[36px] bg-panel">
+<button aria-label="Decrease quantity of Delta Olive Oil" class="px-2.5 h-9 text-muted hover:text-ink active:bg-panel2 transition-colors flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<span class="font-mono text-body font-medium px-3 text-ink select-none min-w-[28px] text-center">2</span>
+<button aria-label="Increase quantity of Delta Olive Oil" class="px-2.5 h-9 text-muted hover:text-ink active:bg-panel2 transition-colors flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+<!-- Line Total (E£189.00 x 2) -->
+<div class="text-right min-w-[90px]">
+<span class="text-body font-mono font-medium text-ink">E£378.00</span>
+<p class="text-[11px] font-mono text-faint">E£189.00 ea</p>
+</div>
+<!-- Remove Button -->
+<button aria-label="Remove Delta Olive Oil" class="w-9 h-9 rounded-8 flex items-center justify-center text-muted hover:text-bad hover:bg-badWash transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</article>
+<!-- Internal Divider -->
+<hr class="border-t border-line my-5"/>
+<!-- Bottom Action Bar / Collapsed Drawer Link -->
+<div class="pt-1">
+<button class="w-full flex items-center justify-between py-2 text-small font-small text-muted hover:text-ink transition-colors group" type="button">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">bookmark_border</span>
+<span>Save for later (0 items)</span>
+</span>
+<span class="material-symbols-outlined text-[18px] text-muted group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Right Column (4 cols): Order Summary & Constraints -->
+<aside class="lg:col-span-4 flex flex-col gap-6">
+<!-- Order Summary Card -->
+<div class="bg-panel border border-line rounded-12 p-6 shadow-sm">
+<h2 class="text-body font-body font-semibold text-ink mb-4">Summary</h2>
+<!-- Line items -->
+<div class="space-y-3">
+<div class="flex items-center justify-between text-body font-body">
+<span class="text-muted">Subtotal</span>
+<span class="font-mono text-ink">E£627.00</span>
+</div>
+<div class="flex items-center justify-between text-body font-body">
+<div class="flex flex-col">
+<span class="text-muted">Delivery</span>
+<span class="text-[11px] text-ok">Free over E£500</span>
+</div>
+<span class="font-mono text-ok font-medium">Free</span>
+</div>
+<div class="flex items-center justify-between text-small font-small">
+<span class="text-muted">Estimated VAT (included)</span>
+<span class="font-mono text-muted">E£0.00</span>
+</div>
+</div>
+<!-- Divider -->
+<hr class="border-t border-line my-4"/>
+<!-- Total Line -->
+<div class="flex items-baseline justify-between mb-5">
+<span class="text-body font-body font-bold text-ink">Total</span>
+<span class="text-title font-mono font-bold text-ink">E£627.00</span>
+</div>
+<!-- Promo Code Input Group -->
+<div class="mb-5">
+<label class="block text-label font-label text-muted mb-1.5" for="promo_code">Promo code (optional)</label>
+<div class="flex gap-2">
+<input class="flex-1 min-w-0 px-3 py-2 bg-panel border border-line rounded-8 text-body text-ink placeholder:text-faint focus:outline-none focus:border-accent" id="promo_code" placeholder="Enter voucher code" type="text"/>
+<button class="px-3.5 py-2 bg-panel2 border border-controlEdge rounded-8 text-small font-small font-medium text-ink hover:bg-line transition-colors whitespace-nowrap" type="button">
+                Apply
+              </button>
+</div>
+</div>
+<!-- Primary CTA Button (Single Focal Action) -->
+<button class="w-full h-11 bg-accent text-accentInk rounded-9 font-medium text-body flex items-center justify-center gap-2 hover:opacity-95 active:opacity-90 shadow-sm transition-all duration-150 cursor-pointer" type="button">
+<span>Checkout</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<!-- Security Reassurance -->
+<div class="mt-4 pt-4 border-t border-line/70 flex items-center justify-center gap-2 text-center text-small font-small text-muted">
+<span class="material-symbols-outlined text-[16px] text-ok">lock</span>
+<span class="text-[12px] leading-tight">Encrypted multi-seller checkout · 14-day hassle-free returns</span>
+</div>
+</div>
+<!-- Honest Domain Gap Card -->
+<div class="bg-panel2 border border-line rounded-12 p-5">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-[16px] text-warn">info</span>
+<h3 class="text-label font-label uppercase tracking-wider font-semibold text-faint">
+              DOMAIN CONSTRAINTS &amp; HONEST GAPS
+            </h3>
+</div>
+<p class="text-small font-small text-muted leading-relaxed">
+            A persistent multi-item cart is a proposed addition — the production domain currently processes single-item checkout against one organization. Multi-seller aggregation and saved-for-later are target state.
+          </p>
+</div>
+</aside>
+</div>
+</main>
+<!-- Shared Footer Component -->
+<footer class="w-full border-t border-line bg-panel mt-16">
+<div class="px-6 py-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+<!-- Brand & Copyright -->
+<div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+<span class="text-title font-title font-bold text-ink">MarketCore</span>
+<span class="hidden sm:inline text-lineStrong">•</span>
+<p class="text-small font-small text-muted">
+          © 2025 MarketCore Marketplace, Inc. All rights reserved.
+        </p>
+</div>
+<!-- Footer Navigation Links -->
+<nav class="flex flex-wrap items-center justify-center gap-6 text-label font-label">
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#about">About MarketCore</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#seller-standards">Seller Standards</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#trust">Trust &amp; Safety</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#developer">Developer API</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#privacy">Privacy Policy</a>
+<a class="text-muted hover:text-ink transition-colors duration-150" href="#terms">Terms of Service</a>
+</nav>
+</div>
+</footer>
+</body></html>

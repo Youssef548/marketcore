@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore — Products List (Nile Traders)</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "faint": "#676e7a",
+            "on-surface-variant": "#464555",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed-variant": "#46464f",
+            "surface-bright": "#fcf8ff",
+            "on-background": "#1b1b24",
+            "on-tertiary": "#ffffff",
+            "rail": "#0b0d14",
+            "tertiary": "#7e3000",
+            "secondary-fixed-dim": "#c7c5d0",
+            "badWash": "#fdecef",
+            "muted": "#5a6272",
+            "canvas": "#f6f7fb",
+            "surface-container-high": "#eae6f4",
+            "on-secondary-fixed": "#1a1b23",
+            "inverse-surface": "#302f39",
+            "outline-variant": "#c7c4d8",
+            "panel2": "#f1f3f9",
+            "okWash": "#e8f7ee",
+            "warn": "#a55a05",
+            "error": "#ba1a1a",
+            "on-tertiary-fixed": "#351000",
+            "error-container": "#ffdad6",
+            "primary-container": "#4f46e5",
+            "surface-container-highest": "#e4e1ee",
+            "on-primary": "#ffffff",
+            "secondary-fixed": "#e3e1ec",
+            "accentInk": "#ffffff",
+            "line": "#e6e8ef",
+            "surface-container": "#f0ecf9",
+            "bad": "#d11b43",
+            "on-error-container": "#93000a",
+            "on-surface": "#1b1b24",
+            "surface": "#fcf8ff",
+            "on-primary-fixed-variant": "#3323cc",
+            "inverse-primary": "#c3c0ff",
+            "on-primary-fixed": "#0f0069",
+            "background": "#fcf8ff",
+            "lineStrong": "#d5d9e2",
+            "primary-fixed-dim": "#c3c0ff",
+            "outline": "#777587",
+            "inverse-on-surface": "#f3effc",
+            "tertiary-fixed": "#ffdbcc",
+            "surface-variant": "#e4e1ee",
+            "on-tertiary-container": "#ffd2be",
+            "ink": "#0a0b12",
+            "warnWash": "#fdf3e4",
+            "tertiary-container": "#a44100",
+            "surface-tint": "#4d44e3",
+            "primary": "#3525cd",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "on-primary-container": "#dad7ff",
+            "secondary": "#5d5e67",
+            "railInk": "#eef1f7",
+            "on-secondary-container": "#64646d",
+            "railMuted": "#8b93a7",
+            "ok": "#117f3a",
+            "info": "#097499",
+            "secondary-container": "#e3e1ec",
+            "panel": "#ffffff",
+            "primary-fixed": "#e2dfff",
+            "on-secondary": "#ffffff",
+            "surface-dim": "#dcd8e5",
+            "on-error": "#ffffff",
+            "accentWash": "#eef0ff",
+            "surface-container-low": "#f5f2ff",
+            "controlEdge": "#838b9a",
+            "accent": "#4f46e5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-lg": "16px",
+            "space-xs": "4px",
+            "space-sm": "6px",
+            "margin": "20px",
+            "gutter": "16px",
+            "space-md": "10px",
+            "space-xl": "22px",
+            "space-xxl": "26px"
+          },
+          "fontFamily": {
+            "small": ["DM Sans"],
+            "metric": ["DM Sans"],
+            "title": ["DM Sans"],
+            "display": ["DM Sans"],
+            "body": ["DM Sans"],
+            "label": ["DM Sans"],
+            "mono": ["DM Mono"]
+          },
+          "fontSize": {
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body text-body min-h-screen flex flex-col antialiased selection:bg-accentWash selection:text-primary">
+<!-- SIDE NAVIGATION RAIL (Shared Component: SideNavBar) -->
+<aside class="fixed top-0 left-0 bottom-0 w-[252px] h-screen z-40 flex flex-col justify-between bg-rail text-railInk border-r border-line dark:border-line">
+<div class="w-[252px] min-w-[252px] h-full flex flex-col px-4 py-4 justify-between select-none">
+<!-- Top Section: Brand & Navigation -->
+<div class="flex flex-col gap-4">
+<!-- Brand Tile -->
+<div class="flex items-center gap-3 px-2 py-1.5">
+<div class="w-8 h-8 rounded-lg bg-panel2 text-ink flex items-center justify-center font-title text-title font-semibold">
+<span class="material-symbols-outlined text-[20px] text-accent">storefront</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title text-[15px] font-semibold text-railInk tracking-tight truncate leading-tight">Nile Traders</span>
+<span class="font-label text-[11px] text-railMuted uppercase tracking-wider">Enterprise Seller</span>
+</div>
+</div>
+<!-- ⌘K Quick Search Trigger -->
+<button class="flex items-center justify-between w-full px-3 py-2 text-railMuted bg-rail/60 hover:bg-panel2/10 hover:text-railInk transition-colors duration-150 rounded-lg border border-railMuted/20 text-small font-small">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">search</span>
+<span>Quick search...</span>
+</div>
+<kbd class="px-1.5 py-0.5 text-[11px] font-mono bg-rail rounded border border-railMuted/30 text-railMuted font-normal">⌘K</kbd>
+</button>
+<!-- Navigation Group -->
+<nav class="flex flex-col gap-1 mt-2">
+<!-- Overview Tab -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-railMuted hover:text-railInk hover:bg-rail/50 font-body text-body transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Catalog Group (Active Sub-context) -->
+<div class="flex flex-col gap-1 pt-1">
+<div class="flex items-center justify-between px-3 py-2 rounded-lg bg-panel2/15 text-railInk font-body text-body font-medium transition-colors duration-150">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px] text-accent">inventory_2</span>
+<span class="text-railInk">Catalog</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-railMuted">expand_more</span>
+</div>
+<!-- Submenu Items -->
+<div class="flex flex-col ml-7 pl-3 border-l border-railMuted/20 gap-1 mt-0.5">
+<!-- Active Products Tab -->
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-panel2 text-ink font-body text-body font-medium transition-colors duration-150 shadow-sm" href="#">
+<span class="text-[13.5px]">Products</span>
+<span class="px-1.5 py-0.2 rounded-full bg-accent text-accentInk font-mono text-[11px] font-medium leading-none">4</span>
+</a>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-railMuted hover:text-railInk hover:bg-panel2/10 font-body text-body text-[13.5px] transition-colors duration-150" href="#">
+<span>Collections</span>
+</a>
+<a class="flex items-center justify-between px-2.5 py-1.5 rounded-lg text-railMuted hover:text-railInk hover:bg-panel2/10 font-body text-body text-[13.5px] transition-colors duration-150" href="#">
+<span>Transfers</span>
+</a>
+</div>
+</div>
+<!-- Money Tab -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-railMuted hover:text-railInk hover:bg-rail/50 font-body text-body transition-colors duration-150 mt-1" href="#">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>Money</span>
+</a>
+<!-- Admin Tab -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-railMuted hover:text-railInk hover:bg-rail/50 font-body text-body transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+<span>Admin</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Pinned User Chip -->
+<div class="border-t border-railMuted/20 pt-3">
+<div class="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-panel2/10 transition-colors duration-150 cursor-pointer">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-7 h-7 rounded-full bg-accent/20 text-accent flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">account_circle</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body text-small font-medium text-railInk truncate leading-tight">Nile Traders Owner</span>
+<span class="font-label text-[11px] text-railMuted truncate">org_892b1</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-railMuted text-[18px]">more_vert</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- TOP APP BAR (Shared Component: TopNavBar) -->
+<header class="fixed top-0 left-[252px] right-0 h-16 z-30 flex items-center bg-panel border-b border-line dark:border-line">
+<div class="h-16 w-full px-6 flex items-center justify-between gap-4">
+<!-- Left: Breadcrumbs -->
+<div class="flex items-center gap-2 font-body text-body">
+<span class="font-title text-[15px] font-semibold text-ink tracking-tight flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-accent">token</span>
+          MarketCore
+        </span>
+<span class="text-lineStrong mx-1">/</span>
+<span class="text-muted hover:text-ink transition-colors cursor-pointer text-small font-normal">Catalog</span>
+<span class="text-lineStrong mx-0.5">/</span>
+<span class="text-ink font-medium text-small">Products</span>
+</div>
+<!-- Center-Right Controls: Search Bar & Actions -->
+<div class="flex items-center gap-3">
+<!-- Header ⌘K Search Input -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] text-muted">search</span>
+<input class="w-full h-8 pl-8 pr-12 py-1 bg-canvas border border-line rounded-lg text-small font-body text-ink placeholder:text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" placeholder="Search console..." type="text"/>
+<kbd class="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-mono bg-panel rounded border border-line text-muted">⌘K</kbd>
+</div>
+<div class="h-5 w-px bg-line"></div>
+<!-- Trailing Action Icons -->
+<div class="flex items-center gap-1">
+<button aria-label="Notifications" class="w-8 h-8 flex items-center justify-center rounded-lg text-muted hover:text-ink hover:bg-panel2 transition-colors relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-accent ring-2 ring-panel"></span>
+</button>
+<button aria-label="Manage accounts" class="w-8 h-8 flex items-center justify-center rounded-lg text-muted hover:text-ink hover:bg-panel2 transition-colors">
+<span class="material-symbols-outlined text-[20px]">manage_accounts</span>
+</button>
+</div>
+<!-- Secondary Action: Help & Docs -->
+<button class="px-2.5 py-1 text-small text-muted hover:text-ink hover:bg-panel2 transition-colors rounded-lg font-medium">
+          Help &amp; Docs
+        </button>
+<!-- Primary Action -->
+<button class="h-8 px-3.5 bg-accent text-accentInk rounded-[9px] font-label text-label font-medium hover:bg-accent/90 transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Create Order</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN VIEWPORT CONTAINER -->
+<main class="ml-[252px] pt-16 flex-1 flex flex-col min-w-0 bg-canvas">
+<div class="p-5 max-w-[1440px] w-full mx-auto flex flex-col gap-5">
+<!-- PAGE HEADER -->
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
+<div>
+<h1 class="font-title text-title font-semibold text-ink tracking-tight">Products</h1>
+<p class="font-small text-small text-muted mt-0.5">4 products · Nile Traders</p>
+</div>
+<!-- Right Action Controls -->
+<div class="flex items-center gap-2.5 flex-wrap">
+<!-- Search catalog input -->
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-muted">search</span>
+<input class="w-full h-9 pl-9 pr-3 py-1.5 bg-panel border border-line rounded-[8px] text-small font-body text-ink placeholder:text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent shadow-sm" placeholder="Search catalog SKU or name..." type="text"/>
+</div>
+<!-- Filter Button -->
+<button class="h-9 px-3 bg-panel border border-line rounded-[8px] text-small font-label font-medium text-ink hover:bg-panel2 transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-muted">filter_list</span>
+<span>Filter</span>
+<span class="w-1.5 h-1.5 rounded-full bg-accent ml-0.5"></span>
+</button>
+<!-- New Product Button (accent, 9px radius) -->
+<button class="h-9 px-3.5 bg-accent text-accentInk rounded-[9px] font-label text-label font-medium hover:bg-accent/90 transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>New product</span>
+</button>
+</div>
+</section>
+<!-- KPI METRIC CARDS ROW (4 Cards Bento layout) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- KPI 1: Published -->
+<div class="p-4 rounded-[12px] bg-panel border border-line shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label text-label text-muted uppercase tracking-wider font-medium">Published</span>
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-okWash text-ok text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>Active</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline justify-between">
+<div class="font-metric text-metric font-mono text-ink">2</div>
+<span class="font-small text-[12px] text-muted">50% of catalog</span>
+</div>
+</div>
+<!-- KPI 2: Draft -->
+<div class="p-4 rounded-[12px] bg-panel border border-line shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label text-label text-muted uppercase tracking-wider font-medium">Draft</span>
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-panel2 text-faint text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-muted"></span>
+<span>Staged</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline justify-between">
+<div class="font-metric text-metric font-mono text-ink">1</div>
+<span class="font-small text-[12px] text-muted">Unpublished</span>
+</div>
+</div>
+<!-- KPI 3: Out of stock -->
+<div class="p-4 rounded-[12px] bg-panel border border-line shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label text-label text-muted uppercase tracking-wider font-medium">Out of stock</span>
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-warnWash text-warn text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+<span>Needs attention</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline justify-between">
+<div class="font-metric text-metric font-mono text-ink">1</div>
+<span class="font-small text-[12px] text-bad font-medium">1 SKU blocked</span>
+</div>
+</div>
+<!-- KPI 4: Inventory value -->
+<div class="p-4 rounded-[12px] bg-panel border border-line shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label text-label text-muted uppercase tracking-wider font-medium">Inventory value</span>
+<span class="text-ok font-mono text-[11px] font-medium inline-flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+              +4.8%
+            </span>
+</div>
+<div class="mt-3 flex items-end justify-between gap-2">
+<div>
+<div class="font-metric text-metric font-mono text-ink">E£12,450.00</div>
+<span class="font-small text-[11px] text-muted">29 items across 4 lines</span>
+</div>
+<!-- SVG Sparkline Trend -->
+<div class="w-16 h-8 pb-1">
+<svg class="w-full h-full text-accent" fill="none" viewbox="0 0 64 24">
+<path d="M1 19L14 15L28 17L42 8L56 11L63 3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M1 19L14 15L28 17L42 8L56 11L63 3V24H1V19Z" fill="currentColor" fill-opacity="0.08"></path>
+</svg>
+</div>
+</div>
+</div>
+</section>
+<!-- DATA TABLE CONTAINER (Dense surface, hairline separation, hoverable rows) -->
+<section class="bg-panel border border-line rounded-[12px] shadow-sm overflow-hidden flex flex-col">
+<!-- Table Toolbar -->
+<div class="px-4 py-2.5 border-b border-line flex items-center justify-between bg-panel text-small">
+<div class="flex items-center gap-3">
+<span class="font-label text-muted uppercase text-[11px] font-medium tracking-wider">Filtered View: All Inventory</span>
+<span class="text-lineStrong">|</span>
+<div class="flex items-center gap-1.5">
+<span class="inline-block w-2 h-2 rounded-full bg-ok"></span>
+<span class="text-[12px] text-muted">Tenant Isolated: <code class="font-mono text-ink">org_892b1</code></span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2 py-1 text-[12px] text-muted hover:text-ink rounded flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+              Columns
+            </button>
+<button class="px-2 py-1 text-[12px] text-muted hover:text-ink rounded flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">download</span>
+              Export CSV
+            </button>
+</div>
+</div>
+<!-- Dense Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line text-faint font-label text-[12px] uppercase tracking-wider">
+<th class="py-3 px-4 font-medium">Product</th>
+<th class="py-3 px-4 font-medium">Status</th>
+<th class="py-3 px-4 font-medium text-right">Price</th>
+<th class="py-3 px-4 font-medium">Available</th>
+<th class="py-3 px-4 font-medium">Sales · 30d</th>
+<th class="py-3 px-4 font-medium text-right">Trend</th>
+<th class="py-3 px-4 font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line text-body font-body">
+<!-- ROW 1: Nile Cotton Shirt -->
+<tr class="hover:bg-panel2/70 transition-colors group">
+<!-- Product & SKU -->
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-ok shrink-0" title="In Stock"></span>
+<div class="flex flex-col">
+<span class="font-medium text-ink hover:text-accent cursor-pointer transition-colors text-[14px]">Nile Cotton Shirt</span>
+<span class="font-mono text-[12px] text-faint">SKU: NLE-CTN-ECR-M</span>
+</div>
+</div>
+</td>
+<!-- Status Pill -->
+<td class="py-3 px-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-okWash text-ok">
+                    PUBLISHED
+                  </span>
+</td>
+<!-- Price -->
+<td class="py-3 px-4 text-right font-mono text-ink text-[13.5px]">
+                  E£249.00
+                </td>
+<!-- Available (Share bar + mono number) -->
+<td class="py-3 px-4">
+<div class="flex items-center gap-2.5">
+<div class="w-24 h-1.5 bg-line rounded-full overflow-hidden shrink-0">
+<div class="h-full bg-ok rounded-full" style="width: 66%;"></div>
+</div>
+<span class="font-mono text-[13px] text-ink font-medium">10</span>
+</div>
+</td>
+<!-- Sales Sparkline -->
+<td class="py-3 px-4">
+<div class="w-20 h-5">
+<svg class="w-full h-full text-ok" fill="none" viewbox="0 0 40 16">
+<path d="M1 13L9 11L18 7L27 9L39 2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+</svg>
+</div>
+</td>
+<!-- Trend -->
+<td class="py-3 px-4 text-right whitespace-nowrap">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded font-mono text-[12px] font-medium text-ok bg-okWash">
+<span class="material-symbols-outlined text-[13px]">arrow_drop_up</span>
+                    +18.4%
+                  </span>
+</td>
+<!-- Action -->
+<td class="py-3 px-4 text-right whitespace-nowrap">
+<button class="font-small text-accent hover:text-primary font-medium hover:underline transition-colors px-2 py-1">
+                    Edit
+                  </button>
+</td>
+</tr>
+<!-- ROW 2: Giza Sheet Set -->
+<tr class="hover:bg-panel2/70 transition-colors group">
+<!-- Product & SKU -->
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-warn shrink-0" title="Low Stock"></span>
+<div class="flex flex-col">
+<span class="font-medium text-ink hover:text-accent cursor-pointer transition-colors text-[14px]">Giza Sheet Set</span>
+<span class="font-mono text-[12px] text-faint">SKU: NLE-GZA-SHT-W</span>
+</div>
+</div>
+</td>
+<!-- Status Pill -->
+<td class="py-3 px-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-okWash text-ok">
+                    PUBLISHED
+                  </span>
+</td>
+<!-- Price -->
+<td class="py-3 px-4 text-right font-mono text-ink text-[13.5px]">
+                  E£1,250.00
+                </td>
+<!-- Available -->
+<td class="py-3 px-4">
+<div class="flex items-center gap-2.5">
+<div class="w-24 h-1.5 bg-line rounded-full overflow-hidden shrink-0">
+<div class="h-full bg-warn rounded-full" style="width: 25%;"></div>
+</div>
+<span class="font-mono text-[13px] text-ink font-medium">4</span>
+</div>
+</td>
+<!-- Sales Sparkline -->
+<td class="py-3 px-4">
+<div class="w-20 h-5">
+<svg class="w-full h-full text-ok" fill="none" viewbox="0 0 40 16">
+<path d="M1 11L10 13L21 6L30 8L39 4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+</svg>
+</div>
+</td>
+<!-- Trend -->
+<td class="py-3 px-4 text-right whitespace-nowrap">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded font-mono text-[12px] font-medium text-ok bg-okWash">
+<span class="material-symbols-outlined text-[13px]">arrow_drop_up</span>
+                    +6.2%
+                  </span>
+</td>
+<!-- Action -->
+<td class="py-3 px-4 text-right whitespace-nowrap">
+<button class="font-small text-accent hover:text-primary font-medium hover:underline transition-colors px-2 py-1">
+                    Edit
+                  </button>
+</td>
+</tr>
+<!-- ROW 3: Ramie Table Runner -->
+<tr class="hover:bg-panel2/70 transition-colors group">
+<!-- Product & SKU -->
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-faint shrink-0" title="Draft Staged"></span>
+<div class="flex flex-col">
+<span class="font-medium text-ink hover:text-accent cursor-pointer transition-colors text-[14px]">Ramie Table Runner</span>
+<span class="font-mono text-[12px] text-faint">SKU: NLE-RAM-RUN-N</span>
+</div>
+</div>
+</td>
+<!-- Status Pill -->
+<td class="py-3 px-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-panel2 text-faint">
+                    DRAFT
+                  </span>
+</td>
+<!-- Price -->
+<td class="py-3 px-4 text-right font-mono text-ink text-[13.5px]">
+                  E£180.00
+                </td>
+<!-- Available -->
+<td class="py-3 px-4">
+<div class="flex items-center gap-2.5">
+<div class="w-24 h-1.5 bg-line rounded-full overflow-hidden shrink-0">
+<div class="h-full bg-secondary rounded-full" style="width: 100%;"></div>
+</div>
+<span class="font-mono text-[13px] text-ink font-medium">15</span>
+</div>
+</td>
+<!-- Sales Sparkline -->
+<td class="py-3 px-4">
+<div class="w-20 h-5">
+<svg class="w-full h-full text-muted" fill="none" viewbox="0 0 40 16">
+<path d="M1 8L12 8L24 8L39 8" stroke="currentColor" stroke-dasharray="2 2" stroke-linecap="round" stroke-width="1.5"></path>
+</svg>
+</div>
+</td>
+<!-- Trend -->
+<td class="py-3 px-4 text-right whitespace-nowrap">
+<span class="font-mono text-[13px] text-muted">
+                    —
+                  </span>
+</td>
+<!-- Action -->
+<td class="py-3 px-4 text-right whitespace-nowrap">
+<button class="font-small text-accent hover:text-primary font-medium hover:underline transition-colors px-2 py-1">
+                    Edit
+                  </button>
+</td>
+</tr>
+<!-- ROW 4: Delta Olive Oil -->
+<tr class="hover:bg-panel2/70 transition-colors group">
+<!-- Product & SKU -->
+<td class="py-3 px-4">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-bad shrink-0" title="Out of Stock"></span>
+<div class="flex flex-col">
+<span class="font-medium text-ink hover:text-accent cursor-pointer transition-colors text-[14px]">Delta Olive Oil</span>
+<span class="font-mono text-[12px] text-faint">SKU: DLT-OLV-500-E</span>
+</div>
+</div>
+</td>
+<!-- Status Pill -->
+<td class="py-3 px-4 whitespace-nowrap">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-badWash text-bad">
+                    OUT OF STOCK
+                  </span>
+</td>
+<!-- Price -->
+<td class="py-3 px-4 text-right font-mono text-ink text-[13.5px]">
+                  E£189.00
+                </td>
+<!-- Available -->
+<td class="py-3 px-4">
+<div class="flex items-center gap-2.5">
+<div class="w-24 h-1.5 bg-line rounded-full overflow-hidden shrink-0">
+<div class="h-full bg-bad rounded-full" style="width: 0%;"></div>
+</div>
+<span class="font-mono text-[13px] text-bad font-semibold">0</span>
+</div>
+</td>
+<!-- Sales Sparkline -->
+<td class="py-3 px-4">
+<div class="w-20 h-5">
+<svg class="w-full h-full text-bad" fill="none" viewbox="0 0 40 16">
+<path d="M1 3L11 6L23 10L32 11L39 15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+</svg>
+</div>
+</td>
+<!-- Trend -->
+<td class="py-3 px-4 text-right whitespace-nowrap">
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded font-mono text-[12px] font-medium text-bad bg-badWash">
+<span class="material-symbols-outlined text-[13px]">arrow_drop_down</span>
+                    -12.0%
+                  </span>
+</td>
+<!-- Action -->
+<td class="py-3 px-4 text-right whitespace-nowrap">
+<button class="font-small text-accent hover:text-primary font-medium hover:underline transition-colors px-2 py-1">
+                    Edit
+                  </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Integrity Footer Notice -->
+<div class="px-4 py-2.5 bg-panel2 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-small">
+<div class="flex items-center gap-2 text-faint">
+<span class="material-symbols-outlined text-[16px] text-ok">verified</span>
+<span class="text-[12px]">Database CHECK constraint verified — <span class="font-mono text-ink">Inventory count cannot fall below 0; isolated by tenant_id = org_892b1</span></span>
+</div>
+<div class="flex items-center gap-3 text-[12px] text-muted">
+<span>Showing 4 of 4 products</span>
+<span class="text-lineStrong">|</span>
+<span class="font-mono text-ink">Latency: 14ms</span>
+</div>
+</div>
+</section>
+</div>
+<!-- SELLER CONSOLE FOOTER (Shared Component: Footer) -->
+<footer class="w-full mt-auto py-4 pl-0 border-t border-line dark:border-line bg-canvas">
+<div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 gap-4 w-full">
+<span class="font-small text-small text-muted">
+          © 2025 MarketCore Enterprise Inc. All rights reserved.
+        </span>
+<div class="flex items-center gap-6">
+<a class="text-faint hover:text-muted dark:text-faint dark:hover:text-muted font-small transition-colors duration-150" href="#">Compliance</a>
+<a class="text-faint hover:text-muted dark:text-faint dark:hover:text-muted font-small transition-colors duration-150" href="#">Documentation</a>
+<a class="text-faint hover:text-muted dark:text-faint dark:hover:text-muted font-small transition-colors duration-150" href="#">System Status</a>
+<a class="text-faint hover:text-muted dark:text-faint dark:hover:text-muted font-small transition-colors duration-150" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+</main>
+</body></html>

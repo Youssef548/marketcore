@@ -1,0 +1,478 @@
+<!-- {"title":"MarketCore — Foundations (/design/foundations)","screen":"projects/3383911874392417631/screens/b013e76cba304ce0a2bdc16216e0c247","pass":"plain","w":1280,"h":2933,"frame":"height:2933px","links":[]} -->
+<style>.sx-foundations{position:relative;height:100%;font:400 16px/normal Times,serif;letter-spacing:normal;color:#000;-webkit-font-smoothing:auto;text-align:left}@font-face { font-family: "DM Mono sx-foundations"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTU7PB1QTsUX8KYthSQBK6PYK3EXw.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Mono sx-foundations"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTU7PB1QTsUX8KYthqQBK6PYK0.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Mono sx-foundations"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTR7PB1QTsUX8KYvumzEY2tbYf-Vlh3uA.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Mono sx-foundations"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmmono/v16/aFTR7PB1QTsUX8KYvumzEYOtbYf-Vlg.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-foundations"; font-style: italic; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Wp2ywxg089UriCZaSExdy3sGt9zz86GPwyKK58UfivUw4aw.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-foundations"; font-style: italic; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Wp2ywxg089UriCZaSExdy3sGt9zz86GPwyKy58UfivUw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-foundations"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-foundations"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-foundations"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-foundations"; font-style: normal; font-weight: 500; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-foundations"; font-style: normal; font-weight: 600; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-foundations"; font-style: normal; font-weight: 600; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }@font-face { font-family: "DM Sans sx-foundations"; font-style: normal; font-weight: 700; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZ2IHTWEBlwu8Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }@font-face { font-family: "DM Sans sx-foundations"; font-style: normal; font-weight: 700; font-display: swap; src: url("https://fonts.gstatic.com/s/dmsans/v17/rP2Hp2ywxg089UriCZOIHTWEBlw.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }.sx-foundations{  --panel2: #f1f3f9;           --accentInk: #ffffff;         --infoWash: #e0f2fe;}.sx-foundations > .sx-body{background-color: var(--canvas); color: var(--ink); font-family: "DM Sans sx-foundations", sans-serif; font-size: 14.5px; line-height: 1.5; -webkit-font-smoothing: antialiased;}.sx-foundations .font-mono,.sx-foundations.font-mono{font-family: "DM Mono sx-foundations", monospace;}.sx-foundations .text-display,.sx-foundations.text-display{font-size: 35px; line-height: 1.2; letter-spacing: -0.025em; font-weight: 700;}.sx-foundations .text-metric,.sx-foundations.text-metric{font-size: 28px; line-height: 1.25; letter-spacing: -0.025em; font-weight: 700;}.sx-foundations .text-title,.sx-foundations.text-title{font-size: 25px; line-height: 1.3; letter-spacing: -0.025em; font-weight: 600;}.sx-foundations .text-body-scale,.sx-foundations.text-body-scale{font-size: 14.5px; line-height: 1.5;}.sx-foundations .text-small-scale,.sx-foundations.text-small-scale{font-size: 13px; line-height: 1.4;}.sx-foundations .text-label-scale,.sx-foundations.text-label-scale{font-size: 12px; line-height: 1; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;}.sx-foundations :focus-visible{outline: 3px solid var(--accent); outline-offset: 2px;}.sx-foundations .swatch-card,.sx-foundations.swatch-card{background-color: var(--panel); border-radius: 12px; overflow: hidden; box-shadow: color-mix(in srgb, var(--ink) 4%, transparent) 0px 1px 3px, color-mix(in srgb, var(--ink) 2%, transparent) 0px 1px 2px;}.sx-foundations,.sx-foundations *,.sx-foundations ::before,.sx-foundations ::after{--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;}.sx-foundations ::backdrop{--tw-border-spacing-x: 0; --tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ;}.sx-foundations,.sx-foundations *,.sx-foundations ::after,.sx-foundations ::before{box-sizing: border-box; border-width: 0px; border-style: solid; border-color: #e5e7eb;}.sx-foundations ::after,.sx-foundations ::before{--tw-content: '';}.sx-foundations,.sx-foundations{line-height: 1.5; text-size-adjust: 100%; tab-size: 4; font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; font-feature-settings: normal; font-variation-settings: normal; -webkit-tap-highlight-color: transparent;}.sx-foundations > .sx-body{margin: 0px; line-height: inherit;}.sx-foundations hr{height: 0px; color: inherit; border-top-width: 1px;}.sx-foundations abbr:where([title]){text-decoration: underline dotted;}.sx-foundations h1,.sx-foundations h2,.sx-foundations h3,.sx-foundations h4,.sx-foundations h5,.sx-foundations h6{font-size: inherit; font-weight: inherit;}.sx-foundations a{color: inherit; text-decoration: inherit;}.sx-foundations b,.sx-foundations strong{font-weight: bolder;}.sx-foundations code,.sx-foundations kbd,.sx-foundations pre,.sx-foundations samp{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-feature-settings: normal; font-variation-settings: normal; font-size: 1em;}.sx-foundations small{font-size: 80%;}.sx-foundations sub,.sx-foundations sup{font-size: 75%; line-height: 0; position: relative; vertical-align: baseline;}.sx-foundations sub{bottom: -0.25em;}.sx-foundations sup{top: -0.5em;}.sx-foundations table{text-indent: 0px; border-color: inherit; border-collapse: collapse;}.sx-foundations button,.sx-foundations input,.sx-foundations optgroup,.sx-foundations select,.sx-foundations textarea{font-family: inherit; font-feature-settings: inherit; font-variation-settings: inherit; font-size: 100%; font-weight: inherit; line-height: inherit; letter-spacing: inherit; color: inherit; margin: 0px; padding: 0px;}.sx-foundations button,.sx-foundations select{text-transform: none;}.sx-foundations button,.sx-foundations input:where([type="button"]),.sx-foundations input:where([type="reset"]),.sx-foundations input:where([type="submit"]){appearance: button; background-color: transparent; background-image: none;}.sx-foundations progress{vertical-align: baseline;}.sx-foundations ::-webkit-inner-spin-button,.sx-foundations ::-webkit-outer-spin-button{height: auto;}.sx-foundations [type="search"],.sx-foundations[type="search"]{appearance: textfield; outline-offset: -2px;}.sx-foundations ::-webkit-search-decoration{appearance: none;}.sx-foundations ::-webkit-file-upload-button{appearance: button; font: inherit;}.sx-foundations summary{display: list-item;}.sx-foundations blockquote,.sx-foundations dd,.sx-foundations dl,.sx-foundations figure,.sx-foundations h1,.sx-foundations h2,.sx-foundations h3,.sx-foundations h4,.sx-foundations h5,.sx-foundations h6,.sx-foundations hr,.sx-foundations p,.sx-foundations pre{margin: 0px;}.sx-foundations fieldset{margin: 0px; padding: 0px;}.sx-foundations legend{padding: 0px;}.sx-foundations menu,.sx-foundations ol,.sx-foundations ul{list-style: none; margin: 0px; padding: 0px;}.sx-foundations dialog{padding: 0px;}.sx-foundations textarea{resize: vertical;}.sx-foundations input::placeholder,.sx-foundations textarea::placeholder{opacity: 1; color: #9ca3af;}.sx-foundations [role="button"],.sx-foundations[role="button"],.sx-foundations button{cursor: pointer;}.sx-foundations :disabled{cursor: default;}.sx-foundations audio,.sx-foundations canvas,.sx-foundations embed,.sx-foundations iframe,.sx-foundations img,.sx-foundations object,.sx-foundations svg,.sx-foundations video{display: block; vertical-align: middle;}.sx-foundations img,.sx-foundations video{max-width: 100%; height: auto;}.sx-foundations [hidden]:where(:not([hidden="until-found"])),.sx-foundations[hidden]:where(:not([hidden="until-found"])){display: none;}.sx-foundations .relative,.sx-foundations.relative{position: relative;}.sx-foundations .mx-auto,.sx-foundations.mx-auto{margin-left: auto; margin-right: auto;}.sx-foundations .mb-1,.sx-foundations.mb-1{margin-bottom: 0.25rem;}.sx-foundations .mb-1\.5,.sx-foundations.mb-1\.5{margin-bottom: 0.375rem;}.sx-foundations .mb-14,.sx-foundations.mb-14{margin-bottom: 3.5rem;}.sx-foundations .mb-2,.sx-foundations.mb-2{margin-bottom: 0.5rem;}.sx-foundations .mb-3,.sx-foundations.mb-3{margin-bottom: 0.75rem;}.sx-foundations .mb-4,.sx-foundations.mb-4{margin-bottom: 1rem;}.sx-foundations .mb-6,.sx-foundations.mb-6{margin-bottom: 1.5rem;}.sx-foundations .mb-8,.sx-foundations.mb-8{margin-bottom: 2rem;}.sx-foundations .mt-1,.sx-foundations.mt-1{margin-top: 0.25rem;}.sx-foundations .mt-6,.sx-foundations.mt-6{margin-top: 1.5rem;}.sx-foundations .block,.sx-foundations.block{display: block;}.sx-foundations .flex,.sx-foundations.flex{display: flex;}.sx-foundations .inline-flex,.sx-foundations.inline-flex{display: inline-flex;}.sx-foundations .grid,.sx-foundations.grid{display: grid;}.sx-foundations .h-1\.5,.sx-foundations.h-1\.5{height: 0.375rem;}.sx-foundations .h-10,.sx-foundations.h-10{height: 2.5rem;}.sx-foundations .h-16,.sx-foundations.h-16{height: 4rem;}.sx-foundations .h-2\.5,.sx-foundations.h-2\.5{height: 0.625rem;}.sx-foundations .h-20,.sx-foundations.h-20{height: 5rem;}.sx-foundations .h-7,.sx-foundations.h-7{height: 1.75rem;}.sx-foundations .h-9,.sx-foundations.h-9{height: 2.25rem;}.sx-foundations .h-\[1px\],.sx-foundations.h-\[1px\]{height: 1px;}.sx-foundations .h-\[2px\],.sx-foundations.h-\[2px\]{height: 2px;}.sx-foundations .h-full,.sx-foundations.h-full{height: 100%;}.sx-foundations .min-h-screen,.sx-foundations.min-h-screen{min-height: 2933px;}.sx-foundations .w-1\.5,.sx-foundations.w-1\.5{width: 0.375rem;}.sx-foundations .w-2\.5,.sx-foundations.w-2\.5{width: 0.625rem;}.sx-foundations .w-3\/4,.sx-foundations.w-3\/4{width: 75%;}.sx-foundations .w-32,.sx-foundations.w-32{width: 8rem;}.sx-foundations .w-48,.sx-foundations.w-48{width: 12rem;}.sx-foundations .w-7,.sx-foundations.w-7{width: 1.75rem;}.sx-foundations .w-full,.sx-foundations.w-full{width: 100%;}.sx-foundations .max-w-2xl,.sx-foundations.max-w-2xl{max-width: 42rem;}.sx-foundations .max-w-4xl,.sx-foundations.max-w-4xl{max-width: 56rem;}.sx-foundations .max-w-\[1440px\],.sx-foundations.max-w-\[1440px\]{max-width: 1440px;}.sx-foundations .shrink-0,.sx-foundations.shrink-0{flex-shrink: 0;}.sx-foundations .grow,.sx-foundations.grow{flex-grow: 1;}.sx-foundations .grid-cols-1,.sx-foundations.grid-cols-1{grid-template-columns: repeat(1, minmax(0px, 1fr));}.sx-foundations .flex-col,.sx-foundations.flex-col{flex-direction: column;}.sx-foundations .flex-wrap,.sx-foundations.flex-wrap{flex-wrap: wrap;}.sx-foundations .items-center,.sx-foundations.items-center{align-items: center;}.sx-foundations .items-baseline,.sx-foundations.items-baseline{align-items: baseline;}.sx-foundations .justify-center,.sx-foundations.justify-center{justify-content: center;}.sx-foundations .justify-between,.sx-foundations.justify-between{justify-content: space-between;}.sx-foundations .gap-1,.sx-foundations.gap-1{gap: 0.25rem;}.sx-foundations .gap-1\.5,.sx-foundations.gap-1\.5{gap: 0.375rem;}.sx-foundations .gap-2,.sx-foundations.gap-2{gap: 0.5rem;}.sx-foundations .gap-3,.sx-foundations.gap-3{gap: 0.75rem;}.sx-foundations .gap-4,.sx-foundations.gap-4{gap: 1rem;}.sx-foundations .gap-6,.sx-foundations.gap-6{gap: 1.5rem;}.sx-foundations .gap-8,.sx-foundations.gap-8{gap: 2rem;}.sx-foundations .space-y-4 > :not([hidden]) ~ :not([hidden]),.sx-foundations.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse: 0; margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse))); margin-bottom: calc(1rem * var(--tw-space-y-reverse));}.sx-foundations .divide-y > :not([hidden]) ~ :not([hidden]),.sx-foundations.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse: 0; border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse))); border-bottom-width: calc(1px * var(--tw-divide-y-reverse));}.sx-foundations .overflow-hidden,.sx-foundations.overflow-hidden{overflow: hidden;}.sx-foundations .overflow-visible,.sx-foundations.overflow-visible{overflow: visible;}.sx-foundations .rounded,.sx-foundations.rounded{border-radius: 0.25rem;}.sx-foundations .rounded-full,.sx-foundations.rounded-full{border-radius: 9999px;}.sx-foundations .rounded-lg,.sx-foundations.rounded-lg{border-radius: 0.5rem;}.sx-foundations .rounded-md,.sx-foundations.rounded-md{border-radius: 0.375rem;}.sx-foundations .rounded-xl,.sx-foundations.rounded-xl{border-radius: 0.75rem;}.sx-foundations .border,.sx-foundations.border{border-width: 1px;}.sx-foundations .border-b,.sx-foundations.border-b{border-bottom-width: 1px;}.sx-foundations .border-t,.sx-foundations.border-t{border-top-width: 1px;}.sx-foundations .bg-white,.sx-foundations.bg-white{--tw-bg-opacity: 1; background-color: #ffffff;}.sx-foundations .p-4,.sx-foundations.p-4{padding: 1rem;}.sx-foundations .p-6,.sx-foundations.p-6{padding: 1.5rem;}.sx-foundations .px-1,.sx-foundations.px-1{padding-left: 0.25rem; padding-right: 0.25rem;}.sx-foundations .px-1\.5,.sx-foundations.px-1\.5{padding-left: 0.375rem; padding-right: 0.375rem;}.sx-foundations .px-2\.5,.sx-foundations.px-2\.5{padding-left: 0.625rem; padding-right: 0.625rem;}.sx-foundations .px-3,.sx-foundations.px-3{padding-left: 0.75rem; padding-right: 0.75rem;}.sx-foundations .px-4,.sx-foundations.px-4{padding-left: 1rem; padding-right: 1rem;}.sx-foundations .px-6,.sx-foundations.px-6{padding-left: 1.5rem; padding-right: 1.5rem;}.sx-foundations .py-0\.5,.sx-foundations.py-0\.5{padding-top: 0.125rem; padding-bottom: 0.125rem;}.sx-foundations .py-1,.sx-foundations.py-1{padding-top: 0.25rem; padding-bottom: 0.25rem;}.sx-foundations .py-12,.sx-foundations.py-12{padding-top: 3rem; padding-bottom: 3rem;}.sx-foundations .py-2,.sx-foundations.py-2{padding-top: 0.5rem; padding-bottom: 0.5rem;}.sx-foundations .py-5,.sx-foundations.py-5{padding-top: 1.25rem; padding-bottom: 1.25rem;}.sx-foundations .pb-8,.sx-foundations.pb-8{padding-bottom: 2rem;}.sx-foundations .pt-2,.sx-foundations.pt-2{padding-top: 0.5rem;}.sx-foundations .pt-3,.sx-foundations.pt-3{padding-top: 0.75rem;}.sx-foundations .pt-4,.sx-foundations.pt-4{padding-top: 1rem;}.sx-foundations .pt-8,.sx-foundations.pt-8{padding-top: 2rem;}.sx-foundations .font-mono,.sx-foundations.font-mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}.sx-foundations .font-sans,.sx-foundations.font-sans{font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";}.sx-foundations .text-\[13px\],.sx-foundations.text-\[13px\]{font-size: 13px;}.sx-foundations .font-bold,.sx-foundations.font-bold{font-weight: 700;}.sx-foundations .font-medium,.sx-foundations.font-medium{font-weight: 500;}.sx-foundations .font-normal,.sx-foundations.font-normal{font-weight: 400;}.sx-foundations .font-semibold,.sx-foundations.font-semibold{font-weight: 600;}.sx-foundations .leading-relaxed,.sx-foundations.leading-relaxed{line-height: 1.625;}.sx-foundations .tracking-wider,.sx-foundations.tracking-wider{letter-spacing: 0.05em;}.sx-foundations .text-white,.sx-foundations.text-white{--tw-text-opacity: 1; color: #ffffff;}.sx-foundations .transition-colors,.sx-foundations.transition-colors{transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms;}.sx-foundations .transition-opacity,.sx-foundations.transition-opacity{transition-property: opacity; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms;}.sx-foundations .first\:pt-0:first-child,.sx-foundations.first\:pt-0:first-child{padding-top: 0px;}.sx-foundations .last\:pb-0:last-child,.sx-foundations.last\:pb-0:last-child{padding-bottom: 0px;}.sx-foundations .hover\:bg-slate-50:hover,.sx-foundations.hover\:bg-slate-50:hover{--tw-bg-opacity: 1; background-color: #f8fafc;}.sx-foundations .hover\:underline:hover,.sx-foundations.hover\:underline:hover{text-decoration-line: underline;}.sx-foundations .hover\:opacity-90:hover,.sx-foundations.hover\:opacity-90:hover{opacity: 0.9;}.sx-foundations .active\:scale-\[0\.98\]:active,.sx-foundations.active\:scale-\[0\.98\]:active{--tw-scale-x: 0.98; --tw-scale-y: 0.98; transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));}.sx-foundations .sm\:grid-cols-2,.sx-foundations.sm\:grid-cols-2{grid-template-columns: repeat(2, minmax(0px, 1fr));}.sx-foundations .sm\:flex-row,.sx-foundations.sm\:flex-row{flex-direction: row;}.sx-foundations .sm\:px-12,.sx-foundations.sm\:px-12{padding-left: 3rem; padding-right: 3rem;}.sx-foundations .md\:grid-cols-2,.sx-foundations.md\:grid-cols-2{grid-template-columns: repeat(2, minmax(0px, 1fr));}.sx-foundations .md\:flex-row,.sx-foundations.md\:flex-row{flex-direction: row;}.sx-foundations .md\:items-baseline,.sx-foundations.md\:items-baseline{align-items: baseline;}.sx-foundations .lg\:grid-cols-2,.sx-foundations.lg\:grid-cols-2{grid-template-columns: repeat(2, minmax(0px, 1fr));}.sx-foundations .lg\:grid-cols-3,.sx-foundations.lg\:grid-cols-3{grid-template-columns: repeat(3, minmax(0px, 1fr));}.sx-foundations .lg\:grid-cols-4,.sx-foundations.lg\:grid-cols-4{grid-template-columns: repeat(4, minmax(0px, 1fr));}.sx-foundations .lg\:p-8,.sx-foundations.lg\:p-8{padding: 2rem;}.sx-foundations .lg\:px-20,.sx-foundations.lg\:px-20{padding-left: 5rem; padding-right: 5rem;}</style>
+<div class="sx-foundations "><div class="sx-body min-h-screen py-12 px-6 sm:px-12 lg:px-20 max-w-[1440px] mx-auto" style="">
+<header class="mb-14 pb-8 border-b" style="border-color: var(--line);">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+      <div class="flex items-center gap-3">
+        <span class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-[13px]" style="background-color: var(--accent);">MC</span>
+        <span class="text-label-scale text-faint tracking-wider" style="color: var(--faint);">Design System Spec · Quartz</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-1 rounded-full text-label-scale font-medium" style="background-color: var(--panel2); color: var(--muted); border: 1px solid var(--line);">Route: /design/foundations</span>
+        <span class="px-2.5 py-1 rounded-full text-label-scale font-medium" style="background-color: var(--okWash); color: var(--ok); border: 1px solid color-mix(in srgb, var(--ok) 20%, transparent);">WCAG 4.5:1 Verified</span>
+      </div>
+    </div>
+
+    <h1 class="text-display mb-4" style="color: var(--ink);">Foundations — Quartz</h1>
+    <p class="max-w-4xl text-body-scale leading-relaxed" style="color: var(--muted);">
+      MarketCore UI resolves into four deterministic layers: <strong style="color: var(--ink);">palette → semantic → components → screens</strong>. 
+      A component names an architectural <strong style="color: var(--ink);">role</strong> (<code class="font-mono text-small-scale px-1 py-0.5 rounded" style="background-color: var(--panel2); color: var(--accent);">var(--accent)</code>), never a hardcoded hue. Repointing token roles enables multi-theme parity between Light (Quartz) and Dark (Graphite) across both the Seller Console (252px tenant rail) and Buyer Storefront (no rail) without structural drift.
+    </p>
+  </header>
+
+  
+  <section class="mb-14">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="text-title" style="color: var(--ink);">1. Color Tokens & Contrast Contract</h2>
+      <span class="text-small-scale font-mono" style="color: var(--faint);">All ground pairs ≥ 4.5:1 · Controls ≥ 3:1</span>
+    </div>
+
+    
+    <div class="mb-8">
+      <div class="text-label-scale mb-3" style="color: var(--faint);">Surface Architecture</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full border-b" style="background-color: var(--canvas); border-color: var(--line);"></div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--canvas</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">App background grounding</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#f6f7fb</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full border-b" style="background-color: #ffffff; border-color: var(--line);"></div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--panel</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Cards, bars, raised planes</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#ffffff</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full border-b" style="background-color: var(--panel2); border-color: var(--line);"></div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--panel2</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Inset wells, table headers</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#f1f3f9</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full border-b" style="background-color: var(--rail); border-color: var(--line);"></div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--rail</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Seller console rail only</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#0b0d14</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="mb-8">
+      <div class="text-label-scale mb-3" style="color: var(--faint);">Text & Semantic Focus</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center font-bold text-white text-metric" style="background-color: var(--ink);">Aa</div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--ink</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Primary readable copy (18.3:1)</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#0a0b12</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center font-bold text-white text-metric" style="background-color: var(--muted);">Aa</div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--muted</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Secondary copy (6.13:1)</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#5a6272</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center font-bold text-white text-metric" style="background-color: var(--faint);">Aa</div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--faint</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Uppercase labels & table heads (5.1:1)</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#676e7a</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center font-bold text-white text-metric" style="background-color: var(--accent);">Aa</div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--accent</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">The one interactive focus (6.29:1)</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#4f46e5</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="mb-8">
+      <div class="text-label-scale mb-3" style="color: var(--faint);">Edge & Boundaries</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center" style="background-color: var(--panel2);">
+            <div class="w-3/4 h-[1px]" style="background-color: var(--line);"></div>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--line</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Hairline structural divider</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#e6e8ef</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center" style="background-color: var(--panel2);">
+            <div class="w-3/4 h-[2px]" style="background-color: var(--lineStrong);"></div>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--lineStrong</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Decorative border emphasis</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#d5d9e2</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center" style="background-color: var(--panel2);">
+            <div class="w-32 h-9 rounded bg-white border" style="border-color: var(--controlEdge);"></div>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-mono text-small-scale font-semibold" style="color: var(--ink);">--controlEdge</span>
+              <span class="text-label-scale font-mono px-1.5 py-0.5 rounded" style="background-color: var(--panel2); color: var(--ok);">3:1 PASS</span>
+            </div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Control boundary · inputs & buttons</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#838b9a</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div>
+      <div class="text-label-scale mb-3" style="color: var(--faint);">Semantic States</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center gap-2" style="background-color: var(--okWash); color: var(--ok);">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--ok);"></span>
+            <span class="text-small-scale font-semibold">Active · 4.60:1</span>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--ok / --okWash</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Healthy, paid, in stock</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#117f3a / #e8f7ee</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center gap-2" style="background-color: var(--badWash); color: var(--bad);">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--bad);"></span>
+            <span class="text-small-scale font-semibold">Failed · 4.66:1</span>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--bad / --badWash</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Failed, refunded, out of stock</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#d11b43 / #fdecef</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center gap-2" style="background-color: var(--warnWash); color: var(--warn);">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--warn);"></span>
+            <span class="text-small-scale font-semibold">Warning · 4.70:1</span>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--warn / --warnWash</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Needs attention, low stock</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#a55a05 / #fdf3e4</div>
+          </div>
+        </div>
+        
+        <div class="swatch-card border" style="border-color: var(--line);">
+          <div class="h-20 w-full flex items-center justify-center gap-2" style="background-color: #e0f2fe; color: var(--info);">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--info);"></span>
+            <span class="text-small-scale font-semibold">Neutral · 4.77:1</span>
+          </div>
+          <div class="p-4 bg-white">
+            <div class="font-mono text-small-scale font-semibold mb-1" style="color: var(--ink);">--info / --infoWash</div>
+            <div class="text-small-scale mb-2" style="color: var(--muted);">Informational, data series</div>
+            <div class="font-mono text-label-scale" style="color: var(--faint);">#097499 / #e0f2fe</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="mb-14">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="text-title" style="color: var(--ink);">2. Strict Type Hierarchy</h2>
+      <span class="text-small-scale font-mono" style="color: var(--faint);">Floor is 12px · Exact steps</span>
+    </div>
+
+    <div class="bg-white rounded-xl border overflow-hidden p-6 lg:p-8" style="border-color: var(--line);">
+      <div class="divide-y" style="border-color: var(--line);">
+
+        
+        <div class="py-5 first:pt-0 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Display · 35px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Sans Bold / -0.025em</div>
+          </div>
+          <div class="grow text-display" style="color: var(--ink);">
+            Everything from every seller, one checkout
+          </div>
+        </div>
+
+        
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Metric · 28px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Mono Bold</div>
+          </div>
+          <div class="grow text-metric font-mono" style="color: var(--ink);">
+            E£48,290.00 <span class="text-body-scale font-sans font-normal" style="color: var(--ok);">+14.2% QoQ</span>
+          </div>
+        </div>
+
+        
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Title · 25px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Sans SemiBold</div>
+          </div>
+          <div class="grow text-title" style="color: var(--ink);">
+            Nile Cotton Shirt — Artisan Inventory
+          </div>
+        </div>
+
+        
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Body · 14.5px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Sans Regular / 1.5lh</div>
+          </div>
+          <div class="grow text-body-scale max-w-2xl" style="color: var(--muted);">
+            A timeless bespoke button-down tailored from breathable, single-origin Egyptian cotton. Cut with clean lines and finished with mother-of-pearl buttons for daily durability.
+          </div>
+        </div>
+
+        
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Small · 13px</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Sans Regular</div>
+          </div>
+          <div class="grow text-small-scale" style="color: var(--muted);">
+            Dispatched via Aramex Express · Guaranteed settlement within 24h of merchant verification.
+          </div>
+        </div>
+
+        
+        <div class="py-5 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Label · 12px Floor</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">Uppercase · 0.05em track</div>
+          </div>
+          <div class="grow text-label-scale" style="color: var(--faint);">
+            ORGANIZATION TENANT BOUNDARY: ORG_892B1
+          </div>
+        </div>
+
+        
+        <div class="py-5 last:pb-0 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <div class="w-48 shrink-0">
+            <span class="text-label-scale" style="color: var(--faint);">Monospace Specimen</span>
+            <div class="text-small-scale font-mono" style="color: var(--muted);">DM Mono tabular align</div>
+          </div>
+          <div class="grow flex flex-wrap gap-6 font-mono text-small-scale">
+            <span class="px-2.5 py-1 rounded" style="background-color: var(--panel2); color: var(--ink);">SKU: NLE-CTN-ECR-M</span>
+            <span class="px-2.5 py-1 rounded" style="background-color: var(--panel2); color: var(--ink);">REQ: req_01j7x9k2</span>
+            <span class="px-2.5 py-1 rounded font-semibold" style="background-color: var(--panel2); color: var(--accent);">PRICE: E£249.00</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="mb-14">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="text-title" style="color: var(--ink);">3. Component Library</h2>
+      <span class="text-small-scale font-mono" style="color: var(--faint);">Standardized Radii: 12px Card / 8px Control / 999px Pill</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      
+      <div class="bg-white rounded-xl border p-6 flex flex-col justify-between" style="border-color: var(--line);">
+        <div>
+          <div class="text-label-scale mb-4" style="color: var(--faint);">Interactive Controls</div>
+          <div class="space-y-4">
+            
+            <div class="flex flex-wrap items-center gap-3">
+              
+              <button class="h-9 px-4 rounded-lg font-medium text-body-scale transition-opacity hover:opacity-90 active:scale-[0.98]" style="background-color: var(--accent); color: var(--accentInk); border-radius: 8px;">
+                Primary action
+              </button>
+              
+              <button class="h-9 px-4 rounded-lg font-medium text-body-scale border transition-colors hover:bg-slate-50" style="background-color: var(--panel); border-color: var(--controlEdge); color: var(--ink); border-radius: 8px;">
+                Secondary control
+              </button>
+              
+              <button class="h-9 px-3 rounded-lg font-medium text-body-scale transition-colors hover:underline" style="color: var(--accent);">
+                Quiet action →
+              </button>
+            </div>
+
+            
+            <div class="pt-3">
+              <label class="block text-label-scale mb-1.5" style="color: var(--ink);">
+                ORGANIZATION SLUG <span style="color: var(--bad);">*</span>
+              </label>
+              <div class="relative">
+                <input type="text" value="nile-traders" class="w-full h-10 px-3 rounded-lg border font-mono text-body-scale" style="border-color: var(--controlEdge); border-radius: 8px; color: var(--ink); background-color: var(--panel);" readonly>
+              </div>
+              <span class="block mt-1 text-small-scale" style="color: var(--faint);">Must be lowercase alphanumeric and match tenant registry.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 mt-6 border-t text-small-scale font-mono" style="border-color: var(--line); color: var(--faint);">
+          Rule: Exactly one primary accent button per major screen region.
+        </div>
+      </div>
+
+      
+      <div class="bg-white rounded-xl border p-6 flex flex-col justify-between" style="border-color: var(--line);">
+        <div>
+          <div class="text-label-scale mb-4" style="color: var(--faint);">Status Indicators & Chips</div>
+          <div class="space-y-4">
+            
+            
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-small-scale font-medium" style="background-color: var(--okWash); color: var(--ok);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--ok);"></span> Paid
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-small-scale font-medium" style="background-color: var(--warnWash); color: var(--warn);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--warn);"></span> Low stock
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-small-scale font-medium" style="background-color: var(--badWash); color: var(--bad);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--bad);"></span> Refunded
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-small-scale font-medium" style="background-color: var(--infoWash); color: var(--info);">
+                <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--info);"></span> Processing
+              </span>
+            </div>
+
+            
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-small-scale font-mono font-medium" style="background-color: var(--okWash); color: var(--ok);">
+                ↑ +18.4%
+              </span>
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-small-scale font-mono font-medium" style="background-color: var(--badWash); color: var(--bad);">
+                ↓ -6.2%
+              </span>
+              <span class="text-small-scale" style="color: var(--muted);">Paired strictly with explanatory label</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 mt-6 border-t text-small-scale font-mono" style="border-color: var(--line); color: var(--faint);">
+          Rule: Never color alone. A status is always a glyph/dot AND a word.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  
+  <section class="mb-14">
+    <div class="flex items-baseline justify-between mb-6">
+      <h2 class="text-title" style="color: var(--ink);">4. Data Motifs</h2>
+      <span class="text-small-scale font-mono" style="color: var(--faint);">Proportional Share Bars & Ambient Sparklines</span>
+    </div>
+
+    <div class="bg-white rounded-xl border p-6 lg:p-8" style="border-color: var(--line);">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+
+        
+        <div class="space-y-4">
+          <div class="text-label-scale" style="color: var(--faint);">Share Bars (6px Fixed Track)</div>
+
+          
+          <div>
+            <div class="flex justify-between text-small-scale mb-1">
+              <span style="color: var(--ink);">Nile Cotton Shirt</span>
+              <span class="font-mono font-semibold" style="color: var(--ink);">85%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--panel2);">
+              <div class="h-full rounded-full" style="width: 85%; background-color: var(--accent);"></div>
+            </div>
+          </div>
+
+          
+          <div>
+            <div class="flex justify-between text-small-scale mb-1">
+              <span style="color: var(--ink);">Giza Sheet Set</span>
+              <span class="font-mono font-semibold" style="color: var(--ink);">45%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--panel2);">
+              <div class="h-full rounded-full" style="width: 45%; background-color: var(--info);"></div>
+            </div>
+          </div>
+
+          
+          <div>
+            <div class="flex justify-between text-small-scale mb-1">
+              <span style="color: var(--ink);">Delta Olive Oil</span>
+              <span class="font-mono font-semibold" style="color: var(--ink);">12%</span>
+            </div>
+            <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--panel2);">
+              <div class="h-full rounded-full" style="width: 12%; background-color: var(--warn);"></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="p-6 rounded-lg border flex flex-col justify-between" style="background-color: var(--panel2); border-color: var(--line);">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-label-scale" style="color: var(--faint);">Ambient Sales Velocity</span>
+            <span class="text-small-scale font-mono font-semibold" style="color: var(--ok);">+24.1% 30d</span>
+          </div>
+
+          <div class="py-2">
+            
+            <svg class="w-full h-16 overflow-visible" viewBox="0 0 300 60" fill="none" preserveAspectRatio="none">
+              <path d="M 0 50 Q 30 45, 60 48 T 120 30 T 180 35 T 240 18 T 300 8" style="stroke:var(--accent)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path d="M 0 50 Q 30 45, 60 48 T 120 30 T 180 35 T 240 18 T 300 8 L 300 60 L 0 60 Z" fill="rgba(79, 70, 229, 0.08)"/>
+            </svg>
+          </div>
+
+          <div class="flex justify-between items-center pt-2 text-small-scale font-mono" style="color: var(--faint);">
+            <span>01 Oct</span>
+            <span>15 Oct</span>
+            <span>30 Oct</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  
+  <footer class="pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-small-scale font-mono" style="border-color: var(--line); color: var(--faint);">
+    <div>MarketCore UI Foundation Specifications · Standard Viewport 1440px</div>
+    <div>Strict Typographic Floor: 12px · Pass Rate: 100% WCAG AA</div>
+  </footer>
+</div></div>

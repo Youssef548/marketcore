@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore Seller Console — Inventory</title>
+<!-- Fonts: DM Sans & DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#3323cc",
+            "faint": "#676e7a",
+            "lineStrong": "#d5d9e2",
+            "on-secondary": "#ffffff",
+            "ok": "#117f3a",
+            "error": "#ba1a1a",
+            "rail": "#0b0d14",
+            "line": "#e6e8ef",
+            "primary": "#3525cd",
+            "badWash": "#fdecef",
+            "panel": "#ffffff",
+            "inverse-surface": "#302f39",
+            "on-secondary-fixed": "#1a1b23",
+            "surface-tint": "#4d44e3",
+            "outline-variant": "#c7c4d8",
+            "secondary-fixed-dim": "#c7c5d0",
+            "secondary-container": "#e3e1ec",
+            "accentWash": "#eef0ff",
+            "surface-container-low": "#f5f2ff",
+            "tertiary": "#7e3000",
+            "inverse-primary": "#c3c0ff",
+            "primary-fixed": "#e2dfff",
+            "controlEdge": "#838b9a",
+            "warn": "#a55a05",
+            "on-background": "#1b1b24",
+            "secondary": "#5d5e67",
+            "surface-bright": "#fcf8ff",
+            "on-error-container": "#93000a",
+            "info": "#097499",
+            "surface-variant": "#e4e1ee",
+            "on-primary-container": "#dad7ff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "panel2": "#f1f3f9",
+            "muted": "#5a6272",
+            "on-error": "#ffffff",
+            "surface-container": "#f0ecf9",
+            "on-primary-fixed": "#0f0069",
+            "ink": "#0a0b12",
+            "on-tertiary-container": "#ffd2be",
+            "surface-dim": "#dcd8e5",
+            "inverse-on-surface": "#f3effc",
+            "outline": "#777587",
+            "secondary-fixed": "#e3e1ec",
+            "tertiary-container": "#a44100",
+            "okWash": "#e8f7ee",
+            "warnWash": "#fdf3e4",
+            "primary-fixed-dim": "#c3c0ff",
+            "tertiary-fixed": "#ffdbcc",
+            "canvas": "#f6f7fb",
+            "surface-container-lowest": "#ffffff",
+            "railInk": "#eef1f7",
+            "primary-container": "#4f46e5",
+            "on-secondary-fixed-variant": "#46464f",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "surface-container-highest": "#e4e1ee",
+            "background": "#fcf8ff",
+            "on-tertiary-fixed": "#351000",
+            "accentInk": "#ffffff",
+            "railMuted": "#8b93a7",
+            "on-primary": "#ffffff",
+            "on-surface": "#1b1b24",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#ffb695",
+            "surface-container-high": "#eae6f4",
+            "bad": "#d11b43",
+            "accent": "#4f46e5",
+            "on-secondary-container": "#64646d",
+            "on-surface-variant": "#464555"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-lg": "16px",
+            "space-xl": "22px",
+            "space-sm": "6px",
+            "margin": "20px",
+            "space-xxl": "26px",
+            "gutter": "16px",
+            "space-xs": "4px",
+            "space-md": "10px"
+          },
+          "fontFamily": {
+            "mono": ["DM Mono", "monospace"],
+            "metric": ["DM Sans", "sans-serif"],
+            "body": ["DM Sans", "sans-serif"],
+            "title": ["DM Sans", "sans-serif"],
+            "small": ["DM Sans", "sans-serif"],
+            "display": ["DM Sans", "sans-serif"],
+            "label": ["DM Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body antialiased selection:bg-accentWash selection:text-accent min-h-screen flex flex-col">
+<!-- ========================================================================= -->
+<!-- SideNavBar Component (Shared Anchor: 252px Fixed Dark Rail)              -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 bottom-0 left-0 w-[252px] h-screen flex flex-col justify-between z-40 bg-rail dark:bg-rail border-r border-line dark:border-lineStrong">
+<div class="w-[252px] h-full p-space-md flex flex-col justify-between shrink-0">
+<!-- Rail Top Header & Navigation -->
+<div class="flex flex-col gap-space-md">
+<!-- Store Identity Badge -->
+<div class="flex items-center gap-space-md px-space-sm py-space-sm rounded">
+<div class="w-8 h-8 rounded bg-accent/20 border border-accent/40 flex items-center justify-center text-accentInk shrink-0 font-bold">
+<span class="material-symbols-outlined text-[20px] text-accentWash">storefront</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title text-[15px] leading-tight text-railInk font-bold tracking-tight truncate">Nile Traders</span>
+<span class="font-label text-[11px] text-railMuted truncate">Enterprise Seller</span>
+</div>
+</div>
+<!-- Global Search Action Bar -->
+<button class="w-full flex items-center justify-between px-space-md py-space-sm bg-[#161922] border border-[#272b3a] rounded text-railMuted hover:text-railInk transition-colors duration-150 active:scale-[0.99] group text-left">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">search</span>
+<span class="font-label text-label">Search (⌘K)</span>
+</div>
+<span class="font-mono text-[10px] bg-[#222736] px-1.5 py-0.5 rounded text-railMuted border border-[#2d3447]">/</span>
+</button>
+<!-- Primary Rail Nav Tabs -->
+<nav class="flex flex-col gap-1 mt-2">
+<!-- Overview Tab -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk rounded font-label text-label hover:bg-inverse-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Catalog Tab (Active for Inventory Sub-destination) -->
+<div class="flex flex-col gap-0.5">
+<a class="flex items-center gap-space-sm px-space-md py-space-sm bg-accent text-accentInk rounded font-label text-label font-medium transition-all duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+<span>Catalog</span>
+</a>
+<!-- Sub-tree navigation under Catalog -->
+<div class="ml-4 pl-3 border-l border-[#242938] flex flex-col gap-1 my-1">
+<a class="py-1 px-2 text-railMuted hover:text-railInk text-[12px] font-label transition-colors" href="#">Products</a>
+<a class="py-1 px-2 text-accentWash bg-[#1c2236] rounded font-medium text-[12px] font-label flex items-center justify-between" href="#">
+<span>Inventory</span>
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+</a>
+<a class="py-1 px-2 text-railMuted hover:text-railInk text-[12px] font-label transition-colors" href="#">Warehouses</a>
+</div>
+</div>
+<!-- Money Tab -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk rounded font-label text-label hover:bg-inverse-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>Money</span>
+</a>
+<!-- Admin Tab -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk rounded font-label text-label hover:bg-inverse-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+<span>Admin</span>
+</a>
+</nav>
+</div>
+<!-- Rail Footer (User Session / Node State) -->
+<div class="pt-4 border-t border-[#1b202e] flex flex-col gap-2">
+<div class="flex items-center justify-between px-2 py-1 text-railMuted text-[11px] font-mono">
+<span class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-ok animate-pulse"></span>
+            SYS-EG-CAI-01
+          </span>
+<span class="text-[10px] text-faint">v2.18-p8</span>
+</div>
+<div class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-railMuted hover:text-railInk transition-colors duration-150 cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label text-label text-railInk truncate">ops@niletraders.eg</span>
+<span class="font-mono text-[10px] text-railMuted truncate">Warehouse Lead · Cairo</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- TopNavBar Component (Shared Anchor: 64px Header at left-[252px])           -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-[252px] right-0 h-16 z-30 bg-panel dark:bg-panel border-b border-line dark:border-lineStrong">
+<div class="flex justify-between items-center h-full px-margin w-full">
+<!-- Left side: Breadcrumb & Workspace Selector -->
+<div class="flex items-center gap-3">
+<span class="font-label text-label font-bold text-ink dark:text-railInk uppercase tracking-wider">Console</span>
+<span class="text-lineStrong">/</span>
+<span class="font-label text-label text-faint">Catalog</span>
+<span class="text-lineStrong">/</span>
+<span class="font-label text-label text-ink font-semibold">Inventory</span>
+<span class="ml-3 px-2 py-0.5 rounded text-[11px] font-mono bg-panel2 text-secondary border border-line">WH: CAIRO_NORTH</span>
+</div>
+<!-- Right side: Actions, Controls, and Context Tray -->
+<div class="flex items-center gap-3">
+<!-- Quick System Status Chip -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-okWash text-ok border border-ok/20 font-label text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>CHECK Constraints Active</span>
+</div>
+<div class="h-5 w-[1px] bg-line mx-1"></div>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-1">
+<button aria-label="Notifications" class="p-2 text-faint hover:text-ink hover:bg-panel2 rounded transition-colors duration-150">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button aria-label="Help &amp; Documentation" class="p-2 text-faint hover:text-ink hover:bg-panel2 rounded transition-colors duration-150">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</button>
+<button aria-label="Table Preferences" class="p-2 text-faint hover:text-ink hover:bg-panel2 rounded transition-colors duration-150">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+<div class="h-5 w-[1px] bg-line mx-1"></div>
+<!-- Profile Avatar Link -->
+<div class="flex items-center gap-2 pl-1 cursor-pointer">
+<div class="w-8 h-8 rounded-full bg-surface-container border border-controlEdge/30 flex items-center justify-center font-label text-xs font-semibold text-ink">
+            NT
+          </div>
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- Main Operational Canvas (Left padding 252px, Top padding 64px)            -->
+<!-- ========================================================================= -->
+<main class="pl-[252px] pt-16 flex-1 w-full max-w-[1440px] mx-auto pb-12">
+<div class="px-margin py-6 flex flex-col gap-6">
+<!-- Page Header: Title, Guardrail Subtext & Action Buttons -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+<div class="flex flex-col gap-1">
+<h1 class="font-title text-title text-ink font-semibold tracking-tight">Inventory</h1>
+<p class="font-small text-small text-faint flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-faint">verified_user</span>
+<span>Available, reserved and version — the <code class="font-mono text-[12px] bg-panel2 px-1 py-0.5 rounded border border-line text-ink">CHECK (available &gt;= 0)</code> constraint is the guard.</span>
+</p>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<!-- Secondary Action: Export CSV -->
+<button class="inline-flex items-center gap-2 px-3.5 py-2 bg-panel border border-lineStrong rounded shadow-sm hover:bg-panel2 font-label text-label text-ink transition-colors duration-150 active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px] text-faint">download</span>
+<span>Export CSV</span>
+</button>
+<!-- Primary Action: Adjust Stock -->
+<button class="inline-flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent/95 text-accentInk rounded shadow-sm font-label text-label font-medium transition-colors duration-150 active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Adjust stock</span>
+</button>
+</div>
+</div>
+<!-- ===================================================================== -->
+<!-- Section 1: KPI Summary Row (4-column High-Contrast Bento Cards)       -->
+<!-- ===================================================================== -->
+<section aria-label="Inventory Key Performance Indicators" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<!-- Card 1: In stock -->
+<div class="bg-panel rounded-xl border border-line p-4 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-muted mb-2">
+<span class="font-label text-label uppercase tracking-wider">In stock</span>
+<span class="w-2 h-2 rounded-full bg-ok ring-4 ring-okWash" title="Operational: Healthy"></span>
+</div>
+<div class="flex items-baseline gap-2 my-1">
+<span class="font-metric text-metric text-ink">3</span>
+<span class="font-body text-body text-faint">items</span>
+</div>
+<div class="pt-2 border-t border-line/60 flex items-center justify-between text-[12px]">
+<span class="text-faint font-small">Active catalogue listings</span>
+<span class="font-mono text-[11px] text-ok font-medium">100% synced</span>
+</div>
+</div>
+<!-- Card 2: Low stock -->
+<div class="bg-panel rounded-xl border border-line p-4 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-muted mb-2">
+<span class="font-label text-label uppercase tracking-wider">Low stock</span>
+<span class="w-2 h-2 rounded-full bg-warn ring-4 ring-warnWash" title="Warning: Low stock trigger"></span>
+</div>
+<div class="flex items-baseline gap-2 my-1">
+<span class="font-metric text-metric text-ink">1</span>
+<span class="font-body text-body text-faint">item</span>
+</div>
+<div class="pt-2 border-t border-line/60 flex items-center justify-between text-[12px]">
+<span class="text-faint font-small">Needs attention</span>
+<span class="font-mono text-[11px] text-warn font-medium">&lt; 5 threshold</span>
+</div>
+</div>
+<!-- Card 3: Out of stock -->
+<div class="bg-panel rounded-xl border border-line p-4 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-muted mb-2">
+<span class="font-label text-label uppercase tracking-wider">Out of stock</span>
+<span class="w-2 h-2 rounded-full bg-bad ring-4 ring-badWash" title="Critical: Zero Available Stock"></span>
+</div>
+<div class="flex items-baseline gap-2 my-1">
+<span class="font-metric text-metric text-ink">1</span>
+<span class="font-body text-body text-faint">item</span>
+</div>
+<div class="pt-2 border-t border-line/60 flex items-center justify-between text-[12px]">
+<span class="text-bad font-small font-medium">Cannot sell</span>
+<span class="font-mono text-[11px] text-faint">1 SKU blocked</span>
+</div>
+</div>
+<!-- Card 4: Total Inventory Value with Sparkline -->
+<div class="bg-panel rounded-xl border border-line p-4 flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-muted mb-2">
+<span class="font-label text-label uppercase tracking-wider">Inventory value</span>
+<div class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-okWash text-ok text-[11px] font-mono font-medium">
+<span>+4.8%</span>
+<span class="material-symbols-outlined text-[13px]">trending_up</span>
+</div>
+</div>
+<div class="flex items-baseline justify-between gap-2 my-1">
+<span class="font-mono text-[26px] leading-tight font-bold text-ink">E£12,450.00</span>
+<!-- Sparkline visualization -->
+<div class="w-16 h-7 shrink-0">
+<svg class="w-full h-full overflow-visible" fill="none" viewbox="0 0 64 28">
+<path d="M1 22 L14 19 L28 23 L42 12 L54 15 L63 4" stroke="#117f3a" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M1 22 L14 19 L28 23 L42 12 L54 15 L63 4 V 28 H 1 Z" fill="url(#sparkline-grad)" opacity="0.15"></path>
+<defs>
+<lineargradient id="sparkline-grad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#117f3a"></stop>
+<stop offset="100%" stop-color="#117f3a" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</div>
+<div class="pt-2 border-t border-line/60 flex items-center justify-between text-[12px]">
+<span class="text-faint font-small">Current valuation</span>
+<span class="font-mono text-[11px] text-muted">EGP (Standard)</span>
+</div>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- Section 2: 'Stock on hand' Table Card (Strict High-Density Data Grid) -->
+<!-- ===================================================================== -->
+<section class="bg-panel rounded-xl border border-line overflow-hidden shadow-sm flex flex-col">
+<!-- Table Toolbar & State Filter -->
+<div class="px-5 py-3.5 bg-panel border-b border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<h2 class="font-body text-body font-bold text-ink">Stock on hand</h2>
+<span class="px-2 py-0.5 rounded-full text-[11px] font-mono bg-panel2 text-faint border border-line">3 SKUs monitored</span>
+</div>
+<div class="flex items-center gap-2">
+<!-- Filter chips -->
+<div class="flex items-center bg-panel2 p-0.5 rounded-lg border border-line text-[11px] font-label">
+<button class="px-2.5 py-1 rounded bg-panel font-medium text-ink shadow-xs">All (3)</button>
+<button class="px-2.5 py-1 text-faint hover:text-ink">Reserved &gt; 0</button>
+<button class="px-2.5 py-1 text-faint hover:text-ink">Critical</button>
+</div>
+</div>
+</div>
+<!-- Density Table Surface -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line text-[12px] font-label uppercase text-muted tracking-wider">
+<th class="py-3 px-5 font-semibold" scope="col">Product</th>
+<th class="py-3 px-4 font-semibold text-right" scope="col">Available</th>
+<th class="py-3 px-4 font-semibold text-right" scope="col">Reserved</th>
+<th class="py-3 px-4 font-semibold text-right" scope="col">Total On-Hand</th>
+<th class="py-3 px-4 font-semibold text-right" scope="col">Lock Version</th>
+<th class="py-3 px-4 font-semibold text-center" scope="col">State</th>
+<th class="py-3 px-5 font-semibold text-right" scope="col">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line text-body text-[14px]">
+<!-- Row 1: Nile Cotton Shirt -->
+<tr class="hover:bg-panel2/60 transition-colors group">
+<td class="py-3.5 px-5">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 rounded-full bg-ok shrink-0" title="Healthy Stock"></span>
+<div class="flex flex-col">
+<span class="font-medium text-ink group-hover:text-primary transition-colors">Nile Cotton Shirt</span>
+<span class="font-mono text-[12px] text-faint tracking-tight">SKU: NLE-CTN-ECR-M</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-semibold text-ink">10</span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono text-muted">2</span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-bold text-ink">12</span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-[12px] text-secondary bg-panel2 px-2 py-0.5 rounded border border-line">v4_rev9</span>
+</td>
+<td class="py-3.5 px-4 text-center">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-label font-bold bg-okWash text-ok border border-ok/20">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                    IN STOCK
+                  </span>
+</td>
+<td class="py-3.5 px-5 text-right">
+<button class="font-label text-label text-accent hover:text-primary font-medium hover:underline p-1">
+                    Adjust
+                  </button>
+</td>
+</tr>
+<!-- Row 2: Giza Sheet Set -->
+<tr class="hover:bg-panel2/60 transition-colors group bg-badWash/10">
+<td class="py-3.5 px-5">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 rounded-full bg-bad shrink-0" title="Out of Stock / Blocked"></span>
+<div class="flex flex-col">
+<span class="font-medium text-ink group-hover:text-primary transition-colors">Giza Sheet Set</span>
+<span class="font-mono text-[12px] text-faint tracking-tight">SKU: NLE-GZA-SHT-W</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-bold text-bad">0</span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono text-faint">0</span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex flex-col items-end">
+<span class="font-mono text-mono font-bold text-ink">3</span>
+<span class="font-small text-[11px] text-bad leading-none mt-0.5">damaged/held</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-[12px] text-secondary bg-panel2 px-2 py-0.5 rounded border border-line">v2_rev1</span>
+</td>
+<td class="py-3.5 px-4 text-center">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-label font-bold bg-badWash text-bad border border-bad/20">
+<span class="w-1.5 h-1.5 rounded-full bg-bad"></span>
+                    OUT OF STOCK
+                  </span>
+</td>
+<td class="py-3.5 px-5 text-right">
+<button class="font-label text-label text-accent hover:text-primary font-medium hover:underline p-1">
+                    Adjust
+                  </button>
+</td>
+</tr>
+<!-- Row 3: Ramie Table Runner -->
+<tr class="hover:bg-panel2/60 transition-colors group">
+<td class="py-3.5 px-5">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 rounded-full bg-warn shrink-0" title="Low Stock Warning"></span>
+<div class="flex flex-col">
+<span class="font-medium text-ink group-hover:text-primary transition-colors">Ramie Table Runner</span>
+<span class="font-mono text-[12px] text-faint tracking-tight">SKU: NLE-RAM-RUN-N</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono font-bold text-warn">3</span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-mono text-muted">0</span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex flex-col items-end">
+<span class="font-mono text-mono font-bold text-ink">8</span>
+<span class="font-small text-[11px] text-muted leading-none mt-0.5">5 unallocated</span>
+</div>
+</td>
+<td class="py-3.5 px-4 text-right">
+<span class="font-mono text-[12px] text-secondary bg-panel2 px-2 py-0.5 rounded border border-line">v1_rev4</span>
+</td>
+<td class="py-3.5 px-4 text-center">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-label font-bold bg-warnWash text-warn border border-warn/20">
+<span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+                    LOW STOCK
+                  </span>
+</td>
+<td class="py-3.5 px-5 text-right">
+<button class="font-label text-label text-accent hover:text-primary font-medium hover:underline p-1">
+                    Adjust
+                  </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Defensive Integrity Guarantee Footer Note -->
+<div class="px-5 py-3 bg-panel2/70 border-t border-line flex items-center justify-between text-[12px] text-faint">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-ok">shield_with_heart</span>
+<span>Database CHECK constraint verified — <code class="font-mono text-[11px] text-ink font-semibold">available &gt;= 0</code> is enforced in the database. Stock reservation increments lock_version and appends to movement log.</span>
+</div>
+<span class="font-mono text-[11px] text-faint shrink-0 ml-4">Isolation: SERIALIZABLE</span>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- Section 3: 'Recent movements' Timeline Card                           -->
+<!-- ===================================================================== -->
+<section class="bg-panel rounded-xl border border-line p-5 shadow-sm">
+<!-- Header -->
+<div class="flex items-center justify-between pb-4 mb-4 border-b border-line">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-accent">history</span>
+<h2 class="font-body text-body font-semibold text-ink">Recent stock movements</h2>
+</div>
+<button class="font-label text-label text-accent hover:text-primary font-medium flex items-center gap-1 hover:underline">
+<span>Full audit log</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<!-- Timeline Flow with Strict Connecting Lines -->
+<div class="relative pl-6 flex flex-col gap-6 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-line">
+<!-- Entry 1: Order #1042 Hold -->
+<div class="relative flex items-start justify-between gap-4">
+<!-- Node Pin -->
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-panel border-2 border-warn ring-2 ring-panel"></div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="font-body text-body font-semibold text-ink">Order #1042 hold</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-mono font-medium bg-warnWash text-warn">
+                  -1 unit
+                </span>
+<span class="text-faint text-[13px]">·</span>
+<span class="font-body text-[13.5px] text-muted">Nile Cotton Shirt</span>
+</div>
+<div class="flex items-center gap-2 text-faint text-[12px]">
+<span class="flex items-center gap-1 font-mono text-[11px]">
+<span class="material-symbols-outlined text-[13px]">terminal</span>
+                  checkout_worker
+                </span>
+<span>·</span>
+<span class="font-mono text-[11px] bg-panel2 px-1.5 py-0.2 rounded border border-line">Lock version v4_rev9</span>
+</div>
+</div>
+<span class="font-mono text-[12px] text-faint whitespace-nowrap">14 mins ago</span>
+</div>
+<!-- Entry 2: Restock Batch Received -->
+<div class="relative flex items-start justify-between gap-4">
+<!-- Node Pin -->
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-panel border-2 border-ok ring-2 ring-panel"></div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="font-body text-body font-semibold text-ink">Restock batch received</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-mono font-medium bg-okWash text-ok">
+                  +5 units
+                </span>
+<span class="text-faint text-[13px]">·</span>
+<span class="font-body text-[13.5px] text-muted">Ramie Table Runner</span>
+</div>
+<div class="flex items-center gap-2 text-faint text-[12px]">
+<span class="flex items-center gap-1 font-mono text-[11px]">
+<span class="material-symbols-outlined text-[13px]">person</span>
+                  ops_lead
+                </span>
+<span>·</span>
+<span>Cairo Central Warehouse (Bin C-14)</span>
+</div>
+</div>
+<span class="font-mono text-[12px] text-faint whitespace-nowrap">3 hours ago</span>
+</div>
+<!-- Entry 3: Order #1038 Hold -->
+<div class="relative flex items-start justify-between gap-4">
+<!-- Node Pin -->
+<div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-panel border-2 border-warn ring-2 ring-panel"></div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="font-body text-body font-semibold text-ink">Order #1038 hold</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-mono font-medium bg-warnWash text-warn">
+                  -1 unit
+                </span>
+<span class="text-faint text-[13px]">·</span>
+<span class="font-body text-[13.5px] text-muted">Nile Cotton Shirt</span>
+</div>
+<div class="flex items-center gap-2 text-faint text-[12px]">
+<span class="flex items-center gap-1 font-mono text-[11px]">
+<span class="material-symbols-outlined text-[13px]">terminal</span>
+                  checkout_worker
+                </span>
+<span>·</span>
+<span class="font-mono text-[11px] bg-panel2 px-1.5 py-0.2 rounded border border-line">Lock version v4_rev8</span>
+</div>
+</div>
+<span class="font-mono text-[12px] text-faint whitespace-nowrap">6 hours ago</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- Footer Component (Shared Anchor: Docked at bottom, pl-[252px])             -->
+<!-- ========================================================================= -->
+<footer class="docked full-width bottom border-t border-line dark:border-lineStrong bg-canvas dark:bg-canvas">
+<div class="pl-[252px] w-full py-space-lg px-margin flex flex-col md:flex-row justify-between items-center gap-space-md text-small">
+<!-- Operational Copyright Notice -->
+<div class="font-small text-small text-faint flex items-center gap-2">
+<span>© 2025 MarketCore, Inc. All rights reserved. Nile Traders Nile Operations Division.</span>
+</div>
+<!-- Links & System Verification -->
+<div class="flex items-center gap-6">
+<a class="font-label text-label text-faint hover:text-ink dark:text-muted dark:hover:text-railInk transition-colors" href="#">Compliance</a>
+<a class="font-label text-label text-faint hover:text-ink dark:text-muted dark:hover:text-railInk transition-colors" href="#">Documentation</a>
+<a class="font-label text-label text-faint hover:text-ink dark:text-muted dark:hover:text-railInk transition-colors flex items-center gap-1" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>System Status</span>
+</a>
+<a class="font-label text-label text-faint hover:text-ink dark:text-muted dark:hover:text-railInk transition-colors" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore Seller Console — Fulfil order #1042</title>
+<!-- Google Fonts: DM Sans & DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#fcf8ff",
+            "secondary-container": "#e3e1ec",
+            "muted": "#5a6272",
+            "primary-fixed-dim": "#c3c0ff",
+            "on-tertiary-fixed": "#351000",
+            "okWash": "#e8f7ee",
+            "accentWash": "#eef0ff",
+            "surface-container-low": "#f5f2ff",
+            "surface": "#fcf8ff",
+            "on-secondary-fixed-variant": "#46464f",
+            "panel": "#ffffff",
+            "on-surface-variant": "#464555",
+            "surface-container-lowest": "#ffffff",
+            "error": "#ba1a1a",
+            "on-error-container": "#93000a",
+            "faint": "#676e7a",
+            "inverse-surface": "#302f39",
+            "controlEdge": "#838b9a",
+            "tertiary-fixed-dim": "#ffb695",
+            "on-tertiary": "#ffffff",
+            "on-surface": "#1b1b24",
+            "primary-container": "#4f46e5",
+            "railMuted": "#8b93a7",
+            "accentInk": "#ffffff",
+            "accent": "#4f46e5",
+            "surface-container-highest": "#e4e1ee",
+            "surface-tint": "#4d44e3",
+            "on-primary-fixed": "#0f0069",
+            "surface-container-high": "#eae6f4",
+            "primary-fixed": "#e2dfff",
+            "secondary": "#5d5e67",
+            "tertiary": "#7e3000",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-secondary": "#ffffff",
+            "inverse-on-surface": "#f3effc",
+            "railInk": "#eef1f7",
+            "ink": "#0a0b12",
+            "surface-dim": "#dcd8e5",
+            "outline": "#777587",
+            "inverse-primary": "#c3c0ff",
+            "surface-variant": "#e4e1ee",
+            "panel2": "#f1f3f9",
+            "info": "#097499",
+            "secondary-fixed": "#e3e1ec",
+            "on-secondary-fixed": "#1a1b23",
+            "ok": "#117f3a",
+            "lineStrong": "#d5d9e2",
+            "badWash": "#fdecef",
+            "secondary-fixed-dim": "#c7c5d0",
+            "line": "#e6e8ef",
+            "on-secondary-container": "#64646d",
+            "on-primary": "#ffffff",
+            "tertiary-container": "#a44100",
+            "surface-container": "#f0ecf9",
+            "surface-bright": "#fcf8ff",
+            "warnWash": "#fdf3e4",
+            "bad": "#d11b43",
+            "on-background": "#1b1b24",
+            "canvas": "#f6f7fb",
+            "on-error": "#ffffff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "primary": "#3525cd",
+            "error-container": "#ffdad6",
+            "on-primary-container": "#dad7ff",
+            "tertiary-fixed": "#ffdbcc",
+            "rail": "#0b0d14",
+            "warn": "#a55a05",
+            "outline-variant": "#c7c4d8",
+            "on-tertiary-container": "#ffd2be"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xl": "22px",
+            "space-md": "10px",
+            "margin": "20px",
+            "space-xs": "4px",
+            "gutter": "16px",
+            "space-sm": "6px",
+            "space-xxl": "26px",
+            "space-lg": "16px"
+          },
+          "fontFamily": {
+            "metric": ["DM Sans", "sans-serif"],
+            "body": ["DM Sans", "sans-serif"],
+            "mono": ["DM Mono", "monospace"],
+            "label": ["DM Sans", "sans-serif"],
+            "title": ["DM Sans", "sans-serif"],
+            "display": ["DM Sans", "sans-serif"],
+            "small": ["DM Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body text-body antialiased min-h-screen flex flex-col selection:bg-accentWash selection:text-accent">
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT: SideNavBar (Fixed 252px Dark Navigation Rail)           -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 bottom-0 left-0 w-[252px] z-40 flex flex-col justify-between bg-rail text-railInk border-r border-lineStrong">
+<!-- Top Segment: Brand & Store Switcher -->
+<div>
+<div class="p-space-lg border-b border-lineStrong/30">
+<div class="flex items-center gap-space-md mb-space-md">
+<div class="w-9 h-9 rounded-xl bg-accent flex items-center justify-center text-accentInk font-semibold font-title text-title shadow-sm">
+            N
+          </div>
+<div class="flex flex-col overflow-hidden">
+<span class="font-title text-title font-semibold text-railInk truncate leading-tight">Nile Traders</span>
+<span class="font-small text-small text-railMuted truncate">Enterprise Seller</span>
+</div>
+</div>
+<!-- Store Switcher CTA Button -->
+<button class="w-full flex items-center justify-between px-space-md py-space-sm bg-panel2/10 hover:bg-panel2/20 text-railInk rounded-lg border border-lineStrong/20 text-small transition-colors duration-150" type="button">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-ok"></span>
+<span class="font-medium">Store Switcher</span>
+</span>
+<span class="material-symbols-outlined text-[18px] text-railMuted" data-icon="unfold_more">unfold_more</span>
+</button>
+</div>
+<!-- Main Navigation Rail Links -->
+<nav class="p-space-md space-y-1">
+<!-- Overview -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 group" href="#overview">
+<span class="material-symbols-outlined text-[20px] group-hover:text-railInk" data-icon="dashboard">dashboard</span>
+<span class="font-body text-body font-normal">Overview</span>
+</a>
+<!-- Catalog -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 group" href="#catalog">
+<span class="material-symbols-outlined text-[20px] group-hover:text-railInk" data-icon="inventory_2">inventory_2</span>
+<span class="font-body text-body font-normal">Catalog</span>
+</a>
+<!-- Money (Active Section -> Fulfillment & Orders) -->
+<div class="pt-1">
+<a class="flex items-center gap-space-md px-space-md py-space-sm bg-accent text-accentInk rounded-lg font-medium transition-colors duration-150 shadow-sm" href="#money">
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+<span class="font-body text-body font-medium">Money</span>
+</a>
+<!-- Sub-tree within Money -->
+<div class="ml-7 pl-3 my-1 border-l border-lineStrong/30 space-y-1">
+<a class="block py-1.5 px-2 text-accentInk font-medium text-small rounded-lg bg-panel2/15 flex items-center justify-between" href="#orders">
+<span>Orders</span>
+<span class="px-1.5 py-0.5 rounded text-[11px] font-mono bg-accent/40 text-accentInk">Fulfil</span>
+</a>
+<a class="block py-1.5 px-2 text-railMuted hover:text-railInk text-small rounded-lg transition-colors" href="#payouts">
+              Payouts
+            </a>
+<a class="block py-1.5 px-2 text-railMuted hover:text-railInk text-small rounded-lg transition-colors" href="#transactions">
+              Transactions
+            </a>
+</div>
+</div>
+<!-- Admin -->
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150 group" href="#admin">
+<span class="material-symbols-outlined text-[20px] group-hover:text-railInk" data-icon="settings">settings</span>
+<span class="font-body text-body font-normal">Admin</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Footer Links in Rail -->
+<div class="p-space-md border-t border-lineStrong/30 space-y-1">
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#docs">
+<span class="material-symbols-outlined text-[18px]" data-icon="menu_book">menu_book</span>
+<span class="font-small text-small">Documentation</span>
+</a>
+<a class="flex items-center gap-space-md px-space-md py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#support">
+<span class="material-symbols-outlined text-[18px]" data-icon="headset_mic">headset_mic</span>
+<span class="font-small text-small">Support</span>
+</a>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT: TopNavBar (Fixed 64px Header, left-[252px])             -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-[252px] right-0 h-16 z-30 bg-panel border-b border-line flex items-center justify-between px-space-xl">
+<!-- Breadcrumbs / Left Area -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center text-small gap-1.5">
+<a class="text-muted hover:text-ink font-normal transition-colors" href="#money">Money</a>
+<span class="text-faint">/</span>
+<a class="text-muted hover:text-ink font-normal transition-colors" href="#orders">Orders</a>
+<span class="text-faint">/</span>
+<a class="text-muted hover:text-ink font-normal transition-colors font-mono" href="#order-1042">#1042</a>
+<span class="text-faint">/</span>
+<span class="text-ink font-semibold">Fulfil</span>
+</div>
+<!-- Quick Search Input -->
+<div class="hidden lg:flex items-center relative ml-6">
+<span class="material-symbols-outlined absolute left-2.5 text-faint text-[18px]" data-icon="search">search</span>
+<input class="pl-8 pr-3 py-1.5 bg-panel2 border border-controlEdge/40 focus:border-accent focus:ring-0 rounded-lg text-small text-ink placeholder:text-faint w-64 transition-all" placeholder="Search orders, SKU, buyers..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions & Merchant Profile -->
+<div class="flex items-center gap-space-lg">
+<a class="text-small font-label text-muted hover:text-ink transition-colors flex items-center gap-1" href="#docs">
+<span class="material-symbols-outlined text-[18px]" data-icon="help">help</span>
+<span>Docs</span>
+</a>
+<!-- Notifications -->
+<button aria-label="Notifications" class="relative p-1.5 text-muted hover:text-ink transition-colors rounded-lg hover:bg-panel2" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-accent"></span>
+</button>
+<!-- Account Profile -->
+<div class="flex items-center gap-space-sm pl-2 border-l border-line">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-lineStrong flex items-center justify-center text-muted">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_circle">account_circle</span>
+</div>
+<div class="hidden xl:flex flex-col">
+<span class="font-label text-label font-medium text-ink leading-none">Nile Logistics</span>
+<span class="font-small text-small text-faint leading-none mt-1">Enterprise Admin</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT CANVAS (pl-[252px], pt-16, flex-1)                           -->
+<!-- ========================================================================= -->
+<main class="ml-[252px] pt-16 flex-1 px-space-xl py-space-xl">
+<div class="max-w-7xl mx-auto space-y-space-xl">
+<!-- Page Navigation Header -->
+<div class="space-y-space-sm">
+<a class="inline-flex items-center gap-1 font-small text-small text-muted hover:text-ink transition-colors" href="#order-1042">
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_back">arrow_back</span>
+<span>Order #1042</span>
+</a>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pt-1">
+<div>
+<h1 class="font-title text-title font-semibold text-ink tracking-tight">Fulfil order #1042</h1>
+<p class="font-small text-small text-muted mt-0.5">
+              Paid · 1 item · ships to Cairo, Egypt
+            </p>
+</div>
+<!-- Top Action Buttons -->
+<div class="flex items-center gap-space-md">
+<button class="inline-flex items-center gap-2 px-space-md py-2 bg-panel hover:bg-panel2 text-ink border border-controlEdge/70 rounded-xl font-label text-small font-medium transition-colors duration-150 shadow-sm" onclick="window.print()" type="button">
+<span class="material-symbols-outlined text-[18px] text-muted" data-icon="print">print</span>
+<span>Print packing slip</span>
+</button>
+<button class="inline-flex items-center gap-2 px-5 py-2 bg-accent hover:bg-primary text-accentInk rounded-xl font-label text-small font-medium shadow-sm transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="local_shipping">local_shipping</span>
+<span>Mark as shipped</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Two-Column Asymmetric Operational Grid (65% Left / 35% Right) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- LEFT COLUMN: Packing checklist & Dispatch form (8 of 12 cols = 66.6%) -->
+<div class="lg:col-span-8 space-y-space-xl">
+<!-- 1. "Pack these items" Card -->
+<section class="bg-panel border border-line rounded-xl overflow-hidden shadow-sm">
+<!-- Card Header -->
+<div class="p-5 border-b border-line flex flex-col md:flex-row md:items-center justify-between gap-2">
+<div>
+<h2 class="font-title text-[18px] font-semibold text-ink leading-snug">Pack these items</h2>
+<p class="font-small text-small text-muted mt-0.5">Verify each physical unit before sealing the parcel.</p>
+</div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-panel2 border border-lineStrong/50 text-faint font-label text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>Verification Enforced</span>
+</div>
+</div>
+<!-- Packing Checklist Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line">
+<th class="py-3 pl-5 pr-3 text-[11px] font-semibold text-faint tracking-wider uppercase w-12" scope="col">
+<span class="sr-only">Selection</span>
+</th>
+<th class="py-3 px-3 text-[11px] font-semibold text-faint tracking-wider uppercase" scope="col">Item</th>
+<th class="py-3 px-3 text-[11px] font-semibold text-faint tracking-wider uppercase" scope="col">SKU &amp; Variant</th>
+<th class="py-3 px-3 text-[11px] font-semibold text-faint tracking-wider uppercase text-right" scope="col">Qty</th>
+<th class="py-3 pl-3 pr-5 text-[11px] font-semibold text-faint tracking-wider uppercase text-right" scope="col">Packed Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line font-body text-body">
+<tr class="hover:bg-panel2/40 transition-colors">
+<!-- Checkbox -->
+<td class="py-4 pl-5 pr-3 align-middle">
+<input aria-label="Mark Nile Cotton Shirt as packed" checked="" class="w-4 h-4 rounded text-accent focus:ring-accent border-controlEdge focus:ring-offset-0 cursor-pointer" type="checkbox"/>
+</td>
+<!-- Product Image & Name -->
+<td class="py-4 px-3 align-middle">
+<div class="flex items-center gap-3">
+<img alt="Nile Cotton Shirt product thumbnail" class="w-12 h-12 object-cover rounded-lg border border-line bg-panel2 flex-shrink-0" data-alt="An organic natural cotton button-up shirt in an ecru cream tone, impeccably folded against a clean minimalist studio backdrop. The lighting is bright and architectural, reflecting high-end editorial commerce photography with deep charcoal and off-white studio shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpocwef4Gj5eWKbPvik9dsEJvR2ofWjMvowO60Zp3SkUG59gbUFdkDmSir-ineP2Mhwf9g6BlJN3QpFt0J7VBbATeIQT0gaq3kJUhWEf5kTntBpY71e55QcbfgFmgAwTWhs4xuCFQlzOFTF_94dQFVkTNaEh8h1yvGs6iRtSC-DaZZAtuv7UZPCDD-UlvWjuiq2Ay1JPCQLuOQ6O1C3oAGvEv1yXkpJw9AxTWDz1w6_MDtYq3hX2cr2Hbol6Xz4WDLL8TWmMuE7v0"/>
+<div>
+<div class="font-medium text-ink">Nile Cotton Shirt</div>
+<span class="text-faint text-small">Apparel / Tops</span>
+</div>
+</div>
+</td>
+<!-- SKU & Variant -->
+<td class="py-4 px-3 align-middle">
+<div class="text-ink font-normal text-small">Ecru / Size M</div>
+<div class="font-mono text-[13px] text-faint mt-0.5">NLE-CTN-ECR-M</div>
+</td>
+<!-- Quantity -->
+<td class="py-4 px-3 align-middle text-right">
+<span class="font-mono font-medium text-ink">1 unit</span>
+</td>
+<!-- Status Badge -->
+<td class="py-4 pl-3 pr-5 align-middle text-right">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-okWash text-ok font-medium text-[12px]">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>Packed ✓</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer Notice -->
+<div class="p-3 bg-panel2/60 border-t border-line text-small text-muted flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-ok flex-shrink-0" data-icon="check_circle">check_circle</span>
+<p>
+                Marking every line packed is what enables the 'Mark as shipped' action. <strong class="text-ink font-semibold">1 of 1</strong> items packed.
+              </p>
+</div>
+</section>
+<!-- 2. "Shipment details" Card -->
+<section class="bg-panel border border-line rounded-xl p-5 shadow-sm space-y-5">
+<div class="border-b border-line pb-3">
+<h2 class="font-title text-[18px] font-semibold text-ink leading-snug">Shipment &amp; dispatch details</h2>
+<p class="font-small text-small text-muted mt-0.5">Record carrier consignment information for recipient notification.</p>
+</div>
+<!-- Form Fields -->
+<div class="space-y-4">
+<!-- Two-Up Row: Carrier + Tracking -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<!-- Carrier Field -->
+<div class="space-y-1.5">
+<label class="block font-label text-[12px] font-medium uppercase tracking-wider text-faint" for="carrier-select">
+                    Carrier / Courier <span class="text-error">*</span>
+</label>
+<div class="relative">
+<select class="w-full bg-panel border border-controlEdge rounded-xl px-3 py-2.5 text-body text-ink font-normal focus:border-accent focus:ring-1 focus:ring-accent appearance-none pr-9 cursor-pointer" id="carrier-select">
+<option selected="" value="aramex">Aramex Express</option>
+<option value="bosta">Bosta</option>
+<option value="egypt-post">Egypt Post</option>
+<option value="dhl">DHL Express</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none text-[20px]" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div>
+</div>
+<!-- Tracking Number Field -->
+<div class="space-y-1.5">
+<label class="block font-label text-[12px] font-medium uppercase tracking-wider text-faint" for="tracking-number">
+                    Tracking number <span class="text-error">*</span>
+</label>
+<div class="relative">
+<input class="w-full bg-panel border border-controlEdge rounded-xl p-2.5 font-mono text-[14px] text-ink focus:border-accent focus:ring-1 focus:ring-accent" id="tracking-number" type="text" value="ARX-EG-89210428-C"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-ok text-[18px]" data-icon="verified">verified</span>
+</div>
+</div>
+</div>
+<!-- Shipping Date Field -->
+<div class="space-y-1.5">
+<label class="block font-label text-[12px] font-medium uppercase tracking-wider text-faint">
+                  Estimated dispatch window
+                </label>
+<div class="flex items-center gap-2 p-2.5 bg-panel2 border border-line rounded-xl text-ink font-normal text-small">
+<span class="material-symbols-outlined text-[18px] text-muted" data-icon="schedule">schedule</span>
+<span>Today, within 24 hours</span>
+<span class="ml-auto text-faint text-[12px]">Standard SLA Guaranteed</span>
+</div>
+</div>
+<!-- Honest Architectural Note Callout Banner -->
+<div class="bg-panel2 border-l-4 border-warn p-3.5 rounded-r-xl text-small text-muted flex items-start gap-3">
+<span class="material-symbols-outlined text-warn text-[20px] flex-shrink-0 mt-0.5" data-icon="warning">warning</span>
+<p class="leading-relaxed">
+<strong class="text-ink font-semibold">Architectural Note:</strong> A typed tracking number is not verified with the carrier in real-time. Carrier webhook polling and dispatch events will be introduced in the shipping v2 migration.
+                </p>
+</div>
+</div>
+</section>
+</div>
+<!-- RIGHT COLUMN: Delivery context & Domain boundaries (4 of 12 cols = 33.3%) -->
+<div class="lg:col-span-4 space-y-space-xl">
+<!-- 1. "Deliver to" Card -->
+<section class="bg-panel border border-line rounded-xl p-5 shadow-sm space-y-4">
+<!-- Header -->
+<div class="flex items-center justify-between pb-3 border-b border-line">
+<h2 class="font-title text-[18px] font-semibold text-ink leading-snug">Deliver to</h2>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-okWash text-ok text-[11px] font-medium">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified">verified</span>
+                Verified
+              </span>
+</div>
+<!-- Recipient Identity -->
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-accentWash text-accent flex items-center justify-center font-bold text-small">
+                  MB
+                </div>
+<div>
+<div class="text-[16px] font-semibold text-ink leading-tight">Mariam Buyer</div>
+<div class="text-[12px] text-faint">Repeat customer · 3rd order</div>
+</div>
+</div>
+<!-- Address Details -->
+<div class="pt-2 text-body text-muted space-y-1 border-t border-line/60">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-faint text-[18px] mt-0.5 flex-shrink-0" data-icon="location_on">location_on</span>
+<p class="text-ink">
+                    12 Corniche El Nil, Apt 4B<br/>
+                    Cairo, 11511<br/>
+                    Egypt
+                  </p>
+</div>
+<div class="flex items-center gap-2 pt-1">
+<span class="material-symbols-outlined text-faint text-[18px] flex-shrink-0" data-icon="call">call</span>
+<span class="font-mono text-body text-ink">+20 100 000 0000</span>
+</div>
+</div>
+<!-- Delivery Instructions -->
+<div class="pt-3">
+<label class="block font-label text-[11px] font-medium uppercase tracking-wider text-faint mb-1">
+                  Delivery instructions
+                </label>
+<div class="p-2.5 bg-panel2 rounded-lg text-small text-ink border border-line flex items-start gap-2">
+<span class="material-symbols-outlined text-muted text-[16px] mt-0.5" data-icon="info">info</span>
+<span class="italic">"Leave with doorman at building entrance."</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. "Domain note" Card -->
+<section class="bg-panel border border-line rounded-xl p-5 shadow-sm space-y-3">
+<div class="flex items-center gap-2 text-ink">
+<span class="material-symbols-outlined text-info text-[20px]" data-icon="shield">shield</span>
+<h2 class="font-title text-[16px] font-semibold">Domain Boundary Notice</h2>
+</div>
+<p class="font-small text-small text-muted leading-relaxed">
+              Fulfilment is a proposed addition. No multi-carrier automated rate quote, live shipping label generation, or carrier dispatch API integration exists in the core domain yet. All parcels are currently recorded as manual seller dispatches.
+            </p>
+<div class="pt-2 border-t border-line flex items-center justify-between text-[12px]">
+<span class="text-faint font-mono">SERVICE: DISPATCH-CORE-v1</span>
+<a class="text-accent hover:underline font-medium inline-flex items-center gap-0.5" href="#compliance">
+                Docs
+                <span class="material-symbols-outlined text-[14px]" data-icon="north_east">north_east</span>
+</a>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT: Footer (Docked full-width ml-[252px])                   -->
+<!-- ========================================================================= -->
+<footer class="ml-[252px] bg-panel border-t border-line px-space-xl py-space-lg mt-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-3">
+<span class="font-label text-label font-semibold text-muted">MarketCore</span>
+<span class="text-faint text-small">
+        © 2025 MarketCore Technologies Inc. Nile Traders Enterprise Console. All rights reserved.
+      </span>
+</div>
+<!-- Mandatory Footer Links from Shared Components JSON -->
+<div class="flex items-center gap-space-lg font-small text-small">
+<a class="text-faint hover:text-ink transition-colors" href="#terms">Terms of Service</a>
+<a class="text-faint hover:text-ink transition-colors" href="#privacy">Privacy Policy</a>
+<a class="text-faint hover:text-ink transition-colors" href="#security">Security Compliance</a>
+<a class="text-faint hover:text-ink transition-colors" href="#api">API Reference</a>
+</div>
+</footer>
+</body></html>

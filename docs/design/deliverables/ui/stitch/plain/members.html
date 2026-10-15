@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore Seller Console — Members</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-fixed": "#e3e1ec",
+            "secondary-fixed-dim": "#c7c5d0",
+            "muted": "#5a6272",
+            "outline-variant": "#c7c4d8",
+            "on-error": "#ffffff",
+            "secondary-container": "#e3e1ec",
+            "faint": "#676e7a",
+            "panel2": "#f1f3f9",
+            "surface-container-highest": "#e4e1ee",
+            "primary": "#3525cd",
+            "warnWash": "#fdf3e4",
+            "info": "#097499",
+            "on-secondary": "#ffffff",
+            "surface-container-high": "#eae6f4",
+            "canvas": "#f6f7fb",
+            "accent": "#4f46e5",
+            "on-surface-variant": "#464555",
+            "railMuted": "#8b93a7",
+            "on-primary-fixed": "#0f0069",
+            "ink": "#0a0b12",
+            "primary-fixed-dim": "#c3c0ff",
+            "inverse-primary": "#c3c0ff",
+            "tertiary-fixed": "#ffdbcc",
+            "surface-container": "#f0ecf9",
+            "warn": "#a55a05",
+            "on-primary-fixed-variant": "#3323cc",
+            "badWash": "#fdecef",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "tertiary-container": "#a44100",
+            "on-background": "#1b1b24",
+            "secondary": "#5d5e67",
+            "panel": "#ffffff",
+            "bad": "#d11b43",
+            "outline": "#777587",
+            "on-primary": "#ffffff",
+            "okWash": "#e8f7ee",
+            "on-tertiary-container": "#ffd2be",
+            "on-secondary-fixed": "#1a1b23",
+            "ok": "#117f3a",
+            "surface-dim": "#dcd8e5",
+            "railInk": "#eef1f7",
+            "surface-variant": "#e4e1ee",
+            "line": "#e6e8ef",
+            "surface-bright": "#fcf8ff",
+            "primary-fixed": "#e2dfff",
+            "tertiary": "#7e3000",
+            "surface-tint": "#4d44e3",
+            "tertiary-fixed-dim": "#ffb695",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#351000",
+            "lineStrong": "#d5d9e2",
+            "on-secondary-container": "#64646d",
+            "accentInk": "#ffffff",
+            "on-primary-container": "#dad7ff",
+            "on-tertiary": "#ffffff",
+            "rail": "#0b0d14",
+            "controlEdge": "#838b9a",
+            "inverse-on-surface": "#f3effc",
+            "primary-container": "#4f46e5",
+            "accentWash": "#eef0ff",
+            "on-surface": "#1b1b24",
+            "error": "#ba1a1a",
+            "inverse-surface": "#302f39",
+            "on-secondary-fixed-variant": "#46464f",
+            "on-error-container": "#93000a",
+            "surface-container-lowest": "#ffffff",
+            "background": "#fcf8ff",
+            "surface": "#fcf8ff",
+            "surface-container-low": "#f5f2ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "16px",
+            "space-md": "10px",
+            "space-lg": "16px",
+            "margin": "20px",
+            "space-xxl": "26px",
+            "space-sm": "6px",
+            "space-xs": "4px",
+            "space-xl": "22px"
+          },
+          "fontFamily": {
+            "title": ["DM Sans"],
+            "display": ["DM Sans"],
+            "body": ["DM Sans"],
+            "label": ["DM Sans"],
+            "small": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "metric": ["DM Sans"]
+          },
+          "fontSize": {
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body text-body min-h-screen flex antialiased selection:bg-accentWash selection:text-primary">
+<!-- SideNavBar Rail (Fixed 252px) -->
+<aside class="fixed top-0 bottom-0 left-0 w-[252px] z-40 flex flex-col justify-between bg-rail border-r border-lineStrong">
+<div class="w-[252px] flex flex-col px-space-md py-space-lg">
+<!-- Tenant Brand Header -->
+<div class="flex items-center gap-space-md px-gutter py-space-sm mb-space-xl">
+<div class="w-8 h-8 rounded-lg bg-accent text-accentInk flex items-center justify-center font-title text-body font-bold shadow-sm">
+          NT
+        </div>
+<div class="flex flex-col overflow-hidden">
+<span class="font-title text-body font-semibold text-railInk truncate">Nile Traders</span>
+<span class="font-small text-small text-railMuted truncate">Enterprise Seller</span>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav aria-label="Main Navigation" class="flex flex-col gap-space-xs">
+<!-- Overview -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span class="font-body text-body">Overview</span>
+</a>
+<!-- Catalog -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="inventory_2">inventory_2</span>
+<span class="font-body text-body">Catalog</span>
+</a>
+<!-- Money -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+<span class="font-body text-body">Money</span>
+</a>
+<!-- Store Settings -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="storefront">storefront</span>
+<span class="font-body text-body">Store Settings</span>
+</a>
+<!-- Members (Active tab per instructions) -->
+<a aria-current="page" class="flex items-center gap-space-md px-gutter py-space-sm bg-accent text-accentInk rounded-lg font-medium shadow-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="group">group</span>
+<span class="font-body text-body font-medium">Members</span>
+</a>
+<!-- Operations -->
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="tune">tune</span>
+<span class="font-body text-body">Operations</span>
+</a>
+</nav>
+</div>
+<!-- Rail Footer -->
+<div class="px-space-md py-space-lg border-t border-lineStrong/20 flex flex-col gap-space-xs">
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+<span class="font-body text-body">Support</span>
+</a>
+<a class="flex items-center gap-space-md px-gutter py-space-sm text-railMuted hover:text-railInk rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+<span class="font-body text-body">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Top Navigation Bar (Fixed 64px, left-offset by 252px) -->
+<header class="fixed top-0 right-0 left-[252px] h-[64px] z-30 flex items-center justify-between bg-panel border-b border-line px-margin">
+<!-- Breadcrumb & Search Cluster -->
+<div class="flex items-center gap-space-lg">
+<nav aria-label="Breadcrumbs" class="flex items-center gap-space-sm">
+<span class="font-title text-body font-semibold text-ink">Admin</span>
+<span class="text-faint">/</span>
+<span class="font-body text-body text-muted">Members</span>
+</nav>
+<!-- Quick Search Bar -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-muted text-[18px]" data-icon="search">search</span>
+<input class="pl-9 pr-24 py-1.5 w-64 bg-panel2 border border-line rounded-lg font-body text-small text-ink placeholder:text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-150" placeholder="Search members, roles, actions..." type="text"/>
+<kbd class="absolute right-2 px-1.5 py-0.5 font-mono text-[11px] text-faint bg-panel border border-line rounded">⌘K Quick Search</kbd>
+</div>
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-space-lg">
+<button class="flex items-center gap-space-xs text-muted hover:text-ink transition-colors duration-150 relative p-1.5 rounded-lg hover:bg-panel2" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent"></span>
+</button>
+<button class="flex items-center gap-space-xs text-muted hover:text-ink transition-colors duration-150 p-1.5 rounded-lg hover:bg-panel2" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="help_outline">help_outline</span>
+</button>
+<div class="h-6 w-px bg-line"></div>
+<!-- Merchant Profile Avatar -->
+<div class="flex items-center gap-space-sm pl-1">
+<img class="w-8 h-8 rounded-full border border-line object-cover" data-alt="A clean, high-contrast studio portrait avatar of an enterprise administrator in modern professional workwear with soft directional lighting against a minimalist slate background representing reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOX8a5P-58FAV9ti8D2zlXHzwezthiq90Yhy-Q3KmnNZuMwrrlfbh-KAxRzU5orLySx4z3KcrP1My647Kz3JLdxWcW1Zb7Ks90sr6N7-Z7ueMt062InPj6mWwm79AwBToR2ccaoaCz0o8tIeSF6xsyNMqeCcLVaAaF26rS4h4seV83lrfU1zdlq8BClCqrpzTjZML0ps95rLLFebRuy1Q3p1tdavHKFgHxxrkUWGlzbo053Wht1uuKqxQBD2U2jEw-CqQA3ASAKKE"/>
+<div class="flex flex-col text-left leading-tight">
+<span class="font-title text-small font-semibold text-ink">owner@marketcore.test</span>
+<span class="font-label text-[11px] text-muted">Org Admin</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas Content (Offset by 252px rail and 64px header, bottom pad for footer) -->
+<main class="ml-[252px] mt-[64px] mb-[40px] flex-1 p-margin flex flex-col gap-space-lg">
+<!-- Page Header Surface -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-space-md pb-2">
+<div>
+<h1 class="font-title text-title font-semibold text-ink">Members</h1>
+<p class="font-body text-body text-muted mt-0.5">Nile Traders · 2 members</p>
+</div>
+<!-- Primary Action -->
+<div>
+<button class="inline-flex items-center gap-space-xs px-gutter py-2 bg-accent text-accentInk rounded-lg font-title text-body font-medium transition-colors duration-150 hover:bg-primary active:scale-[0.99] shadow-sm" onclick="document.getElementById('invite-email').focus();" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="person_add">person_add</span>
+<span>Add member</span>
+</button>
+</div>
+</div>
+<!-- Two Columns Layout (Dominant 7-8 cols left, 4-5 cols right) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-margin items-start">
+<!-- LEFT COLUMN: Organization Members (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- Table Card Surface -->
+<section class="bg-panel border border-line rounded-lg shadow-sm overflow-hidden">
+<!-- Card Header & Filter -->
+<div class="px-gutter py-space-md border-b border-line flex flex-col sm:flex-row sm:items-center justify-between gap-space-md bg-panel">
+<div class="flex items-center gap-space-md">
+<h2 class="font-title text-body font-semibold text-ink">Organization members</h2>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-panel2 border border-line text-muted font-mono text-[12px]">
+                2 active seats
+              </span>
+</div>
+<!-- Filter Input -->
+<div class="relative w-full sm:w-60">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-muted text-[16px]" data-icon="filter_list">filter_list</span>
+<input class="w-full pl-8 pr-3 py-1.5 text-small font-body bg-panel2 border border-line rounded-lg text-ink placeholder:text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" placeholder="Filter by name or email..." type="text"/>
+</div>
+</div>
+<!-- Members Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line text-muted font-label text-label tracking-wide uppercase">
+<th class="py-3 px-gutter font-medium" scope="col">MEMBER</th>
+<th class="py-3 px-gutter font-medium" scope="col">ROLE</th>
+<th class="py-3 px-gutter font-medium" scope="col">STATUS</th>
+<th class="py-3 px-gutter font-medium" scope="col">JOINED</th>
+<th class="py-3 px-gutter text-right font-medium" scope="col">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line text-body font-body">
+<!-- Row 1: Owner -->
+<tr class="hover:bg-panel2/60 transition-colors duration-150">
+<td class="py-3.5 px-gutter">
+<div class="flex items-center gap-space-md">
+<div class="w-9 h-9 rounded-lg bg-accentWash border border-accent/20 flex items-center justify-center font-title text-small font-bold text-accent">
+                        OE
+                      </div>
+<div class="flex flex-col">
+<span class="font-body text-body font-medium text-ink">owner@marketcore.test</span>
+<span class="font-small text-small text-faint">Primary Organization Owner</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-gutter align-middle">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accentWash text-accent font-label text-label font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                      Owner
+                    </span>
+</td>
+<td class="py-3.5 px-gutter align-middle">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-okWash text-ok font-label text-label font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                      Active
+                    </span>
+</td>
+<td class="py-3.5 px-gutter align-middle">
+<span class="font-mono text-small text-muted tabular-nums">19 Sep 2026</span>
+</td>
+<td class="py-3.5 px-gutter text-right align-middle">
+<button class="inline-flex items-center text-accent hover:text-primary font-small text-small font-medium hover:underline p-1 transition-colors duration-150" type="button">
+                      Manage
+                    </button>
+</td>
+</tr>
+<!-- Row 2: Member -->
+<tr class="hover:bg-panel2/60 transition-colors duration-150">
+<td class="py-3.5 px-gutter">
+<div class="flex items-center gap-space-md">
+<div class="w-9 h-9 rounded-lg bg-panel2 border border-lineStrong flex items-center justify-center font-title text-small font-bold text-secondary">
+                        ME
+                      </div>
+<div class="flex flex-col">
+<span class="font-body text-body font-medium text-ink">member@marketcore.test</span>
+<span class="font-small text-small text-faint">Store Operations &amp; Catalog</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-gutter align-middle">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-panel2 border border-line text-secondary font-label text-label font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                      Member
+                    </span>
+</td>
+<td class="py-3.5 px-gutter align-middle">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-okWash text-ok font-label text-label font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                      Active
+                    </span>
+</td>
+<td class="py-3.5 px-gutter align-middle">
+<span class="font-mono text-small text-muted tabular-nums">20 Sep 2026</span>
+</td>
+<td class="py-3.5 px-gutter text-right align-middle">
+<button class="inline-flex items-center text-muted hover:text-bad font-small text-small font-medium hover:underline p-1 transition-colors duration-150" type="button">
+                      Remove
+                    </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Guard Note -->
+<div class="px-gutter py-space-sm bg-panel2 border-t border-line flex items-center gap-space-sm text-faint">
+<span class="material-symbols-outlined text-[16px] text-muted" data-icon="info">info</span>
+<p class="font-small text-[12.5px] leading-relaxed">
+              The last organization owner cannot be removed or downgraded. Ownership transfer requires mutual multi-factor confirmation.
+            </p>
+</div>
+</section>
+</div>
+<!-- RIGHT COLUMN: Invite Form & Isolation Info (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- Card 1: Add a Member / Invite Form -->
+<section class="bg-panel border border-line rounded-lg p-margin shadow-sm flex flex-col gap-space-md">
+<div class="border-b border-line pb-space-sm">
+<h2 class="font-title text-body font-semibold text-ink">Invite member</h2>
+<p class="font-small text-small text-muted">Grant operational roles to colleagues inside Nile Traders.</p>
+</div>
+<form class="flex flex-col gap-space-md" onsubmit="event.preventDefault();">
+<!-- Email Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink" for="invite-email">
+                Email address <span class="text-bad">*</span>
+</label>
+<input class="w-full px-3 py-2 text-body font-body bg-panel border border-controlEdge rounded-lg text-ink placeholder:text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" id="invite-email" placeholder="colleague@organization.test" required="" type="email"/>
+<span class="font-small text-[12px] text-faint">Must be a verified corporate address.</span>
+</div>
+<!-- Role Select Field -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink" for="invite-role">
+                Role assignment <span class="text-bad">*</span>
+</label>
+<select class="w-full px-3 py-2 text-body font-body bg-panel border border-controlEdge rounded-lg text-ink focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" id="invite-role">
+<option value="member">Member (Catalog &amp; Orders)</option>
+<option value="admin">Admin (Full operations)</option>
+<option value="viewer">Viewer (Read-only)</option>
+</select>
+</div>
+<!-- Submit Button -->
+<button class="w-full mt-1 py-2 px-gutter bg-accent text-accentInk rounded-lg font-title text-body font-medium transition-colors duration-150 hover:bg-primary active:scale-[0.99] text-center" type="submit">
+              Add to organization
+            </button>
+</form>
+<!-- Honest Gap Warning Banner -->
+<div class="p-3 bg-warnWash border border-warn/20 rounded-lg flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-warn text-[18px] shrink-0 mt-0.5" data-icon="warning">warning</span>
+<div class="flex flex-col gap-0.5 text-warn">
+<span class="font-label text-label font-semibold">Honest gap: Nothing sends email yet</span>
+<p class="font-small text-[12px] leading-snug">
+                Invitation tokens and transactional email delivery are planned for auth v2. Adding a member immediately grants active access to this tenant.
+              </p>
+</div>
+</div>
+</section>
+<!-- Card 2: Tenant Isolation & Security Boundary -->
+<section class="bg-panel border border-line rounded-lg p-margin shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center gap-space-sm pb-space-xs border-b border-line">
+<span class="material-symbols-outlined text-accent text-[20px]" data-icon="shield">shield</span>
+<h2 class="font-title text-body font-semibold text-ink">Tenant isolation &amp; security boundary</h2>
+</div>
+<ul class="flex flex-col gap-space-md text-small font-body text-secondary">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-ok text-[16px] shrink-0 mt-0.5" data-icon="check_circle">check_circle</span>
+<span>Every console request strictly carries the organization identity via <code class="font-mono text-[12px] text-ink bg-panel2 px-1 py-0.5 rounded border border-line">x-organization-id</code>.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-ok text-[16px] shrink-0 mt-0.5" data-icon="check_circle">check_circle</span>
+<span>A cross-tenant read attempt answers <strong class="text-ink font-medium">404 Not Found</strong> (data does not exist in tenant scope).</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-ok text-[16px] shrink-0 mt-0.5" data-icon="check_circle">check_circle</span>
+<span>A request naming someone else's organization answers <strong class="text-bad font-medium">403 Forbidden</strong>.</span>
+</li>
+</ul>
+<!-- Tenant Token Pill -->
+<div class="mt-2 pt-space-sm border-t border-line flex items-center justify-between">
+<span class="font-label text-[11px] uppercase tracking-wider text-muted font-medium">Active Partition</span>
+<div class="font-mono text-[12px] bg-panel2 text-faint border border-lineStrong px-2.5 py-1 rounded-full flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+              tenant_id: org_892b1 (isolated)
+            </div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Docked Footer (Fixed bottom, left-offset by 252px) -->
+<footer class="fixed bottom-0 right-0 left-[252px] z-20 flex items-center justify-between px-margin py-space-sm h-10 bg-panel border-t border-line">
+<div class="flex items-center gap-space-sm">
+<span class="font-small text-small font-normal text-muted">
+        © 2025 MarketCore Inc. All rights reserved. Nile Traders Enterprise Console.
+      </span>
+</div>
+<div class="flex items-center gap-space-md">
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#">Privacy Policy</a>
+<span class="text-lineStrong">·</span>
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#">Terms of Service</a>
+<span class="text-lineStrong">·</span>
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#">Compliance &amp; Regulatory</a>
+<span class="text-lineStrong">·</span>
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#">Security Audit</a>
+<span class="text-lineStrong">·</span>
+<a class="font-small text-small text-muted hover:text-accent transition-colors duration-150" href="#">Seller Agreement</a>
+</div>
+</footer>
+</body></html>

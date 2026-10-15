@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore Buyer Storefront Mobile Frame</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed": "#e2dfff",
+            "on-secondary-container": "#64646d",
+            "background": "#fcf8ff",
+            "tertiary": "#7e3000",
+            "error": "#ba1a1a",
+            "surface-variant": "#e4e1ee",
+            "faint": "#676e7a",
+            "secondary-fixed": "#e3e1ec",
+            "surface-bright": "#fcf8ff",
+            "outline-variant": "#c7c4d8",
+            "bad": "#d11b43",
+            "secondary-fixed-dim": "#c7c5d0",
+            "railInk": "#eef1f7",
+            "inverse-surface": "#302f39",
+            "controlEdge": "#838b9a",
+            "surface": "#fcf8ff",
+            "on-primary-container": "#dad7ff",
+            "muted": "#5a6272",
+            "surface-container": "#f0ecf9",
+            "okWash": "#e8f7ee",
+            "ink": "#0a0b12",
+            "inverse-primary": "#c3c0ff",
+            "primary-container": "#4f46e5",
+            "outline": "#777587",
+            "error-container": "#ffdad6",
+            "on-primary-fixed-variant": "#3323cc",
+            "panel": "#ffffff",
+            "on-background": "#1b1b24",
+            "accentInk": "#ffffff",
+            "line": "#e6e8ef",
+            "secondary-container": "#e3e1ec",
+            "tertiary-fixed": "#ffdbcc",
+            "on-surface-variant": "#464555",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed": "#1a1b23",
+            "panel2": "#f1f3f9",
+            "on-primary": "#ffffff",
+            "on-tertiary-fixed": "#351000",
+            "on-surface": "#1b1b24",
+            "info": "#097499",
+            "ok": "#117f3a",
+            "surface-dim": "#dcd8e5",
+            "on-secondary": "#ffffff",
+            "surface-container-low": "#f5f2ff",
+            "on-error-container": "#93000a",
+            "tertiary-fixed-dim": "#ffb695",
+            "surface-container-lowest": "#ffffff",
+            "accentWash": "#eef0ff",
+            "on-error": "#ffffff",
+            "railMuted": "#8b93a7",
+            "on-primary-fixed": "#0f0069",
+            "lineStrong": "#d5d9e2",
+            "surface-container-high": "#eae6f4",
+            "canvas": "#f6f7fb",
+            "tertiary-container": "#a44100",
+            "inverse-on-surface": "#f3effc",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "primary": "#3525cd",
+            "secondary": "#5d5e67",
+            "warn": "#a55a05",
+            "on-secondary-fixed-variant": "#46464f",
+            "badWash": "#fdecef",
+            "rail": "#0b0d14",
+            "primary-fixed-dim": "#c3c0ff",
+            "warnWash": "#fdf3e4",
+            "surface-container-highest": "#e4e1ee",
+            "surface-tint": "#4d44e3",
+            "accent": "#4f46e5",
+            "on-tertiary-container": "#ffd2be"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "4px",
+            "space-lg": "16px",
+            "space-md": "10px",
+            "margin": "20px",
+            "space-sm": "6px",
+            "space-xl": "22px",
+            "gutter": "16px",
+            "space-xxl": "26px"
+          },
+          "fontFamily": {
+            "small": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "body": ["DM Sans"],
+            "title": ["DM Sans"],
+            "metric": ["DM Sans"],
+            "label": ["DM Sans"],
+            "display": ["DM Sans"]
+          },
+          "fontSize": {
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-canvas text-ink antialiased min-h-screen flex flex-col items-center justify-center p-4 lg:p-8 font-body text-body selection:bg-accentWash selection:text-accent">
+<!-- Presentation Canvas Container -->
+<div class="w-full max-w-[1440px] flex flex-col items-center justify-center">
+<!-- Subtle Presentation Header Badge -->
+<div class="mb-6 flex items-center gap-3">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-panel border border-line text-muted font-small text-small shadow-sm">
+<span class="w-2 h-2 rounded-full bg-ok animate-pulse"></span>
+<span class="font-mono text-mono text-ink font-medium">Route: /mobile</span>
+<span class="text-lineStrong">|</span>
+<span>Buyer Storefront View (392px × 812px)</span>
+</div>
+</div>
+<!-- Phone Frame Shell (Realistic iPhone Mini / Standard 392 x 812 viewport) -->
+<div class="relative w-[392px] h-[812px] bg-panel rounded-[44px] shadow-2xl border-[10px] border-rail flex flex-col overflow-hidden ring-1 ring-black/5 select-none">
+<!-- Top Bezel / Dynamic Island / Speaker Notch Indicator -->
+<div class="absolute top-0 inset-x-0 h-6 flex items-center justify-center pointer-events-none z-50">
+<div class="w-28 h-4 bg-rail rounded-b-xl flex items-center justify-center">
+<div class="w-10 h-1 rounded-full bg-railMuted/40"></div>
+</div>
+</div>
+<!-- Mobile Status Bar (9:41, wifi, battery) -->
+<div class="pt-3 px-6 h-11 flex justify-between items-center text-ink shrink-0 z-40 bg-panel border-b border-line/40">
+<div class="font-title text-[14px] font-semibold tracking-tight text-ink">9:41</div>
+<div class="flex items-center space-x-1.5 text-ink">
+<span class="material-symbols-outlined text-[16px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[16px]">wifi</span>
+<span class="material-symbols-outlined text-[18px]">battery_full</span>
+</div>
+</div>
+<!-- Compact Top Mobile Storefront Bar -->
+<header class="bg-panel px-3.5 py-2.5 flex items-center gap-2.5 border-b border-line shrink-0 z-30">
+<!-- Logo Mark 'MC' in Accent Box -->
+<div class="w-8 h-8 rounded-lg bg-accent text-accentInk flex items-center justify-center font-title font-bold text-[14px] tracking-tight shrink-0 shadow-sm active:scale-95 transition-transform">
+          MC
+        </div>
+<!-- Search Input -->
+<div class="flex-1 relative">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-muted text-[18px] pointer-events-none">search</span>
+<input class="w-full h-8 pl-8 pr-3 bg-panel2 border border-controlEdge/40 rounded-lg text-small font-small text-ink placeholder:text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" placeholder="Search products…" type="text" value=""/>
+</div>
+<!-- Shopping Cart Icon Button with Active Badge '3' -->
+<button aria-label="Shopping Cart" class="relative w-8 h-8 rounded-lg flex items-center justify-center text-ink hover:bg-panel2 transition-colors active:scale-95 shrink-0">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+<span class="absolute 0 top-0.5 right-0.5 min-w-[15px] h-[15px] px-1 bg-accent text-accentInk font-mono text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+            3
+          </span>
+</button>
+</header>
+<!-- Horizontally Scrolling Filter Chips Bar -->
+<nav class="bg-panel px-3.5 py-2 border-b border-line shrink-0 overflow-x-auto no-scrollbar flex items-center gap-2">
+<!-- Chip 1: Selected In stock -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent text-accentInk font-label text-label uppercase shrink-0 active:scale-95 transition-transform shadow-xs">
+<span class="material-symbols-outlined text-[14px]">check</span>
+<span>In stock</span>
+</button>
+<!-- Chip 2: Under E£200 -->
+<button class="inline-flex items-center px-3 py-1 rounded-full bg-panel border border-controlEdge text-ink font-label text-label uppercase hover:bg-panel2 shrink-0 active:scale-95 transition-all">
+<span>Under E£200</span>
+</button>
+<!-- Chip 3: Nile Traders -->
+<button class="inline-flex items-center px-3 py-1 rounded-full bg-panel border border-controlEdge text-ink font-label text-label uppercase hover:bg-panel2 shrink-0 active:scale-95 transition-all">
+<span>Nile Traders</span>
+</button>
+<!-- Chip 4: Delta Goods -->
+<button class="inline-flex items-center px-3 py-1 rounded-full bg-panel border border-controlEdge text-ink font-label text-label uppercase hover:bg-panel2 shrink-0 active:scale-95 transition-all">
+<span>Delta Goods</span>
+</button>
+</nav>
+<!-- Results Count & Sort Meta Bar -->
+<div class="px-3.5 py-2 bg-canvas flex items-center justify-between shrink-0 border-b border-line">
+<span class="font-small text-small text-muted">4 products · 2 sellers</span>
+<button class="inline-flex items-center gap-0.5 font-label text-label text-ink hover:text-accent transition-colors font-medium">
+<span>Sort: Recommended</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<!-- Main Scrollable Product Canvas: 2-Column Grid -->
+<main class="flex-1 overflow-y-auto px-3.5 py-3 bg-canvas space-y-3">
+<div class="grid grid-cols-2 gap-3 pb-3">
+<!-- Product Card 1: Nile Cotton Shirt -->
+<article class="bg-panel rounded-xl border border-line p-2.5 flex flex-col justify-between hover:border-lineStrong transition-all shadow-xs group">
+<div>
+<!-- Product Image Tile with Badge -->
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-panel2 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A meticulously tailored classic men's button-down dress shirt crafted from pure crisp white Nile Egyptian cotton, displayed neatly folded on a minimalist textured linen surface with soft diffused ambient daylight studio lighting, clean architectural luxury catalog presentation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCam_GuUVsTD33KEC1ctRlQqcrt41xS-lQ2iz93kqZ2YR2Kfw1ckSiD4rnXy4BHKIolnbShCgs78XKcaSFCwB_sTfQ07iEmnYNAVR4F24kV6QKkzQCJS1pXVGiUzpUNsirfMNJuMtKL3p2bc0EG3zE5RyHk3VAPAMLkAowmLAUv7MNfzLbsBUELOhQ-BLha5Yuc0oezFFCYifd8LEmbFL_S3dkaaBCYlBgrGCAQ2XvtjHMHfZt-EtjcUBvYUhekMHvlw3EdKIaGOBU"/>
+<!-- Subtle 'Giza 86' Badge -->
+<span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-ink/75 text-white font-mono text-[10px] tracking-wide font-medium backdrop-blur-xs">
+                  Giza 86
+                </span>
+<button aria-label="Favorite" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-panel/85 backdrop-blur-xs flex items-center justify-center text-muted hover:text-bad transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[14px]">favorite</span>
+</button>
+</div>
+<!-- Seller Label -->
+<div class="font-label text-label uppercase text-muted tracking-wider mb-0.5">
+                Nile Traders
+              </div>
+<!-- Title -->
+<h3 class="font-body text-body font-semibold text-ink line-clamp-1 leading-snug">
+                Nile Cotton Shirt
+              </h3>
+<!-- Rating -->
+<div class="flex items-center gap-1 mt-1 text-warn font-small text-small">
+<span class="material-symbols-outlined text-[14px] text-warn" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-medium text-ink text-[12px]">4.6</span>
+<span class="text-muted text-[11px]">(128)</span>
+</div>
+</div>
+<!-- Price & Stock Footer -->
+<div class="mt-2.5 pt-2 border-t border-line flex items-center justify-between">
+<span class="font-mono text-mono font-medium text-ink">E£249.00</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-okWash text-ok font-label text-[11px] font-medium">
+                In stock
+              </span>
+</div>
+</article>
+<!-- Product Card 2: Delta Olive Oil -->
+<article class="bg-panel rounded-xl border border-line p-2.5 flex flex-col justify-between hover:border-lineStrong transition-all shadow-xs group">
+<div>
+<!-- Product Image Tile with Badge -->
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-panel2 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="An elegant dark amber glass bottle of artisanal cold-pressed extra virgin olive oil adorned with a minimal botanical label, illuminated by golden Mediterranean rim lighting on a dark slate countertop with fresh green olive branches nearby." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjGqSy9FURn2lWwDHgscT0Hx5-wXbRJrDmv3E_rHvO6eEv9caiE_S9uvIxmVT1CvGR-CuJtkq9wOvkloHKbXs8mxlKr66psgMSjX-UMArDxgLsUHwEhXevEGTnTikV3urCPV4d22DqJoNnLg1KV8HM41nh2RfJYExV6XKnw9PK8KSE5u8vrLZc2vye-gpG11CiUeX7ejPVsMJbvhi0CPrxqalmLzXxSYuigmRZWqNNkvUgSe5S67d53OVpGinclgFaNCJiLDVhwPg"/>
+<!-- Subtle 'Artisanal' Badge -->
+<span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-ink/75 text-white font-mono text-[10px] tracking-wide font-medium backdrop-blur-xs">
+                  Artisanal
+                </span>
+<button aria-label="Favorite" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-panel/85 backdrop-blur-xs flex items-center justify-center text-muted hover:text-bad transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[14px]">favorite</span>
+</button>
+</div>
+<!-- Seller Label -->
+<div class="font-label text-label uppercase text-muted tracking-wider mb-0.5">
+                Delta Goods
+              </div>
+<!-- Title -->
+<h3 class="font-body text-body font-semibold text-ink line-clamp-1 leading-snug">
+                Delta Olive Oil
+              </h3>
+<!-- Rating -->
+<div class="flex items-center gap-1 mt-1 text-warn font-small text-small">
+<span class="material-symbols-outlined text-[14px] text-warn" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-medium text-ink text-[12px]">4.9</span>
+<span class="text-muted text-[11px]">(42)</span>
+</div>
+</div>
+<!-- Price & Stock Footer -->
+<div class="mt-2.5 pt-2 border-t border-line flex items-center justify-between">
+<span class="font-mono text-mono font-medium text-ink">E£189.00</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-okWash text-ok font-label text-[11px] font-medium">
+                In stock
+              </span>
+</div>
+</article>
+<!-- Product Card 3: Ramie Table Runner -->
+<article class="bg-panel rounded-xl border border-line p-2.5 flex flex-col justify-between hover:border-lineStrong transition-all shadow-xs group">
+<div>
+<!-- Product Image Tile -->
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-panel2 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A textured woven natural unbleached ramie fiber table runner with delicate fringed edges laid neatly across a natural raw oak dining table, styled with handmade ceramic tableware in serene soft morning light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-GeE4vVKA_VgjnbVcNP9ARRCbg8LKftWIAdY2AI2Yexh0_fIKmO0-_oZn29UXHib0_17AUkJrBpto5P0fzRZ7tY5mFO9k9-dRuKRilLiTPVh-C3_3sMkS2ncSg7KVzb39aDVU8Tsj_6Rjkz8VQ_BVajaELt-t9d70zKgWuCzTD2lCgShCcWflGL41GBU4iUK3mDYoB53I9_ajZ_4XPQYFhXa5yXkNUPJZJ1ERMSl1eq9pbdALwhyXpcX6MWRoYdDT7Orl5EL_Cvs"/>
+<button aria-label="Favorite" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-panel/85 backdrop-blur-xs flex items-center justify-center text-muted hover:text-bad transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[14px]">favorite</span>
+</button>
+</div>
+<!-- Seller Label -->
+<div class="font-label text-label uppercase text-muted tracking-wider mb-0.5">
+                Nile Traders
+              </div>
+<!-- Title -->
+<h3 class="font-body text-body font-semibold text-ink line-clamp-1 leading-snug">
+                Ramie Table Runner
+              </h3>
+<!-- Rating -->
+<div class="flex items-center gap-1 mt-1 text-warn font-small text-small">
+<span class="material-symbols-outlined text-[14px] text-warn" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-medium text-ink text-[12px]">4.7</span>
+<span class="text-muted text-[11px]">(19)</span>
+</div>
+</div>
+<!-- Price & Stock Footer -->
+<div class="mt-2.5 pt-2 border-t border-line flex items-center justify-between">
+<span class="font-mono text-mono font-medium text-ink">E£180.00</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-okWash text-ok font-label text-[11px] font-medium">
+                In stock
+              </span>
+</div>
+</article>
+<!-- Product Card 4: Giza Sheet Set -->
+<article class="bg-panel rounded-xl border border-line p-2.5 flex flex-col justify-between hover:border-lineStrong transition-all shadow-xs group">
+<div>
+<!-- Product Image Tile -->
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-panel2 mb-2">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A stack of folded ultra-soft hotel-grade Egyptian cotton luxury bedsheets in neutral stone gray and ivory tones, draped effortlessly on a minimalist Scandinavian bed frame with soft natural shadows and high-end boutique interior feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUEX_i5IpzVYnmcnqfNdLMgd-vo5wD1kqP_u4-BJe61fjrWcXTGu0O032bXJYY6BlgbmPIo86T35_Tz2V2UQE120Pm5xx-pLYKK38auvxqmzjaq5kHZjdPyN4kJ75eQAb2k09xKXybAkmpothygZeVkPM6r6thZCGE2-JKjdgtm8Og8J8lJCZOXdyiXXyLgtFM61hitbq4iFRGtYC4wbrmQQzsHSpHJpSmJY7wEYW0y_b63Er8zJymg4QvRz1-TjQzIk_QMbBj3pM"/>
+<button aria-label="Favorite" class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-panel/85 backdrop-blur-xs flex items-center justify-center text-muted hover:text-bad transition-colors shadow-xs">
+<span class="material-symbols-outlined text-[14px]">favorite</span>
+</button>
+</div>
+<!-- Seller Label -->
+<div class="font-label text-label uppercase text-muted tracking-wider mb-0.5">
+                Nile Traders
+              </div>
+<!-- Title -->
+<h3 class="font-body text-body font-semibold text-ink line-clamp-1 leading-snug">
+                Giza Sheet Set
+              </h3>
+<!-- Rating -->
+<div class="flex items-center gap-1 mt-1 text-warn font-small text-small">
+<span class="material-symbols-outlined text-[14px] text-warn" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-medium text-ink text-[12px]">4.8</span>
+<span class="text-muted text-[11px]">(85)</span>
+</div>
+</div>
+<!-- Price & Stock Footer (Low Stock) -->
+<div class="mt-2.5 pt-2 border-t border-line flex items-center justify-between">
+<span class="font-mono text-mono font-medium text-ink">E£1,250.00</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-warnWash text-warn font-label text-[11px] font-medium">
+                Low stock
+              </span>
+</div>
+</article>
+</div>
+</main>
+<!-- Compact Mobile Bottom Tab Bar -->
+<nav class="bg-panel border-t border-line px-2 py-1.5 flex justify-around items-center shrink-0 z-40">
+<!-- Tab 1: Home (Active) -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-accent font-medium active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label text-[11px] tracking-tight mt-0.5">Home</span>
+</button>
+<!-- Tab 2: Search -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-muted hover:text-ink transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px]">search</span>
+<span class="font-label text-[11px] tracking-tight mt-0.5">Search</span>
+</button>
+<!-- Tab 3: Wishlist (badge 2) -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-muted hover:text-ink transition-colors active:scale-95 relative">
+<div class="relative">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+<span class="absolute -top-1 -right-2 min-w-[14px] h-[14px] px-0.5 bg-bad text-white font-mono text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+              2
+            </span>
+</div>
+<span class="font-label text-[11px] tracking-tight mt-0.5">Wishlist</span>
+</button>
+<!-- Tab 4: Cart (badge 3) -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-muted hover:text-ink transition-colors active:scale-95 relative">
+<div class="relative">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+<span class="absolute -top-1 -right-2 min-w-[14px] h-[14px] px-0.5 bg-accent text-accentInk font-mono text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+              3
+            </span>
+</div>
+<span class="font-label text-[11px] tracking-tight mt-0.5">Cart</span>
+</button>
+<!-- Tab 5: Account -->
+<button class="flex flex-col items-center justify-center flex-1 py-1 text-muted hover:text-ink transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span class="font-label text-[11px] tracking-tight mt-0.5">Account</span>
+</button>
+</nav>
+<!-- Home Indicator Bar -->
+<div class="h-5 bg-panel flex items-center justify-center shrink-0">
+<div class="w-32 h-1 bg-ink/20 rounded-full"></div>
+</div>
+</div>
+<!-- Presentation Canvas Subtitle & Specs -->
+<div class="mt-8 flex flex-wrap items-center justify-center gap-6 text-muted font-small text-small">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+<span>Standard viewport: 392 × 812 pt</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+<span>High-density 2-column mobile layout</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+<span>Strict 4.5:1 WCAG contrast adherence</span>
+</div>
+</div>
+</div>
+</body></html>

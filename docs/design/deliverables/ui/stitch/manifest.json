@@ -1,0 +1,520 @@
+{
+  "signin": {
+    "craft": {
+      "title": "MarketCore — Sign In (Error State) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/e6e73866408a48e78eb6c91ebf8eaacd",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Sign In (Error State)",
+      "screen": "projects/3383911874392417631/screens/7aeae3ba4f0a430fa96c5a8942c106a7",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "register": {
+    "craft": {
+      "title": "MarketCore — Register [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/4c0a262236104f458ddc5998d17c24a7",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Register",
+      "screen": "projects/3383911874392417631/screens/b99f74e22b754ad49e4eaaac7b54b516",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "onboarding": {
+    "craft": {
+      "title": "MarketCore — First Run Onboarding [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/7fe02e67dfed40d3baa78ec07cc4383c",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — First Run Onboarding",
+      "screen": "projects/3383911874392417631/screens/b1af77aae8bd4c44b8ec17fae2ed82bc",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "shop-home": {
+    "craft": {
+      "title": "MarketCore — Home [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/ea8ed2284e5f4493b5d69ac11ada8b96",
+      "w": 1280,
+      "h": 1104
+    },
+    "plain": {
+      "title": "MarketCore — Home",
+      "screen": "projects/3383911874392417631/screens/d98c81c43b514448b73f2befd4c4c096",
+      "w": 1280,
+      "h": 1344
+    }
+  },
+  "storefront": {
+    "craft": {
+      "title": "MarketCore — Browse [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/0b7dadc905f84722b74a3a5a3f2540af",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Browse",
+      "screen": "projects/3383911874392417631/screens/0caa82304dbc4da497f54b90c50eecdb",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "shop-category": {
+    "craft": {
+      "title": "MarketCore — Category (Textiles) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/f6802957326242a38e8e158038aeaf19",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Category (Textiles)",
+      "screen": "projects/3383911874392417631/screens/5006f86006714c9c8e4f682aa2143afd",
+      "w": 1280,
+      "h": 1164
+    }
+  },
+  "shop-search": {
+    "craft": {
+      "title": "MarketCore — Search [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/f5b48d4efcc245cf86f2bcd3664d7f3e",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Search",
+      "screen": "projects/3383911874392417631/screens/0044a14ccebe4c1680e8337d5ff38d6f",
+      "w": 1280,
+      "h": 1105
+    }
+  },
+  "shop-seller": {
+    "craft": {
+      "title": "MarketCore — Seller Store (Nile Traders) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/68434f41d223432a8c35ae0daa5cb4a2",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Seller Store (Nile Traders)",
+      "screen": "projects/3383911874392417631/screens/32509ce8cb1e4ac4b473bdfd67b54ace",
+      "w": 1280,
+      "h": 1167
+    }
+  },
+  "shop-product": {
+    "craft": {
+      "title": "MarketCore — Product Detail [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/0f5b02ebd05044c18249864a81919946",
+      "w": 1280,
+      "h": 1320
+    },
+    "plain": {
+      "title": "MarketCore — Product Detail",
+      "screen": "projects/3383911874392417631/screens/139550f7f9b741718175da99d0373314",
+      "w": 1280,
+      "h": 1519
+    }
+  },
+  "shop-product-reviews": {
+    "craft": {
+      "title": "MarketCore — Product Reviews [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/878f1a82412345fcaebf7da6b6939a03",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Product Reviews",
+      "screen": "projects/3383911874392417631/screens/cd4b34405374478aa1a8bde67c135a6f",
+      "w": 1280,
+      "h": 1458
+    }
+  },
+  "storefront-mobile": {
+    "craft": {
+      "title": "MarketCore — Mobile Storefront [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/cc02af91d736433c99c74b5d7243bc73",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Mobile Storefront (392px Frame)",
+      "screen": "projects/3383911874392417631/screens/14444bb234824735aecf5241843038f6",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "shop-cart": {
+    "craft": {
+      "title": "MarketCore — Cart [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/397ce4b412f74eed8654ce63634a9747",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Cart (/cart)",
+      "screen": "projects/3383911874392417631/screens/78b6a4f9d50b44adaf8eb7f10d45f2ab",
+      "w": 1280,
+      "h": 1152
+    }
+  },
+  "checkout": {
+    "craft": {
+      "title": "MarketCore — Checkout [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/69eb201359eb40028401bb08530b4da9",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Checkout (/checkout)",
+      "screen": "projects/3383911874392417631/screens/a6284e09f3974f75b37bbebe03831ce5",
+      "w": 1280,
+      "h": 1245
+    }
+  },
+  "shop-confirmation": {
+    "craft": {
+      "title": "MarketCore — Order Placed [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/67d69e1607d34d8c94312146b4d3f532",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Order Placed (/orders/1042/placed)",
+      "screen": "projects/3383911874392417631/screens/40b4da20ad2a42619614819e457cf687",
+      "w": 1280,
+      "h": 1141
+    }
+  },
+  "my-orders": {
+    "craft": {
+      "title": "MarketCore — My Orders [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/75e6e29ce102467096c1b9eda561b21f",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — My orders (/account/orders)",
+      "screen": "projects/3383911874392417631/screens/c7c20b6289a343daab112575441c0a0f",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "shop-order": {
+    "craft": {
+      "title": "MarketCore — Order Detail [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/945133c2f1384adcb63d56aff6600b6c",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Order detail (/account/orders/1042)",
+      "screen": "projects/3383911874392417631/screens/25ecf13c477f4dba9f2682b2c865b836",
+      "w": 1280,
+      "h": 1216
+    }
+  },
+  "account-profile": {
+    "craft": {
+      "title": "MarketCore — Profile & Security [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/3c962fa238c34b82af15784a9994fd5f",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Profile & security (/account)",
+      "screen": "projects/3383911874392417631/screens/291a1296dbc542238d8faf19ae60cfbc",
+      "w": 1280,
+      "h": 1251
+    }
+  },
+  "account-addresses": {
+    "craft": {
+      "title": "MarketCore — Addresses [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/74af561dd3354a0abf3ff791ffb7628d",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Addresses (/account/addresses)",
+      "screen": "projects/3383911874392417631/screens/87a4b8cafe0341c38b83dde0891613e0",
+      "w": 1280,
+      "h": 1102
+    }
+  },
+  "account-payments": {
+    "craft": {
+      "title": "MarketCore — Payment Methods [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/cce5a52f9320409db989bb3362d9fb3b",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Payment methods (/account/payments)",
+      "screen": "projects/3383911874392417631/screens/b317598a4c7f447cae1af2141dcd960e",
+      "w": 1280,
+      "h": 1056
+    }
+  },
+  "account-wishlist": {
+    "craft": {
+      "title": "MarketCore — Wishlist [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/4ce8bf4c0d274c36a0fb2592850ab415",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore — Wishlist (/account/wishlist)",
+      "screen": "projects/3383911874392417631/screens/486772dbf95b4b4b89b6ed9097d281b7",
+      "w": 1280,
+      "h": 1033
+    }
+  },
+  "dashboard": {
+    "craft": {
+      "title": "MarketCore Seller — Overview Dashboard (/admin) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/822b9122f12d458b98f92da1a9e998d5",
+      "w": 1280,
+      "h": 1200
+    },
+    "plain": {
+      "title": "MarketCore Seller — Overview Dashboard (/admin)",
+      "screen": "projects/3383911874392417631/screens/378b0f09d95a4b039e8332a6f3b64e29",
+      "w": 1280,
+      "h": 1345
+    }
+  },
+  "products": {
+    "craft": {
+      "title": "MarketCore Seller — Products (/admin/products) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/498071fe64224cc5a0d5981d3b2e844a",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Products (/admin/products)",
+      "screen": "projects/3383911874392417631/screens/e4a18ef743964c9d881ea30a31173b39",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "product": {
+    "craft": {
+      "title": "MarketCore Seller — Product Detail (/admin/products/6642) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/a7226d9ac7ba47809619f1ad686f7aee",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Product Detail (/admin/products/6642)",
+      "screen": "projects/3383911874392417631/screens/9bed12e1383145aba081e14204c1cdd0",
+      "w": 1280,
+      "h": 1393
+    }
+  },
+  "product-new": {
+    "craft": {
+      "title": "MarketCore Seller — New Product (/admin/products/new) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/3d2137bd585e4c6184f2ac6e72d08b6a",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — New Product (/admin/products/new)",
+      "screen": "projects/3383911874392417631/screens/9f40414b891b4eaf869fffddf2c7492c",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "product-media": {
+    "craft": {
+      "title": "MarketCore Seller — Media & Variants (/admin/products/6642/media) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/4ed9c4b22ead4d0896799486bb0ef5c4",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Media & variants (/admin/products/6642/media)",
+      "screen": "projects/3383911874392417631/screens/98c6adde043346a9a33d09a7d44551b5",
+      "w": 1280,
+      "h": 1120
+    }
+  },
+  "inventory": {
+    "craft": {
+      "title": "MarketCore Seller — Inventory (/admin/inventory) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/0ca97363a827445fadafc7ce9382b5c4",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Inventory (/admin/inventory)",
+      "screen": "projects/3383911874392417631/screens/203fba01296c435aa7339798e5d647e5",
+      "w": 1280,
+      "h": 1131
+    }
+  },
+  "promotions": {
+    "craft": {
+      "title": "MarketCore Seller — Promotions (/admin/promotions) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/f0ed3330c381450585281c8421445d6e",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Promotions (/admin/promotions)",
+      "screen": "projects/3383911874392417631/screens/736f5c701abc404685c767d5abded14d",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "orders": {
+    "craft": {
+      "title": "MarketCore Seller — Orders (/admin/orders) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/e3d56bb1785d472e8691c9f4eefa982f",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Orders (/admin/orders)",
+      "screen": "projects/3383911874392417631/screens/61b2d2decfaf47daa3026d71cc368544",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "order": {
+    "craft": {
+      "title": "MarketCore Seller — Order Detail (/admin/orders/1042) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/5f5f9d2b8c904dad939b0d90f295f8b2",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Order Detail (/admin/orders/1042)",
+      "screen": "projects/3383911874392417631/screens/9a42d7fc0e6649c5ad546da0c34ea124",
+      "w": 1280,
+      "h": 1326
+    }
+  },
+  "fulfil": {
+    "craft": {
+      "title": "MarketCore Seller — Fulfil an Order (/admin/orders/1042/fulfil) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/1974825323bf4b0f85128f098192609d",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Fulfil an Order (/admin/orders/1042/fulfil)",
+      "screen": "projects/3383911874392417631/screens/0edee3e95361418cafcc2e6d2d5b096f",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "refunds": {
+    "craft": {
+      "title": "MarketCore Seller — Refunds (/admin/refunds) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/684425926b25486ebbe6187e55276e18",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Refunds (/admin/refunds)",
+      "screen": "projects/3383911874392417631/screens/b34aca2cee0f41999414f2e673f63d68",
+      "w": 1280,
+      "h": 1558
+    }
+  },
+  "payouts": {
+    "craft": {
+      "title": "MarketCore Seller — Payouts (/admin/payouts) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/d4c4e24f2baa49c0933843d0272184a0",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Payouts (/admin/payouts)",
+      "screen": "projects/3383911874392417631/screens/cb892c21e17a4cd6b257e420c368a651",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "store-settings": {
+    "craft": {
+      "title": "MarketCore Seller — Store Settings (/admin/settings) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/a415a7a4f4784afe83f39849e1df71d2",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Store Settings (/admin/settings)",
+      "screen": "projects/3383911874392417631/screens/61a413abe6e44f6b8f12f88681befbf3",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "members": {
+    "craft": {
+      "title": "MarketCore Seller — Members (/admin/members) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/f2e493798bfc42ebb46287deae48d3fd",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Members (/admin/members)",
+      "screen": "projects/3383911874392417631/screens/48d7fa7996de4e1eb3c4652222df2b71",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "operations": {
+    "craft": {
+      "title": "MarketCore Seller — Operations (/admin/operations) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/96008a27c40241cb93d461a215759ed4",
+      "w": 1280,
+      "h": 1024
+    },
+    "plain": {
+      "title": "MarketCore Seller — Operations (/admin/operations)",
+      "screen": "projects/3383911874392417631/screens/c6d4ef8f6de84b98b2d8cbad0ad587d6",
+      "w": 1280,
+      "h": 1024
+    }
+  },
+  "foundations": {
+    "craft": {
+      "title": "MarketCore — Foundations (/design/foundations) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/a0046aa274a34b3f8218105344333901",
+      "w": 1280,
+      "h": 1370
+    },
+    "plain": {
+      "title": "MarketCore — Foundations (/design/foundations)",
+      "screen": "projects/3383911874392417631/screens/b013e76cba304ce0a2bdc16216e0c247",
+      "w": 1280,
+      "h": 2933
+    }
+  },
+  "states": {
+    "craft": {
+      "title": "MarketCore — States (/design/states) [Senior Craft]",
+      "screen": "projects/3383911874392417631/screens/eae755db91ad44ed83392301bb744689",
+      "w": 1280,
+      "h": 3522
+    },
+    "plain": {
+      "title": "MarketCore — States (/design/states)",
+      "screen": "projects/3383911874392417631/screens/563bea9a80054ccfacd39035a9b23851",
+      "w": 1280,
+      "h": 1461
+    }
+  }
+}

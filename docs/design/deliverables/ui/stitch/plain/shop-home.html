@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-canvas text-ink" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore — Everything from every seller, one checkout</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#ffd2be",
+            "primary-container": "#4f46e5",
+            "error-container": "#ffdad6",
+            "on-surface": "#1b1b24",
+            "surface-container": "#f0ecf9",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "ok": "#117f3a",
+            "tertiary-fixed": "#ffdbcc",
+            "inverse-on-surface": "#f3effc",
+            "surface-dim": "#dcd8e5",
+            "secondary-fixed": "#e3e1ec",
+            "line": "#e6e8ef",
+            "lineStrong": "#d5d9e2",
+            "inverse-primary": "#c3c0ff",
+            "on-tertiary-fixed": "#351000",
+            "canvas": "#f6f7fb",
+            "on-primary-container": "#dad7ff",
+            "on-error-container": "#93000a",
+            "on-tertiary": "#ffffff",
+            "on-surface-variant": "#464555",
+            "surface-bright": "#fcf8ff",
+            "outline-variant": "#c7c4d8",
+            "muted": "#5a6272",
+            "on-error": "#ffffff",
+            "inverse-surface": "#302f39",
+            "bad": "#d11b43",
+            "surface-variant": "#e4e1ee",
+            "tertiary": "#7e3000",
+            "faint": "#676e7a",
+            "surface": "#fcf8ff",
+            "railInk": "#eef1f7",
+            "badWash": "#fdecef",
+            "accent": "#4f46e5",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#eae6f4",
+            "controlEdge": "#838b9a",
+            "tertiary-fixed-dim": "#ffb695",
+            "ink": "#0a0b12",
+            "on-secondary-container": "#64646d",
+            "warn": "#a55a05",
+            "on-secondary": "#ffffff",
+            "accentInk": "#ffffff",
+            "okWash": "#e8f7ee",
+            "secondary-container": "#e3e1ec",
+            "accentWash": "#eef0ff",
+            "tertiary-container": "#a44100",
+            "on-primary-fixed-variant": "#3323cc",
+            "on-secondary-fixed": "#1a1b23",
+            "warnWash": "#fdf3e4",
+            "secondary": "#5d5e67",
+            "info": "#097499",
+            "secondary-fixed-dim": "#c7c5d0",
+            "panel": "#ffffff",
+            "on-primary": "#ffffff",
+            "primary-fixed-dim": "#c3c0ff",
+            "surface-container-low": "#f5f2ff",
+            "rail": "#0b0d14",
+            "surface-container-highest": "#e4e1ee",
+            "background": "#fcf8ff",
+            "primary": "#3525cd",
+            "on-primary-fixed": "#0f0069",
+            "railMuted": "#8b93a7",
+            "on-background": "#1b1b24",
+            "primary-fixed": "#e2dfff",
+            "on-secondary-fixed-variant": "#46464f",
+            "surface-tint": "#4d44e3",
+            "panel2": "#f1f3f9",
+            "error": "#ba1a1a",
+            "outline": "#777587"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem",
+            "card": "12px"
+          },
+          "spacing": {
+            "space-xs": "4px",
+            "space-xxl": "26px",
+            "space-xl": "22px",
+            "space-lg": "16px",
+            "margin": "20px",
+            "space-sm": "6px",
+            "space-md": "10px",
+            "gutter": "16px"
+          },
+          "fontFamily": {
+            "title": ["DM Sans"],
+            "small": ["DM Sans"],
+            "body": ["DM Sans"],
+            "display": ["DM Sans"],
+            "mono": ["DM Mono"],
+            "label": ["DM Sans"],
+            "metric": ["DM Sans"]
+          },
+          "fontSize": {
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col bg-canvas text-ink font-body antialiased selection:bg-accentWash selection:text-accent">
+<!-- TOPNAVBAR (Shared Component Implementation) -->
+<header class="bg-panel dark:bg-surface border-b border-line dark:border-outline-variant transition-colors duration-150 sticky top-0 z-50">
+<div class="w-full max-w-7xl mx-auto px-margin flex items-center justify-between h-16 gap-space-lg">
+<!-- Brand & Wordmark -->
+<a class="text-title font-title text-ink dark:text-inverse-on-surface flex items-center gap-space-sm shrink-0 hover:opacity-90 transition-opacity" href="/">
+<div class="w-8 h-8 rounded bg-accent flex items-center justify-center text-accentInk shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="storefront" style="font-variation-settings: 'FILL' 1;">storefront</span>
+</div>
+<span class="tracking-tight font-bold text-ink">MarketCore</span>
+</a>
+<!-- Search Bar with Left Search Icon & Cmd+K Shortcut Hint -->
+<div class="flex-1 max-w-xl mx-auto">
+<div class="relative flex items-center w-full">
+<span class="material-symbols-outlined absolute left-3.5 text-muted pointer-events-none text-[18px]" data-icon="search">search</span>
+<input class="w-full pl-10 pr-14 py-2 bg-panel2 dark:bg-surface-container rounded-xl border border-transparent focus:border-accent focus:bg-panel text-body font-body text-ink placeholder:text-muted transition-all outline-none" placeholder="Search products and sellers…" type="text"/>
+<div class="absolute right-3 flex items-center">
+<kbd class="px-1.5 py-0.5 text-label font-mono text-muted bg-panel border border-line rounded shadow-xs select-none">⌘K</kbd>
+</div>
+</div>
+</div>
+<!-- Trailing Cluster: Badged Wishlist & Cart, Text Link, Sign in CTA -->
+<div class="flex items-center gap-space-md shrink-0">
+<!-- Wishlist Icon with badge '2' -->
+<a aria-label="Favorites" class="relative p-2 text-muted hover:text-accent hover:bg-panel2 rounded-xl transition-colors" href="#wishlist">
+<span class="material-symbols-outlined text-[22px] align-middle" data-icon="favorite">favorite</span>
+<span class="absolute top-1 right-1 flex items-center justify-center min-w-[17px] h-[17px] px-1 text-[10px] font-mono font-medium text-accentInk bg-accent rounded-full border-2 border-panel">2</span>
+</a>
+<!-- Cart Icon with badge '3' -->
+<a aria-label="Shopping Cart" class="relative p-2 text-muted hover:text-accent hover:bg-panel2 rounded-xl transition-colors" href="#cart">
+<span class="material-symbols-outlined text-[22px] align-middle" data-icon="shopping_cart">shopping_cart</span>
+<span class="absolute top-1 right-1 flex items-center justify-center min-w-[17px] h-[17px] px-1 text-[10px] font-mono font-medium text-accentInk bg-accent rounded-full border-2 border-panel">3</span>
+</a>
+<div class="h-4 w-px bg-line mx-1"></div>
+<!-- Start selling Link -->
+<a class="text-body font-body font-medium text-accent hover:text-primary transition-colors px-2 py-1.5" href="#seller-onboarding">
+          Start selling
+        </a>
+<!-- Sign in Secondary Button -->
+<a class="text-body font-body font-medium text-ink bg-panel border border-controlEdge hover:bg-panel2 px-3.5 py-1.5 rounded-xl transition-colors" href="#signin">
+          Sign in
+        </a>
+</div>
+</div>
+</header>
+<!-- CATEGORY BAR (44px docked secondary horizontal subnav) -->
+<nav class="bg-panel border-b border-line">
+<div class="w-full max-w-7xl mx-auto px-margin flex items-center justify-between h-11 text-small font-small">
+<!-- Primary Buyer Categories -->
+<div class="flex items-center gap-space-lg h-full">
+<!-- 'All' Active with accent bottom border indicator -->
+<a class="text-accent dark:text-inverse-primary font-medium border-b-2 border-accent dark:border-inverse-primary h-full flex items-center px-1" href="/">
+          All
+        </a>
+<a class="text-muted dark:text-on-surface-variant font-normal hover:text-ink transition-colors h-full flex items-center px-1" href="#textiles">
+          Textiles
+        </a>
+<a class="text-muted dark:text-on-surface-variant font-normal hover:text-ink transition-colors h-full flex items-center px-1" href="#home">
+          Home
+        </a>
+<a class="text-muted dark:text-on-surface-variant font-normal hover:text-ink transition-colors h-full flex items-center px-1" href="#food">
+          Food
+        </a>
+<a class="text-muted dark:text-on-surface-variant font-normal hover:text-ink transition-colors h-full flex items-center px-1" href="#beauty">
+          Beauty
+        </a>
+<a class="text-muted dark:text-on-surface-variant font-normal hover:text-ink transition-colors h-full flex items-center px-1 flex items-center gap-1" href="#deals">
+<span class="material-symbols-outlined text-[16px] text-tertiary" data-icon="local_offer">local_offer</span>
+          Deals
+        </a>
+</div>
+<!-- Utility secondary links pushed to right -->
+<div class="flex items-center gap-space-lg">
+<a class="text-muted hover:text-ink transition-colors" href="#sell">Sell on MarketCore</a>
+<span class="text-line">·</span>
+<a class="text-muted hover:text-ink transition-colors flex items-center gap-1" href="#help">
+<span class="material-symbols-outlined text-[15px]" data-icon="help">help</span>
+          Help
+        </a>
+</div>
+</div>
+</nav>
+<!-- MAIN CANVAS -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-margin py-6">
+<!-- 1. HERO SECTION -->
+<section class="bg-panel border border-line rounded-[12px] p-6 shadow-xs relative overflow-hidden">
+<div class="max-w-2xl relative z-10">
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-accentWash text-accent text-label font-label mb-3">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified">verified</span>
+<span>Unified Multi-Vendor Commerce</span>
+</div>
+<h1 class="text-display font-display text-ink tracking-tight font-bold">
+          Everything from every seller, one checkout
+        </h1>
+<p class="text-body font-body text-muted mt-2">
+          Two sellers today. Browse by category, filter by what matters, and buy without leaving the page.
+        </p>
+<!-- Feature Chips -->
+<div class="flex flex-wrap items-center gap-space-sm mt-4">
+<!-- Selected Chip -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent text-accentInk text-small font-small font-medium shadow-xs">
+<span class="material-symbols-outlined text-[16px]" data-icon="local_shipping">local_shipping</span>
+<span>Free delivery over E£500</span>
+</div>
+<!-- Neutral Chip 1 -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-panel2 text-ink border border-line text-small font-small">
+<span class="material-symbols-outlined text-[16px] text-muted" data-icon="sync">sync</span>
+<span>14-day returns</span>
+</div>
+<!-- Neutral Chip 2 -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-panel2 text-ink border border-line text-small font-small">
+<span class="material-symbols-outlined text-[16px] text-muted" data-icon="verified_user">verified_user</span>
+<span>Verified sellers</span>
+</div>
+</div>
+</div>
+<!-- Subtle background atmospheric architectural geometry -->
+<div class="absolute right-0 top-0 bottom-0 w-1/3 pointer-events-none opacity-40 flex items-center justify-end pr-8">
+<div class="w-64 h-64 rounded-full bg-accentWash filter blur-3xl"></div>
+</div>
+</section>
+<!-- 2. CATEGORY BENTO-STYLE GRID -->
+<section class="mt-6">
+<div class="grid grid-cols-4 gap-gutter">
+<!-- Category: Textiles -->
+<a class="group bg-panel border border-line hover:border-controlEdge rounded-[12px] p-4 transition-all duration-150 flex items-center justify-between" href="#textiles">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-panel2 flex items-center justify-center text-ink group-hover:bg-accent group-hover:text-accentInk transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="styler">styler</span>
+</div>
+<div>
+<h3 class="text-body font-body font-bold text-ink">Textiles</h3>
+<p class="text-small font-small text-muted">142 products</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-muted group-hover:text-ink text-[18px] transition-transform group-hover:translate-x-0.5" data-icon="chevron_right">chevron_right</span>
+</a>
+<!-- Category: Home -->
+<a class="group bg-panel border border-line hover:border-controlEdge rounded-[12px] p-4 transition-all duration-150 flex items-center justify-between" href="#home">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-panel2 flex items-center justify-center text-ink group-hover:bg-accent group-hover:text-accentInk transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="chair">chair</span>
+</div>
+<div>
+<h3 class="text-body font-body font-bold text-ink">Home</h3>
+<p class="text-small font-small text-muted">88 products</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-muted group-hover:text-ink text-[18px] transition-transform group-hover:translate-x-0.5" data-icon="chevron_right">chevron_right</span>
+</a>
+<!-- Category: Food -->
+<a class="group bg-panel border border-line hover:border-controlEdge rounded-[12px] p-4 transition-all duration-150 flex items-center justify-between" href="#food">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-panel2 flex items-center justify-center text-ink group-hover:bg-accent group-hover:text-accentInk transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="restaurant">restaurant</span>
+</div>
+<div>
+<h3 class="text-body font-body font-bold text-ink">Food</h3>
+<p class="text-small font-small text-muted">64 products</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-muted group-hover:text-ink text-[18px] transition-transform group-hover:translate-x-0.5" data-icon="chevron_right">chevron_right</span>
+</a>
+<!-- Category: Beauty -->
+<a class="group bg-panel border border-line hover:border-controlEdge rounded-[12px] p-4 transition-all duration-150 flex items-center justify-between" href="#beauty">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-panel2 flex items-center justify-center text-ink group-hover:bg-accent group-hover:text-accentInk transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="spa">spa</span>
+</div>
+<div>
+<h3 class="text-body font-body font-bold text-ink">Beauty</h3>
+<p class="text-small font-small text-muted">31 products</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-muted group-hover:text-ink text-[18px] transition-transform group-hover:translate-x-0.5" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- 3. RESULTS BAR -->
+<section class="mt-7 flex items-center justify-between border-b border-line pb-3">
+<div class="flex items-center gap-2">
+<h2 class="text-body font-body font-medium text-ink">Featured this week · curated, not newest</h2>
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+<span class="text-small font-small text-muted">4 listings</span>
+</div>
+<!-- Sort Dropdown Trigger -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-controlEdge rounded-xl bg-panel text-small font-small text-ink hover:bg-panel2 transition-colors" type="button">
+<span>Sort: Recommended</span>
+<span class="material-symbols-outlined text-[16px] text-muted" data-icon="expand_more">expand_more</span>
+</button>
+</section>
+<!-- 4. PRODUCT GRID (4 columns) -->
+<section class="mt-5 grid grid-cols-4 gap-gutter">
+<!-- CARD 1: Nile Cotton Shirt -->
+<article class="bg-panel border border-line rounded-[12px] overflow-hidden flex flex-col group hover:border-controlEdge hover:shadow-sm transition-all duration-150">
+<!-- Image Area -->
+<div class="relative w-full aspect-square bg-panel2 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" data-alt="A pristine white tailored Egyptian cotton shirt displayed flat on a clean architectural stone plinth. Bright neutral studio lighting highlights the fine weave and bespoke mother-of-pearl buttons. The atmosphere is minimalist, sophisticated, and pristine with clean lines, soft natural shadows, and a neutral palette of off-white and cool grey tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHcjAAUZ3y599-SjRc6oUZPzVauGq52fRWQPtuIjILXmnsvOmLiYnJj9H5YnGRfREXMRYRHYRddbO1vsgrDkn5SBRtcjr1J544Dq-0cuyXvSc-vVe4voSoTjpnwfTxXu3jzYExVjsr0VNq-xBolUDe1XOfcZzi8HzpTRrhXdC92JmAgh_v6ksD59U09KQd55vnlh-FLX5GJ5xLoeNHrmvEYIEsSrn0x1IvzNzy8vrfdM-2QcpoLR260yRpbRSDrQo73Io9YNvdBTM"/>
+<button aria-label="Save to wishlist" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-panel/90 backdrop-blur-sm border border-line flex items-center justify-center text-muted hover:text-bad hover:border-bad transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="favorite">favorite</span>
+</button>
+</div>
+<!-- Content Area -->
+<div class="p-4 flex-1 flex flex-col justify-between">
+<div>
+<!-- Seller & Stock Status -->
+<div class="flex items-center justify-between gap-2">
+<a class="text-label font-label text-muted hover:text-accent font-medium tracking-wide uppercase" href="#seller-nile">Nile Traders</a>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-okWash text-ok text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>In stock</span>
+</div>
+</div>
+<!-- Product Title -->
+<h3 class="text-body font-body font-semibold text-ink mt-1.5 group-hover:text-accent transition-colors line-clamp-1">
+              Nile Cotton Shirt
+            </h3>
+<!-- Rating Stars -->
+<div class="flex items-center gap-1 mt-1 text-small font-small">
+<span class="material-symbols-outlined text-[16px] text-warn" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-ink">4.6</span>
+<span class="text-muted">(128)</span>
+</div>
+</div>
+<!-- Price & Buy Trigger -->
+<div class="pt-3 mt-3 border-t border-line flex items-center justify-between">
+<div>
+<p class="text-[11px] font-label text-muted uppercase tracking-wider">Price</p>
+<p class="text-mono font-mono font-semibold text-ink text-[16px]">E£249.00</p>
+</div>
+<button aria-label="Add Nile Cotton Shirt to cart" class="p-2 rounded-xl bg-panel2 border border-line hover:bg-accent hover:border-accent hover:text-accentInk text-ink transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- CARD 2: Delta Olive Oil -->
+<article class="bg-panel border border-line rounded-[12px] overflow-hidden flex flex-col group hover:border-controlEdge hover:shadow-sm transition-all duration-150">
+<!-- Image Area -->
+<div class="relative w-full aspect-square bg-panel2 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" data-alt="A premium dark green glass bottle of artisanal cold-pressed olive oil with an embossed label standing elegantly on a smooth travertine surface. High-key natural Mediterranean sunlight filters through, casting warm green and golden refractions. The aesthetic is organic, authentic, and premium, evoking culinary mastery and rural heritage." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqh_QWIkYsPDpCpNbqXOyUodnGXZ36vMV88RgAltPtOj6XmoGJHAWb2SdMy_0bxMadS2sokHvi_6g2_it1rGkPMo3WZyXKcrfdTN_HUXiFMPMnMr7_DPFpN-35awZUJnTdV_-xPP7yYWKOlohW6q9JYzWVQYVKYtae-UwfgHVIk8Z6Nx2_FzNaJhMEUg1V4VFt_Oj_3zcwqhgebTA1PiMl-BI54Urf-GXVSPsh7gJaiPpLPyYbN_e8PAFA0E9T9i6chCkHUwk3WXo"/>
+<button aria-label="Save to wishlist" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-panel/90 backdrop-blur-sm border border-line flex items-center justify-center text-muted hover:text-bad hover:border-bad transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="favorite">favorite</span>
+</button>
+</div>
+<!-- Content Area -->
+<div class="p-4 flex-1 flex flex-col justify-between">
+<div>
+<!-- Seller & Stock Status -->
+<div class="flex items-center justify-between gap-2">
+<a class="text-label font-label text-muted hover:text-accent font-medium tracking-wide uppercase" href="#seller-delta">Delta Goods</a>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-okWash text-ok text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>In stock</span>
+</div>
+</div>
+<!-- Product Title -->
+<h3 class="text-body font-body font-semibold text-ink mt-1.5 group-hover:text-accent transition-colors line-clamp-1">
+              Delta Olive Oil
+            </h3>
+<!-- Rating Stars -->
+<div class="flex items-center gap-1 mt-1 text-small font-small">
+<span class="material-symbols-outlined text-[16px] text-warn" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-ink">4.9</span>
+<span class="text-muted">(42)</span>
+</div>
+</div>
+<!-- Price & Buy Trigger -->
+<div class="pt-3 mt-3 border-t border-line flex items-center justify-between">
+<div>
+<p class="text-[11px] font-label text-muted uppercase tracking-wider">Price</p>
+<p class="text-mono font-mono font-semibold text-ink text-[16px]">E£189.00</p>
+</div>
+<button aria-label="Add Delta Olive Oil to cart" class="p-2 rounded-xl bg-panel2 border border-line hover:bg-accent hover:border-accent hover:text-accentInk text-ink transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- CARD 3: Ramie Table Runner -->
+<article class="bg-panel border border-line rounded-[12px] overflow-hidden flex flex-col group hover:border-controlEdge hover:shadow-sm transition-all duration-150">
+<!-- Image Area -->
+<div class="relative w-full aspect-square bg-panel2 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" data-alt="A textured woven natural ramie table runner draped over a minimalist white oak dining table. Soft diffused morning daylight emphasizes the organic tactile fibers and clean hemmed edges. A minimalist ceramic vase rests quietly in the background. The visual tone is tranquil, artisanal, and grounded in neutral earth and ivory shades." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYRXJblg3Rw-iSmgrxu56ZZtu7HAp4vwPKcDxZifB8Lr0ZcRx5gjRu2bbn3aeXQvRL-r4PezGFQJI86hAc818pMjzFwCx208ApEFV_dATrCmwgOv91MfEkykaY_bRati0KkS9lGFOx6uP_XjIHmlBsTnj3UYnEsoSWwOD5FZL6X0bz0jF5P6UdV0AXiGW4rU6_0bxP1H4saLrqW7Xw6xxTolWxgt1JJnsUMMCPI9QLvNGDHhlJ5D174Cn90Qx9iA_rovxFmh5OZnY"/>
+<button aria-label="Save to wishlist" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-panel/90 backdrop-blur-sm border border-line flex items-center justify-center text-muted hover:text-bad hover:border-bad transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="favorite">favorite</span>
+</button>
+</div>
+<!-- Content Area -->
+<div class="p-4 flex-1 flex flex-col justify-between">
+<div>
+<!-- Seller & Stock Status -->
+<div class="flex items-center justify-between gap-2">
+<a class="text-label font-label text-muted hover:text-accent font-medium tracking-wide uppercase" href="#seller-nile">Nile Traders</a>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-okWash text-ok text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>In stock</span>
+</div>
+</div>
+<!-- Product Title -->
+<h3 class="text-body font-body font-semibold text-ink mt-1.5 group-hover:text-accent transition-colors line-clamp-1">
+              Ramie Table Runner
+            </h3>
+<!-- Rating Stars -->
+<div class="flex items-center gap-1 mt-1 text-small font-small">
+<span class="material-symbols-outlined text-[16px] text-warn" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-ink">4.7</span>
+<span class="text-muted">(19)</span>
+</div>
+</div>
+<!-- Price & Buy Trigger -->
+<div class="pt-3 mt-3 border-t border-line flex items-center justify-between">
+<div>
+<p class="text-[11px] font-label text-muted uppercase tracking-wider">Price</p>
+<p class="text-mono font-mono font-semibold text-ink text-[16px]">E£180.00</p>
+</div>
+<button aria-label="Add Ramie Table Runner to cart" class="p-2 rounded-xl bg-panel2 border border-line hover:bg-accent hover:border-accent hover:text-accentInk text-ink transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+<!-- CARD 4: Giza Sheet Set -->
+<article class="bg-panel border border-line rounded-[12px] overflow-hidden flex flex-col group hover:border-controlEdge hover:shadow-sm transition-all duration-150">
+<!-- Image Area -->
+<div class="relative w-full aspect-square bg-panel2 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" data-alt="Folded luxury bedding sheets crafted from genuine Giza long-staple cotton stacked neatly against a soft slate studio backdrop. Crisp architectural folds catch gentle side illumination showing the silky sateen finish. The atmosphere communicates quiet luxury, precision textile engineering, and restful calm using tones of pale ivory and gentle charcoal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB02ud5WAYbsi-yYW7crz5oDzHP2V5ok2zoSzdAGtlDfMfVPrDXTuj02ZL_orpNimdprAjfiCKM9LPHYMjxk0RywM66KffnsMuQimSXiG0ubp88TS_5NtbgbSLj0I4j-slmpTkZXBPnlHBFd97SsR--B8XzWfeakJfwRdCN5Yh7dO2YWR1ac3bbLQNm4PPgnt98QYSD05ir45-SxJSzHcSGihXpLs2a6N53NNx6J1_qSrj55sLcyzssmwanqWV2ikGziTDiytMH0AM"/>
+<button aria-label="Save to wishlist" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-panel/90 backdrop-blur-sm border border-line flex items-center justify-center text-muted hover:text-bad hover:border-bad transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="favorite">favorite</span>
+</button>
+</div>
+<!-- Content Area -->
+<div class="p-4 flex-1 flex flex-col justify-between">
+<div>
+<!-- Seller & Stock Status -->
+<div class="flex items-center justify-between gap-2">
+<a class="text-label font-label text-muted hover:text-accent font-medium tracking-wide uppercase" href="#seller-nile">Nile Traders</a>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-okWash text-ok text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span>In stock</span>
+</div>
+</div>
+<!-- Product Title -->
+<h3 class="text-body font-body font-semibold text-ink mt-1.5 group-hover:text-accent transition-colors line-clamp-1">
+              Giza Sheet Set
+            </h3>
+<!-- Rating Stars -->
+<div class="flex items-center gap-1 mt-1 text-small font-small">
+<span class="material-symbols-outlined text-[16px] text-warn" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-bold text-ink">4.8</span>
+<span class="text-muted">(85)</span>
+</div>
+</div>
+<!-- Price & Buy Trigger -->
+<div class="pt-3 mt-3 border-t border-line flex items-center justify-between">
+<div>
+<p class="text-[11px] font-label text-muted uppercase tracking-wider">Price</p>
+<p class="text-mono font-mono font-semibold text-ink text-[16px]">E£1,250.00</p>
+</div>
+<button aria-label="Add Giza Sheet Set to cart" class="p-2 rounded-xl bg-panel2 border border-line hover:bg-accent hover:border-accent hover:text-accentInk text-ink transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</article>
+</section>
+<!-- TRUST & CHECKOUT PROMISE STRIP -->
+<section class="mt-12 bg-panel border border-line rounded-[12px] p-6 grid grid-cols-3 gap-6">
+<div class="flex items-start gap-3.5">
+<div class="p-2.5 rounded-xl bg-panel2 text-accent">
+<span class="material-symbols-outlined text-[24px]" data-icon="shopping_basket">shopping_basket</span>
+</div>
+<div>
+<h4 class="text-body font-body font-semibold text-ink">Single Basket Checkout</h4>
+<p class="text-small font-small text-muted mt-0.5">Combine wares from Nile Traders and Delta Goods into one consolidated transaction.</p>
+</div>
+</div>
+<div class="flex items-start gap-3.5 border-l border-line pl-6">
+<div class="p-2.5 rounded-xl bg-panel2 text-accent">
+<span class="material-symbols-outlined text-[24px]" data-icon="shield">shield</span>
+</div>
+<div>
+<h4 class="text-body font-body font-semibold text-ink">Direct Seller Guarantees</h4>
+<p class="text-small font-small text-muted mt-0.5">Every vendor is audited for provenance, quality packaging, and strict dispatch timelines.</p>
+</div>
+</div>
+<div class="flex items-start gap-3.5 border-l border-line pl-6">
+<div class="p-2.5 rounded-xl bg-panel2 text-accent">
+<span class="material-symbols-outlined text-[24px]" data-icon="payments">payments</span>
+</div>
+<div>
+<h4 class="text-body font-body font-semibold text-ink">Protected Disbursal</h4>
+<p class="text-small font-small text-muted mt-0.5">Funds are held in secure escrow until your shipment is inspected and confirmed received.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER (Shared Component Implementation) -->
+<footer class="bg-panel dark:bg-surface border-t border-line dark:border-outline-variant mt-16 transition-colors duration-150">
+<div class="w-full max-w-7xl mx-auto px-margin py-space-xl flex flex-col md:flex-row items-center justify-between gap-space-lg">
+<!-- Brand & Copyright -->
+<div class="flex items-center gap-4">
+<span class="text-title font-title text-ink dark:text-inverse-on-surface font-bold tracking-tight">MarketCore</span>
+<span class="text-line hidden md:inline">|</span>
+<p class="text-small font-small text-muted dark:text-on-surface-variant">
+          © 2025 MarketCore Enterprise Marketplace Inc. All rights reserved.
+        </p>
+</div>
+<!-- Footer Policy Links -->
+<nav class="flex items-center flex-wrap gap-x-6 gap-y-2 text-label font-label">
+<a class="text-muted dark:text-on-surface-variant hover:text-ink dark:hover:text-inverse-on-surface transition-colors" href="#privacy">Privacy Policy</a>
+<a class="text-muted dark:text-on-surface-variant hover:text-ink dark:hover:text-inverse-on-surface transition-colors" href="#terms">Terms of Service</a>
+<a class="text-muted dark:text-on-surface-variant hover:text-ink dark:hover:text-inverse-on-surface transition-colors" href="#security">Security Architecture</a>
+<a class="text-muted dark:text-on-surface-variant hover:text-ink dark:hover:text-inverse-on-surface transition-colors" href="#compliance">Compliance</a>
+<a class="text-muted dark:text-on-surface-variant hover:text-ink dark:hover:text-inverse-on-surface transition-colors flex items-center gap-1.5" href="#status">
+<span class="w-2 h-2 rounded-full bg-ok inline-block"></span>
+          Status
+        </a>
+</nav>
+</div>
+</footer>
+</body></html>

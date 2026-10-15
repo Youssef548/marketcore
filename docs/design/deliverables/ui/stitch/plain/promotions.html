@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-canvas" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Promotions — Nile Traders Seller Console</title>
+<!-- Google Fonts: DM Sans & DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#3323cc",
+            "faint": "#676e7a",
+            "lineStrong": "#d5d9e2",
+            "on-secondary": "#ffffff",
+            "ok": "#117f3a",
+            "error": "#ba1a1a",
+            "rail": "#0b0d14",
+            "line": "#e6e8ef",
+            "primary": "#3525cd",
+            "badWash": "#fdecef",
+            "panel": "#ffffff",
+            "inverse-surface": "#302f39",
+            "on-secondary-fixed": "#1a1b23",
+            "surface-tint": "#4d44e3",
+            "outline-variant": "#c7c4d8",
+            "secondary-fixed-dim": "#c7c5d0",
+            "secondary-container": "#e3e1ec",
+            "accentWash": "#eef0ff",
+            "surface-container-low": "#f5f2ff",
+            "tertiary": "#7e3000",
+            "inverse-primary": "#c3c0ff",
+            "primary-fixed": "#e2dfff",
+            "controlEdge": "#838b9a",
+            "warn": "#a55a05",
+            "on-background": "#1b1b24",
+            "secondary": "#5d5e67",
+            "surface-bright": "#fcf8ff",
+            "on-error-container": "#93000a",
+            "info": "#097499",
+            "surface-variant": "#e4e1ee",
+            "on-primary-container": "#dad7ff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "panel2": "#f1f3f9",
+            "muted": "#5a6272",
+            "on-error": "#ffffff",
+            "surface-container": "#f0ecf9",
+            "on-primary-fixed": "#0f0069",
+            "ink": "#0a0b12",
+            "on-tertiary-container": "#ffd2be",
+            "surface-dim": "#dcd8e5",
+            "inverse-on-surface": "#f3effc",
+            "outline": "#777587",
+            "secondary-fixed": "#e3e1ec",
+            "tertiary-container": "#a44100",
+            "okWash": "#e8f7ee",
+            "warnWash": "#fdf3e4",
+            "primary-fixed-dim": "#c3c0ff",
+            "tertiary-fixed": "#ffdbcc",
+            "canvas": "#f6f7fb",
+            "surface-container-lowest": "#ffffff",
+            "railInk": "#eef1f7",
+            "primary-container": "#4f46e5",
+            "on-secondary-fixed-variant": "#46464f",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "surface-container-highest": "#e4e1ee",
+            "background": "#fcf8ff",
+            "on-tertiary-fixed": "#351000",
+            "accentInk": "#ffffff",
+            "railMuted": "#8b93a7",
+            "on-primary": "#ffffff",
+            "on-surface": "#1b1b24",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#ffb695",
+            "surface-container-high": "#eae6f4",
+            "bad": "#d11b43",
+            "accent": "#4f46e5",
+            "on-secondary-container": "#64646d",
+            "on-surface-variant": "#464555"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-lg": "16px",
+            "space-xl": "22px",
+            "space-sm": "6px",
+            "margin": "20px",
+            "space-xxl": "26px",
+            "gutter": "16px",
+            "space-xs": "4px",
+            "space-md": "10px"
+          },
+          "fontFamily": {
+            "mono": ["DM Mono"],
+            "metric": ["DM Sans"],
+            "body": ["DM Sans"],
+            "title": ["DM Sans"],
+            "small": ["DM Sans"],
+            "display": ["DM Sans"],
+            "label": ["DM Sans"]
+          },
+          "fontSize": {
+            "mono": [
+              "14px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ],
+            "metric": [
+              "28px",
+              {
+                "lineHeight": "1.1",
+                "fontWeight": "700"
+              }
+            ],
+            "body": [
+              "14.5px",
+              {
+                "lineHeight": "1.5",
+                "fontWeight": "400"
+              }
+            ],
+            "title": [
+              "25px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "600"
+              }
+            ],
+            "small": [
+              "13px",
+              {
+                "lineHeight": "1.4",
+                "fontWeight": "400"
+              }
+            ],
+            "display": [
+              "35px",
+              {
+                "lineHeight": "1.1",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "700"
+              }
+            ],
+            "label": [
+              "12px",
+              {
+                "lineHeight": "1.2",
+                "letterSpacing": "0.02em",
+                "fontWeight": "500"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="h-full font-body text-body text-ink antialiased bg-canvas selection:bg-accentWash selection:text-primary">
+<!-- ========================================================================= -->
+<!-- SIDE NAV BAR (Shared Component: Fixed 252px Dark Navigation Rail)        -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 bottom-0 left-0 w-[252px] h-screen flex flex-col justify-between z-40 bg-rail border-r border-line dark:border-lineStrong">
+<div class="w-[252px] h-full p-space-md flex flex-col justify-between shrink-0">
+<!-- Rail Header -->
+<div class="flex flex-col gap-space-lg">
+<div class="flex items-center gap-space-md px-space-sm pt-space-xs">
+<div class="w-8 h-8 rounded-lg bg-inverse-surface border border-outline flex items-center justify-center shrink-0 text-accentWash">
+<span class="material-symbols-outlined text-[18px]">storefront</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title text-title text-railInk font-bold tracking-tight text-[15px] leading-tight truncate">Nile Traders</span>
+<span class="font-label text-label text-railMuted text-[11px] leading-tight truncate">Enterprise Seller</span>
+</div>
+</div>
+<!-- Quick Search / Command Button -->
+<button class="flex items-center justify-between w-full px-space-md py-space-sm bg-inverse-surface border border-outline rounded-lg text-railMuted hover:text-railInk text-left transition-colors duration-150" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[16px]">search</span>
+<span class="font-label text-label">Search (⌘K)</span>
+</div>
+<span class="font-mono text-[10px] bg-rail px-1.5 py-0.5 rounded text-railMuted">⌘K</span>
+</button>
+<!-- Navigation Tabs: Intent locks to 'Catalog' as primary ecosystem parent -->
+<nav class="flex flex-col gap-1">
+<!-- Overview Tab -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-inverse-surface rounded font-label text-label transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Catalog Tab (Active destination for Catalog / Promotions context) -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm bg-accent text-accentInk rounded font-label text-label font-medium transition-all duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+<span>Catalog</span>
+</a>
+<!-- Money Tab -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-inverse-surface rounded font-label text-label transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>Money</span>
+</a>
+<!-- Admin Tab -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-inverse-surface rounded font-label text-label transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+<span>Admin</span>
+</a>
+</nav>
+</div>
+<!-- Rail Footer -->
+<div class="pt-space-md border-t border-inverse-surface flex flex-col gap-2">
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk hover:bg-inverse-surface rounded font-label text-label transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">account_circle</span>
+<span class="truncate font-mono text-[12px]">ops@niletraders.eg</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- TOP NAV BAR (Shared Component: Fixed at top left-[252px] right-0 h-16)    -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-[252px] right-0 h-16 z-30 bg-panel border-b border-line">
+<div class="flex justify-between items-center h-full px-margin w-full">
+<!-- Left: Breadcrumb & Search -->
+<div class="flex items-center gap-space-lg">
+<!-- Breadcrumb Hierarchy -->
+<nav aria-label="Breadcrumb" class="flex items-center gap-2">
+<span class="font-label text-label font-bold text-ink uppercase tracking-wider">Console</span>
+<span class="material-symbols-outlined text-[14px] text-faint">chevron_right</span>
+<span class="font-label text-label text-faint hover:text-ink cursor-pointer transition-colors">Catalog</span>
+<span class="material-symbols-outlined text-[14px] text-faint">chevron_right</span>
+<span class="font-label text-label text-ink font-medium">Promotions</span>
+</nav>
+</div>
+<!-- Center Links (as registered in Shared Component) -->
+<nav class="hidden xl:flex items-center gap-space-xl">
+<a class="font-label text-label text-faint hover:text-ink transition-colors duration-150" href="#">Catalog</a>
+<a class="font-label text-label text-faint hover:text-ink transition-colors duration-150" href="#">Products</a>
+<a class="font-label text-label text-faint hover:text-ink transition-colors duration-150" href="#">Inventory</a>
+</nav>
+<!-- Right Trailing Actions & Cluster -->
+<div class="flex items-center gap-space-md">
+<!-- Secondary Action -->
+<button class="hidden sm:inline-flex items-center gap-1.5 px-space-md py-1.5 bg-panel border border-line rounded-lg text-faint hover:text-ink hover:bg-panel2 transition-colors duration-150 font-label text-label" type="button">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+<span>Export Data</span>
+</button>
+<!-- Primary Action -->
+<button class="inline-flex items-center gap-1.5 px-space-md py-1.5 bg-accent text-accentInk rounded-lg hover:bg-opacity-95 transition-all duration-150 font-label text-label font-medium active:scale-[0.99]" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Create Product</span>
+</button>
+<div class="h-4 w-[1px] bg-line mx-1"></div>
+<!-- Trailing Icon Actions -->
+<button class="p-1.5 rounded-lg text-faint hover:text-ink hover:bg-panel2 transition-colors duration-150" title="Notifications" type="button">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="p-1.5 rounded-lg text-faint hover:text-ink hover:bg-panel2 transition-colors duration-150" title="Help &amp; Documentation" type="button">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</button>
+<button class="p-1.5 rounded-lg text-faint hover:text-ink hover:bg-panel2 transition-colors duration-150" title="Display Preferences" type="button">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+<div class="w-7 h-7 rounded-full bg-panel2 border border-line flex items-center justify-center font-label text-[11px] font-bold text-ink ml-1" title="User Account Profile Avatar">
+          EG
+        </div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE CANVAS (Offset for left 252px rail, top 64px header)      -->
+<!-- ========================================================================= -->
+<main class="pl-[252px] pt-16 min-h-screen pb-16 flex flex-col justify-between">
+<div class="p-margin max-w-[1440px] w-full mx-auto">
+<!-- Page Title & Primary Workspace Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-space-xl border-b border-line mb-space-xl">
+<div class="flex flex-col gap-1">
+<h1 class="font-title text-title text-ink font-semibold">Promotions</h1>
+<p class="font-small text-small text-faint">Discounts a buyer can apply at cart or checkout.</p>
+</div>
+<div class="flex items-center gap-space-md">
+<button class="inline-flex items-center gap-1.5 px-space-lg py-2 bg-accent text-accentInk rounded-[8px] hover:bg-primary-container transition-all duration-150 font-label text-label font-medium shadow-sm active:scale-[0.99]" onclick="document.getElementById('promo-code-input').focus();" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>New promotion</span>
+</button>
+</div>
+</div>
+<!-- MAIN CONTENT: Asymmetric Two-Column Bento Layout (7 cols Left / 5 cols Right) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- LEFT COLUMN: Promotions List (7 cols) -->
+<section class="lg:col-span-7 flex flex-col gap-gutter">
+<!-- Promotions List Table Card -->
+<div class="bg-panel rounded-xl border border-line overflow-hidden shadow-sm">
+<!-- Table Action Header / Meta Toolbar -->
+<div class="px-space-lg py-3.5 bg-panel border-b border-line flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-label text-label font-bold text-ink">Configured Codes</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded-full bg-panel2 text-faint font-medium">3 active entries</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded bg-panel2 text-faint font-mono text-[11px]">
+                  Region: EG-CAI
+                </span>
+</div>
+</div>
+<!-- Operational Density Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line text-[11px] font-label font-bold text-faint tracking-wider uppercase">
+<th class="py-3 px-space-lg" scope="col">Code</th>
+<th class="py-3 px-space-md" scope="col">Value</th>
+<th class="py-3 px-space-md" scope="col">Applies to</th>
+<th class="py-3 px-space-md" scope="col">Status</th>
+<th class="py-3 px-space-md" scope="col">Window</th>
+<th class="py-3 px-space-lg text-right" scope="col">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line text-body font-body">
+<!-- Row 1: WELCOME10 -->
+<tr class="hover:bg-panel2 transition-colors duration-150 group">
+<td class="py-3 px-space-lg whitespace-nowrap">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-mono font-bold text-ink tracking-tight">WELCOME10</span>
+<button class="text-faint hover:text-accent p-0.5 rounded transition-colors" onclick="navigator.clipboard.writeText('WELCOME10')" title="Copy coupon code" type="button">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<span class="font-mono text-mono text-ink font-medium">10% off</span>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<span class="font-small text-small text-muted">All products</span>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<!-- Status Pill: OK (Green) -->
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-okWash text-ok text-[11px] font-label font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                        Active
+                      </span>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<span class="font-small text-small text-faint">Ends 31 Oct 2025</span>
+</td>
+<td class="py-3 px-space-lg text-right whitespace-nowrap">
+<button class="font-label text-label font-medium text-accent hover:text-primary transition-colors duration-150" type="button">
+                        Edit
+                      </button>
+</td>
+</tr>
+<!-- Row 2: COTTON20 -->
+<tr class="hover:bg-panel2 transition-colors duration-150 group">
+<td class="py-3 px-space-lg whitespace-nowrap">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-mono font-bold text-ink tracking-tight">COTTON20</span>
+<button class="text-faint hover:text-accent p-0.5 rounded transition-colors" onclick="navigator.clipboard.writeText('COTTON20')" title="Copy coupon code" type="button">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<span class="font-mono text-mono text-ink font-medium">20% off</span>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<span class="font-small text-small text-muted">Textiles category</span>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<!-- Status Pill: Scheduled (Info Blue) -->
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-accentWash text-info text-[11px] font-label font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-info"></span>
+                        Scheduled
+                      </span>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<span class="font-small text-small text-faint">Starts 1 Nov 2025</span>
+</td>
+<td class="py-3 px-space-lg text-right whitespace-nowrap">
+<button class="font-label text-label font-medium text-accent hover:text-primary transition-colors duration-150" type="button">
+                        Edit
+                      </button>
+</td>
+</tr>
+<!-- Row 3: FREESHIP -->
+<tr class="hover:bg-panel2 transition-colors duration-150 group">
+<td class="py-3 px-space-lg whitespace-nowrap">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-mono font-bold text-ink tracking-tight">FREESHIP</span>
+<button class="text-faint hover:text-accent p-0.5 rounded transition-colors" onclick="navigator.clipboard.writeText('FREESHIP')" title="Copy coupon code" type="button">
+<span class="material-symbols-outlined text-[15px]">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<span class="font-mono text-mono text-ink font-medium">Free delivery</span>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<span class="font-small text-small text-muted">Orders over E£500</span>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<!-- Status Pill: Expired (Neutral Grey) -->
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-panel2 text-faint text-[11px] font-label font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-faint"></span>
+                        Expired
+                      </span>
+</td>
+<td class="py-3 px-space-md whitespace-nowrap">
+<span class="font-small text-small text-faint">Ended 30 Sep 2025</span>
+</td>
+<td class="py-3 px-space-lg text-right whitespace-nowrap">
+<button class="font-label text-label font-medium text-accent hover:text-primary transition-colors duration-150" type="button">
+                        Edit
+                      </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Architectural Note Footer inside Table Card -->
+<div class="px-space-lg py-3.5 bg-panel2 border-t border-line flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-[16px] text-info shrink-0 mt-0.5">info</span>
+<p class="font-small text-small text-faint leading-relaxed">
+<span class="font-semibold text-ink">Architectural Note</span> — Promotions and discount codes are a proposed addition; cart and checkout currently process single-order un-discounted totals. Code validation schema is staged.
+              </p>
+</div>
+</div>
+<!-- Quick Stats Micro-Bento Card -->
+<div class="grid grid-cols-3 gap-gutter">
+<div class="bg-panel rounded-xl border border-line p-space-md flex flex-col justify-between">
+<span class="font-label text-label text-faint">Total Usage</span>
+<span class="font-metric text-metric text-ink mt-1">428</span>
+<span class="font-small text-small text-ok mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +12% this month
+              </span>
+</div>
+<div class="bg-panel rounded-xl border border-line p-space-md flex flex-col justify-between">
+<span class="font-label text-label text-faint">Gross Discounts</span>
+<span class="font-metric text-metric text-ink mt-1 font-mono text-[22px]">E£ 14,250</span>
+<span class="font-small text-small text-muted mt-1">Across 3 promotions</span>
+</div>
+<div class="bg-panel rounded-xl border border-line p-space-md flex flex-col justify-between">
+<span class="font-label text-label text-faint">Conversion Lift</span>
+<span class="font-metric text-metric text-ink mt-1">+3.4%</span>
+<span class="font-small text-small text-ok mt-1">A/B validation active</span>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Create a Promotion Form Card (5 cols) -->
+<section class="lg:col-span-5">
+<div class="bg-panel rounded-xl border border-line p-5 shadow-sm">
+<!-- Card Header -->
+<div class="pb-space-md border-b border-line mb-space-lg">
+<h2 class="font-semibold text-ink text-[18px] leading-tight">Create a promotion</h2>
+<p class="font-small text-small text-faint mt-1">Create coupon codes or automatic discounts.</p>
+</div>
+<!-- Form Content -->
+<form class="flex flex-col gap-space-lg" onsubmit="event.preventDefault();">
+<!-- Field 1: Promotion code -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<label class="font-label text-label font-medium text-ink" for="promo-code-input">
+                    Promotion code <span class="text-error">*</span>
+</label>
+<span class="font-small text-small text-faint text-[11px]">Buyers enter this code</span>
+</div>
+<div class="relative">
+<input class="w-full px-3 py-2 bg-panel rounded-[8px] border border-controlEdge font-mono text-mono text-ink placeholder:text-faint focus:border-accent focus:ring-1 focus:ring-accent outline-none uppercase" id="promo-code-input" name="promo-code" placeholder="e.g. SUMMER25" required="" type="text"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-faint">
+<span class="material-symbols-outlined text-[16px]">tag</span>
+</div>
+</div>
+<p class="font-small text-small text-faint text-[11px]">Must be alphanumeric with no spaces. Will be saved in uppercase.</p>
+</div>
+<!-- Field 2: Two-up row (Type select & Value) -->
+<div class="grid grid-cols-2 gap-space-md">
+<!-- Type Select -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink" for="promo-type">
+                    Type <span class="text-error">*</span>
+</label>
+<select class="w-full px-2.5 py-2 bg-panel rounded-[8px] border border-controlEdge font-body text-body text-ink focus:border-accent focus:ring-1 focus:ring-accent outline-none" id="promo-type" name="promo-type">
+<option value="percentage">Percentage off</option>
+<option value="fixed">Fixed amount EGP</option>
+<option value="shipping">Free shipping</option>
+</select>
+</div>
+<!-- Value -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink" for="promo-value">
+                    Value <span class="text-error">*</span>
+</label>
+<input class="w-full px-3 py-2 bg-panel rounded-[8px] border border-controlEdge font-mono text-mono text-ink placeholder:text-faint focus:border-accent focus:ring-1 focus:ring-accent outline-none" id="promo-value" name="promo-value" placeholder="15% or E£50.00" required="" type="text"/>
+</div>
+</div>
+<!-- Field 3: Applies to select -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink" for="applies-to">
+                  Applies to <span class="text-error">*</span>
+</label>
+<select class="w-full px-2.5 py-2 bg-panel rounded-[8px] border border-controlEdge font-body text-body text-ink focus:border-accent focus:ring-1 focus:ring-accent outline-none" id="applies-to" name="applies-to">
+<option value="all">All products</option>
+<option value="category">Specific category [Textiles]</option>
+<option value="minimum">Minimum order total [E£500]</option>
+</select>
+<span class="font-small text-small text-faint text-[11px]">Determine eligibility logic at checkout verification stage.</span>
+</div>
+<!-- Field 4: Active date window (Start date & End date) -->
+<div class="grid grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink" for="start-date">
+                    Start date
+                  </label>
+<input class="w-full px-2.5 py-2 bg-panel rounded-[8px] border border-controlEdge font-mono text-[13px] text-ink focus:border-accent focus:ring-1 focus:ring-accent outline-none" id="start-date" name="start-date" type="date" value="2025-11-01"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label text-label font-medium text-ink" for="end-date">
+                    End date
+                  </label>
+<input class="w-full px-2.5 py-2 bg-panel rounded-[8px] border border-controlEdge font-mono text-[13px] text-ink focus:border-accent focus:ring-1 focus:ring-accent outline-none" id="end-date" name="end-date" type="date" value="2025-11-30"/>
+</div>
+</div>
+<!-- Field 5: Usage limit (optional) -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<label class="font-label text-label font-medium text-ink" for="usage-limit">
+                    Usage limit <span class="text-faint font-normal">(optional)</span>
+</label>
+<span class="font-small text-small text-faint text-[11px]">Maximum redemptions</span>
+</div>
+<input class="w-full px-3 py-2 bg-panel rounded-[8px] border border-controlEdge font-mono text-mono text-ink placeholder:text-faint focus:border-accent focus:ring-1 focus:ring-accent outline-none" id="usage-limit" name="usage-limit" placeholder="e.g. 100 redemptions" type="number"/>
+</div>
+<!-- Submit Action Button -->
+<div class="pt-2">
+<button class="w-full py-2.5 px-4 bg-accent text-accentInk rounded-[8px] font-label text-label font-medium hover:bg-opacity-95 transition-all duration-150 active:scale-[0.99] flex items-center justify-center gap-2 shadow-sm" type="submit">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span>Create promotion</span>
+</button>
+</div>
+</form>
+</div>
+</section>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- FOOTER (Shared Component: Docked full-width bottom with pl-[252px])        -->
+<!-- ========================================================================= -->
+<footer class="docked full-width bottom border-t border-line bg-canvas">
+<div class="w-full py-space-lg px-margin flex flex-col md:flex-row justify-between items-center gap-space-md">
+<span class="font-small text-small text-faint">
+          © 2025 MarketCore, Inc. All rights reserved. Nile Traders Nile Operations Division.
+        </span>
+<div class="flex items-center gap-space-lg">
+<a class="font-label text-label text-faint hover:text-ink transition-colors duration-150" href="#">Compliance</a>
+<a class="font-label text-label text-faint hover:text-ink transition-colors duration-150" href="#">Documentation</a>
+<a class="font-label text-label text-faint hover:text-ink transition-colors duration-150" href="#">System Status</a>
+<a class="font-label text-label text-faint hover:text-ink transition-colors duration-150" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+</main>
+</body></html>

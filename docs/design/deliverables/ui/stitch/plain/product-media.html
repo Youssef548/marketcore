@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MarketCore Seller Console — Media &amp; variants</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: DM Sans & DM Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&amp;family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#3323cc",
+            "faint": "#676e7a",
+            "lineStrong": "#d5d9e2",
+            "on-secondary": "#ffffff",
+            "ok": "#117f3a",
+            "error": "#ba1a1a",
+            "rail": "#0b0d14",
+            "line": "#e6e8ef",
+            "primary": "#3525cd",
+            "badWash": "#fdecef",
+            "panel": "#ffffff",
+            "inverse-surface": "#302f39",
+            "on-secondary-fixed": "#1a1b23",
+            "surface-tint": "#4d44e3",
+            "outline-variant": "#c7c4d8",
+            "secondary-fixed-dim": "#c7c5d0",
+            "secondary-container": "#e3e1ec",
+            "accentWash": "#eef0ff",
+            "surface-container-low": "#f5f2ff",
+            "tertiary": "#7e3000",
+            "inverse-primary": "#c3c0ff",
+            "primary-fixed": "#e2dfff",
+            "controlEdge": "#838b9a",
+            "warn": "#a55a05",
+            "on-background": "#1b1b24",
+            "secondary": "#5d5e67",
+            "surface-bright": "#fcf8ff",
+            "on-error-container": "#93000a",
+            "info": "#097499",
+            "surface-variant": "#e4e1ee",
+            "on-primary-container": "#dad7ff",
+            "on-tertiary-fixed-variant": "#7b2f00",
+            "panel2": "#f1f3f9",
+            "muted": "#5a6272",
+            "on-error": "#ffffff",
+            "surface-container": "#f0ecf9",
+            "on-primary-fixed": "#0f0069",
+            "ink": "#0a0b12",
+            "on-tertiary-container": "#ffd2be",
+            "surface-dim": "#dcd8e5",
+            "inverse-on-surface": "#f3effc",
+            "outline": "#777587",
+            "secondary-fixed": "#e3e1ec",
+            "tertiary-container": "#a44100",
+            "okWash": "#e8f7ee",
+            "warnWash": "#fdf3e4",
+            "primary-fixed-dim": "#c3c0ff",
+            "tertiary-fixed": "#ffdbcc",
+            "canvas": "#f6f7fb",
+            "surface-container-lowest": "#ffffff",
+            "railInk": "#eef1f7",
+            "primary-container": "#4f46e5",
+            "on-secondary-fixed-variant": "#46464f",
+            "surface": "#fcf8ff",
+            "error-container": "#ffdad6",
+            "surface-container-highest": "#e4e1ee",
+            "background": "#fcf8ff",
+            "on-tertiary-fixed": "#351000",
+            "accentInk": "#ffffff",
+            "railMuted": "#8b93a7",
+            "on-primary": "#ffffff",
+            "on-surface": "#1b1b24",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#ffb695",
+            "surface-container-high": "#eae6f4",
+            "bad": "#d11b43",
+            "accent": "#4f46e5",
+            "on-secondary-container": "#64646d",
+            "on-surface-variant": "#464555"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-lg": "16px",
+            "space-xl": "22px",
+            "space-sm": "6px",
+            "margin": "20px",
+            "space-xxl": "26px",
+            "gutter": "16px",
+            "space-xs": "4px",
+            "space-md": "10px"
+          },
+          "fontFamily": {
+            "mono": ["DM Mono"],
+            "metric": ["DM Sans"],
+            "body": ["DM Sans"],
+            "title": ["DM Sans"],
+            "small": ["DM Sans"],
+            "display": ["DM Sans"],
+            "label": ["DM Sans"]
+          },
+          "fontSize": {
+            "mono": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "metric": ["28px", { "lineHeight": "1.1", "fontWeight": "700" }],
+            "body": ["14.5px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "title": ["25px", { "lineHeight": "1.2", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "small": ["13px", { "lineHeight": "1.4", "fontWeight": "400" }],
+            "display": ["35px", { "lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700" }],
+            "label": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500" }]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-canvas text-ink font-body text-body antialiased min-h-screen flex flex-col selection:bg-accentWash selection:text-accent">
+<!-- ========================================================================= -->
+<!-- SideNavBar (Shared Component from JSON)                                    -->
+<!-- ========================================================================= -->
+<aside class="fixed top-0 bottom-0 left-0 w-[252px] h-screen flex flex-col justify-between z-40 bg-rail border-r border-line">
+<div class="w-[252px] h-full p-space-md flex flex-col justify-between shrink-0">
+<!-- Rail Header -->
+<div>
+<div class="flex items-center gap-space-md px-space-md py-space-sm mb-space-md">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-accentInk font-title text-title font-bold shrink-0">
+            N
+          </div>
+<div class="overflow-hidden">
+<h1 class="font-title text-title text-railInk font-bold tracking-tight text-[16px] leading-tight truncate">Nile Traders</h1>
+<p class="font-label text-label text-railMuted">Enterprise Seller</p>
+</div>
+</div>
+<!-- Rail Search / CTA Button -->
+<button class="w-full flex items-center justify-between px-space-md py-space-sm mb-space-lg rounded bg-inverse-surface text-railMuted hover:text-railInk transition-colors duration-150 font-label text-label">
+<span class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[16px]">search</span>
+            Search (⌘K)
+          </span>
+<span class="font-mono text-[10px] text-faint bg-rail px-1 py-0.5 rounded">CMD+K</span>
+</button>
+<!-- Rail Navigation Links -->
+<!-- Primary Context: Catalog > Products -->
+<nav class="flex flex-col gap-1">
+<!-- Overview -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk rounded font-label text-label hover:bg-inverse-surface transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Catalog (Active Parent Scope) -->
+<div>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm bg-accent text-accentInk rounded font-label text-label font-medium transition-all duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+<span>Catalog</span>
+</a>
+<!-- Sub-items for Catalog -->
+<div class="pl-7 pr-2 py-1 flex flex-col gap-1 mt-1 border-l border-railMuted/20 ml-4">
+<a class="flex items-center justify-between py-1 px-2 rounded bg-inverse-surface text-railInk font-label text-label font-medium" href="#">
+<span>Products</span>
+<span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+</a>
+<a class="py-1 px-2 rounded text-railMuted hover:text-railInk font-label text-label transition-colors" href="#">
+<span>Inventory</span>
+</a>
+<a class="py-1 px-2 rounded text-railMuted hover:text-railInk font-label text-label transition-colors" href="#">
+<span>Collections</span>
+</a>
+</div>
+</div>
+<!-- Money -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk rounded font-label text-label hover:bg-inverse-surface transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+<span>Money</span>
+</a>
+<!-- Admin -->
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk rounded font-label text-label hover:bg-inverse-surface transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+<span>Admin</span>
+</a>
+</nav>
+</div>
+<!-- Rail Footer -->
+<div class="pt-space-md border-t border-inverse-surface">
+<a class="flex items-center gap-space-sm px-space-md py-space-sm text-railMuted hover:text-railInk rounded font-label text-label hover:bg-inverse-surface transition-colors duration-150 truncate" href="#">
+<span class="material-symbols-outlined text-[20px] shrink-0">account_circle</span>
+<span class="truncate">ops@niletraders.eg</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- TopNavBar (Shared Component from JSON)                                     -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-[252px] right-0 h-16 z-30 bg-panel border-b border-line">
+<div class="flex justify-between items-center h-full px-margin w-full">
+<!-- Left: Breadcrumb / Product Name Search Context -->
+<div class="flex items-center gap-space-md">
+<span class="font-label text-label font-bold text-ink uppercase tracking-wider">Console</span>
+<span class="text-faint">/</span>
+<div class="flex items-center gap-2 text-faint font-small text-small">
+<a class="hover:text-ink transition-colors" href="#">Catalog</a>
+<span>/</span>
+<a class="hover:text-ink transition-colors" href="#">Products</a>
+<span>/</span>
+<a class="hover:text-ink transition-colors font-medium text-ink" href="#">Nile Cotton Shirt</a>
+<span>/</span>
+<span class="text-ink font-medium">Media &amp; variants</span>
+</div>
+</div>
+<!-- Right: Secondary & Icon Actions & Profile -->
+<div class="flex items-center gap-space-md">
+<!-- Quiet / Secondary action from JSON -->
+<button class="px-space-md py-1.5 rounded-[8px] border border-line bg-panel2 hover:bg-line text-ink font-label text-label transition-colors duration-150 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+          Export Data
+        </button>
+<!-- Primary Create Product action from JSON -->
+<button class="px-space-md py-1.5 rounded-[8px] bg-accent text-accentInk font-label text-label font-medium hover:opacity-95 transition-all duration-150 flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">add</span>
+          Create Product
+        </button>
+<div class="h-5 w-[1px] bg-line mx-1"></div>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded hover:bg-panel2 text-faint hover:text-ink transition-colors" title="Notifications">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="p-1.5 rounded hover:bg-panel2 text-faint hover:text-ink transition-colors" title="Help">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</button>
+<button class="p-1.5 rounded hover:bg-panel2 text-faint hover:text-ink transition-colors" title="Settings">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+<!-- Profile Avatar -->
+<div class="w-8 h-8 rounded-full bg-panel2 border border-controlEdge flex items-center justify-center font-label text-label font-bold text-ink shrink-0 ml-1" title="User Account Profile Avatar">
+          NT
+        </div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN CONTENT CANVAS                                                        -->
+<!-- ========================================================================= -->
+<main class="ml-[252px] pt-16 flex-1 px-margin pb-16">
+<div class="max-w-[1340px] mx-auto py-space-xl">
+<!-- PAGE HEADER -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-xl">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-mono text-label text-accent bg-accentWash px-2 py-0.5 rounded font-medium">SKU #6642</span>
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+<span class="font-label text-label text-ok font-medium">Live on Storefront</span>
+</div>
+<h2 class="font-title text-title font-semibold text-ink">Media &amp; variants</h2>
+<p class="font-small text-small text-faint mt-0.5">Images and options — the two things a buyer looks at before the price.</p>
+</div>
+<!-- Page Actions -->
+<div class="flex items-center gap-space-md">
+<button class="px-space-md py-2 rounded-[8px] border border-controlEdge bg-panel text-ink hover:bg-panel2 font-label text-label font-medium transition-colors duration-150 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+            Preview
+          </button>
+<button class="px-space-lg py-2 rounded-[8px] bg-accent text-accentInk hover:bg-primary font-label text-label font-medium transition-all duration-150 flex items-center gap-1.5 shadow-sm active:scale-[0.99]">
+<span class="material-symbols-outlined text-[18px]">save</span>
+            Save
+          </button>
+</div>
+</div>
+<!-- ASYMMETRIC TWO-COLUMN GRID (12 Cols: 7 Left, 5 Right) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- ===================================================================== -->
+<!-- LEFT COLUMN (7 COLS): Images & Product Options Card                    -->
+<!-- ===================================================================== -->
+<div class="lg:col-span-7 flex flex-col gap-gutter">
+<!-- 1. IMAGES CARD -->
+<section class="bg-panel rounded-xl border border-line p-5 shadow-sm">
+<div class="flex items-center justify-between pb-4 border-b border-line mb-4">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-body text-body font-semibold text-ink">Images</h3>
+<span class="font-label text-label px-2 py-0.5 rounded-full bg-panel2 text-faint font-medium">4 of 8</span>
+</div>
+<p class="font-small text-small text-faint mt-0.5">drag to reorder, first is the card image</p>
+</div>
+<button class="px-space-md py-1.5 rounded-[8px] border border-line bg-panel2 hover:bg-line text-ink font-label text-label font-medium transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                Add image
+              </button>
+</div>
+<!-- 4-Column Image Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<!-- Tile 1: Nile Cotton Shirt Ecru folded -->
+<div class="group relative aspect-square rounded-lg border border-line overflow-hidden bg-panel2 flex flex-col justify-between p-2">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A pristine high-end studio product photograph of a premium folded Egyptian Nile cotton shirt in a natural ecru tone. Crisp studio lighting casts soft, minimal shadows across the woven textured fabric. The minimalist background uses a subtle warm ivory and soft grey palette, reflecting a sophisticated corporate fashion aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAteBFpiosjygvQqAQHXizrhwE5TldtLeWYcootRIv0WXXWWNJShEkq2iQl8YXy07DrTNT2F0niAxoxzRasjTfxeWLwAzxg7X6l42EaPmynYph2mNKWWjNnK9R-YCzvdLSJZMLlSD3qq4Y0uPaaZZ4Ri3JzQDptDqcQUtSuAdEXpYF4iCJ8OZ88QB1GCvZvuW6NWx1ESo_jnZp5eXcoMg1__vlABp9_Q4gS3cf3UgGL6qiInef6hz-JKjGj-MCrp6ez11K1WvBqLyM"/>
+<div class="relative z-10 flex justify-between items-start w-full">
+<span class="bg-accent text-accentInk font-label text-[11px] font-medium rounded-full px-2 py-0.5 shadow-sm">Card image</span>
+<button class="w-6 h-6 rounded-full bg-panel/90 text-ink hover:text-bad hover:bg-panel flex items-center justify-center transition-colors shadow-sm" title="Remove image">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</button>
+</div>
+<div class="relative z-10 mt-auto">
+<span class="inline-block bg-panel/90 backdrop-blur-sm text-ink px-2 py-0.5 rounded text-[11px] font-label font-medium">Folded front</span>
+</div>
+</div>
+<!-- Tile 2: Collar detail close-up -->
+<div class="group relative aspect-square rounded-lg border border-line overflow-hidden bg-panel2 flex flex-col justify-between p-2">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="An extreme macro detail photograph focusing on the tailored collar and delicate weave of a premium ecru cotton shirt. The craftsmanship is highlighted by directional, soft high-key lighting that captures the subtle texture of the luxurious Egyptian threads in neutral light-mode studio tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB44oETD68NHWaayhUPi_86UkuilcQ2XzJ5NpxLKhSRGm8gkIdPIGE1pmyCBtn8cRhcmM1XHvZlw6dSs-fg_N4Sw7NYIuVGtQvlqK4YQ1fAHuJBBqENn1XU7usKQi_dkeyDYq4qU8zluwusR19GL6IKpcRkxq0GyXN3Pgf0lxzr4_BWbtBR47-6fLyVedZx-wrjEgm1ulqaiSxOzWwDicuyaIJ37493KRwxfhSnUy98G4wK2RyeBwO43fetsvbYhowTnf7-ihOxGqo"/>
+<div class="relative z-10 flex justify-end items-start w-full">
+<button class="w-6 h-6 rounded-full bg-panel/90 text-ink hover:text-bad hover:bg-panel flex items-center justify-center transition-colors shadow-sm" title="Remove image">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</button>
+</div>
+<div class="relative z-10 mt-auto">
+<span class="inline-block bg-panel/90 backdrop-blur-sm text-ink px-2 py-0.5 rounded text-[11px] font-label font-medium">Collar &amp; weave</span>
+</div>
+</div>
+<!-- Tile 3: Mother-of-pearl button detail -->
+<div class="group relative aspect-square rounded-lg border border-line overflow-hidden bg-panel2 flex flex-col justify-between p-2">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="A focused close-up product shot of authentic mother-of-pearl buttons stitched onto the placket of an off-white cotton dress shirt. The iridescent sheen of the buttons catches balanced studio daylight, emphasizing ultra-refined craftsmanship against the clean ecru fabric." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4m_BJMh269_A4En2xtPAqZb65NFjtsR_TA5kKUSt2S-JUyjiJpZA1tPQen_TootNEwjnYlXgob2_Zydjx_sYnWKUfcjdfPA5I0s-QBz24_KqbEJG_SQFsl8pP7mA06lEb0A9oG0HS2v4SEwQIGJCLsu4FsEQwn0adTofDt3Q1-_6U78SuwC6FRMtLPfTnzGtHe-3yU_y3uJ5WSm29S_-EKhQzaLfmBWX-yaaYksZ9FEwJEnXdRndgXSMLeEzon7P-xQI3rrvfLKU"/>
+<div class="relative z-10 flex justify-end items-start w-full">
+<button class="w-6 h-6 rounded-full bg-panel/90 text-ink hover:text-bad hover:bg-panel flex items-center justify-center transition-colors shadow-sm" title="Remove image">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</button>
+</div>
+<div class="relative z-10 mt-auto">
+<span class="inline-block bg-panel/90 backdrop-blur-sm text-ink px-2 py-0.5 rounded text-[11px] font-label font-medium">Buttons</span>
+</div>
+</div>
+<!-- Tile 4: Lifestyle/model shot -->
+<div class="group relative aspect-square rounded-lg border border-line overflow-hidden bg-panel2 flex flex-col justify-between p-2">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="An editorial lifestyle photograph of a professional model wearing a tailored ecru Nile cotton shirt in a sunlit modern architectural studio with neutral concrete and warm light wood accents. The atmosphere is effortless, polished, and contemporary, shot in soft natural morning light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKHIr92ja9kr02OdyPmXouLWbOfj7HC9ZRao9bIxWWdEWdR5Y0hn3vjnoH8-xuV5RqLs2Q6uJsSww-XAI6_lyUfWEKeHmorZAcjdwTtkpZWB8t3SE29iXEuPul1vE89rggjoy-kslUP6uc75ZcXn94VR8v4nwm7Kj07FVW7i9bXEu4UCORNc_40MJt7zVZ1WK34K6D4m8ph48k6sZr4xbYDYXL2646oHpx-JY7jjowLeHVwQ_wW2sDb4CugaDuqnCtJaRVN7nDF5k"/>
+<div class="relative z-10 flex justify-end items-start w-full">
+<button class="w-6 h-6 rounded-full bg-panel/90 text-ink hover:text-bad hover:bg-panel flex items-center justify-center transition-colors shadow-sm" title="Remove image">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</button>
+</div>
+<div class="relative z-10 mt-auto">
+<span class="inline-block bg-panel/90 backdrop-blur-sm text-ink px-2 py-0.5 rounded text-[11px] font-label font-medium">On model</span>
+</div>
+</div>
+<!-- Tile 5: Dropzone -->
+<div class="aspect-square border border-dashed border-controlEdge rounded-lg flex flex-col items-center justify-center p-3 bg-panel2/40 hover:bg-panel2 transition-colors cursor-pointer text-center group">
+<span class="material-symbols-outlined text-[28px] text-faint group-hover:text-accent group-hover:scale-105 transition-all mb-1.5">add_photo_alternate</span>
+<span class="font-label text-[12px] font-medium text-ink leading-tight">Upload image</span>
+<span class="font-small text-[11px] text-faint mt-0.5">(up to 10MB)</span>
+</div>
+</div>
+</section>
+<!-- 2. OPTIONS CARD -->
+<section class="bg-panel rounded-xl border border-line p-5 shadow-sm">
+<div class="pb-3 border-b border-line mb-4">
+<h3 class="font-body text-body font-semibold text-ink">Product Options</h3>
+<p class="font-small text-small text-faint mt-0.5">Configures the matrix of buyable variants</p>
+</div>
+<div class="space-y-5">
+<!-- Option 1: Colour -->
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase text-faint font-semibold tracking-wider">Colour</span>
+<button class="text-faint hover:text-bad font-label text-label transition-colors">Delete option</button>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<!-- Ecru Swatch (Selected) -->
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-[8px] border border-accent bg-accentWash/40 cursor-pointer">
+<span class="w-4 h-4 rounded-full bg-[#f4f0ea] border border-controlEdge shrink-0 shadow-inner"></span>
+<span class="font-label text-label font-medium text-ink">Ecru</span>
+<span class="material-symbols-outlined text-[16px] text-accent font-bold">check</span>
+</div>
+<!-- Navy Swatch -->
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-[8px] border border-line bg-panel hover:bg-panel2 cursor-pointer transition-colors">
+<span class="w-4 h-4 rounded-full bg-[#1e293b] border border-controlEdge shrink-0"></span>
+<span class="font-label text-label text-ink">Navy</span>
+</div>
+<!-- Sage Swatch -->
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-[8px] border border-line bg-panel hover:bg-panel2 cursor-pointer transition-colors">
+<span class="w-4 h-4 rounded-full bg-[#94a3b8] border border-controlEdge shrink-0"></span>
+<span class="font-label text-label text-ink">Sage</span>
+</div>
+<button class="px-2.5 py-1.5 rounded-[8px] border border-dashed border-controlEdge text-faint hover:text-ink font-label text-label flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[15px]">add</span>
+                    Add swatch
+                  </button>
+</div>
+</div>
+<!-- Option 2: Size -->
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-label text-label uppercase text-faint font-semibold tracking-wider">Size</span>
+<button class="text-faint hover:text-bad font-label text-label transition-colors">Delete option</button>
+</div>
+<!-- Button Group S, M, L, XL -->
+<div class="flex items-center gap-2">
+<button class="w-10 h-9 rounded-[8px] bg-panel border border-controlEdge text-ink font-label text-label font-medium hover:bg-panel2 transition-colors">
+                    S
+                  </button>
+<!-- M is active -->
+<button class="w-10 h-9 rounded-[8px] bg-accent text-accentInk font-label text-label font-semibold shadow-sm">
+                    M
+                  </button>
+<button class="w-10 h-9 rounded-[8px] bg-panel border border-controlEdge text-ink font-label text-label font-medium hover:bg-panel2 transition-colors">
+                    L
+                  </button>
+<button class="w-10 h-9 rounded-[8px] bg-panel border border-controlEdge text-ink font-label text-label font-medium hover:bg-panel2 transition-colors">
+                    XL
+                  </button>
+<button class="px-3 h-9 rounded-[8px] border border-dashed border-controlEdge text-faint hover:text-ink font-label text-label flex items-center gap-1 transition-colors ml-1">
+<span class="material-symbols-outlined text-[15px]">add</span>
+                    Size
+                  </button>
+</div>
+</div>
+<!-- Add New Option Action -->
+<div class="pt-2 border-t border-line">
+<button class="text-accent hover:text-primary font-label text-label font-medium flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+                  Add another option
+                </button>
+</div>
+</div>
+</section>
+</div>
+<!-- ===================================================================== -->
+<!-- RIGHT COLUMN (5 COLS): Variants Table Card                             -->
+<!-- ===================================================================== -->
+<div class="lg:col-span-5">
+<section class="bg-panel rounded-xl border border-line shadow-sm overflow-hidden flex flex-col">
+<!-- Table Header Bar -->
+<div class="p-4 border-b border-line flex items-center justify-between bg-panel">
+<div class="flex items-center gap-2">
+<h3 class="font-body text-body font-semibold text-ink">Generated Variants</h3>
+<span class="font-label text-label px-2 py-0.5 rounded bg-panel2 text-faint font-medium">6</span>
+</div>
+<button class="font-label text-label text-accent hover:text-primary font-medium flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[16px]">refresh</span>
+                Recalculate matrix
+              </button>
+</div>
+<!-- Dense Table Surface -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-panel2 border-b border-line text-faint font-label text-[11px] uppercase tracking-wider">
+<th class="py-2.5 px-3 font-semibold">Variant</th>
+<th class="py-2.5 px-3 font-semibold text-right">Price</th>
+<th class="py-2.5 px-3 font-semibold text-right">Stock</th>
+<th class="py-2.5 px-3 font-semibold">SKU</th>
+<th class="py-2.5 px-3 font-semibold text-center">Status</th>
+<th class="py-2.5 px-3 font-semibold text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-line text-small font-small">
+<!-- Row 1: Ecru / S -->
+<tr class="hover:bg-panel2/60 transition-colors">
+<td class="py-2.5 px-3 font-medium text-ink">Ecru / S</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-ink">E£249.00</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-ink">3 avail</td>
+<td class="py-2.5 px-3 font-mono text-mono text-faint text-[12px]">NLE-CTN-ECR-S</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-okWash text-ok font-label text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                        Active
+                      </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<button class="text-accent hover:text-primary font-label text-label font-medium transition-colors">Edit</button>
+</td>
+</tr>
+<!-- Row 2: Ecru / M -->
+<tr class="hover:bg-panel2/60 transition-colors">
+<td class="py-2.5 px-3 font-medium text-ink">Ecru / M</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-ink">E£249.00</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-ink">5 avail</td>
+<td class="py-2.5 px-3 font-mono text-mono text-faint text-[12px]">NLE-CTN-ECR-M</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-okWash text-ok font-label text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                        Active
+                      </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<button class="text-accent hover:text-primary font-label text-label font-medium transition-colors">Edit</button>
+</td>
+</tr>
+<!-- Row 3: Ecru / L -->
+<tr class="hover:bg-panel2/60 transition-colors">
+<td class="py-2.5 px-3 font-medium text-ink">Ecru / L</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-ink">E£249.00</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-ink">2 avail</td>
+<td class="py-2.5 px-3 font-mono text-mono text-faint text-[12px]">NLE-CTN-ECR-L</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-okWash text-ok font-label text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-ok"></span>
+                        Active
+                      </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<button class="text-accent hover:text-primary font-label text-label font-medium transition-colors">Edit</button>
+</td>
+</tr>
+<!-- Row 4: Navy / S (Out of stock) -->
+<tr class="hover:bg-panel2/60 transition-colors">
+<td class="py-2.5 px-3 font-medium text-ink">Navy / S</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-ink">E£249.00</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-bad">0 avail</td>
+<td class="py-2.5 px-3 font-mono text-mono text-faint text-[12px]">NLE-CTN-NVY-S</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-badWash text-bad font-label text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-bad"></span>
+                        Out of stock
+                      </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<button class="text-accent hover:text-primary font-label text-label font-medium transition-colors">Edit</button>
+</td>
+</tr>
+<!-- Row 5: Navy / M (Draft) -->
+<tr class="hover:bg-panel2/60 transition-colors">
+<td class="py-2.5 px-3 font-medium text-ink">Navy / M</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-ink">E£249.00</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-faint">0 avail</td>
+<td class="py-2.5 px-3 font-mono text-mono text-faint text-[12px]">NLE-CTN-NVY-M</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-warnWash text-warn font-label text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+                        Draft
+                      </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<button class="text-accent hover:text-primary font-label text-label font-medium transition-colors">Edit</button>
+</td>
+</tr>
+<!-- Row 6: Navy / L (Draft) -->
+<tr class="hover:bg-panel2/60 transition-colors">
+<td class="py-2.5 px-3 font-medium text-ink">Navy / L</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-ink">E£249.00</td>
+<td class="py-2.5 px-3 font-mono text-mono text-right text-faint">0 avail</td>
+<td class="py-2.5 px-3 font-mono text-mono text-faint text-[12px]">NLE-CTN-NVY-L</td>
+<td class="py-2.5 px-3 text-center">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-warnWash text-warn font-label text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-warn"></span>
+                        Draft
+                      </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<button class="text-accent hover:text-primary font-label text-label font-medium transition-colors">Edit</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Card Footer / Honest Domain Note Callout -->
+<div class="p-4 bg-panel2 border-t border-line mt-auto">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-info shrink-0 mt-0.5">info</span>
+<div>
+<h4 class="font-label text-label font-semibold text-ink">Architecture Note</h4>
+<p class="font-small text-small text-muted mt-0.5 leading-relaxed">
+                    Variant-level inventory is a new model, because today one product has one stock row. Multi-SKU stock locking will be enabled in v2 migration.
+                  </p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- Footer (Shared Component from JSON)                                        -->
+<!-- ========================================================================= -->
+<footer class="pl-[252px] w-full py-space-lg px-margin flex flex-col md:flex-row justify-between items-center gap-space-md bg-canvas border-t border-line">
+<div class="font-small text-small text-faint">
+      © 2025 MarketCore, Inc. All rights reserved. Nile Traders Nile Operations Division.
+    </div>
+<div class="flex items-center gap-space-lg">
+<a class="font-label text-label text-faint hover:text-accent transition-colors duration-150" href="#">Compliance</a>
+<a class="font-label text-label text-faint hover:text-accent transition-colors duration-150" href="#">Documentation</a>
+<a class="font-label text-label text-faint hover:text-accent transition-colors duration-150" href="#">System Status</a>
+<a class="font-label text-label text-faint hover:text-accent transition-colors duration-150" href="#">Privacy Policy</a>
+</div>
+</footer>
+</body></html>
