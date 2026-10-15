@@ -5,5 +5,5 @@ export default tseslint.config(
   { ignores: ['eslint.config.mjs', 'dist/**', 'coverage/**'] },
   ...tseslint.configs.recommended,
   // `type: 'package'` is what applies the "packages never import an app" rule.
-  ...defineConfig({ type: 'package' }),
+  ...defineConfig({ type: 'package', tsconfigRootDir: import.meta.dirname }),
 );

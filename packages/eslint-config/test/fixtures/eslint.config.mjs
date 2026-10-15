@@ -17,5 +17,5 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // does not spread — it exists to test the boundary rules, not the recommended set.
 export default tseslint.config(
   { languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
-  ...defineConfig({ type: 'app-fixture', rootPath: HERE }),
+  ...defineConfig({ type: 'app-fixture', tsconfigRootDir: HERE, rootPath: HERE }),
 );

@@ -6,5 +6,5 @@ export default tseslint.config(
   // are generated, and linting generated JavaScript is noise rather than a finding.
   { ignores: ['eslint.config.mjs', 'dist/**', 'coverage/**', 'reports/**'] },
   ...tseslint.configs.recommended,
-  ...defineConfig({ type: 'package' }),
+  ...defineConfig({ type: 'package', tsconfigRootDir: import.meta.dirname }),
 );

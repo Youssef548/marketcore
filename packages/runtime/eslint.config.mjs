@@ -9,5 +9,5 @@ export default tseslint.config(
   // `type: 'package'` applies the "packages never import an app" rule. It is what
   // makes the worker's inability to import apps/api a build error rather than a
   // convention — see docs/adr/0001-modular-monolith-with-worker.md.
-  ...defineConfig({ type: 'package' }),
+  ...defineConfig({ type: 'package', tsconfigRootDir: import.meta.dirname }),
 );

@@ -40,7 +40,7 @@ describe('defineConfig defaults', () => {
     // The plugin defaults to process.cwd(), which is the package directory when
     // turbo runs a package's lint — under which `apps/**` matches nothing and
     // every rule passes silently. This asserts the absolute override.
-    const configs = defineConfig({ type: 'package' }) as unknown as Array<{
+    const configs = defineConfig({ type: 'package', tsconfigRootDir: MONOREPO_ROOT }) as unknown as Array<{
       settings?: Record<string, unknown>;
     }>;
     expect(configs[0].settings?.['boundaries/root-path']).toBe(MONOREPO_ROOT);

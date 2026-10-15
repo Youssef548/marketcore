@@ -12,7 +12,7 @@ const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   // importRules: false — eslint-config-next already registers a plugin under the
   // key `import`, and redefining that key makes ESLint throw.
-  ...defineConfig({ type: 'app-web', importRules: false }),
+  ...defineConfig({ type: 'app-web', tsconfigRootDir: import.meta.dirname, importRules: false }),
   {
     files: ['**/*.{ts,tsx}'],
     // Re-enabled here because the plugin is already registered for these files

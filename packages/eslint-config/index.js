@@ -21,10 +21,21 @@ const PROJECT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..'
  *   config already registers a plugin under the key `import` (eslint-config-next
  *   does), because redefining that key makes ESLint throw. Such a consumer can
  *   still enable `import/no-extraneous-dependencies` in a rules-only config.
+ * @param {string} options.tsconfigRootDir the consuming package's directory —
+ *   pass `import.meta.dirname` from its eslint.config.mjs.
  * @param {string} [options.rootPath]      overrides PROJECT_ROOT; only the
  *   fixture workspace in this package's tests needs to.
  */
-export function defineConfig({ type, importRules = true, rootPath = PROJECT_ROOT }) {
+export function defineConfig({ type, tsconfigRootDir, importRules = true, rootPath = PROJECT_ROOT }) {
+  // Required, because nothing fails without it on the command line. turbo lints one
+  // package per process, so typescript-eslint infers the root from the single config
+  // it has seen. The editor's ESLint server loads every package's config into one
+  // process, sees several candidate roots, and fails every file with "No
+  // tsconfigRootDir was set, and multiple candidate TSConfigRootDirs are present".
+  if (!tsconfigRootDir) {
+    throw new Error('defineConfig: pass tsconfigRootDir: import.meta.dirname');
+  }
+
   const isApp = type.startsWith('app-');
 
   const elements = [
@@ -130,6 +141,8 @@ export function defineConfig({ type, importRules = true, rootPath = PROJECT_ROOT
       ],
     },
   });
+
+  rules.push({ languageOptions: { parserOptions: { tsconfigRootDir } } });
 
   return rules;
 }
