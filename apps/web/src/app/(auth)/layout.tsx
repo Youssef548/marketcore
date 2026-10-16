@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { PropsWithChildren } from 'react';
 import { AuthCard, CardBrand, PublicFrame } from '@/components/public-frame';
 
 /**
@@ -8,7 +8,7 @@ import { AuthCard, CardBrand, PublicFrame } from '@/components/public-frame';
  * The card is the direction's — a panel on the canvas rather than a bare column — so
  * the sign-in screen reads as the same product as the console behind it.
  */
-export default function AuthLayout({ children }: { children: ReactNode }) {
+export default function AuthLayout({ children }: PropsWithChildren) {
   // The front door named no product, so a first-timer could not tell what they were
   // signing into. The name is the same one the rail shows, read from the same place.
   const appName = process.env.APP_NAME ?? 'app';

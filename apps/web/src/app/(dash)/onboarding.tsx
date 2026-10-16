@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { Alert, ArrowRightIcon, Button, ControlSizes, Field, PageHeading, TextLink } from '@app/ui';
 import { AuthCard, PublicFrame } from '@/components/public-frame';
 import { createOrganization, signOut } from '@/lib/session/client';
+import type { OnboardingProps } from './interfaces/onboarding.interface';
 
 /**
  * The first-run screen.
@@ -21,16 +22,7 @@ import { createOrganization, signOut } from '@/lib/session/client';
  * one centred card — an icon tile, the heading, the field, a note on what creating it makes
  * you, the action, and the way out if this is the wrong account.
  */
-export function Onboarding({
-  appName,
-  email,
-  onCreated,
-}: {
-  appName: string;
-  /** Who is signed in, so "wrong account?" has something to be checked against. */
-  email: string;
-  onCreated: () => Promise<void>;
-}) {
+export function Onboarding({ appName, email, onCreated }: OnboardingProps) {
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
