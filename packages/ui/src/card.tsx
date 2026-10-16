@@ -1,12 +1,13 @@
 import type { ElementType } from 'react';
-import type { CardProps, CardVariant } from './interfaces/card.interface';
+import { CardVariants, type CardVariant } from './constants';
+import type { CardProps } from './interfaces/card.interface';
 
 const variants: Record<CardVariant, string> = {
   // A surface inside the console: KPI tiles, tables, the add-product form.
-  panel: 'rounded-xl border border-rule bg-panel',
+  [CardVariants.PANEL]: 'rounded-xl border border-rule bg-panel',
   // The card a public screen centres on the canvas — sign in, register, first run — lifted
   // off the gradient behind it.
-  raised: 'rounded-[18px] border border-rule bg-panel shadow-sm',
+  [CardVariants.RAISED]: 'rounded-[18px] border border-rule bg-panel shadow-sm',
 };
 
 /**
@@ -15,7 +16,7 @@ const variants: Record<CardVariant, string> = {
  */
 export function Card<E extends ElementType = 'div'>({
   as,
-  variant = 'panel',
+  variant = CardVariants.PANEL,
   className = '',
   ...props
 }: CardProps<E>) {

@@ -1,27 +1,28 @@
 'use client';
 
 import type { MouseEvent } from 'react';
-import type { ButtonProps, ButtonSize, ButtonVariant } from './interfaces/button.interface';
+import { ButtonVariants, ControlSizes, type ButtonVariant, type ControlSize } from './constants';
+import type { ButtonProps } from './interfaces/button.interface';
 
 const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-action text-ink-on-action border-transparent hover:bg-action-hover',
+  [ButtonVariants.PRIMARY]: 'bg-action text-ink-on-action border-transparent hover:bg-action-hover',
   // Bordered rather than transparent: in this direction the second action is a thing
   // you can see, not an absence. It is `secondary` rather than `ghost` because a
   // bordered ghost is a name that lies about what it paints.
-  secondary: 'bg-panel text-ink border-control-edge hover:bg-sunken',
-  quiet: 'bg-transparent text-ink-muted border-transparent hover:text-ink',
+  [ButtonVariants.SECONDARY]: 'bg-panel text-ink border-control-edge hover:bg-sunken',
+  [ButtonVariants.QUIET]: 'bg-transparent text-ink-muted border-transparent hover:text-ink',
 };
 
-const sizes: Record<ButtonSize, string> = {
+const sizes: Record<ControlSize, string> = {
   // Matches the `lg` input, so a form's submit lines up with the fields above it.
-  lg: 'h-11 px-5 text-sm font-semibold',
-  md: 'h-10 px-4 text-sm font-medium',
-  sm: 'h-8 px-3 text-xs font-medium',
+  [ControlSizes.LG]: 'h-11 px-5 text-sm font-semibold',
+  [ControlSizes.MD]: 'h-10 px-4 text-sm font-medium',
+  [ControlSizes.SM]: 'h-8 px-3 text-xs font-medium',
 };
 
 export function Button({
-  variant = 'primary',
-  size = 'md',
+  variant = ButtonVariants.PRIMARY,
+  size = ControlSizes.MD,
   busy = false,
   className = '',
   onClick,

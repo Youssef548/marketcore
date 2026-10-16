@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Card } from '../src/card';
+import { CardVariants } from '../src/constants';
 
 describe('Card', () => {
   it('is a div by default and keeps the caller layout beside its surface', () => {
@@ -25,7 +26,7 @@ describe('Card', () => {
     render(
       <>
         <Card>Panel</Card>
-        <Card variant="raised">Raised</Card>
+        <Card variant={CardVariants.RAISED}>Raised</Card>
       </>,
     );
 

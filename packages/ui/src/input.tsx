@@ -1,13 +1,14 @@
 'use client';
 
-import type { InputProps, InputSize } from './interfaces/input.interface';
+import { ControlSizes, type ControlSize } from './constants';
+import type { InputProps } from './interfaces/input.interface';
 
-const sizes: Record<InputSize, string> = {
+const sizes: Record<ControlSize, string> = {
   // The credential and first-run forms: one column, a few fields, nothing else on the
   // screen — so the control is the size of the thing a person is there to do.
-  lg: 'h-11 px-3.5 text-sm',
-  md: 'h-10 px-3 text-sm',
-  sm: 'h-8 px-2.5 text-xs',
+  [ControlSizes.LG]: 'h-11 px-3.5 text-sm',
+  [ControlSizes.MD]: 'h-10 px-3 text-sm',
+  [ControlSizes.SM]: 'h-8 px-2.5 text-xs',
 };
 
 const borders = {
@@ -18,7 +19,7 @@ const borders = {
   invalid: 'border-attention focus:border-attention',
 } as const;
 
-export function Input({ invalid = false, size = 'md', className = '', ...props }: InputProps) {
+export function Input({ invalid = false, size = ControlSizes.MD, className = '', ...props }: InputProps) {
   const border = invalid ? borders.invalid : borders.valid;
 
   return (
