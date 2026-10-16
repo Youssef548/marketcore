@@ -4,8 +4,7 @@ import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PASSWORD_MIN_LENGTH, RegisterRequestSchema } from '@app/contracts';
-import { Alert, Button, Field } from '@app/ui';
-import { ArrowIcon } from '@/components/public-frame';
+import { Alert, ArrowRightIcon, Button, Field, PageHeading, TextLink } from '@app/ui';
 import { messageFrom } from '@/lib/http/browser';
 
 /**
@@ -71,7 +70,7 @@ export default function RegisterPage() {
     // stated beneath it, the action, then the way back to sign in.
     <form className="space-y-4" onSubmit={submit} noValidate>
       <div className="mb-6 space-y-1.5">
-        <h1 className="text-2xl font-bold tracking-tight text-ink">Create your account</h1>
+        <PageHeading>Create your account</PageHeading>
         <p className="text-sm text-ink-muted">You will be asked to sign in afterwards.</p>
       </div>
 
@@ -105,14 +104,14 @@ export default function RegisterPage() {
 
       <Button type="submit" size="lg" busy={pending} className="w-full">
         {pending ? 'Creating…' : 'Create account'}
-        {!pending && <ArrowIcon />}
+        {!pending && <ArrowRightIcon />}
       </Button>
 
       <p className="pt-2 text-center text-sm text-ink-muted">
         Already have one?{' '}
-        <Link className="font-semibold text-action underline underline-offset-2" href="/login">
+        <TextLink as={Link} href="/login">
           Sign in
-        </Link>
+        </TextLink>
       </p>
     </form>
   );

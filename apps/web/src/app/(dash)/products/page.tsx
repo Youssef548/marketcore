@@ -9,7 +9,7 @@ import {
   type CurrencyCode,
   type Product,
 } from '@app/contracts';
-import { Alert, Button, Field } from '@app/ui';
+import { Alert, Button, Card, Field, PageHeading } from '@app/ui';
 import { createProduct, useReadySession } from '@/lib/session/client';
 
 const ProductsSchema = z.array(ProductSchema);
@@ -102,7 +102,7 @@ export default function ProductsPage() {
         <div className="min-w-0">
           {/* The top bar's `h1` names the page; this is the page's own head, as the
            * design draws it, one level below. */}
-          <h2 className="text-2xl font-bold tracking-tight text-ink">Products</h2>
+          <PageHeading level={2}>Products</PageHeading>
           <p className="mt-1 text-sm text-ink-muted">
             {activeOrganization === null
               ? 'Choose an organization above to see its catalog.'
@@ -126,20 +126,20 @@ export default function ProductsPage() {
       {adding && organizationId !== null && <AddProductForm onCreated={load} />}
 
       {organizationId === null ? (
-        <p className="rounded-xl border border-rule bg-panel px-5 py-4 text-sm text-ink-muted">
+        <Card as="p" className="px-5 py-4 text-sm text-ink-muted">
           No organization is selected. Choose one above and its catalog appears here.
-        </p>
+        </Card>
       ) : state.status === 'failed' ? (
         <Alert className="border-l-4">{state.message}</Alert>
       ) : state.status === 'loading' ? (
-        <div role="status" className="space-y-3 rounded-xl border border-rule bg-panel p-5" aria-busy>
+        <Card role="status" className="space-y-3 p-5" aria-busy>
           <span className="sr-only">Loading products…</span>
           <div className="h-3 w-1/3 rounded bg-sunken" />
           <div className="h-3 w-2/3 rounded bg-sunken" />
           <div className="h-3 w-1/2 rounded bg-sunken" />
-        </div>
+        </Card>
       ) : products.length === 0 ? (
-        <div className="rounded-xl border border-rule bg-panel px-6 py-12 text-center">
+        <Card className="px-6 py-12 text-center">
           <p className="text-base font-semibold text-ink">No products yet</p>
           <p className="mt-1 text-sm text-ink-muted">
             Add the first product to {activeOrganization?.name ?? 'this organization'}&apos;s catalog.
@@ -150,7 +150,7 @@ export default function ProductsPage() {
               Add product
             </Button>
           )}
-        </div>
+        </Card>
       ) : (
         <>
           {/* Counts of the rows below, and nothing the API does not return: the design's
@@ -161,7 +161,7 @@ export default function ProductsPage() {
             <Count label="Draft" value={products.length - published} />
           </dl>
 
-          <section aria-labelledby="all-products" className="overflow-hidden rounded-xl border border-rule bg-panel">
+          <Card as="section" aria-labelledby="all-products" className="overflow-hidden">
             <header className="border-b border-rule px-5 py-4 sm:px-6">
               <h3 id="all-products" className="text-base font-bold tracking-tight text-ink">
                 All products
@@ -229,7 +229,7 @@ export default function ProductsPage() {
                 </tbody>
               </table>
             </div>
-          </section>
+          </Card>
         </>
       )}
     </div>
@@ -243,10 +243,10 @@ const HEADER_CELL =
 /** One count card. A `dt`/`dd` pair, so the number is read with what it counts. */
 function Count({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-rule bg-panel px-5 py-4">
+    <Card className="px-5 py-4">
       <dt className="text-sm font-medium text-ink-muted">{label}</dt>
       <dd className="mt-2 text-3xl font-bold tracking-tight text-ink tabular-nums">{value}</dd>
-    </div>
+    </Card>
   );
 }
 
@@ -305,9 +305,10 @@ function AddProductForm({ onCreated }: { onCreated: () => Promise<void> }) {
   }
 
   return (
-    <form
+    <Card
+      as="form"
       aria-labelledby="new-product"
-      className="space-y-4 rounded-xl border border-rule bg-panel p-5 sm:p-6"
+      className="space-y-4 p-5 sm:p-6"
       onSubmit={submit}
       noValidate
     >
@@ -354,6 +355,6 @@ function AddProductForm({ onCreated }: { onCreated: () => Promise<void> }) {
       <Button type="submit" busy={pending}>
         {pending ? 'Adding…' : 'Add product'}
       </Button>
-    </form>
+    </Card>
   );
 }

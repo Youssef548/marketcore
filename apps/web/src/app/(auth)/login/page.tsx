@@ -4,8 +4,7 @@ import { Suspense, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LoginRequestSchema } from '@app/contracts';
-import { Alert, Button, Field } from '@app/ui';
-import { ArrowIcon } from '@/components/public-frame';
+import { Alert, ArrowRightIcon, Button, Field, PageHeading, TextLink } from '@app/ui';
 import { messageFrom, safeRedirect } from '@/lib/http/browser';
 
 /**
@@ -69,7 +68,7 @@ function LoginForm() {
     // refusal as a banner between the fields and the action, then the way to register.
     <form className="space-y-4" onSubmit={submit} noValidate>
       <div className="mb-6 space-y-1.5">
-        <h1 className="text-2xl font-bold tracking-tight text-ink">Sign in</h1>
+        <PageHeading>Sign in</PageHeading>
         <p className="text-sm text-ink-muted">Use the account you registered.</p>
       </div>
 
@@ -108,14 +107,14 @@ function LoginForm() {
        * focus and sends the user back to the top of the form mid-submit. */}
       <Button type="submit" size="lg" busy={pending} className="w-full">
         {pending ? 'Signing in…' : 'Sign in'}
-        {!pending && <ArrowIcon />}
+        {!pending && <ArrowRightIcon />}
       </Button>
 
       <p className="pt-2 text-center text-sm text-ink-muted">
         No account?{' '}
-        <Link className="font-semibold text-action underline underline-offset-2" href="/register">
+        <TextLink as={Link} href="/register">
           Create one
-        </Link>
+        </TextLink>
       </p>
     </form>
   );
