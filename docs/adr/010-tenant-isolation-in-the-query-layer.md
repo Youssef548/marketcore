@@ -82,6 +82,26 @@ composes its filter from one shared helper.**
 - Any later module that stores tenant-owned rows is expected to add its own cross-tenant test. The
   pattern is not considered adopted for a module until that test exists.
 
+## Amendment — 2026-10-16 (CR-001)
+
+The storefront adds two read paths that are not tenant reads, and each gets its own rule rather than
+a hole in this one.
+
+- **Public catalog.** `GET /storefront/products[/:id]` reads `PUBLISHED` products across every active
+  organization. It is the one repository method allowed to read products without a `TenantContext`,
+  and its output is parsed through the `.strict()` `PublicProduct` contract schema — the schema is the
+  allowlist, so a private field cannot leave by accident. INV-9 is narrowed to say so: published
+  product fields and stock are public; drafts, orders, members and the ledger are not.
+- **Buyer scope.** Buyer routes are `@TenantFree()`. A guard builds a `BuyerContext` from the
+  authenticated user id, and buyer-scoped repositories (cart, checkout, buyer orders) take it and
+  compose their `where` from `buyerScope(buyer)` in `packages/domain` — the same shape as
+  `tenantScope`, for the same reason. An order is reachable two ways: by the seller through
+  `tenantScope`, and by the buyer through `buyerScope`; never by a bare id.
+- **Evidence, as before.** INV-12 gets a cross-buyer test per buyer route with a control case, and
+  the public read gets a draft-is-404 test. The pattern is not adopted for a buyer route until its
+  test exists.
+- **A cross-buyer miss answers 404**, for the reason a cross-tenant miss does.
+
 ## Review date
 
 2026-12-19, or at phase 11 — whichever comes first. The trigger is query shapes being settled enough

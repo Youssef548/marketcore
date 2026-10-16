@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-19
 - **Status:** Accepted
-- **Related:** `docs/architecture.md`, `docs/failure-scenarios.md`
+- **Related:** `docs/architecture.md`, `docs/failure-scenarios.md`, `docs/superpowers/specs/2026-10-16-cr-001-buyer-storefront.md`
 
 This document is the source for two things: the invariants that later weeks write tests against, and
 the entity table that later weeks transcribe into `packages/database/prisma/schema/*.prisma`. Nothing
@@ -16,19 +16,24 @@ column is a slogan, not an invariant, and does not belong in this table.
 | ID | Invariant | How it is observed |
 |---|---|---|
 | INV-1 | Inventory available quantity may never become negative | After any concurrent run, `SELECT available FROM inventory WHERE product_id = :id` is >= 0 |
-| INV-2 | A checkout idempotency key may create at most one logical operation | N requests sharing one key produce exactly one order row |
-| INV-3 | An order may be paid at most once for the same captured amount | Count of successful captures for one order is exactly 1 |
+| INV-2 | A checkout idempotency key, scoped to the buyer, may create at most one logical operation | N requests sharing one key produce exactly one checkout and one set of orders |
+| INV-3 | A checkout may be paid at most once for the same captured amount | Count of successful captures for one checkout is exactly 1 |
 | INV-4 | A provider webhook may cause each business side effect at most once | Repeated delivery of one event produces one state transition and one ledger transaction |
 | INV-5 | A refund total may never exceed the successfully captured payment total | `SUM(refund.amountMinor) <= payment.amountMinor` for the payment |
 | INV-6 | Every ledger transaction's signed entries sum to zero per currency | Grouped by transaction, the signed sum is 0 within each currency |
 | INV-7 | Historical financial entries are never edited or deleted | No update or delete path on `LedgerEntry` exists in the codebase |
 | INV-8 | A seller payout may be executed at most once | Under concurrent claims, exactly one provider transfer is initiated per payout |
-| INV-9 | A user may not access a private resource owned by another organization | Cross-tenant fetch by identifier returns 404 or 403 and never returns data |
+| INV-9 | A user may not access a private resource owned by another organization. Published product fields and stock count are public, not private | Cross-tenant fetch of a draft, order, member or ledger row returns 404 or 403 and never returns data |
 | INV-10 | A committed domain event must remain recoverable after a process crash | Killed between commit and publication, the event is still processed exactly once after recovery |
+| INV-11 | A checkout creates every seller's order or none | A 3-seller cart with one line short of stock leaves 0 orders and every stock unchanged |
+| INV-12 | A buyer may read only their own cart and orders | Cross-buyer fetch by identifier returns 404 and never returns data |
+| INV-13 | A checkout's seller shares plus the platform fee equal the captured amount | Per capture, the ledger credits sum to the payment amount |
+| INV-14 | A seller-funded discount reduces only that seller's order total and ledger share | In a two-seller checkout with one seller's code, the other seller's share is unchanged |
+| INV-15 | An abandoned checkout restores its stock exactly once | Two concurrent cancellation runs over one expired checkout restore each product's stock once |
 
 **Not testable as stated, and deliberately replaced.** "Money must be correct" and "the system must
 be reliable" appear in no table because neither names an observable. They are covered by INV-1
-through INV-10.
+through INV-15.
 
 ## 2. Entities
 
@@ -43,11 +48,14 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 | Session | id, userId, expiresAt, revokedAt, revokedReason | One per login; revocation is explicit and recorded with a reason; `expiresAt` is enforced | 2 †|
 | RefreshToken | sessionId, tokenHash, expiresAt, usedAt | Unique tokenHash; rotated on every use | 2 †|
 | Product | id, organizationId, name, priceMinor, currency, status | Tenant-scoped product access | 3 |
-| Inventory | productId, available, reserved, version | Non-negative quantities; unique productId | 3 |
-| Order | id, organizationId, buyerId, status, totalMinor, currency | Totals immutable after creation | 4 |
+| Inventory | productId, available, reserved, version | Non-negative quantities; unique productId. `reserved` stays 0 — stock is decided at checkout, never held | 3 |
+| Cart | id, buyerId, updatedAt | One per buyer | 4 |
+| CartItem | cartId, productId, quantity | Quantity 1–10; unique (cartId, productId) | 4 |
+| Checkout | id, buyerId, status, totalMinor, currency, placedAt | One currency; groups one order per seller; owns the payment | 4 |
+| Order | id, checkoutId, organizationId, buyerId, status, totalMinor, currency | One seller per order; totals immutable after creation | 4 |
 | OrderItem | orderId, productId, quantity, unitPriceMinor | Positive quantity; snapshotted price | 4 |
-| IdempotencyKey | organizationId, key, requestHash, status, response | Unique (organizationId, key) | 5 |
-| Payment | id, orderId, status, amountMinor, currency, providerRef | One logical capture per payment | 6 |
+| IdempotencyKey | buyerId, key, requestHash, status, response | Unique (buyerId, key) | 5 |
+| Payment | id, checkoutId, status, amountMinor, currency, providerRef | One logical capture per checkout | 6 |
 | PaymentAttempt | paymentId, attempt, status, request, response | Unique provider operation key | 6 |
 | WebhookEvent | provider, eventId, type, payload, status | Unique (provider, eventId) | 6 |
 | LedgerAccount | id, organizationId, type, currency, ownerRef | Unique account identity and currency | 8 |
@@ -57,6 +65,11 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 | OutboxEvent | aggregateType, aggregateId, type, payload, status | Claim and retry metadata | 10 |
 | Payout | organizationId, status, amountMinor, currency, providerRef | Idempotent payout operation | 11 |
 | AuditLog | actor, organization, action, resource, before, after, requestId | Immutable chronological record | 12 |
+| Address | id, buyerId, fields | Snapshotted onto the order at checkout | R2 |
+| Review | productId, buyerId, rating, body, sellerReply | Unique (productId, buyerId); only after a Completed order containing the product | R2 |
+| WishlistItem | buyerId, productId | Unique (buyerId, productId); never affects stock | R2 |
+| Promotion | organizationId, code, kind, value, status | Unique (organizationId, code); seller-funded | R2 |
+| Category | id, slug, name | Unique slug | R2 |
 
 **Ownership note.** `LedgerEntry` has no `updatedAt` and no soft-delete column. That is not an
 omission: INV-7 is enforced by the schema offering no way to violate it, which is stronger than a
@@ -90,7 +103,8 @@ readiness check and CI on the day it lands. The full measurement is in
 ## 3. Money
 
 1. Store money as integer minor units, such as cents. **Never binary floating point.**
-2. Store currency on every money-bearing aggregate, and prevent cross-currency balancing.
+2. Store currency on every money-bearing aggregate, and prevent cross-currency balancing. A checkout
+   holds one currency; a cart mixing currencies cannot be checked out.
 3. Snapshot unit price and tax or fee inputs on the order item at purchase time.
 4. Use database transactions to write business state and ledger state atomically where required.
 5. Calculate displayed balances from entries, or from a verified projection that can be rebuilt.
@@ -113,6 +127,7 @@ transaction must sum to zero for each currency. Account naming makes the economi
 | Event | Debit | Credit | Required check |
 |---|---|---|---|
 | Payment captured for 100 with 10 fee | Platform cash 100 | Seller payable 90, platform revenue 10 | Entries sum to zero |
+| One checkout captured for 150: seller A 100, seller B 50, 10% fee | Platform cash 150 | Seller A payable 90, seller B payable 45, platform revenue 15 | Entries sum to zero; seller shares match their orders (INV-13) |
 | Full refund of 100 | Seller payable 90, platform revenue 10 | Platform cash 100 | Total refunds do not exceed capture |
 | Seller payout of 90 | Seller payable 90 | Platform cash 90 | Payout is eligible and unique |
 
@@ -140,8 +155,11 @@ it, and a state no endpoint can enter is scaffolding. It arrives with the operat
 | Legal | Illegal |
 |---|---|
 | Pending payment → Paid | Completed → Pending payment |
-| Paid → Fulfilling | Cancelled → Paid |
+| Pending payment → Cancelled (checkout unpaid 30 minutes; stock restored) | Cancelled → Paid |
+| Paid → Fulfilling | |
 | Fulfilling → Completed | |
+
+Every order of a checkout moves together on payment and on cancellation.
 
 ### Payment
 
@@ -155,8 +173,11 @@ it, and a state no endpoint can enter is scaffolding. It arrives with the operat
 
 | Legal | Illegal |
 |---|---|
-| Requested → Processing | Succeeded → Requested |
+| Requested → Processing (seller approves) | Succeeded → Requested |
+| Requested → Rejected (seller rejects) | Rejected → Processing |
 | Processing → Succeeded or Failed | |
+
+A buyer opens a refund in `Requested`; only the order's seller moves it on.
 
 ### Payout
 
