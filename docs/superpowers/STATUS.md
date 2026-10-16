@@ -1013,3 +1013,40 @@ fails one that does not.
   failed twice in about ten runs (once inside the parallel whole-repo gate) and passed on every rerun,
   including 6 consecutive runs of the file alone. Nothing in this stack touches `apps/api`, and jest
   does not load the ESLint config. Not diagnosed; the whole-repo gate then passed 33/33.
+
+## Shared UI and form helpers — 2026-10-16 (BL-002)
+
+**Claim:** the heading, the inline link, the panel surface and the form request are each written once,
+and the pages that used copies of them look and behave the same.
+**Branches:** `bl2/01-ui-heading-link` … `bl2/04-close-bl-002`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The components | `pnpm --filter @app/ui test` | **37 passed** (27 before) — element, outline level, `as` pass-through, variants |
+| Polymorphic props are typed | a probe `<TextLink as="button" href={42}>` under `tsc` | rejected |
+| The helpers | `pnpm --filter web exec vitest run src/lib/forms` | **7 passed** |
+| The pages, unchanged in behaviour | `pnpm --filter web test` | **83 passed** (76 before; the page tests are untouched) |
+| In a real browser | `pnpm --filter e2e test:behavioural` | **20 passed**, after the components and again after the helpers |
+| No copies left | `git grep` for the heading, link and card class strings in `apps/web/src` | none |
+
+### Delivered
+
+- `@app/ui`: `PageHeading` (level 1 or 2), `TextLink` and `Card` (`panel`, `raised`) rendering as the
+  element the caller names, `ArrowRightIcon`; props in `interfaces/` with a shared `PolymorphicProps`.
+- `apps/web/src/lib/forms/`: `firstIssuePerField`, `postJson`, `SERVER_UNREACHABLE_MESSAGE`.
+
+### Deviation
+
+**`postJson` is a function, not the `useFormSubmit` hook the backlog proposed.** The repeated code was
+the request and its three outcomes, not the `pending`/`error` state: each form's state is two
+`useState` calls whose success branches differ (a redirect, a reload, a router call). A hook would
+have taken those branches as callbacks and saved less than it hid. Cost if wrong: one more helper
+later, with the function already the core of it.
+
+### Not proven / deferred
+
+- The session loader in `lib/session/client.tsx` keeps its own request code: it reads a typed session,
+  distinguishes a refusal from a failure, and is not a form post.
+- No visual check; the classes are the same strings, which the component tests assert in part.
