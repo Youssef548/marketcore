@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { z } from 'zod';
-import { CurrencyCodes, ProductSchema, type CurrencyCode, type Product } from '@app/contracts';
+import {
+  CurrencyCodes,
+  ProductSchema,
+  ProductStatuses,
+  type CurrencyCode,
+  type Product,
+} from '@app/contracts';
 import { Alert, Button, Field } from '@app/ui';
 import { createProduct, useReadySession } from '@/lib/session/client';
 
@@ -83,17 +89,35 @@ export default function ProductsPage() {
     void load();
   }, [load]);
 
+  const products = state.status === 'ready' ? state.products : [];
+  const published = products.filter(({ status }) => status === ProductStatuses.PUBLISHED).length;
+
+  // The Stitch products screen (048): a page head with the count and the primary action,
+  // count cards, then one card holding the table. Only what the API returns is drawn —
+  // name, status and price — so the design's stock, sales, trend and edit columns, its
+  // search and its filter are absent rather than painted with numbers nobody measured.
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <p className="text-sm text-ink-muted">
-          {activeOrganization === null
-            ? 'Choose an organization above to see its catalog.'
-            : `The catalog of ${activeOrganization.name}.`}
-        </p>
+    <div className="space-y-5">
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <div className="min-w-0">
+          {/* The top bar's `h1` names the page; this is the page's own head, as the
+           * design draws it, one level below. */}
+          <h2 className="text-2xl font-bold tracking-tight text-ink">Products</h2>
+          <p className="mt-1 text-sm text-ink-muted">
+            {activeOrganization === null
+              ? 'Choose an organization above to see its catalog.'
+              : state.status === 'ready'
+                ? `${products.length} ${products.length === 1 ? 'product' : 'products'} · ${activeOrganization.name}`
+                : `The catalog of ${activeOrganization.name}.`}
+          </p>
+        </div>
 
         {organizationId !== null && (
-          <Button size="sm" variant={adding ? 'secondary' : 'primary'} onClick={() => setAdding((open) => !open)}>
+          <Button
+            variant={adding ? 'secondary' : 'primary'}
+            onClick={() => setAdding((open) => !open)}
+          >
+            {!adding && <PlusIcon />}
             {adding ? 'Cancel' : 'Add product'}
           </Button>
         )}
@@ -102,84 +126,144 @@ export default function ProductsPage() {
       {adding && organizationId !== null && <AddProductForm onCreated={load} />}
 
       {organizationId === null ? (
-        <p className="rounded-brand border border-rule bg-panel px-4 py-3 text-sm text-ink-muted">
+        <p className="rounded-xl border border-rule bg-panel px-5 py-4 text-sm text-ink-muted">
           No organization is selected. Choose one above and its catalog appears here.
         </p>
       ) : state.status === 'failed' ? (
-        <Alert>{state.message}</Alert>
+        <Alert className="border-l-4">{state.message}</Alert>
       ) : state.status === 'loading' ? (
-        <div role="status" className="space-y-2 rounded-brand border border-rule bg-panel p-4" aria-busy>
+        <div role="status" className="space-y-3 rounded-xl border border-rule bg-panel p-5" aria-busy>
           <span className="sr-only">Loading products…</span>
           <div className="h-3 w-1/3 rounded bg-sunken" />
           <div className="h-3 w-2/3 rounded bg-sunken" />
           <div className="h-3 w-1/2 rounded bg-sunken" />
         </div>
-      ) : state.products.length === 0 ? (
-        <div className="rounded-brand border border-rule bg-panel px-6 py-10 text-center">
-          <p className="text-sm font-medium text-ink">No products yet</p>
-          <p className="mt-1 text-xs text-ink-muted">
+      ) : products.length === 0 ? (
+        <div className="rounded-xl border border-rule bg-panel px-6 py-12 text-center">
+          <p className="text-base font-semibold text-ink">No products yet</p>
+          <p className="mt-1 text-sm text-ink-muted">
             Add the first product to {activeOrganization?.name ?? 'this organization'}&apos;s catalog.
           </p>
           {!adding && (
-            <Button size="sm" className="mt-4" onClick={() => setAdding(true)}>
+            <Button className="mt-5" onClick={() => setAdding(true)}>
+              <PlusIcon />
               Add product
             </Button>
           )}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-brand border border-rule">
-          <table className="w-full border-collapse text-sm">
-            <caption className="sr-only">
-              Products{activeOrganization === null ? '' : ` in ${activeOrganization.name}`}
-            </caption>
-            <thead>
-              <tr className="bg-sunken text-left">
-                <th scope="col" className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
-                  Product
-                </th>
-                <th scope="col" className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
-                  Status
-                </th>
-                <th scope="col" className="px-4 py-2.5 text-right text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
-                  Price
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {state.products.map((product) => (
-                <tr key={product.id} className="border-t border-rule bg-panel">
-                  <td className="px-4 py-3 font-medium text-ink">
-                    {/* The direction's status thread: the leading edge carries the
-                     * state, so a row is findable by scanning the margin. */}
-                    <span
-                      aria-hidden
-                      className={`mr-3 inline-block h-4 w-[3px] rounded-sm align-middle ${
-                        product.status === 'PUBLISHED' ? 'bg-positive' : 'bg-rule-strong'
-                      }`}
-                    />
-                    {product.name}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                        product.status === 'PUBLISHED'
-                          ? 'bg-positive-wash text-positive'
-                          : 'bg-sunken text-ink-muted'
-                      }`}
-                    >
-                      {product.status.toLowerCase()}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono text-xs text-ink">
-                    {money(product.priceMinor, product.currency)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          {/* Counts of the rows below, and nothing the API does not return: the design's
+           * stock and inventory-value cards need data this page does not fetch. */}
+          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Count label="Products" value={products.length} />
+            <Count label="Published" value={published} />
+            <Count label="Draft" value={products.length - published} />
+          </dl>
+
+          <section aria-labelledby="all-products" className="overflow-hidden rounded-xl border border-rule bg-panel">
+            <header className="border-b border-rule px-5 py-4 sm:px-6">
+              <h3 id="all-products" className="text-base font-bold tracking-tight text-ink">
+                All products
+              </h3>
+            </header>
+
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                <caption className="sr-only">
+                  Products{activeOrganization === null ? '' : ` in ${activeOrganization.name}`}
+                </caption>
+                <thead>
+                  <tr className="bg-sunken text-left">
+                    <th scope="col" className={HEADER_CELL}>
+                      Product
+                    </th>
+                    <th scope="col" className={HEADER_CELL}>
+                      Status
+                    </th>
+                    <th scope="col" className={`${HEADER_CELL} text-right`}>
+                      Price
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((product) => {
+                    const live = product.status === ProductStatuses.PUBLISHED;
+
+                    return (
+                      <tr key={product.id} className="border-t border-rule bg-panel hover:bg-canvas">
+                        <td className="px-5 py-3.5 font-semibold text-ink sm:px-6">
+                          {/* The leading dot carries the state, so a row is findable by
+                           * scanning the margin; the pill beside it says it in words. */}
+                          <span className="flex items-center gap-3">
+                            <span
+                              aria-hidden
+                              className={`h-2 w-2 shrink-0 rounded-full ${
+                                live ? 'bg-positive ring-2 ring-positive-wash' : 'bg-ink-faint opacity-60'
+                              }`}
+                            />
+                            {product.name}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5 sm:px-6">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                              live
+                                ? 'border-transparent bg-positive-wash text-positive'
+                                : 'border-rule bg-sunken text-ink-muted'
+                            }`}
+                          >
+                            <span
+                              aria-hidden
+                              className={`h-1.5 w-1.5 rounded-full ${live ? 'bg-positive' : 'bg-ink-muted'}`}
+                            />
+                            {product.status.toLowerCase()}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5 text-right font-mono text-ink tabular-nums sm:px-6">
+                          {money(product.priceMinor, product.currency)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </>
       )}
     </div>
+  );
+}
+
+/** A table header cell: 12px, the type floor, rather than the 11px it used to be. */
+const HEADER_CELL =
+  'whitespace-nowrap px-5 py-3 text-xs font-semibold uppercase tracking-wider text-ink-faint sm:px-6';
+
+/** One count card. A `dt`/`dd` pair, so the number is read with what it counts. */
+function Count({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-rule bg-panel px-5 py-4">
+      <dt className="text-sm font-medium text-ink-muted">{label}</dt>
+      <dd className="mt-2 text-3xl font-bold tracking-tight text-ink tabular-nums">{value}</dd>
+    </div>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg
+      aria-hidden
+      focusable="false"
+      viewBox="0 0 16 16"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+    >
+      <path d="M8 3v10M3 8h10" />
+    </svg>
   );
 }
 
@@ -222,11 +306,16 @@ function AddProductForm({ onCreated }: { onCreated: () => Promise<void> }) {
 
   return (
     <form
-      className="space-y-4 rounded-brand border border-rule bg-panel p-4"
+      aria-labelledby="new-product"
+      className="space-y-4 rounded-xl border border-rule bg-panel p-5 sm:p-6"
       onSubmit={submit}
       noValidate
     >
-      {error !== null && <Alert>{error}</Alert>}
+      <h3 id="new-product" className="text-base font-bold tracking-tight text-ink">
+        New product
+      </h3>
+
+      {error !== null && <Alert className="border-l-4">{error}</Alert>}
 
       <Field
         label="Name"

@@ -59,7 +59,9 @@ export function DashboardChrome({ appName, children }: { appName: string; childr
   // organization first" — and admitting someone to that is the dead end this replaces. Creating
   // the organization reloads the session, and the shell appears in place.
   if (state.session.organizations.length === 0) {
-    return <Onboarding onCreated={reload} />;
+    return (
+      <Onboarding appName={appName} email={state.session.user.email} onCreated={reload} />
+    );
   }
 
   return (

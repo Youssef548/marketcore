@@ -123,6 +123,20 @@ describe('the signed-in shell', () => {
     expect(screen.getByRole('button', { name: 'Create organization' })).toBeTruthy();
   });
 
+  it('says who is signed in on the first-run screen, so "wrong account?" can be answered', async () => {
+    // The first-run screen offers a way out for the wrong account, which is only useful
+    // if it says which account this is. The bar names it, and names it to a screen reader.
+    fetchMock.mockResolvedValue(response(200, NO_ORGANIZATIONS));
+
+    renderShell();
+
+    await screen.findByRole('heading', { name: /not in an organization yet/i });
+    expect(screen.getByRole('banner').textContent).toContain('Signed in as owner@marketcore.test');
+    expect(screen.getByRole('button', { name: 'Sign out' })).toBeTruthy();
+    // The product is named by the app's name, not a literal the deployment cannot change.
+    expect(screen.getByRole('banner').textContent).toContain('marketcore');
+  });
+
   it('creates the first organization and admits the session to the shell', async () => {
     // The first read belongs to nothing; every read after it has the organization that
     // creating produced. That difference is the whole mechanism.
