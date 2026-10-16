@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react';
 import { ErrorEnvelopeSchema } from '@app/contracts';
+import { SERVER_UNREACHABLE_MESSAGE } from '@/lib/forms/post-json';
 import { messageFrom } from '@/lib/http/browser';
 import { SessionViewSchema, type SessionView } from './session';
 import type { ReadySession, SessionState } from './interfaces/client.interface';
@@ -27,7 +28,7 @@ async function readSession(): Promise<SessionState> {
   try {
     response = await fetch('/api/session', { headers: { accept: 'application/json' } });
   } catch {
-    return { status: 'failed', message: 'Could not reach the server' };
+    return { status: 'failed', message: SERVER_UNREACHABLE_MESSAGE };
   }
 
   if (response.status === 401) return { status: 'anonymous' };
