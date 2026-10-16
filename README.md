@@ -284,6 +284,10 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
   not resolve used to pass both ESLint and `tsc`. It needed two rules, not one: `no-unknown` reports a
   file that *resolves* and belongs to no element, and is silent on a path that resolves to nothing at
   all — which `import/no-unresolved` catches. Both are enabled, with a fixture per shape.
+  **Correction, 2026-10-16:** until BL-001, `no-unknown` and the colour-literal rule fired only in the
+  fixture workspace. Their globs were written relative to the repo root, and flat config resolves them
+  against each package's own config directory, so they matched no real file. They are package-relative
+  now, and a fixture package with its own config proves each fires where turbo actually runs it.
 - **No visual regression testing.** No stable rendering environment; a flaky visual gate is worse than
   none.
 
@@ -307,6 +311,9 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
   `dto/`, `repositories/` and `interfaces/` folders; controllers, services and the module file stay at
   the module root. Code that belongs to no module lives in `apps/api/src/common/`. The rule, and the
   check that fails on a loose file, are in `.agents/skills/nestjs-code-conventions`.
+- **Exported shapes live in `*.interface.ts` files**, in every app and package — never inline in a
+  component or service. A type derived from a value beside it (`z.infer`, `typeof`) stays with that
+  value, so a contract's schema and its type cannot drift. A lint error, not a habit.
 - **The web app holds the session, not the browser.** `apps/web` is a BFF: its route handlers are the
   only code that calls the API, and both tokens live in `httpOnly` cookies.
 - **No `.env` in git.** `.env.example` files only.

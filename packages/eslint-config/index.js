@@ -6,6 +6,38 @@ import importPlugin from 'eslint-plugin-import';
 // Two levels up from this file: packages/eslint-config -> packages -> repo root.
 const PROJECT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
+const SOURCE_FILES = '**/src/**/*.{ts,tsx}';
+const TEST_FILES = ['**/*.{test,spec,e2e-spec,integration-spec}.{ts,tsx}'];
+
+// A colour belongs in the token layer, not in a component. This used to be a habit —
+// a `grep` in the README — and a grep is not a gate: it is run by whoever remembers.
+const COLOUR_LITERAL = {
+  // A colour inside a class list counts, so the match is anchored at a word
+  // boundary — the start of the string, after whitespace, or after the `[` of an
+  // arbitrary Tailwind value — rather than requiring the literal to *be* a colour.
+  selector: 'Literal[value=/(^|\\s|\\[)(#[0-9a-fA-F]{3,8}|oklch\\(|rgba?\\(|hsla?\\()/]',
+  message:
+    'A colour value belongs in the token layer (packages/ui/src/tokens.css), named for the job it does. A component names a role — bg-action, text-ink, border-rule — never a value.',
+};
+
+// An exported, hand-written shape lives in a `*.interface.ts` file — in an `interfaces/`
+// folder, or beside its code as `packages/domain` and `packages/runtime` keep them — so a reader finds every
+// shape in one place and an importer never reaches into an implementation file for one
+// (BL-001). Two shapes are allowed where they are, deliberately: a type derived from a
+// value beside it — `z.infer<typeof X>` is a type reference, `(typeof X)[keyof typeof X]`
+// an indexed access, neither matched below — because moving it would split a type from
+// its single source; and an unexported type, which belongs to its file.
+const SHARED_TYPE_MESSAGE =
+  'An exported interface or hand-written type belongs in a <concern>.interface.ts file (in an interfaces/ folder, or beside its code as packages/domain does), imported where it is used. Types derived from a value beside them (z.infer, typeof) stay where they are.';
+const SHARED_TYPE_DECLARATIONS = [
+  { selector: 'ExportNamedDeclaration > TSInterfaceDeclaration', message: SHARED_TYPE_MESSAGE },
+  {
+    selector:
+      'ExportNamedDeclaration > TSTypeAliasDeclaration[typeAnnotation.type=/^(TSUnionType|TSIntersectionType|TSTypeLiteral|TSFunctionType|TSLiteralType|TSTupleType|TSMappedType)$/]',
+    message: SHARED_TYPE_MESSAGE,
+  },
+];
+
 /**
  * The boundary rules: apps never import each other, packages never import an
  * app, and the tooling packages stay build/lint-time only. Violations are
@@ -35,8 +67,6 @@ export function defineConfig({ type, tsconfigRootDir, importRules = true, rootPa
   if (!tsconfigRootDir) {
     throw new Error('defineConfig: pass tsconfigRootDir: import.meta.dirname');
   }
-
-  const isApp = type.startsWith('app-');
 
   const elements = [
     { type: 'app', pattern: 'apps/*' },
@@ -112,34 +142,30 @@ export function defineConfig({ type, tsconfigRootDir, importRules = true, rootPa
   // deliberately ignores an unresolved *side-effect-only* import. It was recorded in the
   // README as a known gap because the fix belongs in this file rather than in a package.
   //
-  // Both directions are listed; the consuming package's own tree first, so a reader sees
-  // their own code at the front of the pattern.
-  const own = isApp ? 'apps/*/src/**/*.{ts,tsx}' : 'packages/*/src/**/*.{ts,tsx}';
-  const other = isApp ? 'packages/*/src/**/*.{ts,tsx}' : 'apps/*/src/**/*.{ts,tsx}';
-
+  // `files` globs resolve against the directory of the config that spreads this one —
+  // each package's own `eslint.config.mjs` — so a repo-relative glob such as
+  // `packages/*/src/**` matched nothing in any real package, and this rule and the colour
+  // rule below were silent everywhere except the fixture workspace, whose config happens
+  // to sit at a repo-shaped root. `**/src/**` matches both: `src/…` from a package, and
+  // `packages/pkg/src/…` from the fixture root. The package-rooted fixture test is what
+  // keeps this from regressing.
   rules.push({
-    files: [own, other],
+    files: [SOURCE_FILES],
     rules: { 'boundaries/no-unknown': 'error' },
   });
 
-  // A colour belongs in the token layer, not in a component. This used to be a habit —
-  // a `grep` in the README — and a grep is not a gate: it is run by whoever remembers.
+  // Two `no-restricted-syntax` gates share these blocks, because a later config setting the
+  // same rule replaces an earlier one for the files both match: a `.tsx` block of its own
+  // for the types rule would have switched the colour rule off.
   rules.push({
-    files: ['apps/*/src/**/*.tsx', 'packages/*/src/**/*.tsx'],
-    ignores: ['**/*.test.tsx'],
-    rules: {
-      'no-restricted-syntax': [
-        'error',
-        {
-          // A colour inside a class list counts, so the match is anchored at a word
-          // boundary — the start of the string, after whitespace, or after the `[` of an
-          // arbitrary Tailwind value — rather than requiring the literal to *be* a colour.
-          selector: 'Literal[value=/(^|\\s|\\[)(#[0-9a-fA-F]{3,8}|oklch\\(|rgba?\\(|hsla?\\()/]',
-          message:
-            'A colour value belongs in the token layer (packages/ui/src/tokens.css), named for the job it does. A component names a role — bg-action, text-ink, border-rule — never a value.',
-        },
-      ],
-    },
+    files: ['**/src/**/*.tsx'],
+    ignores: TEST_FILES,
+    rules: { 'no-restricted-syntax': ['error', COLOUR_LITERAL, ...SHARED_TYPE_DECLARATIONS] },
+  });
+  rules.push({
+    files: ['**/src/**/*.ts'],
+    ignores: [...TEST_FILES, '**/interfaces/**', '**/*.interface.ts', '**/*.d.ts'],
+    rules: { 'no-restricted-syntax': ['error', ...SHARED_TYPE_DECLARATIONS] },
   });
 
   rules.push({ languageOptions: { parserOptions: { tsconfigRootDir } } });

@@ -966,3 +966,50 @@ with behaviour unchanged.
   top bar; the shell is shared by every page and is not one of the four, and most of that chrome is
   for features that do not exist.
 - **No automated visual check** — screenshots were taken by hand, the same gap already recorded.
+
+## Shared types in their own files — 2026-10-16 (BL-001)
+
+**Claim:** every exported, hand-written interface or type lives in a `*.interface.ts` file, and lint
+fails one that does not.
+**Branches:** `bl/02-api-client-types` … `bl/06-lint-types-rule`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The rule and its fixtures | `pnpm --filter @app/eslint-config test` | **16 passed** — an exported interface and a union fail; a derived type, a private type and an `interfaces/` file pass, each asserted to have parsed |
+| The rules fire in a real package | a probe file in `packages/ui/src` and in `apps/web/src`, `npx eslint` | colour literal, exported interface and exported union each reported; derived and private types pass |
+| The fixture test catches the old globs | revert the globs to `packages/*/src/**`, run the suite | **4 failed** — restored, 16 passed |
+| Every package complies | `pnpm turbo run lint --force --continue` | **9/9** |
+| Nothing moved changed behaviour | `pnpm --filter @app/ui test`, `pnpm --filter web test`, `pnpm --filter @app/api-client test` | 27, 76, 8 passed; every entry point re-exports the moved names |
+
+### Delivered
+
+- 23 declarations moved: `packages/api-client` (4), `apps/web/src/lib/http` (2), `apps/web/src/lib/session`
+  (9), `packages/ui` (8).
+- A `no-restricted-syntax` gate on exported interfaces and hand-written type aliases outside
+  `*.interface.ts`, sharing one rule entry with the colour gate so neither switches the other off.
+
+### Findings
+
+1. **Two lint gates this file records as proven were silent in every real package.** `boundaries/no-unknown`
+   and the colour-literal rule used repo-relative globs (`packages/*/src/**`). Flat config resolves `files`
+   against the directory of the config that spreads them — each package's own — so they matched nothing.
+   A `#ff0000` in `packages/ui/src` and in `apps/web/src` passed lint. The fixture suite stayed green because
+   its config sits at a repo-shaped root: it tested the rules, not the place they run. The globs are
+   `**/src/**` now, and a package-rooted fixture config is the regression test.
+2. **Two "allows" tests could pass for the wrong reason.** The fixture configs set no TypeScript parser,
+   so a `.ts` fixture with an interface was a parse error — which reports no rule, so "this does not fire"
+   held trivially. The parser is explicit and the allow tests assert `fatalErrorCount` is 0.
+3. **The 2026-10-16 scan missed nothing it was meant to find**, but it was a grep. The rule found the same
+   set, and accepted the `*.interface.ts` files `packages/domain` and `packages/runtime` already keep
+   beside their code.
+
+### Not proven / deferred
+
+- `apps/api` already complied and was not touched.
+- BL-002 (shared UI and helpers) is still open.
+- **A flaky API e2e test, unrelated to this change:** `auth (e2e) › refuses /auth/me with no token`
+  failed twice in about ten runs (once inside the parallel whole-repo gate) and passed on every rerun,
+  including 6 consecutive runs of the file alone. Nothing in this stack touches `apps/api`, and jest
+  does not load the ESLint config. Not diagnosed; the whole-repo gate then passed 33/33.
