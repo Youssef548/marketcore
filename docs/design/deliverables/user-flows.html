@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MarketCore — user flows, shipped and next sprints</title>
+<title>MarketCore — user flows, shipped and planned</title>
 <style>
   :root{
     --paper:#f6f4ef;
@@ -62,6 +62,12 @@
   .role.db{border-color:#c6cdb2;background:#eef1e6}
   .role.worker{border-color:#d8c3a8;background:#f7eee3}
   .role.provider{border-color:#d6b0b0;background:#f7eaea}
+  .role.alt{border-color:#d3b3b0;background:#f7eae9}
+
+  .alts{margin-top:12px;display:grid;gap:6px}
+  .alts .alt{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .alts .alt .when{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);min-width:0}
+  .alts .alt .tx{color:var(--ink)}
 
   /* ---------- main ---------- */
   main{padding:38px 44px 90px;max-width:1180px}
@@ -108,6 +114,8 @@
   .pill.proven{background:var(--proven-bg);color:var(--proven)}
   .pill.next{background:var(--next-bg);color:var(--next)}
   .pill.gap{background:var(--gap-bg);color:var(--gap)}
+  .pill.rel{background:#efece5;color:var(--ink);border:1px solid var(--line-strong)}
+  .flow h3 .no{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;font-weight:400;color:var(--faint);margin-right:8px;letter-spacing:0}
 
   .note{margin-top:16px;border:1px dashed var(--line-strong);background:#fbfaf7;padding:12px 15px;font-size:13px;color:var(--muted)}
   .note b{color:var(--ink)}
@@ -128,7 +136,8 @@ const ROLES = {
   api:      "API",
   db:       "Database",
   worker:   "Worker",
-  provider: "Payment provider"
+  provider: "Payment provider",
+  alt:      "Alternate outcome"
 };
 
 const PHASES = [
@@ -142,6 +151,7 @@ const PHASES = [
     lede: "Identity, tenancy and catalog are built, and the operator web app signs a user in, holds the session in httpOnly cookies and selects an organization. Everything below is exercised by unit, e2e, integration or behavioural tests.",
     flows: [
       {
+        no: "01-02",
         title: "Create an account",
         who: ["buyer", "seller"],
         steps: [
@@ -158,6 +168,7 @@ const PHASES = [
         gate: "pnpm --filter api test:e2e"
       },
       {
+        no: "01-03",
         title: "Sign in and hold a session",
         who: ["buyer","seller"],
         steps: [
@@ -174,6 +185,7 @@ const PHASES = [
         gate:"pnpm --filter e2e test:behavioural"
       },
       {
+        no: "01-04",
         title: "Stay signed in across a stale access token",
         who: ["buyer","seller"],
         steps: [
@@ -188,6 +200,7 @@ const PHASES = [
         gate:"pnpm --filter web test"
       },
       {
+        no: "01-05",
         title: "Act inside one organization (tenant)",
         who: ["seller","api"],
         steps: [
@@ -203,6 +216,7 @@ const PHASES = [
         gate:"pnpm --filter api test:e2e"
       },
       {
+        no: "01-06",
         title: "Manage a product (seller)",
         who: ["seller"],
         steps: [
@@ -218,6 +232,7 @@ const PHASES = [
         gate:"pnpm --filter api test:integration"
       },
       {
+        no: "01-07",
         title: "Sign out",
         who: ["buyer","seller"],
         steps: [
@@ -234,183 +249,365 @@ const PHASES = [
   },
 
   {
-    id: "w3",
+    id: "p4",
     dot: "wip",
-    nav: "Week 3 · Phase 4",
-    navsub: "Checkout + the stock-1 race",
-    kicker: "Next up — in progress",
-    title: "Transactional checkout and the last-unit race",
-    lede: "The project's headline claim: 100 buyers competing for one unit produce exactly one order and stock 0. This is where the row lock, the order insert and the inventory decrement commit together.",
+    nav: "Phase 4 · Release 1",
+    navsub: "Cart + all-or-nothing checkout",
+    kicker: "Next up — Release 1",
+    title: "One cart across sellers, one all-or-nothing checkout",
+    lede: "The headline claim, now through a buyer's cart: 100 buyers holding the last unit produce exactly one checkout and stock 0. A checkout spans sellers — one order per seller, all created or none — and nothing is reserved at add-to-cart, so the race stays at checkout. The worker arrives here as a plain interval process to cancel unpaid checkouts.",
     flows: [
       {
-        title: "Checkout (the race)",
+        no: "02-01",
+        rel: "Release 1",
+        title: "Buy across two sellers",
+        who: ["buyer","web","api","db"],
+        steps: [
+          { role:"buyer", label:"Browse every seller’s published products" },
+          { role:"api",   label:"Add to cart — seller A, then seller B (stock unchanged, no hold)" },
+          { role:"web",   label:"Cart grouped by seller, live availability (≤ 10 per line)" },
+          { role:"web",   label:"Review step — every price and stock change" },
+          { role:"buyer", label:"Confirm the changes once, one currency" },
+          { role:"api",   label:"Place order (Idempotency-Key scoped to the buyer)" },
+          { role:"db",    label:"One transaction: 1 Checkout + 2 Orders" },
+          { role:"web",   label:"Order placed — Pending payment" }
+        ],
+        detail: [
+          "A buyer is a user with no organization membership. They see every organization’s <b>published</b> products, stock count included (D53, D61); drafts, orders, members and the ledger stay private (INV-9, narrowed).",
+          "The cart lives on the server, one per buyer, and records <b>intent only</b>. Adding a line does not touch inventory — reserving at add-to-cart was rejected because it moved the race and let one account hold every unit (D55, D58).",
+          "Lines are grouped by seller with live availability (“Only N left”, “Sold out”) and capped at 10 units (D59, D72). A buyer reads only their own cart (INV-12).",
+          "One review step lists every price change and stock problem since the line was added, so the buyer confirms once instead of being surprised at the end (D60).",
+          "The buyer confirms once. A cart that mixes currencies is refused here — one currency per checkout (D71).",
+          "Buying requires an account; there is no guest checkout (D54). The key is scoped to the buyer, not an organization, because this checkout spans organizations (INV-2, rescoped).",
+          "One <code>Checkout</code> groups the seller orders and will own the payment. Every seller’s order is created or none is (INV-11, D56–D57).",
+          "Phase 4 ships checkout as “Place order”: the orders are created <b>Pending payment</b> and the payment step arrives in phases 6–7 (D62)."
+        ],
+        alts: [
+          { role:"alt", when:"Changes not confirmed or mixed currency", label:"Place order stays disabled" }
+        ],
+        proves:["next"],
+        invariant:"INV-11 — every seller’s order or none · INV-12 — own cart only",
+        decisions:"D53–D62, D71, D72",
+        gate:"pnpm --filter api test:e2e",
+        models:"Cart, CartItem, Checkout, Order (+ checkoutId)"
+      },
+      {
+        no: "02-02",
+        rel: "Release 1",
+        title: "Checkout — 100 buyers, 1 unit",
         who: ["buyer","api","db"],
         steps: [
-          { role:"buyer", label:"100 buyers: checkout 1 unit" },
-          { role:"api",   label:"Begin transaction" },
-          { role:"db",    label:"SELECT … FOR UPDATE on inventory (row lock)" },
-          { role:"api",   label:"Check available ≥ requested" },
-          { role:"db",    label:"Insert Order + OrderItems (price snapped)" },
-          { role:"db",    label:"Decrement available, bump version" },
+          { role:"buyer", label:"Place order — the last unit sits in 100 carts" },
+          { role:"api",   label:"BEGIN transaction" },
+          { role:"db",    label:"Lock every line’s inventory row — FOR UPDATE, in product-id order" },
+          { role:"api",   label:"Every line available ≥ quantity?" },
+          { role:"db",    label:"Decrement every line, bump version" },
+          { role:"db",    label:"Insert Checkout + one Order per seller" },
           { role:"db",    label:"Write OutboxEvent" },
-          { role:"api",   label:"COMMIT → 1 success, 99 refused" }
+          { role:"api",   label:"COMMIT — exactly 1 checkout wins" }
         ],
-        detail: ["Postgres runs at READ COMMITTED, so the lock — not the transaction alone — is what makes exactly one writer win. The outbox write joins the same transaction so a committed order can never lose its event."],
+        detail: [
+          "Every buyer places the order from their cart. Nothing was reserved when they added it, so all 100 carts can hold the same last unit — the contest happens here, once (D58).",
+          "Lock, check, decrement and insert commit together, or not at all.",
+          "Postgres runs at READ COMMITTED, so the row lock — not the transaction alone — makes exactly one writer win. A multi-seller cart locks several rows, so they are always locked in <b>product-id order</b>: two overlapping carts cannot deadlock (RISK-003).",
+          "<b>All or nothing</b>: one short line fails the whole checkout. There is no partial order for the lines that did fit (INV-11, D57).",
+          "The decrement can never take available below 0 — the database <code>CHECK</code> backs the lock (INV-1).",
+          "Prices are snapped onto the order items. Each order keeps one seller’s <code>organizationId</code> and gains the <code>checkoutId</code>.",
+          "The outbox write joins the same transaction, so a committed checkout can never lose its event.",
+          "One checkout commits; the other 99 roll back with a 409 and nothing created. Stock ends at 0."
+        ],
+        alts: [
+          { role:"alt", when:"Any line short", label:"Rollback → 409, nothing created — the other 99, and one short line fails all" }
+        ],
         proves:["next"],
-        invariant:"INV-1 — inventory never negative",
+        invariant:"INV-1 — never negative · INV-11 — all or nothing",
+        decisions:"D57, D58",
         gate:"pnpm --filter api test:concurrency",
-        models:"Order, OrderItem",
-        risks:["Losing the lock would let two orders both decrement from 1."]
+        models:"Checkout, Order, OrderItem, OutboxEvent",
+        risks:["Losing the lock would let two checkouts both decrement from 1. Locking rows in any order but product id can deadlock overlapping carts."]
+      },
+      {
+        no: "02-03",
+        rel: "Release 1",
+        title: "Lose the last unit",
+        who: ["buyer","web","api","db"],
+        steps: [
+          { role:"buyer", label:"Two buyers hold the last unit in their carts" },
+          { role:"api",   label:"Both place order" },
+          { role:"db",    label:"Row lock — the second waits" },
+          { role:"api",   label:"Unit still available?" },
+          { role:"api",   label:"First buyer: COMMIT — checkout + order" },
+          { role:"web",   label:"Second buyer: back to the cart — line flagged Sold out" }
+        ],
+        detail: [
+          "Both carts showed the unit as available — the cart is intent, not a hold (D58).",
+          "Both requests start a checkout transaction at the same moment.",
+          "The second transaction blocks on the inventory row until the first commits or rolls back.",
+          "When the lock is released the second sees available 0 and fails its check.",
+          "The winner gets a checkout and an order, Pending payment.",
+          "The loser’s transaction rolls back: <b>0 orders, 0 stock change, not charged</b> — no payment exists yet. The buyer is returned to the cart with the failing line flagged “Sold out” (D59)."
+        ],
+        alts: [
+          { role:"alt", when:"Second buyer", label:"Rollback — 0 orders · 0 stock change · not charged" }
+        ],
+        proves:["next"],
+        invariant:"INV-1, INV-11 — the loser is charged nothing",
+        decisions:"D59",
+        gate:"pnpm --filter e2e test:behavioural",
+        models:"Cart, CartItem"
+      },
+      {
+        no: "02-04",
+        rel: "Release 1",
+        title: "Abandoned checkout auto-cancelled",
+        who: ["worker","db"],
+        steps: [
+          { role:"worker", label:"Interval tick — checkouts unpaid 30 min" },
+          { role:"db",     label:"UPDATE checkout → Cancelled WHERE status = Pending payment" },
+          { role:"worker", label:"Row count = 1?" },
+          { role:"db",     label:"Orders → Cancelled, restore stock (same transaction)" },
+          { role:"worker", label:"Stock restored exactly once" }
+        ],
+        detail: [
+          "A checkout still unpaid 30 minutes after placement is cancelled. The worker moves forward to phase 4 as a <b>plain interval process</b> — no Redis, no queue (D70, ADR 0001 amended).",
+          "Exactly-once comes from a <b>conditional update</b> on the checkout’s status, not from the worker’s memory or a lock service.",
+          "Only the run whose update changed a row goes on to restock.",
+          "Its orders move Pending payment → Cancelled and every line’s stock is restored in the same transaction as the status change.",
+          "Two overlapping runs, or a run racing a late payment, restock at most once (INV-15). Phase 10 adds queues to this same process."
+        ],
+        alts: [
+          { role:"alt", when:"Row count 0", label:"Another run won — no restock" }
+        ],
+        proves:["next"],
+        invariant:"INV-15 — stock restored exactly once",
+        decisions:"D70",
+        gate:"pnpm --filter worker test:integration",
+        models:"Checkout, Order (+ Cancelled), Inventory"
       }
     ]
   },
 
   {
-    id: "w4",
+    id: "p5",
     dot: "planned",
-    nav: "Week 4 · Phases 5–6",
+    nav: "Phases 5–6 · Release 1",
     navsub: "Idempotency + payments",
-    kicker: "Planned",
+    kicker: "Planned — Release 1",
     title: "Retry-safe checkout and the payment simulator",
-    lede: "A client that retries must not create a second order, and an order must be paid at most once for the same amount — decided behind a provider port so a deterministic simulator stands in for Stripe.",
+    lede: "A buyer who retries must not create a second checkout, and a checkout must be paid at most once — one charge for every seller’s order, decided behind a provider port so a deterministic simulator stands in for Stripe.",
     flows: [
       {
+        no: "03-01",
+        rel: "Release 1",
         title: "Retry the same checkout",
-        who: ["buyer","api"],
+        who: ["buyer","api","db"],
         steps: [
-          { role:"buyer", label:"20 repeats, one Idempotency-Key" },
-          { role:"api",   label:"Look up (organizationId, key)" },
-          { role:"api",   label:"First call: run checkout, store response" },
+          { role:"buyer", label:"Place order from the cart, 20 times, one Idempotency-Key" },
+          { role:"api",   label:"Look up (buyerId, key)" },
+          { role:"api",   label:"Key seen before?" },
+          { role:"api",   label:"First call: run checkout once" },
+          { role:"db",    label:"Store status + response" },
           { role:"api",   label:"Replays: return the stored response" }
         ],
-        detail: ["One key creates at most one logical operation. The stored response also means a replay returns the same body rather than a fresh attempt."],
+        detail: [
+          "A double click or a network retry sends the same key many times.",
+          "The key is scoped to the <b>buyer</b>, not an organization: a checkout spans sellers, so <code>(organizationId, key)</code> cannot identify it (INV-2, rescoped by CR-001).",
+          "One key creates at most one logical operation.",
+          "The first call runs the checkout: one Checkout, one order per seller.",
+          "The stored response is what later calls return.",
+          "A replay returns the same body rather than a fresh attempt — replays are no-ops."
+        ],
         proves:["next"],
-        invariant:"INV-2 — at most one operation per key",
+        invariant:"INV-2 — at most one checkout per (buyer, key)",
+        decisions:"CR-001 impact: INV-2",
         gate:"pnpm --filter api test:e2e",
         models:"IdempotencyKey"
       },
       {
-        title: "Pay for an order",
-        who: ["buyer","provider"],
+        no: "03-02",
+        rel: "Release 1",
+        title: "Pay for a checkout",
+        who: ["api","provider","db"],
         steps: [
-          { role:"api",   label:"Order pending → create Payment" },
+          { role:"api",      label:"Payment created for the checkout (Pending)" },
           { role:"provider", label:"Attempt capture (simulator or Stripe test)" },
-          { role:"api",   label:"Pending → Processing → Succeeded" },
-          { role:"db",    label:"Record PaymentAttempt (unique op key)" }
+          { role:"api",      label:"Capture succeeded?" },
+          { role:"db",       label:"Succeeded + PaymentAttempt — every order of the checkout → Paid" }
         ],
-        detail: ["Illegal transitions are rejected at the domain boundary: a failed payment cannot become succeeded without a new attempt, and a succeeded payment cannot be captured twice."],
+        detail: [
+          "<b>One buyer charge per checkout</b>, not per order: <code>Payment.orderId</code> becomes <code>Payment.checkoutId</code> (D63).",
+          "Behind the provider port a deterministic simulator stands in for Stripe test mode.",
+          "Illegal transitions are rejected at the domain boundary: a failed payment cannot become succeeded without a new attempt, and a succeeded payment cannot be captured twice.",
+          "A checkout is paid at most once (INV-3, rescoped from the order), and every seller’s order moves to Paid together. Each seller’s share is credited by the ledger and moved later by a payout (separate charges and transfers, ADR 014)."
+        ],
+        alts: [
+          { role:"alt", when:"Capture failed", label:"Failed — needs a new attempt" }
+        ],
         proves:["next"],
-        invariant:"INV-3 — paid at most once",
+        invariant:"INV-3 — a checkout paid at most once",
+        decisions:"D62, D63",
         gate:"pnpm --filter api test:e2e",
-        models:"Payment, PaymentAttempt"
+        models:"Payment (checkoutId), PaymentAttempt"
       }
     ]
   },
 
   {
-    id: "w5",
+    id: "p7",
     dot: "planned",
-    nav: "Weeks 5–7 · Phases 7–9",
-    navsub: "Stripe, ledger, refunds",
-    kicker: "Planned",
-    title: "Webhooks, the double-entry ledger and refunds",
-    lede: "Money becomes auditable: every financial event writes a balanced ledger transaction, a duplicated webhook causes each side effect once, and a refund can never exceed what was captured.",
+    nav: "Phases 7–9 · Release 1",
+    navsub: "Stripe, split ledger, refunds",
+    kicker: "Planned — Release 1",
+    title: "Webhooks, the split double-entry ledger and buyer refunds",
+    lede: "Money becomes auditable: every financial event writes a balanced ledger transaction, one capture is split into each seller’s payable and the platform’s revenue, a duplicated webhook causes each side effect once, and a refund can never exceed what was captured.",
     flows: [
       {
-        title: "A payment webhook arrives",
-        who: ["provider","api"],
+        no: "04-01",
+        rel: "Release 1",
+        title: "Payment webhook",
+        who: ["provider","api","db"],
         steps: [
           { role:"provider", label:"Stripe posts the event (maybe twice)" },
-          { role:"api",   label:"WebhookEvent unique (provider, eventId)" },
-          { role:"api",   label:"Already seen → 200, no work" },
-          { role:"db",    label:"Else: order/payment transition + ledger tx" }
+          { role:"api",      label:"(provider, eventId) seen?" },
+          { role:"api",      label:"Transition payment + every order of the checkout" },
+          { role:"db",       label:"Write ledger transaction" }
         ],
-        detail: ["Deduplication is keyed on the provider's own event id, so a reordered or repeated delivery is a no-op rather than a double charge."],
+        detail: [
+          "Providers deliver at least once and out of order.",
+          "Deduplication is keyed on the provider’s own event id in a unique <code>WebhookEvent</code> row, so a repeated delivery is a no-op rather than a double charge.",
+          "One payment covers the checkout, so a single event moves <b>every seller’s order</b> of that checkout — never one order on its own.",
+          "The ledger transaction is written in the same unit of work as the transition."
+        ],
+        alts: [
+          { role:"alt", when:"Duplicate delivery", label:"200 — no work" }
+        ],
         proves:["next"],
-        invariant:"INV-4 — side effect at most once",
+        invariant:"INV-4 — each side effect at most once",
+        decisions:"D63",
         gate:"pnpm --filter api test:e2e",
         models:"WebhookEvent"
       },
       {
+        no: "04-02",
+        rel: "Release 1",
         title: "Capture posts to the ledger",
         who: ["api","db"],
         steps: [
-          { role:"api",   label:"Capture 100, fee 10" },
-          { role:"db",    label:"Debit platform cash 100" },
-          { role:"db",    label:"Credit seller payable 90 + platform revenue 10" },
-          { role:"db",    label:"Signed entries sum to 0, per currency" }
+          { role:"api", label:"Capture 150: seller A 100, seller B 50, fee 10%" },
+          { role:"db",  label:"Debit platform cash 150" },
+          { role:"db",  label:"Credit seller A payable 90" },
+          { role:"db",  label:"Credit seller B payable 45" },
+          { role:"db",  label:"Credit platform revenue 15" },
+          { role:"db",  label:"Signed entries sum to 0, per currency" }
         ],
-        detail: ["Entries are append-only: <code>LedgerEntry</code> has no update or delete path, so INV-7 is enforced by the schema offering no way to violate it. Amounts are integer minor units; <code>signedAmountMinor</code> is a BigInt with a wire string codec."],
+        detail: [
+          "One charge for a two-seller checkout. Amounts are integer minor units; <code>signedAmountMinor</code> is a BigInt with a wire string codec.",
+          "The platform holds the whole capture first — separate charges and transfers (D63, ADR 014).",
+          "Seller A’s share: 100 less the 10% fee.",
+          "Seller B’s share: 50 less the 10% fee.",
+          "The fee is the platform’s revenue. The seller shares plus the fee equal the capture (INV-13).",
+          "Entries are append-only: <code>LedgerEntry</code> has no update or delete path, so INV-7 is enforced by the schema offering no way to violate it. Payouts later move each seller’s payable."
+        ],
         proves:["next"],
-        invariant:"INV-6 and INV-7 — balances, append-only",
+        invariant:"INV-6 balances · INV-7 append-only · INV-13 seller shares + fee = capture",
+        decisions:"D63",
         gate:"pnpm --filter api test:integration",
         models:"LedgerAccount, LedgerTransaction, LedgerEntry"
       },
       {
-        title: "Refund a payment",
-        who: ["seller","provider"],
+        no: "04-03",
+        rel: "Release 1",
+        title: "Buyer requests a refund, seller approves",
+        who: ["buyer","seller","api","provider","db"],
         steps: [
-          { role:"seller", label:"Request refund ≤ captured total" },
-          { role:"api",   label:"Requested → Processing" },
-          { role:"provider", label:"Provider refund" },
-          { role:"db",    label:"Reversing ledger transaction (never an edit)" },
-          { role:"api",   label:"→ Succeeded or Failed" }
+          { role:"buyer",    label:"My orders → request refund" },
+          { role:"api",      label:"Own order, Paid or later?" },
+          { role:"db",       label:"Refund Requested — on that seller’s Refunds screen" },
+          { role:"seller",   label:"Seller approves?" },
+          { role:"api",      label:"≤ order total and ≤ captured?" },
+          { role:"provider", label:"Provider refund on the checkout payment" },
+          { role:"db",       label:"Reversing ledger transaction — that seller’s share only" },
+          { role:"buyer",    label:"Buyer sees the refund status" }
         ],
-        detail: ["Cumulative refunds can never exceed the capture, checked in the transaction. Corrections use compensating entries rather than editing history."],
+        detail: [
+          "The buyer asks from their own order list (D64). A buyer reads only their own orders (INV-12).",
+          "An order still Pending payment, or someone else’s, is refused before anything is recorded.",
+          "The request is a <code>Refund</code> in a new <b>Requested</b> state, raised by the buyer and shown on the seller’s existing Refunds screen.",
+          "The seller decides; a rejection is a new <b>Rejected</b> state the buyer sees. A seller refunds only their own order.",
+          "Cumulative refunds never exceed the order total or the capture, checked in the transaction (INV-5).",
+          "The refund is issued against the one checkout payment, for this order’s amount.",
+          "Corrections are compensating entries, never edits: only this seller’s payable is reversed.",
+          "The buyer sees Requested, Rejected, or the refund’s outcome."
+        ],
+        alts: [
+          { role:"alt", when:"Not eligible", label:"Refused — e.g. still Pending payment" },
+          { role:"alt", when:"Seller says no", label:"Rejected — shown to the buyer" },
+          { role:"alt", when:"Over the cap", label:"Reject — over cap" }
+        ],
         proves:["next"],
-        invariant:"INV-5 — refunds ≤ captures",
+        invariant:"INV-5 — refunds ≤ captures · INV-12 — own orders only",
+        decisions:"D64",
         gate:"pnpm --filter api test:e2e",
-        models:"Refund"
+        models:"Refund (+ Requested by buyer, Rejected)"
       }
     ]
   },
 
   {
-    id: "w8",
+    id: "p10",
     dot: "planned",
-    nav: "Weeks 8–9 · Phases 10–11",
-    navsub: "Outbox, worker, payouts",
+    nav: "Phases 10–11",
+    navsub: "Outbox, queues, payouts, audit",
     kicker: "Planned",
     title: "Asynchronous work that survives a crash",
-    lede: "The worker arrives with the outbox: work is claimed from the database, retried, and processed exactly once even if a process is killed between commit and publication.",
+    lede: "The worker already runs from phase 4; here it gains the outbox and queues. Work is claimed from the database, retried, and processed exactly once even if a process is killed between commit and publication. Release 1 closes with this phase.",
     flows: [
       {
-        title: "An outbox event is processed",
+        no: "05-01",
+        title: "Outbox event processed",
         who: ["api","worker","db"],
         steps: [
-          { role:"api",   label:"Commit business state + OutboxEvent (one tx)" },
+          { role:"api",    label:"Commit business state + OutboxEvent (one tx)" },
           { role:"worker", label:"Claim pending rows (skip locked)" },
           { role:"worker", label:"Perform side effect" },
-          { role:"db",    label:"Mark processed; on crash, retry" }
+          { role:"worker", label:"Worker crashed mid-flight?" },
+          { role:"db",     label:"Mark processed — exactly once" }
         ],
-        detail: ["Killed between commit and publication, the event is still recovered and processed <b>exactly once</b> — the claim predicate, not the worker's memory, is the guard."],
+        detail: ["Killed between commit and publication, the event is still recovered and processed <b>exactly once</b> — the claim predicate, not the worker’s memory, is the guard. A crashed claim leaves the row claimable, so it is retried."],
+        alts: [
+          { role:"alt", when:"Crashed", label:"Row stays claimable → retried" }
+        ],
         proves:["next"],
         invariant:"INV-10 — recoverable after a crash",
         gate:"pnpm --filter worker test:e2e",
-        models:"OutboxEvent (+ Redis arrives)"
+        models:"OutboxEvent (+ queues added to the phase-4 worker)"
       },
       {
+        no: "05-02",
         title: "Two workers race one payout",
-        who: ["worker","provider"],
+        who: ["worker","db","provider"],
         steps: [
-          { role:"worker", label:"Both claim the same Payout" },
-          { role:"db",    label:"One claim wins the state predicate" },
-          { role:"provider", label:"Exactly one provider transfer" },
-          { role:"worker", label:"Requested → Processing → Paid" }
+          { role:"worker",   label:"Both workers claim the same Payout" },
+          { role:"db",       label:"State predicate won?" },
+          { role:"provider", label:"Exactly one provider transfer" }
         ],
-        detail: ["The payout operation is idempotent at the boundary: a duplicate claim is refused before any money moves."],
+        detail: ["The payout operation is idempotent at the boundary: a duplicate claim is refused before any money moves. A payout moves one seller’s payable from the split ledger."],
+        alts: [
+          { role:"alt", when:"Lost the predicate", label:"Loser stops — no money moves" }
+        ],
         proves:["next"],
         invariant:"INV-8 — payout executed at most once",
         gate:"pnpm --filter worker test:e2e",
         models:"Payout"
       },
       {
-        title: "Every mutation is recorded",
+        no: "05-03",
+        title: "Audit a mutation",
         who: ["api","db"],
         steps: [
-          { role:"api",   label:"Actor, organization, action, before/after" },
-          { role:"db",    label:"Append immutable AuditLog row" },
-          { role:"api",   label:"Carry the requestId" }
+          { role:"api", label:"Mutation performed" },
+          { role:"db",  label:"Append AuditLog (actor, org, action, before/after)" },
+          { role:"api", label:"Carry requestId — joins the log line" }
         ],
         detail: ["The request id finally reaches the domain layer here, joining an audit record to the log line for the same request."],
         proves:["next"],
@@ -422,26 +619,70 @@ const PHASES = [
   },
 
   {
-    id: "w10",
+    id: "r2",
     dot: "planned",
-    nav: "Weeks 10–12 · Phases 12–15",
+    nav: "Release 2 · after phase 11",
+    navsub: "Delivery, reviews, discovery",
+    kicker: "Planned — Release 2",
+    title: "The rest of the storefront",
+    lede: "Release 2 is committed scope that cannot start before phase 11 closes, and cannot delay the invariant phases: addresses and delivery, account and saved payments, reviews, wishlist, discovery (home, category, search, seller store, mobile) and seller-funded promotions (D68). One journey is drawn; the rest are screens rather than new correctness claims.",
+    flows: [
+      {
+        no: "06-01",
+        rel: "Release 2",
+        title: "Deliver and review",
+        who: ["buyer","seller","api","db"],
+        steps: [
+          { role:"buyer",  label:"Checkout with a saved address (snapshotted onto the order)" },
+          { role:"seller", label:"Fulfil: Paid → Fulfilling → Completed" },
+          { role:"buyer",  label:"Write a review" },
+          { role:"api",    label:"Completed order with it, no review yet?" },
+          { role:"db",     label:"Review stored — unique (product, buyer)" },
+          { role:"seller", label:"Seller may reply, never delete" }
+        ],
+        detail: [
+          "The address is copied onto the order at checkout, so editing a saved address never rewrites where a past order went.",
+          "The seller moves their own order through fulfilment to Completed.",
+          "Only a verified buyer reviews (D65).",
+          "Eligibility: an order containing the product is Completed, and this buyer has not reviewed it yet.",
+          "One review per buyer per product, enforced by a unique constraint rather than a check in code.",
+          "A seller may answer a review but can never remove it."
+        ],
+        alts: [
+          { role:"alt", when:"Not eligible", label:"Refused — not a verified buyer" }
+        ],
+        proves:["next"],
+        invariant:"One review per (product, buyer), verified buyers only",
+        decisions:"D65, D68",
+        gate:"pnpm --filter api test:e2e",
+        models:"Address, Review"
+      }
+    ]
+  },
+
+  {
+    id: "p12",
+    dot: "planned",
+    nav: "Phases 12–15",
     navsub: "Telemetry, load, deploy",
     kicker: "Planned",
     title: "Operate it and ship it",
-    lede: "No new invariant — this is the phase where the system is measured, deployed and presented. Every claim above gets a number or a URL behind it.",
+    lede: "No new invariant — this is where the system is measured, deployed and presented, after Release 2. Every claim above gets a number or a URL behind it.",
     flows: [
       {
+        no: "07-01",
         title: "Prove it under load and in the cloud",
         who: ["api","worker"],
         steps: [
           { role:"api",    label:"Telemetry / tracing" },
-          { role:"worker", label:"k6 load scenario → published numbers" },
+          { role:"worker", label:"k6 load scenario" },
+          { role:"api",    label:"Published numbers" },
           { role:"api",    label:"AWS deployment" },
           { role:"api",    label:"Hardening + portfolio write-up" }
         ],
         detail: ["The repository is engineering evidence: each completed phase closes with a runnable command that proves its exit gate, and the README records what is proven versus planned."],
         proves:["next"],
-        invariant:"—",
+        invariant:"— (evidence for the rest)",
         gate:"pnpm turbo run lint typecheck test:coverage build",
         models:"—"
       }
@@ -488,16 +729,22 @@ function renderPhase(i){
         return '<div class="step" role="button" tabindex="0" aria-pressed="false" data-f="'+fi+'" data-s="'+si+'">' +
                  '<span class="rl">'+ROLES[s.role]+'</span><span class="tx">'+s.label+'</span></div>' + arrow;
       }).join("");
-      const pills = (f.proves||[]).map(x => '<span class="pill '+x+'">'+(x==="proven"?"Proven":x==="gap"?"Gap":"Planned")+'</span>').join("");
+      const pills = (f.rel ? '<span class="pill rel">'+f.rel+'</span>' : "") +
+        (f.proves||[]).map(x => '<span class="pill '+x+'">'+(x==="proven"?"Proven":x==="gap"?"Gap":"Planned")+'</span>').join("");
+      const alts = f.alts ? '<div class="alts">' + f.alts.map(a =>
+          '<div class="alt">'+roleChip(a.role)+'<span class="when">'+a.when+'</span><span class="tx">'+a.label+'</span></div>'
+        ).join("") + '</div>' : "";
       const meta =
+        alts +
         '<div class="meta">' +
           '<div><b>Invariant</b>'+f.invariant+'</div>' +
+          (f.decisions ? '<div><b>Decisions</b>'+f.decisions+'</div>' : "") +
           '<div><b>Exit gate</b><code>'+f.gate+'</code></div>' +
           '<div><b>Models</b>'+(f.models||"—")+'</div>' +
         '</div>' +
         (f.risks ? '<div class="note"><b>Watch:</b> '+f.risks.join(" ")+'</div>' : "") +
         (f.gap ? '<div class="note"><b>Gap:</b> '+f.gap+'</div>' : "");
-      return '<section class="flow"><header><h3>'+f.title+'</h3><div class="who">' +
+      return '<section class="flow" id="flow-'+(f.no||fi)+'"><header><h3>'+(f.no ? '<span class="no">'+f.no+'</span>' : "")+f.title+'</h3><div class="who">' +
                (f.who||[]).map(roleChip).join("") + pills +
              '</div></header><div class="body">' +
                '<div class="rail">'+rail+'</div>' +
@@ -505,7 +752,7 @@ function renderPhase(i){
                meta +
              '</div></section>';
     }).join("") +
-    '<footer class="page">Source of truth: <code>README.md</code> (roadmap), <code>docs/domain-model.md</code> (invariants), <code>docs/superpowers/STATUS.md</code> (evidence). Generated for planning — not a committed artifact.</footer>';
+    '<footer class="page">Hand-authored. Journeys, numbering, steps and outcomes match the generated diagrams in <code>flows/</code> (<code>generators/gen-flows.mjs</code>); storefront scope and the D-numbers come from CR-001 (<code>docs/superpowers/specs/2026-10-16-cr-001-buyer-storefront.md</code>). The project has no fixed dates: work is ordered by phase, and the storefront ships in Release 1 (alongside phases 4–11) and Release 2 (after phase 11). Source of truth: <code>README.md</code> (roadmap), <code>docs/domain-model.md</code> (invariants), <code>docs/superpowers/STATUS.md</code> (evidence).</footer>';
 
   // wire nav state
   [...nav.querySelectorAll(".navbtn")].forEach(b =>
