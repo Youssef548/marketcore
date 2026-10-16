@@ -31,6 +31,10 @@ Act as the tech lead for this repository. For substantial work, do not jump stra
 - A feature module groups its artifacts by type: `dto/`, `repositories/` and `interfaces/` folders,
   with controllers, services and the module file at the module root. Shared non-module code lives in
   `apps/api/src/common/`.
+- An exported, hand-written `interface` or `type` lives in a `<concern>.interface.ts` file — in an
+  `interfaces/` folder, or beside its code as `packages/domain` does — never inline in a component,
+  service or module. Types derived from a value beside them (`z.infer<typeof X>`, `(typeof X)[keyof typeof X]`)
+  and unexported types stay where they are. ESLint enforces it (`packages/eslint-config`).
 - Global API behaviour belongs in `apps/api/src/app.setup.ts`, not only in `main.ts`.
 - Tenant identity comes from `x-organization-id`, resolved by guards, not controllers.
 - Every route is guarded by default; `@Public()`, `@TenantFree()`, and `@OwnerOnly()` are the greppable opt-outs.

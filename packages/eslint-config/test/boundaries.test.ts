@@ -32,6 +32,17 @@ async function lintFile(relativePath: string) {
   return result;
 }
 
+/**
+ * Lints from inside the fixture package, with its own `eslint.config.mjs` — how turbo runs
+ * every real package. A rule that fires only from the fixture root is a rule that fires
+ * nowhere real.
+ */
+async function lintFromPackage(relativePath: string) {
+  const eslint = new ESLint({ cwd: join(FIXTURES, 'packages', 'pkg') });
+  const [result] = await eslint.lintFiles([relativePath]);
+  return result;
+}
+
 const rulesFired = (result: Awaited<ReturnType<typeof lintFile>>) =>
   result.messages.map((message) => message.ruleId);
 
@@ -104,6 +115,44 @@ describe('colour literals', () => {
   it('forbids a colour value in a component', async () => {
     // The check used to be a `grep` in the README, which is a habit rather than a gate.
     const result = await lintFile('packages/pkg/src/colour-literal.tsx');
+    expect(rulesFired(result)).toContain('no-restricted-syntax');
+  });
+});
+
+describe('shared type declarations', () => {
+  it('forbids an exported interface or hand-written type in an implementation file', async () => {
+    const result = await lintFile('packages/pkg/src/exported-interface.ts');
+    expect(rulesFired(result).filter((id) => id === 'no-restricted-syntax')).toHaveLength(2);
+  });
+
+  it('allows a type derived from a value beside it, and a private type', async () => {
+    const result = await lintFile('packages/pkg/src/derived-type.ts');
+    expect(result.fatalErrorCount).toBe(0);
+    expect(rulesFired(result)).not.toContain('no-restricted-syntax');
+  });
+
+  it('allows the same shapes in an interfaces/ file', async () => {
+    const result = await lintFile('packages/pkg/src/interfaces/shape.interface.ts');
+    expect(result.fatalErrorCount).toBe(0);
+    expect(rulesFired(result)).not.toContain('no-restricted-syntax');
+  });
+});
+
+describe('rules fire from a package-rooted config, as in every real package', () => {
+  // These failed before the globs were package-relative: `packages/*/src/**` resolved
+  // against the package directory and matched nothing, so the rules passed silently.
+  it('forbids a colour value', async () => {
+    const result = await lintFromPackage('src/colour-literal.tsx');
+    expect(rulesFired(result)).toContain('no-restricted-syntax');
+  });
+
+  it('forbids a file that belongs to no element', async () => {
+    const result = await lintFromPackage('src/imports-loose.ts');
+    expect(rulesFired(result)).toContain('boundaries/no-unknown');
+  });
+
+  it('forbids an exported shape outside an interfaces/ file', async () => {
+    const result = await lintFromPackage('src/exported-interface.ts');
     expect(rulesFired(result)).toContain('no-restricted-syntax');
   });
 });

@@ -7,7 +7,7 @@ the plan cites its ID.
 
 ## BL-001 — Shared types live in their own files, not in implementation files
 
-**Raised:** 2026-10-16 · **Priority:** Should · **Size:** M
+**Raised:** 2026-10-16 · **Priority:** Should · **Size:** M · **Status:** done — the BL-001 PR stack
 
 ### Problem
 

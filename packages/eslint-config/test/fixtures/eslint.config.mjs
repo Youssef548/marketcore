@@ -11,11 +11,15 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // `type: 'app-fixture'` selects the app element type, which is part of what is
 // under test.
 //
+// The TypeScript parser is set explicitly: without it a `.ts` fixture that declares an
+// interface is a parse error, which reports no rule at all — and an "allows" test then
+// passes for the wrong reason.
+//
 // JSX is enabled explicitly: one fixture is a `.tsx` component, and without this the
 // parser fails with "Unexpected token <" and the rule under test never runs. Real
 // consumers get it from `tseslint.configs.recommended`, which this fixture deliberately
 // does not spread — it exists to test the boundary rules, not the recommended set.
 export default tseslint.config(
-  { languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
+  { languageOptions: { parser: tseslint.parser, parserOptions: { ecmaFeatures: { jsx: true } } } },
   ...defineConfig({ type: 'app-fixture', tsconfigRootDir: HERE, rootPath: HERE }),
 );
