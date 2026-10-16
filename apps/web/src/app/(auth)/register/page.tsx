@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PASSWORD_MIN_LENGTH, RegisterRequestSchema } from '@app/contracts';
 import { Alert, Button, Field } from '@app/ui';
+import { ArrowIcon } from '@/components/public-frame';
 import { messageFrom } from '@/lib/http/browser';
 
 /**
@@ -66,44 +67,50 @@ export default function RegisterPage() {
   }
 
   return (
-    <form className="space-y-5" onSubmit={submit} noValidate>
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">Create an account</h1>
+    // The Stitch register screen (046): heading, email, password with its policy
+    // stated beneath it, the action, then the way back to sign in.
+    <form className="space-y-4" onSubmit={submit} noValidate>
+      <div className="mb-6 space-y-1.5">
+        <h1 className="text-2xl font-bold tracking-tight text-ink">Create your account</h1>
         <p className="text-sm text-ink-muted">You will be asked to sign in afterwards.</p>
-      </header>
-
-      {formError !== null && <Alert>{formError}</Alert>}
+      </div>
 
       <Field
         label="Email"
         name="email"
         type="email"
         autoComplete="email"
+        placeholder="you@example.com"
+        size="lg"
         value={email}
         error={fieldErrors.email}
         onChange={(event) => setEmail(event.target.value)}
       />
 
-      <div className="space-y-2">
-        <Field
-          label="Password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          value={password}
-          error={fieldErrors.password}
-          onChange={(event) => setPassword(event.target.value)}
-        />
-        <p className="text-xs text-ink-muted">At least {PASSWORD_MIN_LENGTH} characters.</p>
-      </div>
+      {/* The policy is the field's hint, so the input is described by it — a screen
+       * reader hears the rule with the field rather than only if it goes looking. */}
+      <Field
+        label="Password"
+        name="password"
+        type="password"
+        autoComplete="new-password"
+        size="lg"
+        hint={`At least ${PASSWORD_MIN_LENGTH} characters.`}
+        value={password}
+        error={fieldErrors.password}
+        onChange={(event) => setPassword(event.target.value)}
+      />
 
-      <Button type="submit" busy={pending} className="w-full">
+      {formError !== null && <Alert className="border-l-4">{formError}</Alert>}
+
+      <Button type="submit" size="lg" busy={pending} className="w-full">
         {pending ? 'Creating…' : 'Create account'}
+        {!pending && <ArrowIcon />}
       </Button>
 
-      <p className="text-sm text-ink-muted">
-        Already registered?{' '}
-        <Link className="text-action underline" href="/login">
+      <p className="pt-2 text-center text-sm text-ink-muted">
+        Already have one?{' '}
+        <Link className="font-semibold text-action underline underline-offset-2" href="/login">
           Sign in
         </Link>
       </p>

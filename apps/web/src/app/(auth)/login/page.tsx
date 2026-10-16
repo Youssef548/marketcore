@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LoginRequestSchema } from '@app/contracts';
 import { Alert, Button, Field } from '@app/ui';
+import { ArrowIcon } from '@/components/public-frame';
 import { messageFrom, safeRedirect } from '@/lib/http/browser';
 
 /**
@@ -64,23 +65,24 @@ function LoginForm() {
   }
 
   return (
-    <form className="space-y-5" onSubmit={submit} noValidate>
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">Sign in</h1>
+    // The Stitch sign-in screen (040), error state included: heading, two fields, the
+    // refusal as a banner between the fields and the action, then the way to register.
+    <form className="space-y-4" onSubmit={submit} noValidate>
+      <div className="mb-6 space-y-1.5">
+        <h1 className="text-2xl font-bold tracking-tight text-ink">Sign in</h1>
         <p className="text-sm text-ink-muted">Use the account you registered.</p>
-      </header>
+      </div>
 
       {params.get('registered') === '1' && (
         <Alert variant="success">Account created. Sign in to continue.</Alert>
       )}
-
-      {formError !== null && <Alert>{formError}</Alert>}
 
       <Field
         label="Email"
         name="email"
         type="email"
         autoComplete="email"
+        size="lg"
         value={email}
         error={fieldErrors.email}
         onChange={(event) => setEmail(event.target.value)}
@@ -91,20 +93,27 @@ function LoginForm() {
         name="password"
         type="password"
         autoComplete="current-password"
+        size="lg"
         value={password}
         error={fieldErrors.password}
         onChange={(event) => setPassword(event.target.value)}
       />
 
+      {/* Below the fields, where the design puts it, so it is read in order with the
+       * button it explains. The leading edge is the design's: the same attention
+       * colour as the border, thicker, so the banner reads as a refusal at a glance. */}
+      {formError !== null && <Alert className="border-l-4">{formError}</Alert>}
+
       {/* `busy` rather than `disabled`: a disabled submit button drops keyboard
        * focus and sends the user back to the top of the form mid-submit. */}
-      <Button type="submit" busy={pending} className="w-full">
+      <Button type="submit" size="lg" busy={pending} className="w-full">
         {pending ? 'Signing in…' : 'Sign in'}
+        {!pending && <ArrowIcon />}
       </Button>
 
-      <p className="text-sm text-ink-muted">
+      <p className="pt-2 text-center text-sm text-ink-muted">
         No account?{' '}
-        <Link className="text-action underline" href="/register">
+        <Link className="font-semibold text-action underline underline-offset-2" href="/register">
           Create one
         </Link>
       </p>
