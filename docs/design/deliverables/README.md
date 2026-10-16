@@ -7,9 +7,9 @@ scripts are the source, and a rerun rewrites the committed output in place.
 
 | Path | What it is |
 |---|---|
-| `user-flows.html` | One page, every journey from live today to week 12 — click a step for what happens and why. |
-| `flows/` | The same flows as one SVG per diagram (16) + `index.html`. Actor swimlanes and an alternate-outcome lane. |
-| `system-design/` | C4 context and containers, the module map, the entity map, and five sequence diagrams (refresh rotation, checkout race, webhook dedupe, outbox recovery, payout race). |
+| `user-flows.html` | One page, every journey from live today to week 12 — click a step for what happens and why. **Hand-authored, not generated, and it predates CR-001**: it still shows the single-seller checkout. `flows/` is the current set. |
+| `flows/` | One SVG per flow (21) + `index.html`. Actor swimlanes and an alternate-outcome lane. Includes the CR-001 buyer journeys: buy across two sellers, the stock-1 race through the cart, losing the last unit, the abandoned-checkout auto-cancel, the buyer refund request the seller approves, and one Release 2 journey (deliver and review). |
+| `system-design/` | C4 context and containers (the buyer storefront in `apps/web`, the worker from phase 4), the module map (Storefront, Cart, Orders + Checkout, and the Release 2 modules), the entity map (Cart, CartItem, Checkout), and six sequence diagrams (refresh rotation, the multi-seller all-or-nothing checkout, the abandoned-checkout auto-cancel, webhook dedupe, outbox recovery, payout race). |
 | `ui/stitch/` | **The UI, designed.** 37 Stitch `[Senior Craft]` screens — operator and storefront — the design source for every page (ADR 013, amended). See `ui/stitch/README.md`. |
 | `ui/tokens.json` | The Quartz token set in Tokens Studio / W3C shape — 21 colour tokens, radius, type. Import into Figma so the design and the build share one vocabulary. Committed as a file; its generator was removed with the board. |
 | `ui/before-after.html` | **The shipped flow, before and after the responsive and accessibility pass** — 7 screens × 2 states, self-contained, with the layout numbers beside them. |
@@ -37,7 +37,8 @@ instead of a screenshot that goes stale.
 The screens come from Stitch project `3383911874392417631`, seeded from Quartz's `DESIGN.md`; their
 content is the real seed data in `packages/database/prisma/seed.constants.ts` (Nile Traders,
 *Nile Cotton Shirt*, E£249.00, stock 10).
-The system-design diagrams derive from `docs/architecture.md` and `docs/domain-model.md`.
+The system-design diagrams derive from `docs/architecture.md` and `docs/domain-model.md`; the
+storefront parts of both sets come from CR-001 and the storefront PRD in `docs/superpowers/specs/`.
 
 The `flows/` and `system-design/` diagrams still carry their own categorical palette for encoding
 actors and outcomes, so they are not re-tinted to Quartz. That is deliberate rather than an
