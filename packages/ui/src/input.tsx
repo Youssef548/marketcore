@@ -2,7 +2,7 @@
 
 import type { InputHTMLAttributes } from 'react';
 
-export type InputSize = 'md' | 'sm';
+export type InputSize = 'lg' | 'md' | 'sm';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /**
@@ -14,6 +14,9 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 }
 
 const sizes: Record<InputSize, string> = {
+  // The credential and first-run forms: one column, a few fields, nothing else on the
+  // screen — so the control is the size of the thing a person is there to do.
+  lg: 'h-11 px-3.5 text-sm',
   md: 'h-10 px-3 text-sm',
   sm: 'h-8 px-2.5 text-xs',
 };

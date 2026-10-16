@@ -108,6 +108,12 @@ const TEXT_ON_SURFACE: [string, string][] = [
   ['positive', 'positive-wash'],
   ['ink', 'attention-wash'],
   ['ink', 'positive-wash'],
+  // A text link, and the action-coloured glyph on the first-run screen's icon tile.
+  // Links have been `text-action` on the panel since the first web slice without the
+  // pair being measured; the Stitch re-skin adds the canvas and the sunken tile.
+  ['action', 'panel'],
+  ['action', 'canvas'],
+  ['action', 'sunken'],
 ];
 
 /**
