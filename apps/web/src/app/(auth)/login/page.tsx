@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LoginRequestSchema } from '@app/contracts';
 import { Alert, ArrowRightIcon, Button, Field, PageHeading, TextLink } from '@app/ui';
-import { messageFrom, safeRedirect } from '@/lib/http/browser';
+import { firstIssuePerField } from '@/lib/forms/issues';
+import { postJson } from '@/lib/forms/post-json';
+import { safeRedirect } from '@/lib/http/browser';
 
 /**
  * Sign in.
@@ -34,7 +36,7 @@ function LoginForm() {
 
     const parsed = LoginRequestSchema.safeParse({ email, password });
     if (!parsed.success) {
-      setFieldErrors(collectIssues(parsed.error.issues));
+      setFieldErrors(firstIssuePerField(parsed.error.issues));
       return;
     }
 
@@ -42,25 +44,16 @@ function LoginForm() {
     setFormError(null);
     setPending(true);
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(parsed.data),
-      });
+    const result = await postJson('/api/auth/login', parsed.data, 204);
+    setPending(false);
 
-      if (response.status === 204) {
-        // `next` is attacker-controllable, so it is constrained to this site.
-        router.replace(safeRedirect(params.get('next')));
-        return;
-      }
-
-      setFormError(await messageFrom(response));
-    } catch {
-      setFormError('Could not reach the server');
-    } finally {
-      setPending(false);
+    if (result.ok) {
+      // `next` is attacker-controllable, so it is constrained to this site.
+      router.replace(safeRedirect(params.get('next')));
+      return;
     }
+
+    setFormError(result.message);
   }
 
   return (
@@ -118,18 +111,6 @@ function LoginForm() {
       </p>
     </form>
   );
-}
-
-/** The first message per field, which is the one a person reads. */
-function collectIssues(issues: { path: PropertyKey[]; message: string }[]): Record<string, string> {
-  const collected: Record<string, string> = {};
-
-  for (const issue of issues) {
-    const field = String(issue.path[0] ?? 'form');
-    collected[field] ??= issue.message;
-  }
-
-  return collected;
 }
 
 export default function LoginPage() {

@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PASSWORD_MIN_LENGTH, RegisterRequestSchema } from '@app/contracts';
 import { Alert, ArrowRightIcon, Button, Field, PageHeading, TextLink } from '@app/ui';
-import { messageFrom } from '@/lib/http/browser';
+import { firstIssuePerField } from '@/lib/forms/issues';
+import { postJson } from '@/lib/forms/post-json';
 
 /**
  * Create an account.
@@ -32,12 +33,7 @@ export default function RegisterPage() {
 
     const parsed = RegisterRequestSchema.safeParse({ email, password });
     if (!parsed.success) {
-      const collected: Record<string, string> = {};
-      for (const issue of parsed.error.issues) {
-        const field = String(issue.path[0] ?? 'form');
-        collected[field] ??= issue.message;
-      }
-      setFieldErrors(collected);
+      setFieldErrors(firstIssuePerField(parsed.error.issues));
       return;
     }
 
@@ -45,24 +41,15 @@ export default function RegisterPage() {
     setFormError(null);
     setPending(true);
 
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(parsed.data),
-      });
+    const result = await postJson('/api/auth/register', parsed.data, 201);
+    setPending(false);
 
-      if (response.status === 201) {
-        router.replace('/login?registered=1');
-        return;
-      }
-
-      setFormError(await messageFrom(response));
-    } catch {
-      setFormError('Could not reach the server');
-    } finally {
-      setPending(false);
+    if (result.ok) {
+      router.replace('/login?registered=1');
+      return;
     }
+
+    setFormError(result.message);
   }
 
   return (
