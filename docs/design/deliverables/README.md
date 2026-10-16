@@ -1,13 +1,13 @@
 # Design deliverables
 
-Visual artefacts for the project. They are generated, not hand-drawn: the `generators/`
-scripts are the source, and a rerun rewrites the committed output in place.
+Visual artefacts for the project. They are generated, not hand-drawn — except `user-flows.html`
+(below): the `generators/` scripts are the source, and a rerun rewrites the committed output in place.
 
 ## What is here
 
 | Path | What it is |
 |---|---|
-| `user-flows.html` | One page, every journey from live today to week 12 — click a step for what happens and why. **Hand-authored, not generated, and it predates CR-001**: it still shows the single-seller checkout. `flows/` is the current set. |
+| `user-flows.html` | One page, every journey by phase — live today, Release 1 (phases 4–11), Release 2 (after phase 11), then phases 12–15 — click a step for what happens and why. **Hand-authored, not generated**: it carries the same journeys, numbering, steps and alternate outcomes as `flows/`, plus the invariant, CR-001 decisions, exit gate and models behind each. When `gen-flows.mjs` changes, update this page by hand to match. |
 | `flows/` | One SVG per flow (21) + `index.html`. Actor swimlanes and an alternate-outcome lane. Includes the CR-001 buyer journeys: buy across two sellers, the stock-1 race through the cart, losing the last unit, the abandoned-checkout auto-cancel, the buyer refund request the seller approves, and one Release 2 journey (deliver and review). |
 | `system-design/` | C4 context and containers (the buyer storefront in `apps/web`, the worker from phase 4), the module map (Storefront, Cart, Orders + Checkout, and the Release 2 modules), the entity map (Cart, CartItem, Checkout), and six sequence diagrams (refresh rotation, the multi-seller all-or-nothing checkout, the abandoned-checkout auto-cancel, webhook dedupe, outbox recovery, payout race). |
 | `ui/stitch/` | **The UI, designed.** 37 Stitch `[Senior Craft]` screens — operator and storefront — the design source for every page (ADR 013, amended). See `ui/stitch/README.md`. |
