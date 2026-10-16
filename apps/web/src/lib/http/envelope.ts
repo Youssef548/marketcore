@@ -1,10 +1,6 @@
 import { ApiError } from '@app/api-client';
-import { ErrorCodes, type ErrorEnvelope } from '@app/contracts';
-
-export interface FailureResponse {
-  status: number;
-  body: ErrorEnvelope;
-}
+import { ErrorCodes } from '@app/contracts';
+import type { FailureResponse } from './interfaces/http.interface';
 
 /**
  * The API's error shape, produced by the web layer.
