@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { Alert, Button, Field } from '@app/ui';
-import { ArrowIcon, AuthCard, PublicFrame } from '@/components/public-frame';
+import { Alert, ArrowRightIcon, Button, Field, PageHeading, TextLink } from '@app/ui';
+import { AuthCard, PublicFrame } from '@/components/public-frame';
 import { createOrganization, signOut } from '@/lib/session/client';
 
 /**
@@ -81,9 +81,7 @@ export function Onboarding({
             >
               <BuildingIcon />
             </span>
-            <h1 className="mb-2.5 text-2xl font-bold tracking-tight text-ink">
-              You&rsquo;re not in an organization yet
-            </h1>
+            <PageHeading className="mb-2.5">You&rsquo;re not in an organization yet</PageHeading>
             <p className="max-w-[24rem] text-sm leading-relaxed text-ink-muted">
               {appName} keeps products, orders and money inside an organization. Create one and you
               are its owner.
@@ -123,18 +121,18 @@ export function Onboarding({
            * sends the user back to the top of the form mid-submit. */}
           <Button type="submit" size="lg" busy={pending} className="w-full">
             {pending ? 'Creating…' : 'Create organization'}
-            {!pending && <ArrowIcon />}
+            {!pending && <ArrowRightIcon />}
           </Button>
 
           <p className="border-t border-rule pt-4 text-center text-sm text-ink-muted">
             Wrong account?{' '}
-            <button
+            <TextLink
+              as="button"
               type="button"
-              className="font-semibold text-action underline underline-offset-2"
               onClick={() => void signOut().then(() => window.location.assign('/login'))}
             >
               Sign out
-            </button>
+            </TextLink>
           </p>
         </form>
       </AuthCard>
