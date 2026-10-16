@@ -85,6 +85,22 @@ class name, and `packages/ui/test/tokens.spec.ts` still asserts the same twenty-
 - ADR 012 is unaffected — the component layer is still hand-rolled and Radix still arrives per widget.
   Only its description of selvedge's signature moves is amended.
 
+## Amendment — 2026-10-16 (CR-001)
+
+Quartz stays the design system; the board does not. Every screen — operator and storefront, 37 in
+all — is now designed by its Stitch `[Senior Craft]` file under `docs/design/deliverables/ui/stitch/`.
+Stitch was seeded from Quartz's `DESIGN.md`, so those screens already use its type and colours; what
+they replace is the board's layouts. `design-board.html` and `gen-ui.mjs` are deleted.
+
+- **The tokens rule, not the file's hex values.** A Stitch screen is built against
+  `packages/ui/src/tokens.css`; small colour drift in the export (`#0a0b12` for `#0b0d14`) snaps to the
+  token. The contrast test and the 12px type floor gate every page.
+- **Graphite stays, as tokens.** Stitch designs light only. Graphite remains a second value set for the
+  same names, so each Stitch layout renders dark without a dark design.
+- **The four shipped pages are re-skinned first.** Sign in, register, onboarding and products move to
+  their Stitch layouts before phase 4, so new pages are built on one set of patterns.
+- `ui/tokens.json` stays as a committed file for Figma; it no longer has a generator.
+
 ## Review date
 
 2027-01-10

@@ -10,8 +10,8 @@ scripts are the source, and a rerun rewrites the committed output in place.
 | `user-flows.html` | One page, every journey from live today to week 12 — click a step for what happens and why. |
 | `flows/` | The same flows as one SVG per diagram (16) + `index.html`. Actor swimlanes and an alternate-outcome lane. |
 | `system-design/` | C4 context and containers, the module map, the entity map, and five sequence diagrams (refresh rotation, checkout race, webhook dedupe, outbox recovery, payout race). |
-| `ui/design-board.html` | **The UI, designed — the chosen direction, Quartz.** 13 screens × 2 skins (Quartz light, Graphite dark): sign in, register, dashboard, products, product detail, orders, order detail, refunds, payouts, members, operations, foundations, states. |
-| `ui/tokens.json` | The Quartz token set in Tokens Studio / W3C shape — 21 colour tokens, radius, type. Import into Figma so the design and the build share one vocabulary. |
+| `ui/stitch/` | **The UI, designed.** 37 Stitch `[Senior Craft]` screens — operator and storefront — the design source for every page (ADR 013, amended). See `ui/stitch/README.md`. |
+| `ui/tokens.json` | The Quartz token set in Tokens Studio / W3C shape — 21 colour tokens, radius, type. Import into Figma so the design and the build share one vocabulary. Committed as a file; its generator was removed with the board. |
 | `ui/before-after.html` | **The shipped flow, before and after the responsive and accessibility pass** — 7 screens × 2 states, self-contained, with the layout numbers beside them. |
 | `ui/screens/` | The before/after PNGs and `metrics.json` — **not committed** (gitignored), captured on demand. See `ui/screens/README.md`. |
 | `generators/` | The Node scripts that produce the above. No dependencies; run with `node`. |
@@ -34,8 +34,9 @@ instead of a screenshot that goes stale.
 
 ## Provenance
 
-The UI board's tokens are defined in `generators/gen-ui.mjs`; the content is the real seed data in
-`packages/database/prisma/seed.constants.ts` (Nile Traders, *Nile Cotton Shirt*, E£249.00, stock 10).
+The screens come from Stitch project `3383911874392417631`, seeded from Quartz's `DESIGN.md`; their
+content is the real seed data in `packages/database/prisma/seed.constants.ts` (Nile Traders,
+*Nile Cotton Shirt*, E£249.00, stock 10).
 The system-design diagrams derive from `docs/architecture.md` and `docs/domain-model.md`.
 
 The `flows/` and `system-design/` diagrams still carry their own categorical palette for encoding
@@ -50,7 +51,7 @@ Open the HTML files directly — they are self-contained and need no server:
 ```bash
 open docs/design/deliverables/user-flows.html
 open docs/design/deliverables/system-design/index.html
-open docs/design/deliverables/ui/design-board.html
+open docs/design/deliverables/ui/stitch/001-marketcore-seller-overview-dashboard-admin-senior-craft.html
 ```
 
 ## Regenerating
@@ -58,7 +59,6 @@ open docs/design/deliverables/ui/design-board.html
 ```bash
 node docs/design/deliverables/generators/gen-flows.mjs
 node docs/design/deliverables/generators/gen-system-design.mjs
-node docs/design/deliverables/generators/gen-ui.mjs
 node docs/design/deliverables/generators/gen-before-after.mjs
 ```
 
