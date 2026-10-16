@@ -3,4 +3,4 @@ export interface Shape {
   name: string;
 }
 
-export type Size = 'lg' | 'md' | 'sm';
+export type Handler = (value: string) => void;

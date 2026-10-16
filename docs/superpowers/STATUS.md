@@ -1050,3 +1050,34 @@ later, with the function already the core of it.
 - The session loader in `lib/session/client.tsx` keeps its own request code: it reads a typed session,
   distinguishes a refusal from a failure, and is not a form post.
 - No visual check; the classes are the same strings, which the component tests assert in part.
+
+## Every shape has a name — 2026-10-16 (BL-003)
+
+**Claim:** no option set is a literal union and no props shape is inline, in `apps/web` and
+`packages/ui`, and lint fails either.
+**Branches:** `bl3/01-ui-const-enums` … `bl3/04-lint-shapes`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The rules and their exceptions | `pnpm --filter @app/eslint-config test` | **21 passed** — literal union, union in an interface file and inline props fail; const enum, `Omit` keys and a tagged union pass |
+| The tests catch a missing rule | empty `NAMED_SHAPES`, run the suite | **4 failed** — restored, 21 passed |
+| The rules fire in real packages | probe files in `packages/ui/src` and `apps/web/src`, `npx eslint` | each shape reported, each exception silent |
+| Everything complies | `pnpm turbo run lint --force --continue` | **9/9** |
+| Nothing changed behaviour | `pnpm --filter @app/ui test`, `pnpm --filter web test`, `pnpm --filter e2e test:behavioural` | 37, 83, 20 passed |
+
+### Delivered
+
+- `packages/ui/src/constants.ts`: `AlertVariants`, `ButtonVariants`, `ControlSizes` (one scale where
+  Button and Input had two), `CardVariants`, `HeadingLevels`; `apps/web/src/components/constants.ts`:
+  `BrandMarkSizes`. Every call site passes the constant.
+- Named props for 13 web components and `Card`/`TextLink`'s own props.
+
+### Findings
+
+1. **Two BL-001 fixtures used a literal union as their example of an allowed type.** The new rule
+   flagged them, correctly; they use a function type now, so each fixture still tests one rule.
+2. **`git grep -E` cannot match `\s` or `\b`** (POSIX ERE), so the first scan for this pattern found
+   nothing. The scan that counted was PCRE, and the rule is the check that stays.
+

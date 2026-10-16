@@ -156,3 +156,34 @@ describe('rules fire from a package-rooted config, as in every real package', ()
     expect(rulesFired(result)).toContain('no-restricted-syntax');
   });
 });
+
+describe('named shapes', () => {
+  const restricted = (result: Awaited<ReturnType<typeof lintFile>>) =>
+    rulesFired(result).filter((id) => id === 'no-restricted-syntax');
+
+  it('forbids an option set written as a union of literals', async () => {
+    const result = await lintFile('packages/pkg/src/literal-union.ts');
+    expect(restricted(result)).toHaveLength(1);
+  });
+
+  it('forbids a literal union inside an interface file too', async () => {
+    const result = await lintFile('packages/pkg/src/interfaces/option-union.interface.ts');
+    expect(restricted(result)).toHaveLength(1);
+  });
+
+  it('forbids a props shape written inline on a component', async () => {
+    const result = await lintFile('packages/pkg/src/inline-props.tsx');
+    expect(restricted(result)).toHaveLength(1);
+  });
+
+  it('allows a const-object enum, a union of keys, and a tagged union', async () => {
+    const result = await lintFile('packages/pkg/src/allowed-shapes.ts');
+    expect(result.fatalErrorCount).toBe(0);
+    expect(restricted(result)).toHaveLength(0);
+  });
+
+  it('fires from a package-rooted config', async () => {
+    const result = await lintFromPackage('src/inline-props.tsx');
+    expect(restricted(result)).toHaveLength(1);
+  });
+});

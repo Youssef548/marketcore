@@ -35,6 +35,10 @@ Act as the tech lead for this repository. For substantial work, do not jump stra
   `interfaces/` folder, or beside its code as `packages/domain` does — never inline in a component,
   service or module. Types derived from a value beside them (`z.infer<typeof X>`, `(typeof X)[keyof typeof X]`)
   and unexported types stay where they are. ESLint enforces it (`packages/eslint-config`).
+- Name every shape. An option set is a const-object enum with its type derived beside it
+  (`export const CardVariants = { PANEL: 'panel' } as const`), never a literal union like
+  `'panel' | 'raised'`; callers pass `CardVariants.PANEL`. A props or options object is a named
+  interface, never an inline `{ … }` on a parameter or in a type argument. ESLint enforces both.
 - Global API behaviour belongs in `apps/api/src/app.setup.ts`, not only in `main.ts`.
 - Tenant identity comes from `x-organization-id`, resolved by guards, not controllers.
 - Every route is guarded by default; `@Public()`, `@TenantFree()`, and `@OwnerOnly()` are the greppable opt-outs.

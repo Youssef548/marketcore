@@ -38,6 +38,34 @@ const SHARED_TYPE_DECLARATIONS = [
   },
 ];
 
+// Two shapes that hide a type rather than name it (BL-003).
+//
+// A union of literals — `'panel' | 'raised'`, `1 | 2` — is an option set that exists only in the
+// type checker: callers type the raw string and nothing at runtime can list the options. It is a
+// const-object enum instead, with its type derived beside it, as `@app/contracts` writes
+// `ProductStatuses`. A union *of keys* passed as a type argument (`Omit<P, 'id' | 'invalid'>`) is
+// not an option set and is allowed.
+//
+// An object type written inline — on a destructured parameter, or as a type argument in a type
+// declaration — is a props shape with no name: it cannot be imported, reused or found. It is a
+// named interface instead.
+const SHAPE_MESSAGE_UNION =
+  'A union of literals is an option set: declare it as a const-object enum (export const Sizes = { LG: "lg" } as const) and derive the type from it.';
+const SHAPE_MESSAGE_INLINE =
+  'An inline object type has no name: declare it as a named interface (in a *.interface.ts file when it is exported) and use the name.';
+const NAMED_SHAPES = [
+  {
+    selector: 'TSUnionType:has(> TSLiteralType):not(TSTypeParameterInstantiation > TSUnionType)',
+    message: SHAPE_MESSAGE_UNION,
+  },
+  { selector: ':function > ObjectPattern > TSTypeAnnotation > TSTypeLiteral', message: SHAPE_MESSAGE_INLINE },
+  {
+    selector: 'TSTypeAliasDeclaration TSTypeParameterInstantiation > TSTypeLiteral',
+    message: SHAPE_MESSAGE_INLINE,
+  },
+];
+const INTERFACE_FILES = ['**/src/**/interfaces/**/*.ts', '**/src/**/*.interface.ts'];
+
 /**
  * The boundary rules: apps never import each other, packages never import an
  * app, and the tooling packages stay build/lint-time only. Violations are
@@ -154,18 +182,24 @@ export function defineConfig({ type, tsconfigRootDir, importRules = true, rootPa
     rules: { 'boundaries/no-unknown': 'error' },
   });
 
-  // Two `no-restricted-syntax` gates share these blocks, because a later config setting the
+  // Three `no-restricted-syntax` gates share these blocks, because a later config setting the
   // same rule replaces an earlier one for the files both match: a `.tsx` block of its own
   // for the types rule would have switched the colour rule off.
   rules.push({
     files: ['**/src/**/*.tsx'],
     ignores: TEST_FILES,
-    rules: { 'no-restricted-syntax': ['error', COLOUR_LITERAL, ...SHARED_TYPE_DECLARATIONS] },
+    rules: { 'no-restricted-syntax': ['error', COLOUR_LITERAL, ...SHARED_TYPE_DECLARATIONS, ...NAMED_SHAPES] },
   });
   rules.push({
     files: ['**/src/**/*.ts'],
     ignores: [...TEST_FILES, '**/interfaces/**', '**/*.interface.ts', '**/*.d.ts'],
-    rules: { 'no-restricted-syntax': ['error', ...SHARED_TYPE_DECLARATIONS] },
+    rules: { 'no-restricted-syntax': ['error', ...SHARED_TYPE_DECLARATIONS, ...NAMED_SHAPES] },
+  });
+  // Interface files are where shared shapes belong, so only the shape rules apply to them —
+  // in their own block, because a block that also matched them would replace this rule entry.
+  rules.push({
+    files: INTERFACE_FILES,
+    rules: { 'no-restricted-syntax': ['error', ...NAMED_SHAPES] },
   });
 
   rules.push({ languageOptions: { parserOptions: { tsconfigRootDir } } });
