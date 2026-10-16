@@ -17,6 +17,11 @@ organization, and is designed to the system in [`docs/design/deliverables`](./do
 The concurrency, idempotency, ledger and payout guarantees are designed and specified, not yet
 implemented — see [Roadmap](#roadmap).
 
+**Scope:** an operator UI for sellers *and* a multi-seller buyer storefront — public buyers browse
+every seller's published products, fill one cart across sellers, and check out once. The
+requirements are in [`CR-001`](./docs/superpowers/specs/2026-10-16-cr-001-buyer-storefront.md) and
+the [storefront PRD](./docs/superpowers/specs/2026-10-16-marketcore-storefront-prd.md).
+
 ---
 
 ## Start here
@@ -45,6 +50,9 @@ Ten invariants, each restated as the observable that proves it, live in
 | Ledger transactions balance | Signed entries sum to zero per currency | phase 8 |
 | A payout executes at most once | Two workers racing the same payout call the provider once | phase 11 |
 | One tenant cannot read another's data | Cross-tenant fetch returns 404/403, never data | **proven, phase 2** |
+| A checkout creates every seller's order or none | A 3-seller cart with one line short of stock creates 0 orders and changes no stock | phase 4 |
+| A buyer reads only their own orders and cart | Cross-buyer fetch returns 404, never data | phase 4 |
+| An abandoned checkout restores its stock exactly once | An unpaid checkout older than 30 minutes is cancelled once, however many runs see it | phase 4 |
 
 ---
 
@@ -56,8 +64,8 @@ in a single transaction; the worker handles asynchronous work in its own process
 
 ```
 apps/api      NestJS REST under /api/v1
-apps/worker   BullMQ processors (phase 10)
-apps/web      Next.js 15 App Router — the operator UI, and a BFF in front of the API
+apps/worker   background jobs — checkout auto-cancel from phase 4, BullMQ queues from phase 10
+apps/web      Next.js 15 App Router — the operator UI, the buyer storefront, and a BFF in front of the API
 packages/
   runtime     env validation, Prisma module, request ids, JSON logger  ← shared by both apps
   domain      pure rules: state machines, invariants, money
@@ -85,7 +93,7 @@ Design decisions and their alternatives are recorded in [`docs/adr/`](./docs/adr
 
 ## Design
 
-The operator UI is designed to **Quartz** — a dark navy rail on a cool near-white canvas, one indigo
+The operator UI and the storefront are designed to **Quartz** — a dark navy rail on a cool near-white canvas, one indigo
 action, DM Sans with DM Mono for numerals. The direction, the alternatives that were rendered and
 rejected, and what it costs are in [`ADR 013`](./docs/adr/013-design-direction-quartz.md).
 
@@ -106,7 +114,7 @@ Everything visual is generated and committed, so it cannot drift from the code:
 
 | Artefact | What it is |
 |---|---|
-| [`docs/design/deliverables/ui/design-board.html`](./docs/design/deliverables/ui/design-board.html) | 13 screens, two skins, designed to the end state |
+| [`docs/design/deliverables/ui/stitch/`](./docs/design/deliverables/ui/stitch/README.md) | 37 screens, operator and storefront — the design source for every page, built on the Quartz tokens |
 | [`docs/design/deliverables/ui/tokens.json`](./docs/design/deliverables/ui/tokens.json) | the token set in Tokens Studio shape — import into Figma |
 | [`docs/design/deliverables/user-flows.html`](./docs/design/deliverables/user-flows.html) | every user journey, live today through week 12 |
 | [`docs/design/deliverables/system-design/`](./docs/design/deliverables/system-design/index.html) | C4 context and containers, the module map, the entity map, five sequence diagrams |
@@ -180,6 +188,9 @@ The flagship scenarios, and where each is proven:
 | Inventory constraints enforced by the database | `pnpm --filter api test:integration` | **proven** |
 | Cookie flags as a browser actually received them | `pnpm --filter e2e test:behavioural` | **proven** |
 | Last-item race — 100 buyers, 1 unit | `pnpm --filter api test:concurrency` | phase 4 |
+| All-or-nothing checkout — one short line, zero orders | `pnpm --filter api test:integration` | phase 4 |
+| Cross-buyer isolation — one buyer cannot read another's order | `pnpm --filter api test:e2e` | phase 4 |
+| Abandoned checkout — cancelled and restocked once | `pnpm --filter worker test:integration` | phase 4 |
 | Duplicate checkout — 20 repeats, one order | `pnpm --filter api test:e2e` | phase 5 |
 | Duplicate payment webhook — one ledger transaction | `pnpm --filter api test:e2e` | phase 8 |
 | Outbox recovery — killed mid-flight, processed once | `pnpm --filter worker test:e2e` | phase 10 |
@@ -222,21 +233,27 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md), each with the beh
 
 **In progress**
 
-- Phase 4 (week 3): transactional checkout and the stock-1 race.
+- Phase 4: the multi-seller cart, all-or-nothing checkout, the stock-1 race, and a minimal worker
+  that cancels unpaid checkouts after 30 minutes.
 
 **Planned**
 
-| Week | Phase | Milestone |
-|---|---|---|
-| 3 | 4 | **Transactional checkout; the stock-1 race passes repeatedly** |
-| 4 | 5–6 | Idempotency and the deterministic payment simulator |
-| 5–7 | 7–9 | Stripe test mode, double-entry ledger, refunds |
-| 8–9 | 10–11 | Outbox, worker, payouts, audit |
-| 10–11 | 12–14 | Telemetry, k6 load results, AWS deployment |
-| 12 | 15 | Portfolio presentation and hardening |
+No fixed dates. The storefront lands in two releases: Release 1 alongside the invariant phases,
+Release 2 after them.
 
-**Deliberately excluded** — a consumer storefront (the web app is an operator UI, not a shop),
-Kubernetes, Kafka, real money movement, and payment providers beyond Stripe. Each was considered and
+| Release | Phase | Milestone |
+|---|---|---|
+| 1 | 4 | **Cart and all-or-nothing multi-seller checkout; the stock-1 race passes repeatedly; auto-cancel worker** |
+| 1 | 5–6 | Idempotency scoped to the buyer, and the deterministic payment simulator |
+| 1 | 7–9 | Stripe test mode, one charge split by a double-entry ledger, buyer refund requests |
+| 1 | 10–11 | Outbox and queues in the worker, payouts, audit |
+| 2 | — | Addresses and delivery, account and saved cards, reviews, wishlist, discovery, search, seller promotions |
+| — | 12–14 | Telemetry, k6 load results, AWS deployment |
+| — | 15 | Portfolio presentation and hardening |
+
+**Deliberately excluded** — guest checkout, stock reservations, a dedicated search engine,
+platform-funded promotions, Kubernetes, Kafka, real money movement, and payment providers beyond
+Stripe. Each was considered and
 rejected for a stated reason rather than deferred silently; see [`docs/architecture.md`](./docs/architecture.md).
 
 ---
@@ -252,8 +269,9 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
   stolen access token remains valid until it expires — which is why the TTL is short.
 - **No email is sent by anything.** Member administration adds an existing user by email; invitations,
   delivery and password reset do not exist.
-- **The worker does not exist yet.** It arrives in phase 10, when there is asynchronous work for it to
-  consume. The boundary that forces `packages/runtime` is already in place.
+- **The worker does not exist yet.** It arrives in phase 4 as a plain process that cancels unpaid
+  checkouts, and gains queues in phase 10. The boundary that forces `packages/runtime` is already in
+  place.
 - **Two themes ship, and a person chooses.** `apps/web` renders Quartz or Graphite from a cookie the
   server reads, so the page arrives painted. The default is light whatever the operating system says.
 - **The products page exists, and it is thin.** Name, status and price, for the organization the

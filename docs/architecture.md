@@ -2,12 +2,14 @@
 
 - **Date:** 2026-09-19
 - **Status:** Accepted
-- **Related:** `docs/domain-model.md`, `docs/failure-scenarios.md`, `docs/adr/0001-modular-monolith-with-worker.md`
+- **Related:** `docs/domain-model.md`, `docs/failure-scenarios.md`, `docs/adr/0001-modular-monolith-with-worker.md`,
+  `docs/superpowers/specs/2026-10-16-cr-001-buyer-storefront.md`
 
 ## Problem
 
 MarketCore is a multi-tenant marketplace transaction platform. Sellers create products with
-limited inventory. Buyers place orders. Payments are processed asynchronously. Seller balances,
+limited inventory. Buyers browse every seller's published products, fill one cart across sellers,
+and check out once; each checkout creates one order per seller, or none. Payments are processed asynchronously. Seller balances,
 refunds, and payouts are represented through an append-only double-entry ledger.
 
 The platform is not intended to compete with a complete marketplace product. **The product is
@@ -28,7 +30,7 @@ not affect the answer, it is not made here.
 
 | User | Needs | Key actions |
 |---|---|---|
-| Buyer | A reliable purchase outcome without duplicate charges | Browse products, submit checkout, view order, request refund |
+| Buyer | A reliable purchase outcome without duplicate charges | Browse every seller's products, keep one cart across sellers, check out once, view orders, request refund; in Release 2 also delivery, reviews, wishlist, search, promotion codes |
 | Seller | Accurate inventory and money owed | Manage products, review orders, view ledger balance, request payout |
 | Organization Owner | Tenant administration and control | Manage members, roles, configuration, audit history |
 | Operations User | Trace and recover failed workflows | Inspect payments, webhooks, jobs, refunds, correlation IDs |
@@ -42,17 +44,19 @@ which is why every week's deliverable includes the command that proves it.
 
 | Goals | Non-goals |
 |---|---|
-| Prevent overselling under concurrent checkout | A feature-complete consumer marketplace interface |
+| Prevent overselling under concurrent checkout | Guest checkout and stock reservations |
 | Make retried requests and duplicate events safe | Real money movement in production |
 | Model financial events with a balanced ledger | Support for every payment provider |
 | Demonstrate tenant isolation and role-based access | Premature microservice decomposition |
 | Provide measurable test and load evidence | Kubernetes or Kafka solely for resume keywords |
-| Deploy a reproducible and observable system | Complex recommendation, search, or logistics features |
+| Deploy a reproducible and observable system | A dedicated search engine, recommendations, or carrier logistics |
+| Keep a multi-seller checkout all or nothing, paid by one split charge | Platform-funded promotions |
 
 ## First release boundary
 
 **Phases 0–4 only:** engineering specification, foundation, identity and tenancy, catalog and
-inventory, transactional checkout.
+inventory, the multi-seller cart and transactional all-or-nothing checkout, and the worker's first
+job — cancelling unpaid checkouts.
 
 That boundary is deliberate. It produces a running NestJS and PostgreSQL system with concurrency-safe
 checkout, which is the project's first genuinely defensible claim. Payments, ledger, refunds, outbox,
@@ -91,14 +95,21 @@ are in `docs/adr/010-tenant-isolation-in-the-query-layer.md`.
 | Auth | Credentials, sessions, tokens | Register, login, refresh, revoke, password policy, authentication guards | 2 |
 | Organizations | Organizations, memberships, roles | Tenant lifecycle, invitations, member roles, tenant context | 2 |
 | Catalog | Products, prices | Product lifecycle, seller ownership, pricing, publish state | 3 |
-| Inventory | Stock, reservations, adjustments | Available stock, row locking, reservations, release, adjustment history | 3 |
-| Orders | Orders, order items | Order creation, totals, state transitions, buyer history | 4 |
+| Inventory | Stock, adjustments | Available stock, row locking, adjustment history — no reservations | 3 |
+| Storefront | Public product reads | Published products across every organization, public fields only | 4 |
+| Cart | Carts, cart items | One server-side cart per buyer across sellers, live availability, line cap | 4 |
+| Orders | Checkouts, orders, order items | All-or-nothing checkout, one order per seller, totals, transitions, buyer history, auto-cancel | 4 |
 | Payments | Payments, attempts, provider references | Provider calls, payment state, webhook application, reconciliation | 6 |
 | Ledger | Accounts, transactions, entries | Balanced entries, seller payable, platform revenue, account balances | 8 |
 | Refunds | Refund requests and outcomes | Eligibility, provider refund, compensating entries, order impact | 9 |
 | Payouts | Payout requests and attempts | Eligibility, concurrency protection, provider transfer, settlement | 11 |
 | Outbox | Outbox events and dispatch | Reliable publication, claim leases, retries, delivery status | 10 |
 | Audit | Immutable audit records | Actor, action, resource, before/after data, request metadata | 12 |
+| Delivery | Addresses, fulfilment | Address book, address snapshot on the order, seller fulfilment | R2 |
+| Reviews | Reviews, replies | Verified-buyer reviews, seller replies | R2 |
+| Wishlist | Wishlist items | Saved products, move to cart | R2 |
+| Promotions | Seller codes | Percentage or fixed codes, seller-funded, snapshotted on the order | R2 |
+| Search | Full-text index | Postgres full-text over published products | R2 |
 | Observability | Logs, metrics, traces | Correlation, instrumentation, dashboards, alerts, health checks | 1, 12 |
 
 ## Runtime shape
@@ -111,19 +122,22 @@ and outbox write all commit atomically in one process and one database transacti
 demonstrates independent scaling of request and background workloads without paying for service
 decomposition, which the plan lists as a non-goal.
 
-The worker arrives in Phase 10, when there is asynchronous work to consume. It is not scaffolded
-earlier. The concrete consequence of the separate process — the worker cannot import `apps/api`, so
+The worker arrives in Phase 4 with one job: cancel checkouts still unpaid after 30 minutes and
+restore their stock. It is a plain process on an interval — no Redis, no queue — because the
+exactly-once guarantee comes from a conditional update on the checkout's status, not from the
+transport. Phase 10 adds BullMQ queues to the same process. The concrete consequence of the separate process — the worker cannot import `apps/api`, so
 shared plumbing lives in `packages/runtime` — is recorded in
 `docs/adr/0001-modular-monolith-with-worker.md`.
 
-The web application is parked. The plan's non-goals exclude a consumer interface, so `apps/web`
-remains exactly as the template shipped it, and the prototype's Customer/Seller/Operations screens
-inform the Phase 15 demonstration rather than the build.
+`apps/web` serves both surfaces through one BFF: the operator UI under `/admin`, and the buyer
+storefront at the root. A buyer is a user with no organization membership; the storefront reads
+published products across organizations and the buyer's own cart and orders, never a tenant's
+private data.
 
 ## Repository layout
 
 ```
-apps/{api,worker,web}          worker in phase 10; web parked
+apps/{api,worker,web}          worker from phase 4; web is the operator UI and the storefront
 packages/{runtime,domain,payments,contracts,database,api-client,ui,config,eslint-config}
 docs/{architecture.md,domain-model.md,failure-scenarios.md,adr/}
 load-tests/                    k6 scenarios (phase 13) — outside the pnpm workspace

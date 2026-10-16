@@ -79,6 +79,19 @@ Two follow-on obligations this decision creates, both scheduled rather than disc
 
 Both are recorded in the spec's §4 and in the Phase 10 plan rather than left to be rediscovered.
 
+## Amendment — 2026-10-16 (CR-001)
+
+The worker arrives in **phase 4**, not phase 10. Its first job — cancel checkouts unpaid for 30
+minutes and restore their stock (D70) — needs no queue: exactly-once comes from a conditional
+`UPDATE … WHERE status = 'PENDING_PAYMENT'` with `SKIP LOCKED`, so it runs as a plain process on an
+interval with no Redis. Phase 10 adds BullMQ to the same process.
+
+The follow-on obligations move with it, split by what they depend on:
+
+1. `scripts/check-db-env.mjs` must cover `apps/worker/.env` **in phase 4**, the day that file exists.
+2. `REDIS_URL` joins turbo's `test` env **in phase 10**, unchanged, because nothing reads Redis
+   before then.
+
 ## Review date
 
 2026-12-19, or earlier if a measured bottleneck appears that a modular monolith cannot address.
