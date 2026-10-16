@@ -1,11 +1,9 @@
 import type { ButtonHTMLAttributes } from 'react';
-
-export type ButtonVariant = 'primary' | 'secondary' | 'quiet';
-export type ButtonSize = 'lg' | 'md' | 'sm';
+import type { ButtonVariant, ControlSize } from '../constants';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
-  size?: ButtonSize;
+  size?: ControlSize;
   /**
    * Work is in flight. Sets `aria-busy` and `aria-disabled` and guards the click —
    * deliberately not `disabled`, which drops keyboard focus and throws a keyboard

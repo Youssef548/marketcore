@@ -1,6 +1,5 @@
 import type { InputHTMLAttributes } from 'react';
-
-export type InputSize = 'lg' | 'md' | 'sm';
+import type { ControlSize } from '../constants';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /**
@@ -8,5 +7,5 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
    * colour, so the state reaches a screen reader rather than only the eye.
    */
   invalid?: boolean;
-  size?: InputSize;
+  size?: ControlSize;
 }

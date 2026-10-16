@@ -1,8 +1,9 @@
-import type { AlertProps, AlertVariant } from './interfaces/alert.interface';
+import { AlertVariants, type AlertVariant } from './constants';
+import type { AlertProps } from './interfaces/alert.interface';
 
 const variants: Record<AlertVariant, string> = {
-  error: 'border-attention bg-attention-wash text-attention',
-  success: 'border-positive bg-positive-wash text-positive',
+  [AlertVariants.ERROR]: 'border-attention bg-attention-wash text-attention',
+  [AlertVariants.SUCCESS]: 'border-positive bg-positive-wash text-positive',
 };
 
 /**
@@ -14,7 +15,7 @@ const variants: Record<AlertVariant, string> = {
  * which is why it is not named for either — and it forwards an `id`, because a field
  * has to be able to point its input at it.
  */
-export function Alert({ variant = 'error', className = '', children, ...props }: AlertProps) {
+export function Alert({ variant = AlertVariants.ERROR, className = '', children, ...props }: AlertProps) {
   if (!children) return null;
 
   return (

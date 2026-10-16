@@ -1,6 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-
-export type AlertVariant = 'error' | 'success';
+import type { AlertVariant } from '../constants';
 
 export interface AlertProps extends Omit<HTMLAttributes<HTMLParagraphElement>, 'children'> {
   variant?: AlertVariant;

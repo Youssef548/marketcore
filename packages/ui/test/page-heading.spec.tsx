@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { HeadingLevels } from '../src/constants';
 import { PageHeading } from '../src/page-heading';
 
 describe('PageHeading', () => {
@@ -10,7 +11,7 @@ describe('PageHeading', () => {
   });
 
   it('takes level 2 inside the shell, whose top bar holds the h1', () => {
-    render(<PageHeading level={2}>Products</PageHeading>);
+    render(<PageHeading level={HeadingLevels.H2}>Products</PageHeading>);
 
     expect(screen.getByRole('heading', { level: 2, name: 'Products' })).toBeTruthy();
     expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
