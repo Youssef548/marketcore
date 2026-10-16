@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { Alert, Button, Field } from '@app/ui';
+import { ArrowIcon, AuthCard, PublicFrame } from '@/components/public-frame';
 import { createOrganization, signOut } from '@/lib/session/client';
 
 /**
@@ -15,8 +16,21 @@ import { createOrganization, signOut } from '@/lib/session/client';
  *
  * One field, because the contract makes `slug` optional and the API derives it from the name.
  * Asking for a slug here would be asking the user to solve the API's problem.
+ *
+ * The layout is the Stitch first-run screen (032): the public bar with who is signed in, and
+ * one centred card — an icon tile, the heading, the field, a note on what creating it makes
+ * you, the action, and the way out if this is the wrong account.
  */
-export function Onboarding({ onCreated }: { onCreated: () => Promise<void> }) {
+export function Onboarding({
+  appName,
+  email,
+  onCreated,
+}: {
+  appName: string;
+  /** Who is signed in, so "wrong account?" has something to be checked against. */
+  email: string;
+  onCreated: () => Promise<void>;
+}) {
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -39,48 +53,125 @@ export function Onboarding({ onCreated }: { onCreated: () => Promise<void> }) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-canvas px-6 py-12">
-      <div className="w-full max-w-[26rem] rounded-[16px] border border-rule bg-panel p-7">
+    <PublicFrame
+      appName={appName}
+      aside={
+        <span className="flex min-w-0 items-center gap-2 rounded-brand border border-rule bg-sunken py-1 pl-1 pr-2.5">
+          <span
+            aria-hidden
+            className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-panel text-xs font-bold text-ink-muted"
+          >
+            {email.slice(0, 1).toUpperCase()}
+          </span>
+          <span className="truncate font-mono text-xs font-medium text-ink">
+            <span className="sr-only">Signed in as </span>
+            {email}
+          </span>
+        </span>
+      }
+    >
+      <AuthCard wide>
         <form className="space-y-5" onSubmit={submit} noValidate>
-          <header className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight text-ink">
+          {/* A `div` rather than a `header`: the public bar is this screen's banner, and
+           * a second one would leave "the banner" meaning two things. */}
+          <div className="mb-6 flex flex-col items-center text-center">
+            <span
+              aria-hidden
+              className="mb-4 grid h-14 w-14 place-items-center rounded-2xl border border-rule bg-sunken text-action"
+            >
+              <BuildingIcon />
+            </span>
+            <h1 className="mb-2.5 text-2xl font-bold tracking-tight text-ink">
               You&rsquo;re not in an organization yet
             </h1>
-            <p className="text-sm text-ink-muted">
-              MarketCore keeps products, orders and money inside an organization. Create one and you
+            <p className="max-w-[24rem] text-sm leading-relaxed text-ink-muted">
+              {appName} keeps products, orders and money inside an organization. Create one and you
               are its owner.
             </p>
-          </header>
-
-          {error !== null && <Alert>{error}</Alert>}
+          </div>
 
           <Field
             label="Organization name"
             name="name"
             autoComplete="organization"
+            placeholder="Nile Traders"
+            size="lg"
+            hint="Its catalog, its orders and its members all belong to it."
             value={name}
             error={null}
             onChange={(event) => setName(event.target.value)}
           />
 
+          {/* The design's ownership note, stated as what the API does rather than what the
+           * design claimed: the creating account becomes the owner, and nothing more. */}
+          <div className="flex items-start gap-3 rounded-xl border border-rule bg-sunken px-3.5 py-3">
+            <span
+              aria-hidden
+              className="mt-px grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-panel text-action"
+            >
+              <ShieldIcon />
+            </span>
+            <p className="text-xs leading-relaxed text-ink-muted">
+              <b className="mb-0.5 block text-sm font-semibold text-ink">You become its owner</b>
+              The console opens in the new organization as soon as it exists.
+            </p>
+          </div>
+
+          {error !== null && <Alert className="border-l-4">{error}</Alert>}
+
           {/* `busy` rather than `disabled`: a disabled submit button drops keyboard focus and
            * sends the user back to the top of the form mid-submit. */}
-          <Button type="submit" busy={pending} className="w-full">
+          <Button type="submit" size="lg" busy={pending} className="w-full">
             {pending ? 'Creating…' : 'Create organization'}
+            {!pending && <ArrowIcon />}
           </Button>
 
-          <p className="text-sm text-ink-muted">
+          <p className="border-t border-rule pt-4 text-center text-sm text-ink-muted">
             Wrong account?{' '}
             <button
               type="button"
-              className="text-action underline"
+              className="font-semibold text-action underline underline-offset-2"
               onClick={() => void signOut().then(() => window.location.assign('/login'))}
             >
               Sign out
             </button>
           </p>
         </form>
-      </div>
-    </main>
+      </AuthCard>
+    </PublicFrame>
+  );
+}
+
+function BuildingIcon() {
+  return (
+    <svg
+      focusable="false"
+      viewBox="0 0 24 24"
+      className="h-7 w-7"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 10h4a1 1 0 0 1 1 1v10M3 21h18M8 8h3M8 12h3M8 16h3" />
+    </svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg
+      focusable="false"
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" />
+    </svg>
   );
 }

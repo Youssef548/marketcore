@@ -8,6 +8,7 @@ vi.mock('next/navigation', async (importOriginal) => ({
   useRouter: () => ({ replace: mocks.replace }),
 }));
 
+import { PASSWORD_MIN_LENGTH } from '@app/contracts';
 import RegisterPage from './page';
 
 const fetchMock = vi.fn();
@@ -93,5 +94,17 @@ describe('the registration form', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create account' }));
 
     await waitFor(() => expect(screen.getByText('Email is already registered')).toBeTruthy());
+  });
+
+  it('describes the password field with the policy, before anything is refused', async () => {
+    // The minimum is stated from the shared constant, and it is the field's description
+    // rather than a paragraph beside it, so a screen reader hears it with the field.
+    render(<RegisterPage />);
+
+    const describedBy = screen.getByLabelText('Password').getAttribute('aria-describedby');
+    expect(describedBy).toBeTruthy();
+    expect(document.getElementById(describedBy as string)?.textContent).toBe(
+      `At least ${PASSWORD_MIN_LENGTH} characters.`,
+    );
   });
 });

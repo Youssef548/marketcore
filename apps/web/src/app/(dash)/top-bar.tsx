@@ -54,7 +54,7 @@ export function TopBar() {
         <span className="flex items-center gap-2.5 rounded-brand border border-rule bg-panel py-1.5 pl-1.5 pr-3">
           <span
             aria-hidden
-            className="grid h-7 w-7 place-items-center rounded-full bg-sunken text-[11px] font-semibold text-ink-muted"
+            className="grid h-7 w-7 place-items-center rounded-full bg-sunken text-xs font-semibold text-ink-muted"
           >
             {initials(user.email)}
           </span>

@@ -3,7 +3,7 @@
 import type { ButtonHTMLAttributes, MouseEvent } from 'react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'quiet';
-export type ButtonSize = 'md' | 'sm';
+export type ButtonSize = 'lg' | 'md' | 'sm';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -26,8 +26,10 @@ const variants: Record<ButtonVariant, string> = {
 };
 
 const sizes: Record<ButtonSize, string> = {
-  md: 'h-10 px-4 text-sm',
-  sm: 'h-8 px-3 text-xs',
+  // Matches the `lg` input, so a form's submit lines up with the fields above it.
+  lg: 'h-11 px-5 text-sm font-semibold',
+  md: 'h-10 px-4 text-sm font-medium',
+  sm: 'h-8 px-3 text-xs font-medium',
 };
 
 export function Button({
@@ -52,7 +54,7 @@ export function Button({
       aria-busy={busy || undefined}
       aria-disabled={busy || undefined}
       onClick={handleClick}
-      className={`inline-flex items-center justify-center gap-2 rounded-brand border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-focus-ring disabled:opacity-50 ${sizes[size]} ${variants[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-brand border transition-colors focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-focus-ring disabled:opacity-50 ${sizes[size]} ${variants[variant]} ${className}`}
       {...props}
     />
   );

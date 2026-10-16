@@ -929,3 +929,39 @@ checked is that the documents agree with each other:
    reservations, with one locked transaction at checkout, proves more with less.
 3. **The worker's phase was an artefact of its transport.** It was scheduled for phase 10 because
    BullMQ arrives then; auto-cancel needs only a conditional update, so the worker moved to phase 4.
+||||||| f8b285e
+
+---
+
+## The Stitch re-skin of the four shipped pages — 2026-10-16 (CR-001)
+
+**Exit gate:** sign in, register, first run and products render their Stitch layouts in both themes,
+with behaviour unchanged.
+**Branch:** `feat/stitch-reskin` (from `f8b285e`)
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| Web lint, types, unit | `pnpm --filter web lint && pnpm --filter web typecheck && pnpm --filter web test` | **76 passed** (74 before; +2) |
+| Design system | `pnpm --filter @app/ui test` | **27 passed** — `Field` hint wiring +2; contrast pairs +3 |
+| Contrast, both themes | `packages/ui/test/tokens.spec.ts` | `action` on `panel`, `canvas`, `sunken` now measured and clear 4.5:1 in Quartz and Graphite |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33** |
+| Real browser, real TLS | `docker compose -f docker-compose.e2e.yml up -d --build --wait && pnpm --filter e2e test:behavioural` | **20 passed** — sign in, register, first run, products, dark theme, unchanged |
+
+### Delivered
+
+- **`PublicFrame`** (`apps/web/src/components/public-frame.tsx`) — the public bar and centred card the
+  three screens outside the shell share (Stitch 040, 046, 032).
+- **`packages/ui`**: an `lg` size for `Input` and `Button`, and a `hint` on `Field` that the input is
+  described by, so the password policy is read with the field rather than beside it.
+- **Products** (048): page head with a count, count cards derived from the rows, and the table in one
+  card. Columns the API does not return (stock, sales, trend, edit) are absent rather than invented.
+- **The 12px floor**: the table headers and the top bar's initials were 11px and are now 12px.
+
+### Not proven / deferred
+
+- **The shell is not re-skinned.** 048 draws a grouped rail, search, notifications and a breadcrumb
+  top bar; the shell is shared by every page and is not one of the four, and most of that chrome is
+  for features that do not exist.
+- **No automated visual check** — screenshots were taken by hand, the same gap already recorded.

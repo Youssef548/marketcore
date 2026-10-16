@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
+import { AuthCard, CardBrand, PublicFrame } from '@/components/public-frame';
 
 /**
- * The credential pages: one card, centred, on the canvas and nothing around it.
+ * The credential pages: a public bar, and one card centred on the canvas beneath it —
+ * the composition of the Stitch sign-in and register screens (040, 046).
  *
  * The card is the direction's — a panel on the canvas rather than a bare column — so
  * the sign-in screen reads as the same product as the console behind it.
@@ -12,11 +14,11 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
   const appName = process.env.APP_NAME ?? 'app';
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-canvas px-6 py-12">
-      <div className="w-full max-w-[26rem] space-y-4">
-        <p className="text-center text-sm font-semibold tracking-tight text-ink">{appName}</p>
-        <div className="rounded-[16px] border border-rule bg-panel p-7">{children}</div>
-      </div>
-    </main>
+    <PublicFrame appName={appName}>
+      <AuthCard>
+        <CardBrand appName={appName} />
+        {children}
+      </AuthCard>
+    </PublicFrame>
   );
 }
