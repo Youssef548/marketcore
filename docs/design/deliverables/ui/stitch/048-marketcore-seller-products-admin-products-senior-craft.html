@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>MarketCore — Products</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=DM+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --canvas: #f6f7fb;
+      --panel: #ffffff;
+      --panel2: #f1f3f9;
+      --rail: #0b0d14;
+      --railInk: #eef1f7;
+      --railMuted: #8b93a7;
+      --ink: #0a0b12;
+      --muted: #5a6272;
+      --faint: #676e7a;
+      --line: #e6e8ef;
+      --lineStrong: #d5d9e2;
+      --controlEdge: #838b9a;
+      --accent: #4f46e5;
+      --accentInk: #ffffff;
+      --accentWash: #eef0ff;
+      --accentHover: #4338ca;
+      --ok: #117f3a;
+      --okWash: #e8f7ee;
+      --bad: #d11b43;
+      --badWash: #fdecef;
+      --warn: #a55a05;
+      --warnWash: #fdf3e4;
+      --info: #097499;
+      --r: 14px;
+      --rSm: 8px;
+      --elevation-card: 0 1px 3px rgba(16,24,40,0.04), 0 4px 14px rgba(16,24,40,0.04), 0 0 0 1px rgba(16,24,40,0.05);
+      --elevation-hero: 0 4px 6px -1px rgba(79, 70, 229, 0.06), 0 10px 24px -3px rgba(79, 70, 229, 0.08), 0 0 0 1px rgba(79, 70, 229, 0.12);
+      --font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --fontMono: 'DM Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .shell {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      background: var(--canvas);
+    }
+
+    .mono { font-family: var(--fontMono); font-feature-settings: "tnum" on, "zero" on; }
+
+    /* ---------- Left Sidebar Rail (252px) ---------- */
+    .rail {
+      width: 252px;
+      flex: 0 0 252px;
+      background: var(--rail);
+      color: var(--railInk);
+      display: flex;
+      flex-direction: column;
+      padding: 16px 14px 14px;
+      gap: 5px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      user-select: none;
+    }
+
+    .railtop {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 6px 8px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 8px;
+    }
+
+    .logo-crest {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #4f46e5 0%, #3525cd 100%);
+      position: relative;
+      flex: 0 0 32px;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.4);
+      display: grid;
+      place-items: center;
+      color: #fff;
+    }
+
+    .logo-crest:after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-left: 2px solid #ffffff;
+      border-bottom: 2px solid #ffffff;
+      border-radius: 0 0 0 2px;
+    }
+
+    .ws { line-height: 1.25; }
+    .ws b { display: block; font-size: 14.5px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+    .ws i { display: block; font-style: normal; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--railMuted); margin-top: 2px; font-weight: 500; }
+    .railtop > svg { margin-left: auto; color: var(--railMuted); opacity: 0.8; }
+
+    .railsearch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 0 10px;
+      height: 34px;
+      margin-bottom: 6px;
+      color: var(--railMuted);
+      transition: all 0.15s ease;
+    }
+    .railsearch:hover, .railsearch:focus-within {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.18);
+      color: #fff;
+    }
+    .railsearch input {
+      flex: 1;
+      background: none;
+      border: 0;
+      outline: none;
+      color: #fff;
+      font: inherit;
+      font-size: 13.5px;
+      min-width: 0;
+    }
+    .railsearch input::placeholder { color: var(--railMuted); }
+    .railsearch kbd {
+      font-family: var(--fontMono);
+      font-size: 11px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      padding: 1px 5px;
+      color: var(--railMuted);
+    }
+
+    .rail nav {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .rail nav::-webkit-scrollbar { width: 4px; }
+    .rail nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+    .navhead {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--railMuted);
+      font-weight: 600;
+      padding: 12px 10px 4px;
+      opacity: 0.85;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      color: #9fa7b8;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav:hover {
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+    }
+    .nav.on {
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.35);
+    }
+    .nav.on svg { color: #fff; }
+
+    .count {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.12);
+      color: #cbd2e0;
+      border-radius: 999px;
+      padding: 1px 7px;
+      line-height: 1.35;
+    }
+    .nav.on .count {
+      background: rgba(255,255,255,0.24);
+      color: #ffffff;
+    }
+    .count.warn {
+      background: #e07912;
+      color: #120a00;
+    }
+
+    .railuser {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 8px 4px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+    .railuser:hover { background: rgba(255,255,255,0.04); border-radius: 8px; }
+    .railuser b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 136px; font-weight: 600; color: #fff; }
+    .railuser i { display: block; font-style: normal; font-size: 12px; color: var(--railMuted); }
+    .railuser > svg { margin-left: auto; color: var(--railMuted); }
+
+    .av {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--panel2);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex: 0 0 30px;
+      border: 1px solid var(--line);
+    }
+    .av.inv {
+      background: linear-gradient(135deg, #eef0ff 0%, #dcd8e5 100%);
+      color: var(--accent);
+      border-color: rgba(79,70,229,0.25);
+    }
+
+    /* ---------- Main Content Area ---------- */
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100vh;
+      background: var(--canvas);
+    }
+
+    .topbar {
+      height: 60px;
+      flex: 0 0 60px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .crumbs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .crumbs .dimx { color: var(--muted); font-weight: 500; }
+    .crumbs i { color: var(--lineStrong); font-style: normal; font-weight: 400; }
+
+    .topsearch {
+      margin-left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      height: 36px;
+      padding: 0 12px;
+      max-width: 380px;
+      flex: 1;
+      color: var(--muted);
+      transition: all 0.15s ease;
+    }
+    .topsearch:focus-within {
+      background: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accentWash);
+    }
+    .topsearch input {
+      flex: 1;
+      border: 0;
+      background: none;
+      outline: none;
+      font: inherit;
+      font-size: 13.5px;
+      color: var(--ink);
+      min-width: 0;
+    }
+    .topsearch kbd {
+      font-family: var(--fontMono);
+      font-size: 11px;
+      border: 1px solid var(--lineStrong);
+      border-radius: 4px;
+      padding: 1px 5px;
+      color: var(--faint);
+      background: #fff;
+    }
+
+    .top-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .iconbtn {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .iconbtn:hover {
+      background: var(--panel2);
+      color: var(--ink);
+      border-color: var(--lineStrong);
+    }
+    .iconbtn .badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: var(--bad);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 1px 5px;
+      line-height: 1.1;
+      font-style: normal;
+      box-shadow: 0 0 0 2px #fff;
+    }
+
+    .userchip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 4px 10px 4px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .userchip:hover { background: var(--panel2); }
+    .userchip b { display: block; font-size: 13.5px; font-weight: 600; line-height: 1.2; }
+    .userchip i { display: block; font-style: normal; font-size: 11.5px; color: var(--muted); line-height: 1.2; }
+    .userchip > svg { color: var(--muted); margin-left: 2px; }
+
+    /* ---------- Page Canvas ---------- */
+    .page {
+      padding: 24px 28px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 1440px;
+      width: 100%;
+    }
+
+    .pagehead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .pagehead h1 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+    .pagehead p {
+      margin: 4px 0 0;
+      font-size: 13.5px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .headctl {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .inline-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--panel);
+      border: 1px solid var(--lineStrong);
+      border-radius: 8px;
+      height: 38px;
+      padding: 0 11px;
+      color: var(--muted);
+      width: 250px;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+    }
+    .inline-search:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accentWash);
+    }
+    .inline-search input {
+      border: 0;
+      background: none;
+      outline: none;
+      font: inherit;
+      font-size: 13.5px;
+      color: var(--ink);
+      width: 100%;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--accent);
+      color: var(--accentInk);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 0 16px;
+      height: 38px;
+      font: 600 13.5px/1 var(--font);
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(79,70,229,0.2), 0 2px 5px rgba(79,70,229,0.2);
+      transition: background 0.15s, transform 0.05s;
+    }
+    .btn:hover { background: var(--accentHover); }
+    .btn:active { transform: translateY(1px); }
+    .btn.ghost {
+      background: var(--panel);
+      color: var(--ink);
+      border-color: var(--lineStrong);
+      box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+    }
+    .btn.ghost:hover {
+      background: var(--panel2);
+      border-color: var(--controlEdge);
+    }
+    .btn.quiet {
+      background: none;
+      color: var(--muted);
+      border: 1px solid transparent;
+      padding: 5px 10px;
+      border-radius: 6px;
+      box-shadow: none;
+    }
+    .btn.quiet:hover {
+      background: var(--panel2);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+    .btn.sm { font-size: 13px; height: 28px; }
+
+    /* ---------- KPI Deck ---------- */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .kpi {
+      background: var(--panel);
+      border-radius: var(--r);
+      box-shadow: var(--elevation-card);
+      padding: 16px 18px 14px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .kpi:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16,24,40,0.06), 0 0 0 1px rgba(16,24,40,0.08);
+    }
+
+    /* Focal KPI Card */
+    .kpi.primary-kpi {
+      background: linear-gradient(175deg, #ffffff 0%, #fafbff 100%);
+      box-shadow: var(--elevation-hero);
+      border: 1px solid rgba(79, 70, 229, 0.18);
+    }
+    .kpi.primary-kpi:hover {
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.12), 0 0 0 1px rgba(79, 70, 229, 0.25);
+    }
+
+    .kpitop {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 24px;
+    }
+    .kpi-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .primary-kpi .kpi-label {
+      font-weight: 600;
+      color: #312e81;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .primary-kpi .kpi-label::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .kpi-val {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-top: 10px;
+      color: var(--ink);
+    }
+    .primary-kpi .kpi-val {
+      font-size: 30px;
+      color: #1e1b4b;
+      font-family: var(--fontMono);
+      font-feature-settings: "tnum" on;
+      margin-top: 8px;
+    }
+
+    .delta {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 3px 8px;
+      line-height: 1;
+    }
+    .delta.up { color: var(--ok); background: var(--okWash); }
+    .delta.down { color: var(--bad); background: var(--badWash); }
+
+    .kpi-spark {
+      margin-top: 8px;
+      height: 38px;
+      display: flex;
+      align-items: flex-end;
+    }
+    .spark { display: block; width: 100%; height: 38px; }
+
+    /* ---------- Catalog Data Table Card ---------- */
+    .card {
+      background: var(--panel);
+      border-radius: var(--r);
+      box-shadow: var(--elevation-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cardhead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #ffffff;
+    }
+    .cardhead h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .tblwrap {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .tbl th {
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--faint);
+      font-weight: 600;
+      padding: 11px 22px;
+      background: var(--panel2);
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    .tbl th.num { text-align: right; }
+    .tbl th.trend-col { text-align: left; padding-left: 12px; }
+
+    .tbl td {
+      padding: 13px 22px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+      background: #ffffff;
+      transition: background 0.12s ease;
+    }
+    .tbl tbody tr:hover td {
+      background: var(--panel2);
+    }
+    .tbl tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    /* Product Column */
+    .who {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: 0 0 8px;
+    }
+    .dot.ok { background: var(--ok); box-shadow: 0 0 0 2px var(--okWash); }
+    .dot.draft { background: var(--faint); opacity: 0.6; }
+
+    .who > span {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-weight: 600;
+      color: var(--ink);
+      font-size: 14.5px;
+    }
+    .who i {
+      display: block;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--fontMono);
+      letter-spacing: 0.02em;
+    }
+
+    /* Status Pill */
+    .st {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+    .st i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .st.ok { background: var(--okWash); color: var(--ok); }
+    .st.neutral { background: var(--panel2); color: var(--muted); border: 1px solid var(--line); }
+
+    /* Price Column */
+    .tbl td.num {
+      text-align: right;
+      font-weight: 600;
+      font-size: 14.5px;
+      color: var(--ink);
+    }
+
+    /* Stock Bar Column */
+    .stock {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sharebar {
+      width: 88px;
+      height: 6px;
+      border-radius: 999px;
+      background: #e4e7ee;
+      overflow: hidden;
+      display: inline-block;
+    }
+    .sharebar i {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+    }
+    .stock b {
+      font-size: 13.5px;
+      font-weight: 600;
+      min-width: 20px;
+    }
+
+    /* Sales & Trend Sparkline */
+    .sales-spark-cell {
+      width: 106px;
+      padding-right: 8px;
+    }
+    .spark-table {
+      display: block;
+      width: 96px;
+      height: 28px;
+    }
+
+    .dash {
+      color: var(--faint);
+      font-weight: 500;
+      padding-left: 6px;
+    }
+
+    .tbl tfoot td {
+      background: var(--panel2);
+      border-top: 1px solid var(--line);
+      padding: 12px 22px;
+    }
+    .tf {
+      font-size: 12.5px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .tf svg { color: var(--faint); flex-shrink: 0; }
+
+    /* Action button */
+    .act-cell {
+      text-align: right;
+      padding-right: 20px;
+    }
+
+    /* Accessibility focus styling */
+    :where(a, button, input):focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+<!-- 252px Dark Navigation Rail -->
+<aside class="rail">
+<div class="railtop" title="Switch Organization">
+<span class="logo-crest"></span>
+<div class="ws">
+<b>Nile Traders</b>
+<i>Enterprise Seller</i>
+</div>
+<svg aria-hidden="true" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14">
+<path d="M6 9l6 6 6-6"></path>
+</svg>
+</div>
+<label class="railsearch">
+<svg aria-hidden="true" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14">
+<circle cx="11" cy="11" r="7"></circle>
+<path d="M20 20l-3.5-3.5"></path>
+</svg>
+<input aria-label="Search navigation" placeholder="Search"/>
+<kbd>⌘K</kbd>
+</label>
+<nav>
+<span class="navhead">Overview</span>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="16">
+<rect height="7" rx="1.5" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1.5" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1.5" width="7" x="3" y="14"></rect>
+<rect height="7" rx="1.5" width="7" x="14" y="14"></rect>
+</svg>
+          Dashboard
+        </a>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="16">
+<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path>
+</svg>
+          Reports
+        </a>
+<span class="navhead">Catalog</span>
+<a aria-current="page" class="nav on">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="16">
+<path d="M21 8l-9-5-9 5 9 5 9-5z"></path>
+<path d="M3 8v8l9 5 9-5V8"></path>
+<path d="M12 13l9-5"></path>
+</svg>
+          Products
+          <span class="count">4</span>
+</a>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="16">
+<path d="M12 2l9 5-9 5-9-5 9-5z"></path>
+<path d="M3 12l9 5 9-5"></path>
+<path d="M3 17l9 5 9-5"></path>
+</svg>
+          Inventory
+        </a>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="15">
+<path d="M3 12l9-9h7v7l-9 9z"></path>
+<circle cx="16" cy="8" r="1.4"></circle>
+</svg>
+          Promotions
+        </a>
+<span class="navhead">Money</span>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="16">
+<path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2z"></path>
+<path d="M9 7h6M9 11h6"></path>
+</svg>
+          Orders
+          <span class="count">128</span>
+</a>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="16">
+<path d="M9 14L4 9l5-5"></path>
+<path d="M4 9h11a5 5 0 010 10h-3"></path>
+</svg>
+          Refunds
+        </a>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="16">
+<path d="M3 10l9-6 9 6"></path>
+<path d="M5 10v9M19 10v9M9 19v-5h6v5M2 21h20"></path>
+</svg>
+          Payouts
+        </a>
+<span class="navhead">Admin</span>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="16">
+<circle cx="9" cy="8" r="3.2"></circle>
+<path d="M3 20a6 6 0 0112 0"></path>
+<path d="M16 5.5a3 3 0 010 5.6M18 20a5.5 5.5 0 00-3-4.9"></path>
+</svg>
+          Members
+        </a>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="16">
+<path d="M3 9l1.6-5h14.8L21 9"></path>
+<path d="M4 9v10a1 1 0 001 1h14a1 1 0 001-1V9"></path>
+<path d="M3 9h18"></path>
+<path d="M9 20v-6h6v6"></path>
+</svg>
+          Store settings
+        </a>
+<a class="nav">
+<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="16">
+<path d="M3 12h4l3 8 4-16 3 8h4"></path>
+</svg>
+          Operations
+          <span class="count warn">3</span>
+</a>
+</nav>
+<div class="railuser">
+<span class="av inv">JP</span>
+<div>
+<b>owner@marketcore.test</b>
+<i>Owner</i>
+</div>
+<svg aria-hidden="true" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14">
+<path d="M6 9l6 6 6-6"></path>
+</svg>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="main">
+<header class="topbar">
+<nav aria-label="Breadcrumb" class="crumbs">
+<span class="dimx">Catalog</span>
+<i>/</i>
+<span>Products</span>
+</nav>
+<label class="topsearch">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="15">
+<circle cx="11" cy="11" r="7"></circle>
+<path d="M20 20l-3.5-3.5"></path>
+</svg>
+<input aria-label="Search products, orders, request ids" placeholder="Search products, orders, request ids…"/>
+<kbd>⌘K</kbd>
+</label>
+<div class="top-actions">
+<button aria-label="Notifications, 3 unread" class="iconbtn">
+<svg aria-hidden="true" fill="none" height="17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24" width="17">
+<path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"></path>
+<path d="M10.5 20a2 2 0 003 0"></path>
+</svg>
+<i aria-hidden="true" class="badge">3</i>
+</button>
+<div class="userchip">
+<span class="av inv">JP</span>
+<div>
+<b>Jordan Park</b>
+<i>Owner · Nile Traders</i>
+</div>
+<svg aria-hidden="true" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14">
+<path d="M6 9l6 6 6-6"></path>
+</svg>
+</div>
+</div>
+</header>
+<div class="page">
+<!-- Page Title & Primary Controls -->
+<div class="pagehead">
+<div>
+<h1>Products</h1>
+<p>4 products · Nile Traders</p>
+</div>
+<div class="headctl">
+<label class="inline-search">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="15">
+<circle cx="11" cy="11" r="7"></circle>
+<path d="M20 20l-3.5-3.5"></path>
+</svg>
+<input aria-label="Search products" placeholder="Search products…"/>
+</label>
+<button class="btn ghost">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="15">
+<path d="M4 6h16M4 12h16M4 18h16"></path>
+<circle cx="9" cy="6" r="2"></circle>
+<circle cx="15" cy="12" r="2"></circle>
+<circle cx="8" cy="18" r="2"></circle>
+</svg>
+              Filter
+            </button>
+<button class="btn">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="15">
+<path d="M12 5v14M5 12h14"></path>
+</svg>
+              New product
+            </button>
+</div>
+</div>
+<!-- Metric KPI Cards -->
+<div class="kpis">
+<div class="kpi">
+<div class="kpitop">
+<span class="kpi-label">Published</span>
+</div>
+<div class="kpi-val">2</div>
+<div class="kpi-spark"></div>
+</div>
+<div class="kpi">
+<div class="kpitop">
+<span class="kpi-label">Draft</span>
+</div>
+<div class="kpi-val">1</div>
+<div class="kpi-spark"></div>
+</div>
+<div class="kpi">
+<div class="kpitop">
+<span class="kpi-label">Out of stock</span>
+<span class="delta down">
+<svg aria-hidden="true" fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="13">
+<path d="M6 9l6 6 6-6"></path>
+</svg>
+                needs attention
+              </span>
+</div>
+<div class="kpi-val">1</div>
+<div class="kpi-spark"></div>
+</div>
+<!-- Commanding Focal Anchor: Inventory Value -->
+<div class="kpi primary-kpi">
+<div class="kpitop">
+<span class="kpi-label">Inventory value</span>
+<span class="delta up">
+<svg aria-hidden="true" fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24" width="13">
+<path d="M18 15l-6-6-6 6"></path>
+</svg>
+                6.2%
+              </span>
+</div>
+<div class="kpi-val mono">E£12,450</div>
+<div class="kpi-spark">
+<svg aria-hidden="true" class="spark" height="38" preserveaspectratio="none" viewbox="0 0 132 38" width="100%">
+<defs>
+<lineargradient id="primaryKpiGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#4f46e5" stop-opacity="0.22"></stop>
+<stop offset="100%" stop-color="#4f46e5" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<path d="M0.0 32.0 L22.0 24.0 L44.0 30.0 L66.0 16.0 L88.0 9.0 L110.0 13.0 L132.0 5.0 L132 38 L0 38 Z" fill="url(#primaryKpiGrad)"></path>
+<path d="M0.0 32.0 L22.0 24.0 L44.0 30.0 L66.0 16.0 L88.0 9.0 L110.0 13.0 L132.0 5.0" fill="none" stroke="#4f46e5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Catalog Data Table Card -->
+<section class="card">
+<header class="cardhead">
+<h3>All products</h3>
+</header>
+<div class="tblwrap">
+<table class="tbl">
+<thead>
+<tr>
+<th scope="col">Product</th>
+<th scope="col">Status</th>
+<th class="num" scope="col">Price</th>
+<th scope="col">Available</th>
+<th scope="col">Sales · 30d</th>
+<th class="trend-col" scope="col">Trend</th>
+<th class="act-cell" scope="col"><span class="sr-only">Actions</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<div class="who">
+<em class="dot ok" title="Published status"></em>
+<span>
+                        Nile Cotton Shirt
+                        <i>SKU-6642</i>
+</span>
+</div>
+</td>
+<td>
+<span class="st ok"><i></i>published</span>
+</td>
+<td class="num mono">E£249.00</td>
+<td>
+<span class="stock">
+<span aria-hidden="true" class="sharebar"><i style="width:42%;background:var(--ok)"></i></span>
+<b class="mono">10</b>
+</span>
+</td>
+<td class="sales-spark-cell">
+<svg aria-hidden="true" class="spark-table" height="30" preserveaspectratio="none" viewbox="0 0 96 30" width="96">
+<defs>
+<lineargradient id="sg6" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0" stop-color="var(--accent)" stop-opacity=".22"></stop>
+<stop offset="1" stop-color="var(--accent)" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0.0 26.0 L16.0 20.3 L32.0 23.1 L48.0 14.6 L64.0 17.4 L80.0 6.0 L96.0 11.7 L96 30 L0 30 Z" fill="url(#sg6)"></path>
+<path d="M0.0 26.0 L16.0 20.3 L32.0 23.1 L48.0 14.6 L64.0 17.4 L80.0 6.0 L96.0 11.7" fill="none" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</td>
+<td>
+<span class="delta up">
+<svg aria-hidden="true" fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="13">
+<path d="M6 15l6-6 6 6"></path>
+</svg>
+                      18.4%
+                    </span>
+</td>
+<td class="act-cell">
+<button class="btn quiet sm">Edit</button>
+</td>
+</tr>
+<tr>
+<td>
+<div class="who">
+<em class="dot draft" title="Draft status"></em>
+<span>
+                        Giza Sheet Set
+                        <i>SKU-7711</i>
+</span>
+</div>
+</td>
+<td>
+<span class="st neutral"><i></i>draft</span>
+</td>
+<td class="num mono">E£1,250.00</td>
+<td>
+<span class="stock">
+<span aria-hidden="true" class="sharebar"><i style="width:0%;background:var(--bad)"></i></span>
+<b class="mono">0</b>
+</span>
+</td>
+<td class="sales-spark-cell">
+<svg aria-hidden="true" class="spark-table" height="30" preserveaspectratio="none" viewbox="0 0 96 30" width="96">
+<defs>
+<lineargradient id="sg7" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0" stop-color="var(--faint)" stop-opacity=".15"></stop>
+<stop offset="1" stop-color="var(--faint)" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0.0 26.0 L16.0 26.0 L32.0 26.0 L48.0 26.0 L64.0 26.0 L80.0 26.0 L96.0 26.0 L96 30 L0 30 Z" fill="url(#sg7)"></path>
+<path d="M0.0 26.0 L16.0 26.0 L32.0 26.0 L48.0 26.0 L64.0 26.0 L80.0 26.0 L96.0 26.0" fill="none" stroke="var(--lineStrong)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</td>
+<td>
+<span class="dash">—</span>
+</td>
+<td class="act-cell">
+<button class="btn quiet sm">Edit</button>
+</td>
+</tr>
+<tr>
+<td>
+<div class="who">
+<em class="dot ok" title="Published status"></em>
+<span>
+                        Ramie Table Runner
+                        <i>SKU-8820</i>
+</span>
+</div>
+</td>
+<td>
+<span class="st ok"><i></i>published</span>
+</td>
+<td class="num mono">E£180.00</td>
+<td>
+<span class="stock">
+<span aria-hidden="true" class="sharebar"><i style="width:13%;background:var(--warn)"></i></span>
+<b class="mono">3</b>
+</span>
+</td>
+<td class="sales-spark-cell">
+<svg aria-hidden="true" class="spark-table" height="30" preserveaspectratio="none" viewbox="0 0 96 30" width="96">
+<defs>
+<lineargradient id="sg8" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0" stop-color="var(--accent)" stop-opacity=".22"></stop>
+<stop offset="1" stop-color="var(--accent)" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0.0 16.0 L16.0 21.0 L32.0 11.0 L48.0 26.0 L64.0 6.0 L80.0 16.0 L96.0 21.0 L96 30 L0 30 Z" fill="url(#sg8)"></path>
+<path d="M0.0 16.0 L16.0 21.0 L32.0 11.0 L48.0 26.0 L64.0 6.0 L80.0 16.0 L96.0 21.0" fill="none" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</td>
+<td>
+<span class="delta down">
+<svg aria-hidden="true" fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="13">
+<path d="M6 9l6 6 6-6"></path>
+</svg>
+                      12.1%
+                    </span>
+</td>
+<td class="act-cell">
+<button class="btn quiet sm">Edit</button>
+</td>
+</tr>
+<tr>
+<td>
+<div class="who">
+<em class="dot ok" title="Published status"></em>
+<span>
+                        Delta Olive Oil
+                        <i>SKU-9931</i>
+</span>
+</div>
+</td>
+<td>
+<span class="st ok"><i></i>published</span>
+</td>
+<td class="num mono">E£189.00</td>
+<td>
+<span class="stock">
+<span aria-hidden="true" class="sharebar"><i style="width:100%;background:var(--ok)"></i></span>
+<b class="mono">24</b>
+</span>
+</td>
+<td class="sales-spark-cell">
+<svg aria-hidden="true" class="spark-table" height="30" preserveaspectratio="none" viewbox="0 0 96 30" width="96">
+<defs>
+<lineargradient id="sg9" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0" stop-color="var(--accent)" stop-opacity=".22"></stop>
+<stop offset="1" stop-color="var(--accent)" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0.0 26.0 L16.0 21.0 L32.0 16.0 L48.0 21.0 L64.0 11.0 L80.0 16.0 L96.0 6.0 L96 30 L0 30 Z" fill="url(#sg9)"></path>
+<path d="M0.0 26.0 L16.0 21.0 L32.0 16.0 L48.0 21.0 L64.0 11.0 L80.0 16.0 L96.0 6.0" fill="none" stroke="var(--accent)" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</td>
+<td>
+<span class="delta up">
+<svg aria-hidden="true" fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="13">
+<path d="M6 15l6-6 6 6"></path>
+</svg>
+                      9.3%
+                    </span>
+</td>
+<td class="act-cell">
+<button class="btn quiet sm">Edit</button>
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td class="tf" colspan="7">
+<svg aria-hidden="true" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="16" y2="12"></line>
+<line x1="12" x2="12.01" y1="8" y2="8"></line>
+</svg>
+                    Inventory is enforced by a database CHECK — the API cannot sell what it does not have.
+                  </td>
+</tr>
+</tfoot>
+</table>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>
