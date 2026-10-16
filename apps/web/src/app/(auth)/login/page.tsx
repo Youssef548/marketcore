@@ -4,7 +4,7 @@ import { Suspense, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LoginRequestSchema } from '@app/contracts';
-import { Alert, ArrowRightIcon, Button, Field, PageHeading, TextLink } from '@app/ui';
+import { Alert, AlertVariants, ArrowRightIcon, Button, ControlSizes, Field, PageHeading, TextLink } from '@app/ui';
 import { firstIssuePerField } from '@/lib/forms/issues';
 import { postJson } from '@/lib/forms/post-json';
 import { safeRedirect } from '@/lib/http/browser';
@@ -66,7 +66,7 @@ function LoginForm() {
       </div>
 
       {params.get('registered') === '1' && (
-        <Alert variant="success">Account created. Sign in to continue.</Alert>
+        <Alert variant={AlertVariants.SUCCESS}>Account created. Sign in to continue.</Alert>
       )}
 
       <Field
@@ -74,7 +74,7 @@ function LoginForm() {
         name="email"
         type="email"
         autoComplete="email"
-        size="lg"
+        size={ControlSizes.LG}
         value={email}
         error={fieldErrors.email}
         onChange={(event) => setEmail(event.target.value)}
@@ -85,7 +85,7 @@ function LoginForm() {
         name="password"
         type="password"
         autoComplete="current-password"
-        size="lg"
+        size={ControlSizes.LG}
         value={password}
         error={fieldErrors.password}
         onChange={(event) => setPassword(event.target.value)}
@@ -98,7 +98,7 @@ function LoginForm() {
 
       {/* `busy` rather than `disabled`: a disabled submit button drops keyboard
        * focus and sends the user back to the top of the form mid-submit. */}
-      <Button type="submit" size="lg" busy={pending} className="w-full">
+      <Button type="submit" size={ControlSizes.LG} busy={pending} className="w-full">
         {pending ? 'Signing in…' : 'Sign in'}
         {!pending && <ArrowRightIcon />}
       </Button>

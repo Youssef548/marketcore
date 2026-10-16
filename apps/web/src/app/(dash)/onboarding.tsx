@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { Alert, ArrowRightIcon, Button, Field, PageHeading, TextLink } from '@app/ui';
+import { Alert, ArrowRightIcon, Button, ControlSizes, Field, PageHeading, TextLink } from '@app/ui';
 import { AuthCard, PublicFrame } from '@/components/public-frame';
 import { createOrganization, signOut } from '@/lib/session/client';
 
@@ -93,7 +93,7 @@ export function Onboarding({
             name="name"
             autoComplete="organization"
             placeholder="Nile Traders"
-            size="lg"
+            size={ControlSizes.LG}
             hint="Its catalog, its orders and its members all belong to it."
             value={name}
             error={null}
@@ -119,7 +119,7 @@ export function Onboarding({
 
           {/* `busy` rather than `disabled`: a disabled submit button drops keyboard focus and
            * sends the user back to the top of the form mid-submit. */}
-          <Button type="submit" size="lg" busy={pending} className="w-full">
+          <Button type="submit" size={ControlSizes.LG} busy={pending} className="w-full">
             {pending ? 'Creating…' : 'Create organization'}
             {!pending && <ArrowRightIcon />}
           </Button>
