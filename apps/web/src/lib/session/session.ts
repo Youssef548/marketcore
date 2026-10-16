@@ -5,9 +5,8 @@ import {
   OrganizationSchema,
   UserSummarySchema,
   type Organization,
-  type TokenPair,
-  type UserSummary,
 } from '@app/contracts';
+import type { SessionDeps } from './interfaces/session.interface';
 
 /**
  * What the browser is told about its session.
@@ -32,27 +31,6 @@ export type SessionView = z.infer<typeof SessionViewSchema>;
  */
 export const SelectOrganizationRequestSchema = z.object({ organizationId: z.string().min(1) });
 export type SelectOrganizationRequest = z.infer<typeof SelectOrganizationRequestSchema>;
-
-/** Where the tokens live. Injected so the rules below run without a Next request. */
-export interface SessionStore {
-  readAccessToken(): string | undefined;
-  readRefreshToken(): string | undefined;
-  readOrganizationId(): string | undefined;
-  saveTokens(pair: TokenPair): void;
-  clear(): void;
-}
-
-export interface SessionApi {
-  me(accessToken: string): Promise<UserSummary>;
-  organizations(accessToken: string): Promise<Organization[]>;
-}
-
-export interface SessionDeps {
-  store: SessionStore;
-  api: SessionApi;
-  /** Rotates a refresh token. Single-flight, so concurrent loads share one rotation. */
-  refresh(presentedToken: string): Promise<TokenPair>;
-}
 
 /**
  * Which organization the session is acting in.

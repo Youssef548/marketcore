@@ -9,7 +9,8 @@ import {
   refreshCookieAttributes,
 } from './cookies';
 import { createRefreshCoordinator } from './refresh';
-import { loadSession, type SessionApi, type SessionStore, type SessionView } from './session';
+import { loadSession, type SessionView } from './session';
+import type { SessionApi, SessionStore } from './interfaces/session.interface';
 
 type CookieJar = Awaited<ReturnType<typeof cookies>>;
 

@@ -8,12 +8,8 @@ import {
   type TokenPair,
   type UserSummary,
 } from '@app/contracts';
-import {
-  loadSession,
-  resolveActiveOrganization,
-  type SessionApi,
-  type SessionStore,
-} from './session';
+import { loadSession, resolveActiveOrganization } from './session';
+import type { SessionApi, SessionStore } from './interfaces/session.interface';
 
 const USER: UserSummary = { id: 'u1', email: 'owner@marketcore.test' };
 
