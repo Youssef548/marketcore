@@ -1,17 +1,6 @@
 'use client';
 
-import type { InputHTMLAttributes } from 'react';
-
-export type InputSize = 'lg' | 'md' | 'sm';
-
-export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
-  /**
-   * Marks the field as failing validation. Sets `aria-invalid` as well as the
-   * colour, so the state reaches a screen reader rather than only the eye.
-   */
-  invalid?: boolean;
-  size?: InputSize;
-}
+import type { InputProps, InputSize } from './interfaces/input.interface';
 
 const sizes: Record<InputSize, string> = {
   // The credential and first-run forms: one column, a few fields, nothing else on the
