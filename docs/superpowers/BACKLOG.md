@@ -116,3 +116,34 @@ classes and the same logic are copied between pages and drift apart.
 - `collectIssues` and the submit flow exist once, with unit tests; login and register use them.
 - `pnpm --filter @app/ui test`, `pnpm --filter web test`, the behavioural suite and
   `pnpm turbo run lint typecheck test build` are green, with no assertion weakened.
+
+---
+
+## BL-003 — Option sets are const-object enums; every shape has a name
+
+**Raised:** 2026-10-16 · **Priority:** Should · **Size:** S · **Status:** done — the BL-003 PR stack
+
+### Problem
+
+Two ways a type was left unnamed, found reviewing `@app/ui`'s `Card`:
+
+- **Option sets as literal unions.** `type CardVariant = 'panel' | 'raised'` exists only in the type
+  checker: callers type `variant="raised"`, tests repeat the string, nothing at runtime can list the
+  options. AGENTS.md already says to prefer const-object enums, and `@app/contracts` does
+  (`ProductStatuses`). Seven in `@app/ui` and `apps/web`; `ButtonSize` and `InputSize` were the same
+  three sizes declared twice.
+- **Inline shapes.** `PolymorphicProps<E, { variant?: CardVariant; className?: string }>` and 13
+  components typing their props inline (`Rail({ appName }: { appName: string })`).
+
+### Rule
+
+- An option set is `export const Xs = { A: 'a' } as const` with `type X = (typeof Xs)[keyof typeof Xs]`
+  beside it. A union of keys as a type argument (`Omit<P, 'id' | 'invalid'>`) and a tagged union
+  (`{ kind: 'ok' } | { kind: 'failed' }`) are not option sets and stay.
+- A props or options object is a named interface. `{ children }` alone is React's `PropsWithChildren`.
+
+### Done when
+
+Lint fails a literal union and an inline object type, in implementation and interface files alike,
+with fixtures proving each fires and each exception passes.
+

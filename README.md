@@ -314,6 +314,8 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
 - **Exported shapes live in `*.interface.ts` files**, in every app and package — never inline in a
   component or service. A type derived from a value beside it (`z.infer`, `typeof`) stays with that
   value, so a contract's schema and its type cannot drift. A lint error, not a habit.
+- **Every shape has a name.** An option set is a const-object enum (`ControlSizes.LG`, not `'lg'`), and a
+  component's props are a named interface, not an inline `{ … }`. Also a lint error.
 - **The web app holds the session, not the browser.** `apps/web` is a BFF: its route handlers are the
   only code that calls the API, and both tokens live in `httpOnly` cookies.
 - **No `.env` in git.** `.env.example` files only.
