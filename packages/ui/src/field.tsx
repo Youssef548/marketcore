@@ -9,6 +9,12 @@ export interface FieldProps extends Omit<InputProps, 'id' | 'invalid'> {
   label: ReactNode;
   /** The message a refusal produced, if any. */
   error?: string | null;
+  /**
+   * What the field asks for, stated before anything is refused — a password policy,
+   * what a name is used for. Described by the input rather than merely placed under
+   * it, so a screen reader reads the rule with the field instead of after the form.
+   */
+  hint?: ReactNode;
   id?: string;
 }
 
@@ -23,10 +29,23 @@ export interface FieldProps extends Omit<InputProps, 'id' | 'invalid'> {
  * The generated id is React's `useId` rather than a counter, because it is stable
  * across a server render and the client's hydration of it.
  */
-export function Field({ label, error = null, id, className = '', ...inputProps }: FieldProps) {
+export function Field({
+  label,
+  error = null,
+  hint,
+  id,
+  className = '',
+  ...inputProps
+}: FieldProps) {
   const generatedId = useId();
   const fieldId = id ?? generatedId;
   const errorId = `${fieldId}-error`;
+  const hintId = `${fieldId}-hint`;
+  const hasHint = hint !== undefined && hint !== null;
+  // The hint first, then the refusal: the rule, and then why this value broke it.
+  const describedBy =
+    [hasHint ? hintId : null, error === null ? null : errorId].filter(Boolean).join(' ') ||
+    undefined;
 
   return (
     <div className="space-y-2">
@@ -34,10 +53,15 @@ export function Field({ label, error = null, id, className = '', ...inputProps }
       <Input
         id={fieldId}
         invalid={error !== null}
-        aria-describedby={error === null ? undefined : errorId}
+        aria-describedby={describedBy}
         className={className}
         {...inputProps}
       />
+      {hasHint && (
+        <p id={hintId} className="text-xs text-ink-muted">
+          {hint}
+        </p>
+      )}
       <Alert id={errorId}>{error}</Alert>
     </div>
   );
