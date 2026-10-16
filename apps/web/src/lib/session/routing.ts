@@ -1,3 +1,5 @@
+import type { RoutingDecision } from './interfaces/routing.interface';
+
 /**
  * Where a visitor goes, as a decision with no Next in it.
  *
@@ -9,8 +11,6 @@
 export const DASHBOARD_PATH = '/dashboard';
 export const LOGIN_PATH = '/login';
 export const REGISTER_PATH = '/register';
-
-export type RoutingDecision = { kind: 'next' } | { kind: 'redirect'; to: string };
 
 export function isProtected(pathname: string): boolean {
   return pathname === DASHBOARD_PATH || pathname.startsWith(`${DASHBOARD_PATH}/`);

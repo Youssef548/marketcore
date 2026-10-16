@@ -9,17 +9,10 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { ErrorEnvelopeSchema, type Organization, type UserSummary } from '@app/contracts';
+import { ErrorEnvelopeSchema } from '@app/contracts';
 import { messageFrom } from '@/lib/http/browser';
 import { SessionViewSchema, type SessionView } from './session';
-
-export type SessionState =
-  | { status: 'loading' }
-  /** A refusal: there is no session. Distinct from a failure to ask. */
-  | { status: 'anonymous' }
-  /** The server could not be reached, or answered something unusable. */
-  | { status: 'failed'; message: string }
-  | { status: 'ready'; session: SessionView };
+import type { ReadySession, SessionState } from './interfaces/client.interface';
 
 /**
  * Read once, from `/api/session`.
@@ -86,25 +79,6 @@ export function useSession(): SessionContextValue {
     throw new Error('useSession was used outside a SessionProvider');
   }
   return value;
-}
-
-/**
- * The session a signed-in subtree may rely on.
- *
- * `useSession` answers *whether* there is a session; this answers *what it is*, for
- * modules that are only ever rendered once the answer is yes. The four arms of
- * `SessionState` are narrowed in one place — the shell — so a consumer receives a
- * session rather than a union it has to narrow and cannot get wrong silently.
- *
- * The active organization is resolved here rather than by each module that needs to
- * name the tenant, so membership is applied once and the two cannot disagree.
- */
-export interface ReadySession {
-  user: UserSummary;
-  organizations: Organization[];
-  /** The organization the session is acting in, or null when none is chosen. */
-  activeOrganization: Organization | null;
-  reload: () => Promise<void>;
 }
 
 const ReadySessionContext = createContext<ReadySession | null>(null);
