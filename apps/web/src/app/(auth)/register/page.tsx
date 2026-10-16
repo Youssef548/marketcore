@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PASSWORD_MIN_LENGTH, RegisterRequestSchema } from '@app/contracts';
-import { Alert, ArrowRightIcon, Button, Field, PageHeading, TextLink } from '@app/ui';
+import { Alert, ArrowRightIcon, Button, ControlSizes, Field, PageHeading, TextLink } from '@app/ui';
 import { firstIssuePerField } from '@/lib/forms/issues';
 import { postJson } from '@/lib/forms/post-json';
 
@@ -67,7 +67,7 @@ export default function RegisterPage() {
         type="email"
         autoComplete="email"
         placeholder="you@example.com"
-        size="lg"
+        size={ControlSizes.LG}
         value={email}
         error={fieldErrors.email}
         onChange={(event) => setEmail(event.target.value)}
@@ -80,7 +80,7 @@ export default function RegisterPage() {
         name="password"
         type="password"
         autoComplete="new-password"
-        size="lg"
+        size={ControlSizes.LG}
         hint={`At least ${PASSWORD_MIN_LENGTH} characters.`}
         value={password}
         error={fieldErrors.password}
@@ -89,7 +89,7 @@ export default function RegisterPage() {
 
       {formError !== null && <Alert className="border-l-4">{formError}</Alert>}
 
-      <Button type="submit" size="lg" busy={pending} className="w-full">
+      <Button type="submit" size={ControlSizes.LG} busy={pending} className="w-full">
         {pending ? 'Creating…' : 'Create account'}
         {!pending && <ArrowRightIcon />}
       </Button>

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Card } from '@app/ui';
+import { Card, CardVariants } from '@app/ui';
+import { BrandMarkSizes, type BrandMarkSize } from './constants';
 
 /**
  * The frame every screen outside the shell sits in: sign in, register, and the first-run
@@ -27,7 +28,7 @@ export function PublicFrame({
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-canvas to-sunken">
       <header className="flex h-15 shrink-0 items-center justify-between gap-4 border-b border-rule bg-panel px-4 sm:px-9">
         <span className="flex items-center gap-3">
-          <BrandMark size="sm" />
+          <BrandMark size={BrandMarkSizes.SM} />
           <span className="text-base font-bold tracking-tight text-ink">{appName}</span>
         </span>
         {aside}
@@ -47,7 +48,7 @@ export function PublicFrame({
 export function AuthCard({ wide = false, children }: { wide?: boolean; children: ReactNode }) {
   return (
     <Card
-      variant="raised"
+      variant={CardVariants.RAISED}
       className={`w-full ${wide ? 'max-w-[30rem]' : 'max-w-[27.5rem]'} p-6 sm:p-9`}
     >
       {children}
@@ -62,7 +63,7 @@ export function AuthCard({ wide = false, children }: { wide?: boolean; children:
 export function CardBrand({ appName }: { appName: string }) {
   return (
     <div className="mb-6 flex items-center gap-3">
-      <BrandMark size="md" />
+      <BrandMark size={BrandMarkSizes.MD} />
       <span className="text-lg font-bold leading-tight tracking-tight text-ink">{appName}</span>
     </div>
   );
@@ -72,9 +73,9 @@ export function CardBrand({ appName }: { appName: string }) {
  * The mark the rail draws, on the action colour rather than the rail's: the same square
  * with the same corner stroke, so the front door and the console read as one product.
  */
-export function BrandMark({ size }: { size: 'sm' | 'md' }) {
-  const box = size === 'sm' ? 'h-7 w-7 rounded-[8px]' : 'h-8 w-8 rounded-[9px]';
-  const inset = size === 'sm' ? 'inset-[7px]' : 'inset-[8px]';
+export function BrandMark({ size }: { size: BrandMarkSize }) {
+  const box = size === BrandMarkSizes.SM ? 'h-7 w-7 rounded-[8px]' : 'h-8 w-8 rounded-[9px]';
+  const inset = size === BrandMarkSizes.SM ? 'inset-[7px]' : 'inset-[8px]';
 
   return (
     <span aria-hidden className={`relative inline-block shrink-0 bg-action ${box}`}>

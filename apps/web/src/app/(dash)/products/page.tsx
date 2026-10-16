@@ -9,7 +9,7 @@ import {
   type CurrencyCode,
   type Product,
 } from '@app/contracts';
-import { Alert, Button, Card, Field, PageHeading } from '@app/ui';
+import { Alert, Button, ButtonVariants, Card, Field, HeadingLevels, PageHeading } from '@app/ui';
 import { createProduct, useReadySession } from '@/lib/session/client';
 
 const ProductsSchema = z.array(ProductSchema);
@@ -102,7 +102,7 @@ export default function ProductsPage() {
         <div className="min-w-0">
           {/* The top bar's `h1` names the page; this is the page's own head, as the
            * design draws it, one level below. */}
-          <PageHeading level={2}>Products</PageHeading>
+          <PageHeading level={HeadingLevels.H2}>Products</PageHeading>
           <p className="mt-1 text-sm text-ink-muted">
             {activeOrganization === null
               ? 'Choose an organization above to see its catalog.'
@@ -114,7 +114,7 @@ export default function ProductsPage() {
 
         {organizationId !== null && (
           <Button
-            variant={adding ? 'secondary' : 'primary'}
+            variant={adding ? ButtonVariants.SECONDARY : ButtonVariants.PRIMARY}
             onClick={() => setAdding((open) => !open)}
           >
             {!adding && <PlusIcon />}

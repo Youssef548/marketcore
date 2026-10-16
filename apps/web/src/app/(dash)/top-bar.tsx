@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Alert, Button } from '@app/ui';
+import { Alert, Button, ButtonVariants, ControlSizes } from '@app/ui';
 import { signOut, useReadySession } from '@/lib/session/client';
 import { OrganizationSwitcher } from './organization-switcher';
 import { pageTitle } from './page-title';
@@ -62,7 +62,7 @@ export function TopBar() {
         </span>
 
         <ThemeToggle />
-        <Button variant="secondary" size="sm" busy={signingOut} onClick={() => void end()}>
+        <Button variant={ButtonVariants.SECONDARY} size={ControlSizes.SM} busy={signingOut} onClick={() => void end()}>
           Sign out
         </Button>
       </div>
