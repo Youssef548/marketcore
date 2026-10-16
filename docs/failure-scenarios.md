@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-19
 - **Status:** Accepted
-- **Related:** `docs/architecture.md`, `docs/domain-model.md`
+- **Related:** `docs/architecture.md`, `docs/domain-model.md`, `docs/superpowers/specs/2026-10-16-marketcore-storefront-srs.md`
 
 A failure scenario is only accepted into this table if it names the behaviour required, the test
 that proves the behaviour, and the week that test lands. Anything with an empty "proven by" cell is a
@@ -21,11 +21,19 @@ hope.
 | Database deadlock occurs | Bounded retry handles retryable transaction failure | Forced lock-order test | 3 |
 | Email sending fails | Payment and ledger remain successful | Notification retry test | 10 |
 | Two payout workers race | One claim and one provider call | Concurrent worker integration test (INV-8) | 9 |
+| One line of a multi-seller checkout is short of stock | No order, no stock change, every failing line reported | All-or-nothing checkout test (INV-11) | phase 4 |
+| A price changes after the buyer confirmed it | Checkout refused with `PRICE_CHANGED`; nothing committed | Confirmed-price mismatch test (SRS-FR-CHK-003) | phase 4 |
+| Overlapping carts lock the same rows in different orders | Rows lock in product-id order; no deadlock reaches the client | Overlapping-cart concurrency test (SRS-NFR-REL-002) | phase 4 |
+| Two auto-cancel runs see the same expired checkout | Cancelled once, stock restored once | Parallel worker-run test (INV-15) | phase 4 |
+| The worker is down past the 30-minute window | Unpaid checkouts are cancelled on the next run; nothing is lost, only late | Worker-restart test | phase 4 |
+| A payment captures after the checkout was auto-cancelled | No order becomes Paid; the capture is refunded in full | Capture-after-cancel test (SRS-FR-PAY-004) | phase 6 |
+| Two sellers' refunds race against one payment | Cumulative refunds never exceed the capture | Multi-seller refund-cap test (INV-5) | phase 9 |
 
 ## 2. Flagship automated tests
 
-These are the eight tests the plan nominates as the project's evidence. Three of them shape the
-architecture rather than merely verifying it, and are marked accordingly.
+These are the eight tests the plan nominates as the project's evidence, plus three the storefront
+adds (CR-001). Five of them shape the architecture rather than merely verifying it, and are marked
+accordingly.
 
 | Test | Setup | Assertions | Week | Shapes design |
 |---|---|---|---|---|
@@ -37,11 +45,14 @@ architecture rather than merely verifying it, and are marked accordingly.
 | Tenant isolation | User from tenant A requests tenant B resource | Not found or forbidden, without data leakage | 2 | |
 | Payout race | Two workers claim the same eligible payout | Provider transfer is initiated once | 9 | **yes** — forces a single atomic claim |
 | Refund cap | Concurrent refunds exceed the captured amount | Only the valid cumulative amount succeeds | 9 | |
+| All-or-nothing checkout | 3-seller cart, one line short | 0 orders, every stock unchanged, every failing line reported | phase 4 | **yes** — forces one transaction across sellers |
+| Cross-buyer isolation | Buyer X requests buyer Y's cart, checkout, order | 404, never data; X reads X's own | phase 4 | |
+| Abandoned checkout | Two worker runs over expired unpaid checkouts | Each cancelled once; stock restored once | phase 4 | **yes** — forces the conditional update |
 
 ## 3. How the two views relate
 
 The failure matrix and the flagship-test list answer different questions, and merging them would
-lose information. **Four of the eight flagship tests are failure scenarios; four are correctness
+lose information. **Six of the eleven flagship tests are failure scenarios; five are correctness
 claims that no failure produces.** Saying so is more useful than pretending every test belongs in
 the matrix.
 
@@ -55,6 +66,9 @@ the matrix.
 | Tenant isolation | No — authorization correctness | — |
 | Payout race | Yes | Two payout workers race |
 | Refund cap | No — invariant check under concurrency | — |
+| All-or-nothing checkout | Yes | One line of a multi-seller checkout is short of stock |
+| Cross-buyer isolation | No — authorization correctness | — |
+| Abandoned checkout | Yes | Two auto-cancel runs see the same expired checkout |
 
 Conversely, five failure rows are proven by tests that are not flagship tests, because they verify
 degradation behaviour rather than a headline claim: provider timeout, out-of-order webhook, Redis

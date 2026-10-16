@@ -875,3 +875,57 @@ entirely through the UI.
 
 
 
+
+## The buyer storefront baseline — 2026-10-16 (planning)
+
+**Claim:** the scope change to a multi-seller buyer storefront is decided, baselined and traceable
+from business requirement to test — **not** that any of it is built.
+**Branch:** `docs/cr-001-storefront`
+**Change request:** `docs/superpowers/specs/2026-10-16-cr-001-buyer-storefront.md`
+
+### Proven
+
+Nothing behavioural. This entry records decisions, and a decision is not evidence. What can be
+checked is that the documents agree with each other:
+
+| Check | How | Result |
+|---|---|---|
+| Every Release 1 PRD requirement has an SRS requirement and a named test | SRS §12 and the plan's §6 | 6 features, every AC mapped to a test and a task |
+| No live document still cites the deleted board | `git grep design-board -- README.md docs/architecture.md docs/domain-model.md docs/adr docs/design/deliverables/README.md` | only ADR 013's amendment, which records the deletion |
+| Every Stitch file the docs cite is committed | `ls docs/design/deliverables/ui/stitch/*.html \| wc -l` | 37 |
+
+### Delivered
+
+- **CR-001** (D52–D74): the "no consumer storefront" exclusion reversed; a multi-seller cart; an
+  all-or-nothing checkout with no reservations; one charge split by the ledger; buyer refund
+  requests; two releases; Stitch as the design source for every screen on Quartz tokens.
+- **The storefront PRD** (baseline v2), **the Release 1 SRS** (D75–D80) and **the Release 1
+  development plan**.
+- **ADR 014** (one charge per checkout, split by the ledger); **ADR 010** amended (public catalog,
+  buyer scope); **ADR 0001** amended (the worker from phase 4); **ADR 013** amended (Stitch).
+- `docs/domain-model.md` gains INV-11 … INV-15 and amends INV-2, INV-3 and INV-9;
+  `docs/failure-scenarios.md` gains seven failures and three flagship tests.
+- 37 Stitch `[Senior Craft]` screens committed; `design-board.html` and `gen-ui.mjs` removed.
+
+### Not proven / deferred
+
+- **Every new invariant is a claim with an observable, and none has a test yet.** INV-11 … INV-15
+  land in phases 4–9.
+- **ADR 014 is written ahead of its phase**, against the ADR folder's just-in-time rule. It records a
+  decision the user made now (D63) so phase 4's checkout shape does not have to guess it; it stays
+  `Proposed` and is reviewed at phase 6's start.
+- **D80 is an assumption:** only an owner approves a refund. Unconfirmed.
+- **SRS-NFR-PERF-001 is a target, not a measurement** — phase 13.
+- **Release 2 has stories and rules but no acceptance criteria**; they are written when it is planned.
+
+### Findings
+
+1. **"Minimal" was the wrong first reading of "add a buyer path".** The scope moved twice in one
+   session — minimal path, then full storefront; buy-now, then cart; reservations, then none — and
+   each reversal cancelled decisions built on the last. Recording every decision with an ID is what
+   made the reversals cheap to apply rather than silently inconsistent.
+2. **Reserving at add-to-cart looked like more correctness and was less.** It moved the flagship race
+   away from checkout, let one account hold every unit, and added an expiry-mid-checkout failure. No
+   reservations, with one locked transaction at checkout, proves more with less.
+3. **The worker's phase was an artefact of its transport.** It was scheduled for phase 10 because
+   BullMQ arrives then; auto-cancel needs only a conditional update, so the worker moved to phase 4.

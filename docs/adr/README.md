@@ -8,7 +8,7 @@ its constraint exists describes a guess, not a decision.
 
 | ADR | Decision | Gating phase | Status |
 |---|---|---|---|
-| [001](./0001-modular-monolith-with-worker.md) | Use a modular monolith with API and worker processes | Before application structure | Accepted |
+| [001](./0001-modular-monolith-with-worker.md) | Use a modular monolith with API and worker processes (amended: worker from phase 4) | Before application structure | Accepted |
 | 002 | Use PostgreSQL row locking for limited inventory | Before checkout implementation (phase 4) | Proposed |
 | 003 | Use request-scoped idempotency records | Before retry-safe checkout (phase 5) | Proposed |
 | 004 | Use a deterministic payment simulator before Stripe | Before payment implementation (phase 6) | Proposed |
@@ -17,10 +17,11 @@ its constraint exists describes a guess, not a decision.
 | 007 | Use BullMQ for background processing | Before worker and retry configuration (phase 10) | Proposed |
 | 008 | Use OpenTelemetry for cross-process tracing | Before instrumentation (phase 12) | Proposed |
 | 009 | Deploy API and worker on ECS Fargate | Before Terraform implementation (phase 14) | Proposed |
-| [010](./010-tenant-isolation-in-the-query-layer.md) | Enforce tenant isolation in the application query layer | Before tenancy and every tenant-owned read (phase 2) | Accepted |
+| [010](./010-tenant-isolation-in-the-query-layer.md) | Enforce tenant isolation in the application query layer (amended: public catalog and buyer scope) | Before tenancy and every tenant-owned read (phase 2) | Accepted |
 | [011](./011-web-session-and-token-storage.md) | Hold the web session in httpOnly cookies behind a BFF | Before the first web route that needs a session | Accepted |
 | [012](./012-component-layer.md) | Keep the component layer hand-rolled; adopt Radix per widget | Before the design system's first component | Accepted |
-| [013](./013-design-direction-quartz.md) | Adopt Quartz as the design direction | After the first web slice, on looking at the built app | Accepted |
+| [013](./013-design-direction-quartz.md) | Adopt Quartz as the design direction (amended: Stitch screens on Quartz tokens) | After the first web slice, on looking at the built app | Accepted |
+| [014](./014-one-charge-per-checkout-split-by-the-ledger.md) | Take one charge per checkout and split it by the ledger | Before the first payment (phase 6) | Proposed |
 
 Decisions that do not warrant an ADR live in `docs/superpowers/specs/`, whose `D<n>` identifiers are
 cited from code comments and plans. The sequence is continuous across documents rather than
