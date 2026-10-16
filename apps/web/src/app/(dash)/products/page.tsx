@@ -240,8 +240,13 @@ export default function ProductsPage() {
 const HEADER_CELL =
   'whitespace-nowrap px-5 py-3 text-xs font-semibold uppercase tracking-wider text-ink-faint sm:px-6';
 
+interface CountProps {
+  label: string;
+  value: number;
+}
+
 /** One count card. A `dt`/`dd` pair, so the number is read with what it counts. */
-function Count({ label, value }: { label: string; value: number }) {
+function Count({ label, value }: CountProps) {
   return (
     <Card className="px-5 py-4">
       <dt className="text-sm font-medium text-ink-muted">{label}</dt>
@@ -267,6 +272,10 @@ function PlusIcon() {
   );
 }
 
+interface AddProductFormProps {
+  onCreated: () => Promise<void>;
+}
+
 /**
  * Add a product to the organization the session acts in.
  *
@@ -274,7 +283,7 @@ function PlusIcon() {
  * handler, which supplies the tenant; the browser never names it. A refusal is shown
  * as the server worded it rather than restated here.
  */
-function AddProductForm({ onCreated }: { onCreated: () => Promise<void> }) {
+function AddProductForm({ onCreated }: AddProductFormProps) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [currency, setCurrency] = useState<CurrencyCode>(CurrencyCodes.EGP);

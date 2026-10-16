@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Organization, UserSummary } from '@app/contracts';
 import type { SessionView } from '../session';
 
@@ -26,4 +27,10 @@ export interface ReadySession {
   /** The organization the session is acting in, or null when none is chosen. */
   activeOrganization: Organization | null;
   reload: () => Promise<void>;
+}
+
+export interface ReadySessionProviderProps {
+  session: SessionView;
+  reload: () => Promise<void>;
+  children: ReactNode;
 }

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { PropsWithChildren } from 'react';
 import { SessionProvider } from '@/lib/session/client';
 import { DashboardChrome } from './chrome';
 
@@ -11,7 +11,7 @@ import { DashboardChrome } from './chrome';
  * that: the session itself is loaded in a route handler, because a render cannot
  * write the cookies a rotation produces.
  */
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default function DashboardLayout({ children }: PropsWithChildren) {
   const appName = process.env.APP_NAME ?? 'app';
 
   return (

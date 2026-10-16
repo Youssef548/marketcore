@@ -1,6 +1,11 @@
-import type { ReactNode } from 'react';
 import { Card, CardVariants } from '@app/ui';
-import { BrandMarkSizes, type BrandMarkSize } from './constants';
+import { BrandMarkSizes } from './constants';
+import type {
+  AuthCardProps,
+  BrandMarkProps,
+  CardBrandProps,
+  PublicFrameProps,
+} from './interfaces/public-frame.interface';
 
 /**
  * The frame every screen outside the shell sits in: sign in, register, and the first-run
@@ -14,16 +19,7 @@ import { BrandMarkSizes, type BrandMarkSize } from './constants';
  * Colours are the token layer's only, so the frame is Quartz or Graphite by the theme
  * cookie alone, with no branch here.
  */
-export function PublicFrame({
-  appName,
-  aside,
-  children,
-}: {
-  appName: string;
-  /** The bar's right-hand side: who is signed in, on the one screen where someone is. */
-  aside?: ReactNode;
-  children: ReactNode;
-}) {
+export function PublicFrame({ appName, aside, children }: PublicFrameProps) {
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-canvas to-sunken">
       <header className="flex h-15 shrink-0 items-center justify-between gap-4 border-b border-rule bg-panel px-4 sm:px-9">
@@ -45,7 +41,7 @@ export function PublicFrame({
  * The card a credential form sits on: the panel, an 18px radius and a hairline, as the
  * Stitch auth cards draw it. `wide` is the first-run card, which carries more prose.
  */
-export function AuthCard({ wide = false, children }: { wide?: boolean; children: ReactNode }) {
+export function AuthCard({ wide = false, children }: AuthCardProps) {
   return (
     <Card
       variant={CardVariants.RAISED}
@@ -60,7 +56,7 @@ export function AuthCard({ wide = false, children }: { wide?: boolean; children:
  * The product's name at the head of a card, mark first. Decoration around a name: the
  * mark is hidden from assistive technology, and the name is what is read.
  */
-export function CardBrand({ appName }: { appName: string }) {
+export function CardBrand({ appName }: CardBrandProps) {
   return (
     <div className="mb-6 flex items-center gap-3">
       <BrandMark size={BrandMarkSizes.MD} />
@@ -73,7 +69,7 @@ export function CardBrand({ appName }: { appName: string }) {
  * The mark the rail draws, on the action colour rather than the rail's: the same square
  * with the same corner stroke, so the front door and the console read as one product.
  */
-export function BrandMark({ size }: { size: BrandMarkSize }) {
+export function BrandMark({ size }: BrandMarkProps) {
   const box = size === BrandMarkSizes.SM ? 'h-7 w-7 rounded-[8px]' : 'h-8 w-8 rounded-[9px]';
   const inset = size === BrandMarkSizes.SM ? 'inset-[7px]' : 'inset-[8px]';
 

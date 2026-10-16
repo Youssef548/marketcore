@@ -7,13 +7,17 @@ import {
   useEffect,
   useMemo,
   useState,
-  type ReactNode,
+  type PropsWithChildren,
 } from 'react';
 import { ErrorEnvelopeSchema } from '@app/contracts';
 import { SERVER_UNREACHABLE_MESSAGE } from '@/lib/forms/post-json';
 import { messageFrom } from '@/lib/http/browser';
-import { SessionViewSchema, type SessionView } from './session';
-import type { ReadySession, SessionState } from './interfaces/client.interface';
+import { SessionViewSchema } from './session';
+import type {
+  ReadySession,
+  ReadySessionProviderProps,
+  SessionState,
+} from './interfaces/client.interface';
 
 /**
  * Read once, from `/api/session`.
@@ -58,7 +62,7 @@ interface SessionContextValue {
 
 const SessionContext = createContext<SessionContextValue | null>(null);
 
-export function SessionProvider({ children }: { children: ReactNode }) {
+export function SessionProvider({ children }: PropsWithChildren) {
   const [state, setState] = useState<SessionState>({ status: 'loading' });
 
   const reload = useCallback(async () => {
@@ -84,15 +88,7 @@ export function useSession(): SessionContextValue {
 
 const ReadySessionContext = createContext<ReadySession | null>(null);
 
-export function ReadySessionProvider({
-  session,
-  reload,
-  children,
-}: {
-  session: SessionView;
-  reload: () => Promise<void>;
-  children: ReactNode;
-}) {
+export function ReadySessionProvider({ session, reload, children }: ReadySessionProviderProps) {
   const value = useMemo<ReadySession>(
     () => ({
       user: session.user,

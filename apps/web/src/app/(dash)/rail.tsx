@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import type { RailProps } from './interfaces/rail.interface';
 
 /**
  * Where the session can go.
@@ -20,7 +21,7 @@ const NAV = [
   { href: '/products', label: 'Products' },
 ] as const;
 
-export function Rail({ appName }: { appName: string }) {
+export function Rail({ appName }: RailProps) {
   const pathname = usePathname();
 
   return (

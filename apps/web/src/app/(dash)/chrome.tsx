@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Alert } from '@app/ui';
 import { useSession, ReadySessionProvider } from '@/lib/session/client';
 import { Rail } from './rail';
 import { TopBar } from './top-bar';
 import { Onboarding } from './onboarding';
+import type { DashboardChromeProps } from './interfaces/chrome.interface';
 
 /**
  * The shell every signed-in page sits in.
@@ -20,7 +21,7 @@ import { Onboarding } from './onboarding';
  * rail, the top bar, the switcher and every page state the question "is there a
  * session" neither by guarding nor in prose.
  */
-export function DashboardChrome({ appName, children }: { appName: string; children: ReactNode }) {
+export function DashboardChrome({ appName, children }: DashboardChromeProps) {
   const router = useRouter();
   const { state, reload } = useSession();
 
