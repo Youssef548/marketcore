@@ -1081,3 +1081,34 @@ later, with the function already the core of it.
 2. **`git grep -E` cannot match `\s` or `\b`** (POSIX ERE), so the first scan for this pattern found
    nothing. The scan that counted was PCRE, and the rule is the check that stays.
 
+
+## Conventions reach every agent — 2026-10-16 (guidance)
+
+**Claim:** the rules behind BL-001 … BL-003 are found by an agent working in any part of the repo,
+not only in NestJS code.
+**Branch:** `bl3/05-agent-guidance`
+
+### Delivered
+
+- **`typescript-code-conventions`**, a new skill for every app and package: named values, const-object
+  enums, named shapes, types in `*.interface.ts`, shared at the second sighting, builders, our types
+  only. Its general rules moved out of `nestjs-code-conventions`, which keeps only the two NestJS ones
+  (module folders, repository layer) and points to it — one source per rule.
+- **`.claude/skills/`** links both, and `git-delivery-workflow`. Only `e2e` was linked before.
+- **`CLAUDE.md`** is `@AGENTS.md`, so a tool that reads only `CLAUDE.md` gets the same instructions.
+- **AGENTS.md** carries one pointer to the skill instead of two restated rules.
+
+### Findings
+
+1. **The rules existed and could not fire.** `nestjs-code-conventions` already said "do not use bare
+   union types" and "types live in their own file". Its description triggered on controllers,
+   services and DTOs, so web and UI work never reached it — and it was not linked into `.claude/skills/`,
+   so Claude Code could not discover it at all. The patterns BL-001 … BL-003 removed were written in
+   exactly the code the skill could not reach.
+2. **The skill's literal check finds more than this work fixed** — tagged-union status strings and theme
+   names compared as literals. Recorded as BL-004 rather than widened into this change.
+
+### Not proven
+
+- That a new session loads the skills: discovery happens at session start, so it cannot be observed from
+  the session that added them. The links resolve and each `SKILL.md` has valid frontmatter.
