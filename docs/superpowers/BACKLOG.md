@@ -85,7 +85,7 @@ excluding tests, `interfaces/` and `*.interface.ts`, then drop `type X,` import 
 
 ## BL-002 — Repeated UI goes to the design system, repeated logic to one helper
 
-**Raised:** 2026-10-16 · **Priority:** Should · **Size:** M · **Do after:** the Stitch re-skin (#35) merges
+**Raised:** 2026-10-16 · **Priority:** Should · **Size:** M · **Status:** done — the BL-002 PR stack
 
 ### Problem
 
@@ -101,7 +101,7 @@ classes and the same logic are copied between pages and drift apart.
 | Text link — `font-semibold text-action underline underline-offset-2` | login, register, onboarding | `@app/ui`: `TextLink` (framework-free; the app passes `next/link` in) |
 | Card surface and the arrow icon — `AuthCard`, `ArrowIcon` | `apps/web/src/components/public-frame.tsx` | `@app/ui`: `Card`, an icon. `PublicFrame`, `CardBrand` and `BrandMark` name the app and stay in it. |
 | First zod issue per field — `collectIssues` | defined in login, the same loop inlined in register | `apps/web/src/lib/forms/` — form logic, not design |
-| Submit flow — `pending`, `formError`, `fetch`, `messageFrom`, "Could not reach the server" | login, register, `lib/session/client.tsx` | `apps/web/src/lib/forms/`: one `useFormSubmit` hook |
+| Submit flow — `fetch`, `messageFrom`, "Could not reach the server" | login, register, `lib/session/client.tsx` | `apps/web/src/lib/forms/`: `postJson` and `SERVER_UNREACHABLE_MESSAGE` — a function, not the hook first proposed (see STATUS) |
 
 ### Rule
 
