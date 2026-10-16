@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 import { ErrorCodes } from '@app/contracts';
-import type { FailureResponse } from './envelope';
+import type { BodyResult } from './interfaces/http.interface';
 
 /**
  * A request body, read without throwing.
@@ -16,8 +16,6 @@ export async function readJson(request: Request): Promise<unknown> {
     return undefined;
   }
 }
-
-export type BodyResult<T> = { ok: true; value: T } | { ok: false; failure: FailureResponse };
 
 /**
  * A body parsed against the contract the API validates it with.

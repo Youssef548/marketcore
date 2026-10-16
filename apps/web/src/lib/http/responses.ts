@@ -1,6 +1,7 @@
 import { ApiError } from '@app/api-client';
 import { ErrorCodes } from '@app/contracts';
-import { failureResponse, type FailureResponse } from './envelope';
+import { failureResponse } from './envelope';
+import type { FailureResponse } from './interfaces/http.interface';
 
 /**
  * The responses this layer produces, so a route handler reads as the decision it
