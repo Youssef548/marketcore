@@ -32,13 +32,14 @@ what they consume — a checkout's payment instead of an order's.
 
 | Task | Description | Story | SRS | Size | Depends on |
 |---|---|---|---|---|---|
-| T-001 | Re-skin sign in, register, onboarding, products to Stitch 040/046/032/048 | — | SRS-NFR-A11Y-001 | M | — |
+| T-001 | Re-skin sign in, register, onboarding, products to Stitch 040/046/032/048 — **done**, `49f763a` | — | SRS-NFR-A11Y-001 | M | — |
+| T-002 | Re-skin the shared shell (left rail, top bar) to the Stitch dashboard (001): grouped rail, breadcrumb top bar, user chip. Only chrome that works ships — no search, ⌘K or notifications until a feature backs them. The top bar's `h1` moves into the page header, and the behavioural test that reads it moves with it. | — | SRS-NFR-A11Y-001 | M | T-001 |
 | T-010 | `packages/domain`: `BuyerContext`, `buyerScope`, `PLATFORM_FEE_BPS`, checkout and order transitions incl. `CANCELLED` | US-CHK-002 | SRS-FR-BORD-003, D78 | S | — |
 | T-011 | `packages/contracts`: `PublicProduct` (strict), cart, checkout, buyer-order schemas; the 409 `details.lines` shape | US-CAT-002, US-CHK-002 | SRS-FR-CAT-003, SRS-FR-CHK-003 | M | — |
 | T-012 | Migration: `Cart`, `CartItem` (CHECK 1–10), `Checkout`, `Order` + `OrderItem` with `checkoutId`; indexes | — | §6 | M | T-010 |
 | T-013 | `BuyerGuard` building `BuyerContext` on `@TenantFree()` routes | US-BORD-001 | D75 | S | T-010 |
 | T-020 | `GET /storefront/products[/:id]`, published only, through `PublicProduct` | US-CAT-001, -002 | SRS-FR-CAT-001 … 004 | M | T-011, T-012 |
-| T-021 | Web: browse and product page (Stitch 057, 077) via the BFF | US-CAT-001, -002 | — | M | T-001, T-020 |
+| T-021 | Web: browse and product page (Stitch 057, 077) via the BFF | US-CAT-001, -002 | — | M | T-002, T-020 |
 | T-030 | `GET /cart`, `PUT`/`DELETE /cart/items/:productId`, live availability, seller grouping | US-CART-001, -002 | SRS-FR-CART-001 … 007 | M | T-012, T-013 |
 | T-031 | Web: cart (Stitch 056) with "Only N left" / "Sold out" lines | US-CART-002 | — | M | T-021, T-030 |
 | T-040 | `POST /checkouts`: ordered row locks, confirmed-price check, one order per seller, cart emptied, all or nothing, deadlock retry | US-CHK-001, -002 | SRS-FR-CHK-001 … 007, §8 | L | T-030 |
@@ -73,7 +74,7 @@ their endpoint exists.
 
 | Milestone | Demonstrable outcome | Requirements covered | Gate command |
 |---|---|---|---|
-| M0 — one look | The four shipped pages on Stitch layouts, both themes | D74 | `pnpm turbo run lint typecheck test build`, behavioural suite |
+| M0 — one look | The four shipped pages and the shared shell on Stitch layouts, both themes | D74 | `pnpm turbo run lint typecheck test build`, behavioural suite |
 | M1 — phase-4 gate | A buyer fills a two-seller cart and places one checkout; the stock-1 race passes 20 runs in a row; a short line creates nothing; an abandoned checkout restocks once | F-CAT, F-CART, F-CHK, F-BORD, D70 | `pnpm --filter api test:concurrency`, `test:integration`, `test:e2e`; `pnpm --filter worker test:integration` |
 | M2 — phase-5 gate | 20 repeats of one key make one checkout | SRS-FR-CHK-008 | `pnpm --filter api test:e2e` |
 | M3 — phases 6–8 gate | One charge pays a two-seller checkout; the ledger split sums to zero; capture-after-cancel refunds | F-PAY-01 | `pnpm --filter api test:integration` |

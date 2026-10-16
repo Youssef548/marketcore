@@ -917,6 +917,8 @@ checked is that the documents agree with each other:
 - **D80 is an assumption:** only an owner approves a refund. Unconfirmed.
 - **SRS-NFR-PERF-001 is a target, not a measurement** — phase 13.
 - **Release 2 has stories and rules but no acceptance criteria**; they are written when it is planned.
+- **The shared shell (rail and top bar) is not on Stitch yet.** The re-skin covered the four pages,
+  not the chrome around them. Tracked as T-002 in the Release 1 plan; it closes M0.
 
 ### Findings
 
