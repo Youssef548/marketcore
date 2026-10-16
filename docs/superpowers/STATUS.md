@@ -931,7 +931,6 @@ checked is that the documents agree with each other:
    reservations, with one locked transaction at checkout, proves more with less.
 3. **The worker's phase was an artefact of its transport.** It was scheduled for phase 10 because
    BullMQ arrives then; auto-cancel needs only a conditional update, so the worker moved to phase 4.
-||||||| f8b285e
 
 ---
 
