@@ -3,3 +3,7 @@ export * from './button';
 export * from './field';
 export * from './input';
 export * from './label';
+export * from './interfaces/alert.interface';
+export * from './interfaces/button.interface';
+export * from './interfaces/field.interface';
+export * from './interfaces/input.interface';

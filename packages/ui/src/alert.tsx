@@ -1,11 +1,4 @@
-import type { HTMLAttributes, ReactNode } from 'react';
-
-export type AlertVariant = 'error' | 'success';
-
-export interface AlertProps extends Omit<HTMLAttributes<HTMLParagraphElement>, 'children'> {
-  variant?: AlertVariant;
-  children?: ReactNode;
-}
+import type { AlertProps, AlertVariant } from './interfaces/alert.interface';
 
 const variants: Record<AlertVariant, string> = {
   error: 'border-attention bg-attention-wash text-attention',
