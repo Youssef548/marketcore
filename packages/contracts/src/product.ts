@@ -37,3 +37,10 @@ export const InventorySchema = z.object({
   reserved: z.number().int(),
 });
 export type Inventory = z.infer<typeof InventorySchema>;
+
+/**
+ * PUT /products/:id/inventory (D81). An absolute count rather than a delta, so a
+ * repeated request is harmless and a seller states what is on the shelf.
+ */
+export const SetInventoryRequestSchema = z.object({ available: z.int().min(0) }).strict();
+export type SetInventoryRequest = z.infer<typeof SetInventoryRequestSchema>;

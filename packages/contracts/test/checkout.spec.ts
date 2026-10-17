@@ -1,0 +1,81 @@
+import { describe, expect, it } from 'vitest';
+import {
+  CHECKOUT_MAX_LINES,
+  CheckoutConflictReasons,
+  CheckoutRefusals,
+  CheckoutStatuses,
+  CurrencyCodes,
+  OrderStatuses,
+} from '../src/constants';
+import {
+  CheckoutConflictDetailsSchema,
+  CheckoutLineConflictDetailsSchema,
+  CheckoutSchema,
+  CreateCheckoutRequestSchema,
+} from '../src/checkout';
+
+const line = (productId: string) => ({ productId, quantity: 1, unitPriceMinor: 100 });
+
+describe('CreateCheckoutRequestSchema (SRS-FR-CHK-001, §7)', () => {
+  it('accepts the confirmed lines', () => {
+    expect(CreateCheckoutRequestSchema.parse({ lines: [line('a')] })).toEqual({ lines: [line('a')] });
+  });
+  it('refuses no lines and more than 50', () => {
+    expect(CreateCheckoutRequestSchema.safeParse({ lines: [] }).success).toBe(false);
+    const many = Array.from({ length: CHECKOUT_MAX_LINES + 1 }, (_, i) => line(`p${i}`));
+    expect(CreateCheckoutRequestSchema.safeParse({ lines: many }).success).toBe(false);
+  });
+  it('refuses the same product twice', () => {
+    expect(CreateCheckoutRequestSchema.safeParse({ lines: [line('a'), line('a')] }).success).toBe(false);
+  });
+  it.each([
+    { quantity: 11 },
+    { quantity: 0 },
+    { unitPriceMinor: 0 },
+    { unitPriceMinor: 99.5 },
+  ])('refuses a line with %o', (override) => {
+    expect(CreateCheckoutRequestSchema.safeParse({ lines: [{ ...line('a'), ...override }] }).success).toBe(false);
+  });
+});
+
+describe('CheckoutSchema', () => {
+  it('is one checkout of one order per seller, with snapshotted items', () => {
+    const checkout = {
+      id: 'k1',
+      status: CheckoutStatuses.PENDING_PAYMENT,
+      totalMinor: 43_800,
+      currency: CurrencyCodes.EGP,
+      placedAt: '2026-10-16T10:00:00.000Z',
+      orders: [
+        {
+          id: 'o1',
+          status: OrderStatuses.PENDING_PAYMENT,
+          totalMinor: 24_900,
+          currency: CurrencyCodes.EGP,
+          seller: { name: 'Nile', slug: 'nile' },
+          items: [{ productId: 'p1', name: 'Shirt', quantity: 1, unitPriceMinor: 24_900 }],
+        },
+      ],
+    };
+    expect(CheckoutSchema.parse(checkout)).toEqual(checkout);
+  });
+});
+
+describe('the 409 details (SRS-FR-CHK-003, -006, §8)', () => {
+  it('lists failing lines with reason, stock and current price', () => {
+    const details = {
+      lines: [{ productId: 'p1', reason: CheckoutConflictReasons.SOLD_OUT, available: 0, currentUnitPriceMinor: 100 }],
+    };
+    expect(CheckoutLineConflictDetailsSchema.parse(details)).toEqual(details);
+    expect(CheckoutConflictDetailsSchema.parse(details)).toEqual(details);
+  });
+  it('names a changed cart', () => {
+    expect(CheckoutConflictDetailsSchema.parse({ reason: CheckoutRefusals.CART_CHANGED })).toEqual({
+      reason: CheckoutRefusals.CART_CHANGED,
+    });
+  });
+  it('refuses an empty line list and an unknown reason', () => {
+    expect(CheckoutLineConflictDetailsSchema.safeParse({ lines: [] }).success).toBe(false);
+    expect(CheckoutConflictDetailsSchema.safeParse({ reason: 'NOPE' }).success).toBe(false);
+  });
+});
