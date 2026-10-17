@@ -114,9 +114,22 @@ export type OrderStatus = (typeof OrderStatuses)[keyof typeof OrderStatuses];
  */
 export const CHECKOUT_PAYMENT_WINDOW_MINUTES = 30;
 
-/** A cart line holds 1 to 10 units (D72, RULE-CART-001). */
+/**
+ * A cart line holds 1 to 10 units (D72, RULE-CART-001).
+ */
 export const CART_LINE_MIN_QUANTITY = 1;
 export const CART_LINE_MAX_QUANTITY = 10;
+
+/**
+ * The largest value the database column can hold: every money and quantity column
+ * in this schema is Postgres `INTEGER` (int4).
+ *
+ * A zod `z.int()` accepts any safe integer, so a value above this passes the
+ * contract and the pipe and then fails inside Prisma — a 500 for what is really a
+ * 400. A client validating with the same schema the server publishes cannot know
+ * the real bound unless it is stated here (review finding, phase 4).
+ */
+export const POSTGRES_INT_MAX = 2_147_483_647;
 
 /** The most lines one checkout may carry (SRS §7). */
 export const CHECKOUT_MAX_LINES = 50;

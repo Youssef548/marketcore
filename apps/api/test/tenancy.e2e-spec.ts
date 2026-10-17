@@ -52,7 +52,7 @@ describe('tenant isolation (e2e)', () => {
   });
 
   /** Bob, acting inside his own organization, reaching for Alice's product. */
-  const bobReaches = (method: 'get' | 'patch' | 'post', path: string) =>
+  const bobReaches = (method: 'get' | 'patch' | 'post' | 'put', path: string) =>
     request(app.getHttpServer())
       [method](path)
       .set(tenantHeaders(bob.accessToken, bob.organizationId));
@@ -84,6 +84,20 @@ describe('tenant isolation (e2e)', () => {
 
   it("cannot read another organization's inventory", async () => {
     await bobReaches('get', `/api/v1/products/${alice.productId}/inventory`).expect(404);
+  });
+
+  it("cannot set another organization's inventory", async () => {
+    // The newest mutating route, so it belongs in this inventory rather than only in
+    // the inventory suite — an INV-9 audit reads this file.
+    await bobReaches('put', `/api/v1/products/${alice.productId}/inventory`)
+      .send({ available: 999 })
+      .expect(404);
+
+    const stillAlice = await request(app.getHttpServer())
+      .get(`/api/v1/products/${alice.productId}/inventory`)
+      .set(tenantHeaders(alice.accessToken, alice.organizationId))
+      .expect(200);
+    expect(stillAlice.body.available).toBe(0);
   });
 
   it("does not list another organization's products", async () => {
