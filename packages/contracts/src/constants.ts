@@ -157,6 +157,14 @@ export type CheckoutRefusal = (typeof CheckoutRefusals)[keyof typeof CheckoutRef
 export const POSTGRES_INT_MAX = 2_147_483_647;
 
 /**
+ * The smallest value the database column can hold: the mirror of the ceiling
+ * above. A zod `z.int()` has no floor either, so a large negative value used
+ * to pass the contract and then fail inside Prisma — the same 500 for a 400,
+ * one direction over (phase-4 review finding).
+ */
+export const POSTGRES_INT_MIN = -2_147_483_648;
+
+/**
  * Turns a const object of wire values into the non-empty tuple `z.enum` needs.
  * Shared because otherwise every enum in this package repeats the same cast.
  */
