@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { CreateProductRequestSchema, SetInventoryRequestSchema } from '../src/product';
+import { POSTGRES_INT_MAX, POSTGRES_INT_MIN } from '../src/constants';
+import {
+  CreateProductRequestSchema,
+  SetInventoryRequestSchema,
+  UpdateProductRequestSchema,
+} from '../src/product';
 
 describe('CreateProductRequestSchema', () => {
   it('accepts integer minor units and a known currency', () => {
@@ -40,5 +45,43 @@ describe('SetInventoryRequestSchema (D81)', () => {
   });
   it.each([-1, 1.5])('refuses %s', (available) => {
     expect(SetInventoryRequestSchema.safeParse({ available }).success).toBe(false);
+  });
+});
+
+describe('the int4 bounds (phase-4 review findings)', () => {
+  it('accepts the column maximum and refuses one above it', () => {
+    // `z.int()` alone accepts any safe integer, so an over-large value used to pass
+    // the contract and the pipe and then fail inside Prisma — a 500 for a 400.
+    expect(SetInventoryRequestSchema.safeParse({ available: POSTGRES_INT_MAX }).success).toBe(true);
+    expect(SetInventoryRequestSchema.safeParse({ available: POSTGRES_INT_MAX + 1 }).success).toBe(
+      false,
+    );
+  });
+
+  it('bounds a product price the same way, so the two cannot drift', () => {
+    const priced = (priceMinor: number) =>
+      CreateProductRequestSchema.safeParse({ name: 'Dates', priceMinor, currency: 'EGP' }).success;
+
+    expect(priced(POSTGRES_INT_MAX)).toBe(true);
+    expect(priced(POSTGRES_INT_MAX + 1)).toBe(false);
+  });
+
+  it('accepts the column minimum and refuses one below it', () => {
+    // The mirror finding: `z.int()` had a ceiling and no floor, so -2^31 - 1
+    // passed validation and then died inside Prisma the same way.
+    expect(UpdateProductRequestSchema.safeParse({ priceMinor: POSTGRES_INT_MIN }).success).toBe(
+      true,
+    );
+    expect(
+      UpdateProductRequestSchema.safeParse({ priceMinor: POSTGRES_INT_MIN - 1 }).success,
+    ).toBe(false);
+  });
+
+  it('bounds a product price on create the same way, so the two cannot drift', () => {
+    const priced = (priceMinor: number) =>
+      CreateProductRequestSchema.safeParse({ name: 'Dates', priceMinor, currency: 'EGP' }).success;
+
+    expect(priced(POSTGRES_INT_MIN)).toBe(true);
+    expect(priced(POSTGRES_INT_MIN - 1)).toBe(false);
   });
 });
