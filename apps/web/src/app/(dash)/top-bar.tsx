@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Alert, Button, ButtonVariants, ControlSizes } from '@app/ui';
 import { signOut, useReadySession } from '@/lib/session/client';
 import { OrganizationSwitcher } from './organization-switcher';
-import { pageTitle } from './page-title';
+import { breadcrumbFor } from './navigation';
 import { ThemeToggle } from './theme-toggle';
 
 /** The first two characters of the local part — `a@x.com` reads "A", not "A@". */
@@ -15,7 +15,13 @@ function initials(email: string): string {
 }
 
 /**
- * The page title, the tenant the session acts in, and who is signed in.
+ * Where the page sits, the tenant the session acts in, and who is signed in.
+ *
+ * Where you are is a breadcrumb rather than a title, as the design draws it (001,
+ * 048): the page's own name belongs to the page's own head, and a shell that also
+ * states it is a second statement of one fact. The crumb is derived from the path so
+ * it cannot be pushed down wrongly, and it is absent — rather than blank — for a path
+ * the shell was never told about.
  *
  * The tenant lives here rather than in the rail: it gates every tenant-scoped
  * request, so it belongs on the strip that is always visible, next to the page it
@@ -27,7 +33,7 @@ export function TopBar() {
   const { user } = useReadySession();
   const [signingOut, setSigningOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const title = pageTitle(pathname);
+  const crumb = breadcrumbFor(pathname);
 
   async function end() {
     setSigningOut(true);
@@ -44,9 +50,21 @@ export function TopBar() {
 
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 border-b border-rule bg-panel px-6 py-3">
-      {/* No title is the honest answer for a path the shell was never told about; an
-       * empty heading is not — so the heading is absent rather than blank. */}
-      {title !== null && <h1 className="text-base font-semibold text-ink">{title}</h1>}
+      {/* The design's `.crumbs`: the section muted, a slash, the page in ink. No crumb
+       * is the honest answer for a path the shell was never told about — an empty
+       * navigation landmark is not. */}
+      {crumb !== null && (
+        <nav
+          aria-label="Breadcrumb"
+          className="flex min-w-0 items-center gap-2 text-sm font-semibold"
+        >
+          <span className="truncate font-medium text-ink-muted">{crumb.group}</span>
+          <span aria-hidden className="text-ink-faint">
+            /
+          </span>
+          <span className="truncate text-ink">{crumb.label}</span>
+        </nav>
+      )}
 
       <div className="flex flex-wrap items-center gap-3">
         <OrganizationSwitcher />

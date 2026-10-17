@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { HeadingLevels, PageHeading } from '@app/ui';
 import { ADMIN_PRODUCTS_PATH } from '@/lib/session/routing';
 import { useReadySession } from '@/lib/session/client';
 
@@ -12,17 +13,23 @@ import { useReadySession } from '@/lib/session/client';
  * and points at the first page that reads tenant data. It states the tenant the way
  * the top bar does and names no internal identifier, so it reads as an overview
  * rather than a debug dump.
+ *
+ * It owns its own `h1`, as the design's page head does. The shell names where the page
+ * sits, in its breadcrumb; the page names itself, once.
  */
 export default function DashboardPage() {
   const { user, organizations, activeOrganization } = useReadySession();
 
   return (
     <div className="space-y-8">
-      <header>
-        <p className="text-sm text-ink-muted">
+      {/* A `div` rather than a `header`: the shell's top bar is this page's banner, and a
+       * second one would leave "the banner" meaning two things. */}
+      <div>
+        <PageHeading level={HeadingLevels.H1}>Overview</PageHeading>
+        <p className="mt-1 text-sm text-ink-muted">
           Signed in as <span className="font-medium">{user.email}</span>.
         </p>
-      </header>
+      </div>
 
       <dl className="grid grid-cols-[10rem_1fr] gap-x-4 gap-y-3 text-sm">
         <dt className="text-ink-faint">Organizations</dt>

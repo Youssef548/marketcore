@@ -2,27 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ADMIN_PATH, ADMIN_PRODUCTS_PATH } from '@/lib/session/routing';
+import { ADMIN_PATH } from '@/lib/session/routing';
+import { NAV_SECTIONS } from './navigation';
 import type { RailProps } from './interfaces/rail.interface';
 
 /**
- * Where the session can go.
+ * Where the session can go, grouped as the Stitch rail groups it (001, 048).
  *
- * Every entry is a route that exists — no section is listed ahead of its page, the
- * same line this repository draws for tokens and models. The active item is derived
- * from the pathname rather than passed down, so the rail cannot claim a page the
- * router is not on. The hrefs are the console's own URLs, named once in
- * `@/lib/session/routing` rather than typed here.
+ * The pages, their order and their sections are one registry (`./navigation`), which
+ * the top bar's breadcrumb reads too — so the rail cannot mark a page the crumb does
+ * not know about. Every entry is a route that exists: no section is listed ahead of
+ * its page, and the design's counts, search box and notification badge are absent
+ * because the features behind them are.
  *
- * It carries navigation and nothing else: the tenant lives in the top bar, where it
- * is visible beside the page it scopes rather than screaming its own box into a
- * column that is otherwise about movement.
+ * The rail carries navigation and nothing else: the tenant lives in the top bar,
+ * where it is visible beside the page it scopes rather than screaming its own box
+ * into a column that is otherwise about movement.
  */
-const NAV = [
-  { href: ADMIN_PATH, label: 'Overview' },
-  { href: ADMIN_PRODUCTS_PATH, label: 'Products' },
-] as const;
-
 export function Rail({ appName }: RailProps) {
   const pathname = usePathname();
 
@@ -43,25 +39,35 @@ export function Rail({ appName }: RailProps) {
         {appName}
       </Link>
 
-      <nav className="space-y-1">
-        {NAV.map(({ href, label }) => {
-          const active = pathname === href;
+      <nav className="flex flex-col gap-0.5">
+        {NAV_SECTIONS.map(({ group, entries }) => (
+          <div key={group}>
+            {/* The design's `.navhead`: uppercase, wide tracking, muted — at the 12px
+             * floor rather than the 11px 048 draws it at. */}
+            <span className="block px-2.5 pb-1 pt-3.5 text-xs font-semibold uppercase tracking-[0.13em] text-ink-on-rail-muted">
+              {group}
+            </span>
 
-          return (
-            <Link
-              key={href}
-              href={href}
-              aria-current={active ? 'page' : undefined}
-              className={`block rounded-brand px-2.5 py-2 text-sm ${
-                active
-                  ? 'bg-rail-active font-semibold text-ink-on-action'
-                  : 'text-ink-on-rail-muted hover:bg-rail-hover hover:text-ink-on-rail'
-              }`}
-            >
-              {label}
-            </Link>
-          );
-        })}
+            {entries.map(({ href, label }) => {
+              const active = pathname === href;
+
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? 'page' : undefined}
+                  className={`block rounded-brand px-2.5 py-2 text-sm ${
+                    active
+                      ? 'bg-rail-active font-semibold text-ink-on-action'
+                      : 'text-ink-on-rail-muted hover:bg-rail-hover hover:text-ink-on-rail'
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
     </aside>
   );

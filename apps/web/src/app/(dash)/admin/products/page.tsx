@@ -98,11 +98,13 @@ export default function ProductsPage() {
   // search and its filter are absent rather than painted with numbers nobody measured.
   return (
     <div className="space-y-5">
-      <header className="flex flex-wrap items-center justify-between gap-4">
+      {/* A `div` rather than a `header`: the shell's top bar is this page's banner, and a
+       * second one would leave "the banner" meaning two things. */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0">
-          {/* The top bar's `h1` names the page; this is the page's own head, as the
-           * design draws it, one level below. */}
-          <PageHeading level={HeadingLevels.H2}>Products</PageHeading>
+          {/* The page owns the document's `h1`; the shell's top bar names the section
+           * you are in, as a breadcrumb. */}
+          <PageHeading level={HeadingLevels.H1}>Products</PageHeading>
           <p className="mt-1 text-sm text-ink-muted">
             {activeOrganization === null
               ? 'Choose an organization above to see its catalog.'
@@ -121,7 +123,7 @@ export default function ProductsPage() {
             {adding ? 'Cancel' : 'Add product'}
           </Button>
         )}
-      </header>
+      </div>
 
       {adding && organizationId !== null && <AddProductForm onCreated={load} />}
 
@@ -163,9 +165,11 @@ export default function ProductsPage() {
 
           <Card as="section" aria-labelledby="all-products" className="overflow-hidden">
             <header className="border-b border-rule px-5 py-4 sm:px-6">
-              <h3 id="all-products" className="text-base font-bold tracking-tight text-ink">
+              {/* A section of the page, so one level under the page's own `h1` — the
+               * ladder descends rather than skipping. */}
+              <h2 id="all-products" className="text-base font-bold tracking-tight text-ink">
                 All products
-              </h3>
+              </h2>
             </header>
 
             <div className="overflow-x-auto">
@@ -321,9 +325,9 @@ function AddProductForm({ onCreated }: AddProductFormProps) {
       onSubmit={submit}
       noValidate
     >
-      <h3 id="new-product" className="text-base font-bold tracking-tight text-ink">
+      <h2 id="new-product" className="text-base font-bold tracking-tight text-ink">
         New product
-      </h3>
+      </h2>
 
       {error !== null && <Alert className="border-l-4">{error}</Alert>}
 

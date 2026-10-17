@@ -172,12 +172,16 @@ test.describe('web: the session in a real browser', () => {
 
     await page.goto(`${WEB}/admin/products`);
 
-    // The top bar names the page. Scoped to the banner because the page carries its own
-    // heading with the same words — the shell's claim and the page's, and the locator
-    // has to say which one it means.
+    // The page owns the document's h1; the shell names where the page sits. Both
+    // assertions moved here with the heading: the top bar used to carry it, and a
+    // browser is the only layer that can say which element is actually painted.
+    await expect(page.getByRole('heading', { level: 1, name: 'Products' })).toBeVisible();
     await expect(
-      page.getByRole('banner').getByRole('heading', { name: 'Products' }),
-    ).toBeVisible();
+      page.getByRole('banner').getByRole('navigation', { name: 'Breadcrumb' }),
+    ).toHaveText(/Catalog\s*\/\s*Products/);
+
+    // The ladder descends from the page's own title rather than skipping a level.
+    await expect(page.getByRole('heading', { level: 2, name: 'All products' })).toBeVisible();
 
     // ...and the row can only appear if the request carried `x-organization-id`: the
     // API answers a tenant-scoped read without that header with 400, never with
