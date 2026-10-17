@@ -1,0 +1,18 @@
+// quantity BETWEEN 1 AND 10 is a hand-written CHECK in the migration (D72).
+// addedUnitPriceMinor is the price when the line was first added (D82), so the
+// review step can show what changed since.
+model CartItem {
+  id                  String   @id @default(uuid())
+  cartId              String
+  productId           String
+  quantity            Int
+  addedUnitPriceMinor Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
