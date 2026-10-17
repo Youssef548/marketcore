@@ -114,6 +114,37 @@ export type OrderStatus = (typeof OrderStatuses)[keyof typeof OrderStatuses];
  */
 export const CHECKOUT_PAYMENT_WINDOW_MINUTES = 30;
 
+/** A cart line holds 1 to 10 units (D72, RULE-CART-001). */
+export const CART_LINE_MIN_QUANTITY = 1;
+export const CART_LINE_MAX_QUANTITY = 10;
+
+/** The most lines one checkout may carry (SRS §7). */
+export const CHECKOUT_MAX_LINES = 50;
+
+/** Public catalog page size (SRS-FR-CAT-001). */
+export const STOREFRONT_PAGE_SIZE = 24;
+
+/** Buyer order history page size (D89 — the SRS does not state one). */
+export const BUYER_ORDERS_PAGE_SIZE = 20;
+
+/** A cart line's live availability (SRS-FR-CART-005). */
+export const CartLineAvailabilities = { OK: 'OK', SHORT: 'SHORT', SOLD_OUT: 'SOLD_OUT' } as const;
+export type CartLineAvailability =
+  (typeof CartLineAvailabilities)[keyof typeof CartLineAvailabilities];
+
+/** Why a checkout line was refused (SRS-FR-CHK-003). Precedence is D85. */
+export const CheckoutConflictReasons = {
+  SOLD_OUT: 'SOLD_OUT',
+  SHORT: 'SHORT',
+  PRICE_CHANGED: 'PRICE_CHANGED',
+} as const;
+export type CheckoutConflictReason =
+  (typeof CheckoutConflictReasons)[keyof typeof CheckoutConflictReasons];
+
+/** A refusal about the request as a whole rather than one line (SRS-FR-CHK-006). */
+export const CheckoutRefusals = { CART_CHANGED: 'CART_CHANGED' } as const;
+export type CheckoutRefusal = (typeof CheckoutRefusals)[keyof typeof CheckoutRefusals];
+
 /**
  * Turns a const object of wire values into the non-empty tuple `z.enum` needs.
  * Shared because otherwise every enum in this package repeats the same cast.

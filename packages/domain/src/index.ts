@@ -9,6 +9,7 @@ export * from './buyer';
 export * from './order';
 export * from './fee';
 export * from './checkout-policy';
+export * from './checkout';
 
 export * from './password';
 export * from './password.interface';
