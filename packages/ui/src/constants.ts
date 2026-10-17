@@ -23,6 +23,10 @@ export type ControlSize = (typeof ControlSizes)[keyof typeof ControlSizes];
 export const CardVariants = { PANEL: 'panel', RAISED: 'raised' } as const;
 export type CardVariant = (typeof CardVariants)[keyof typeof CardVariants];
 
-/** A page's own title is `H1`; a page inside the shell is `H2`, under the top bar's `h1`. */
+/**
+ * A page's own title is `H1`; a section inside that page is `H2`. The shell does not
+ * hold an `h1` of its own — it names where the page sits, in a breadcrumb — so there is
+ * exactly one `h1` in a document and it belongs to the page.
+ */
 export const HeadingLevels = { H1: 1, H2: 2 } as const;
 export type HeadingLevel = (typeof HeadingLevels)[keyof typeof HeadingLevels];

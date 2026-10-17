@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import type { ReactNode } from 'react';
 
 const mocks = vi.hoisted(() => ({ replace: vi.fn(), pathname: vi.fn() }));
 
@@ -13,6 +14,7 @@ vi.mock('next/navigation', async (importOriginal) => ({
 
 import { SessionProvider } from '@/lib/session/client';
 import { ADMIN_PATH } from '@/lib/session/routing';
+import DashboardPage from './admin/page';
 import { DashboardChrome } from './chrome';
 
 const SESSION = {
@@ -46,12 +48,10 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-function renderShell() {
+function renderShell(page: ReactNode = <p>the page</p>) {
   return render(
     <SessionProvider>
-      <DashboardChrome appName="marketcore">
-        <p>the page</p>
-      </DashboardChrome>
+      <DashboardChrome appName="marketcore">{page}</DashboardChrome>
     </SessionProvider>,
   );
 }
@@ -92,8 +92,55 @@ describe('the signed-in shell', () => {
     expect(topBar.textContent).toContain('owner@marketcore.test');
     expect(rail.textContent).not.toContain('Nile Traders');
     expect(rail.textContent).not.toContain('owner@marketcore.test');
+  });
 
-    expect(screen.getByRole('heading', { name: 'Overview' })).toBeTruthy();
+  it('groups the rail\u2019s nav under its section headings, and marks where you are', async () => {
+    // The Stitch rail's `.navhead`: an uppercase section label above the pages that
+    // belong to it. Only the sections with pages are drawn — the design's Money and
+    // Admin groups, its counts and its search box are for features that do not exist.
+    fetchMock.mockResolvedValue(response(200, SESSION));
+
+    renderShell();
+    await screen.findByText('owner@marketcore.test');
+
+    const rail = screen.getByRole('complementary');
+    expect(within(rail).getByText('Dashboard')).toBeTruthy();
+    expect(within(rail).getByText('Catalog')).toBeTruthy();
+
+    expect(within(rail).getByRole('link', { name: 'Overview' }).getAttribute('aria-current')).toBe(
+      'page',
+    );
+    // The page you are not on claims nothing.
+    expect(within(rail).getByRole('link', { name: 'Products' }).getAttribute('aria-current')).toBeNull();
+  });
+
+  it('names where the page sits in the top bar, and lets the page name itself', async () => {
+    // The assertion that moved with the `h1`. The top bar used to carry the page's
+    // title, which meant two places named the page; now the top bar carries the
+    // breadcrumb the design draws and each page owns its own `h1`.
+    fetchMock.mockResolvedValue(response(200, SESSION));
+
+    renderShell(<DashboardPage />);
+    // Waited on by the shell's own landmark rather than by text: the page names the
+    // signed-in user too, so the address is matched twice and neither is the shell's.
+    await screen.findByRole('navigation', { name: 'Breadcrumb' });
+
+    const topBar = screen.getByRole('banner');
+    const rail = screen.getByRole('complementary');
+
+    // No heading in the shell at all: a page's title belongs to the page.
+    expect(within(topBar).queryByRole('heading')).toBeNull();
+    expect(within(rail).queryByRole('heading')).toBeNull();
+
+    const crumbs = within(topBar).getByRole('navigation', { name: 'Breadcrumb' });
+    expect(crumbs.textContent).toBe('Dashboard/Overview');
+
+    // ...and exactly one `h1`, which is the page's, whose words are the crumb's last
+    // segment. Two statements of one fact, so the test asserts they agree.
+    const headings = screen.getAllByRole('heading', { level: 1 });
+    expect(headings).toHaveLength(1);
+    expect(headings[0].textContent).toBe('Overview');
+    expect(crumbs.textContent?.endsWith(headings[0].textContent ?? '')).toBe(true);
   });
 
   it('offers a switcher only once there is more than one organization to choose from', async () => {

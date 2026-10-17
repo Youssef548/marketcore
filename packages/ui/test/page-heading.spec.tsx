@@ -10,10 +10,10 @@ describe('PageHeading', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Sign in' })).toBeTruthy();
   });
 
-  it('takes level 2 inside the shell, whose top bar holds the h1', () => {
-    render(<PageHeading level={HeadingLevels.H2}>Products</PageHeading>);
+  it('takes level 2 for a section inside a page, whose own title is the h1', () => {
+    render(<PageHeading level={HeadingLevels.H2}>All products</PageHeading>);
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Products' })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: 'All products' })).toBeTruthy();
     expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
   });
 
