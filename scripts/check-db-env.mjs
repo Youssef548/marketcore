@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// DATABASE_URL lives in two places: packages/database/.env (migrations) and
-// apps/api/.env (runtime). If they disagree you migrate against one database and
+// DATABASE_URL lives in three places: packages/database/.env (migrations), apps/api/.env
+// and apps/worker/.env (runtime). If they disagree you migrate against one database and
 // run against another, which fails silently. This runs before the migrate
 // commands and refuses on mismatch.
 //
@@ -10,11 +10,15 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+// DB_ENV_ROOT exists for apps/worker/test/check-db-env.spec.ts, which runs this
+// script against a temporary tree. Nothing else sets it.
+const root = process.env.DB_ENV_ROOT ?? resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const targets = [
   { name: 'packages/database/.env', path: resolve(root, 'packages/database/.env') },
   { name: 'apps/api/.env', path: resolve(root, 'apps/api/.env') },
+  // ADR 0001 amendment, obligation 1: the worker reads the same database from phase 4.
+  { name: 'apps/worker/.env', path: resolve(root, 'apps/worker/.env') },
 ];
 
 function readDatabaseUrl(path) {
@@ -37,8 +41,10 @@ const found = targets
   .map((target) => ({ ...target, url: readDatabaseUrl(target.path) }))
   .filter((target) => target.url !== null);
 
-// Fewer than two files means there is nothing to compare.
-if (found.length < targets.length) process.exit(0);
+// Fewer than two files means there is nothing to compare. Not `< targets.length`:
+// that skipped the comparison whenever any one file was missing, so adding a third
+// target would have silently stopped comparing the other two.
+if (found.length < 2) process.exit(0);
 
 const [first, ...rest] = found;
 if (rest.some((target) => target.url !== first.url)) {

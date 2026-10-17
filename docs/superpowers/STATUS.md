@@ -1199,3 +1199,42 @@ old URLs permanently redirected (D92).
   this file already records for the design system.
 - **Milestone M0 closes on this change plus T-001** (`49f763a`, the four pages); the shell was the half
   T-001 deliberately left alone.
+
+---
+
+## Phase 4 Task 17 — `apps/worker` scaffold, environment, scheduler, and `check-db-env.mjs` — 2026-10-17
+
+**Claim:** the worker app is scaffolded as a plain Node process, its environment validation needs no
+JWT secret, the scheduler runs immediately and never overlaps runs, and `check-db-env.mjs` now
+covers the worker's `.env` without silently disabling the API/database comparison when the worker file
+is absent.
+**Branch:** `feat/phase-4-worker`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| Runtime env gains `DatabaseEnvSchema` / `parseEnv` | `pnpm --filter @app/runtime test` | **8 passed** — database-only env needs no `JWT_SECRET`; `validateEnv` still requires it |
+| Worker env defaults and floors | `pnpm --filter worker test` | **11 passed** — env, scheduler (4), and `check-db-env` (4) |
+| Worker scheduler behaviour | same | runs immediately; no overlap; stop waits; errors reported and continue |
+| `check-db-env` covers worker | same | exit 0 when all three agree; exit 1 when worker disagrees; still compares the other two when worker file is absent |
+| Boundary rules bite for the new app | probe `import '../../api/src/app.module'` in `apps/worker/src/scheduler.ts` | `pnpm --filter worker lint` fails with `boundaries/element-types`; reverting restores green |
+| Worker lint, typecheck, build | `pnpm --filter worker lint && pnpm --filter worker typecheck && pnpm --filter worker build` | all clean |
+| Domain unchanged | `pnpm --filter @app/domain test` | **80 passed** |
+
+### Delivered
+
+- **`packages/runtime/src/config/env.ts`** — exports `DatabaseEnvSchema` and `parseEnv`, while `validateEnv`
+  stays as strict as before.
+- **`apps/worker`** — new package with `DatabaseEnvSchema`-based `WorkerEnvSchema`, a non-overlapping
+  `startInterval` scheduler, and Vitest + ESLint + TypeScript configured.
+- **`scripts/check-db-env.mjs`** — honours `DB_ENV_ROOT`, adds `apps/worker/.env` as a third target, and
+  compares whenever at least two files are present (not `< targets.length`).
+
+### Not proven / deferred
+
+- **The whole-repo gate `pnpm turbo run lint typecheck test build` failed on `api#test`** because the API's
+  e2e and integration suites need `DATABASE_URL`, `JWT_SECRET` and a running PostgreSQL, which this
+  worktree does not have configured. The Task 17 deliverables themselves pass lint, typecheck and tests.
+- **No integration tests** — the `vitest.integration.config.ts` exists, but integration suites land with
+  Task 18.

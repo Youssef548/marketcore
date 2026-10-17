@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateEnv } from './env';
+import { DatabaseEnvSchema, parseEnv, validateEnv } from './env';
 
 /**
  * Passing an explicit source object keeps this a pure function test — no
@@ -42,5 +42,21 @@ describe('validateEnv', () => {
 
   it('coerces PORT from the string an environment variable always is', () => {
     expect(validateEnv({ ...valid, PORT: '4567' }).PORT).toBe(4567);
+  });
+});
+
+describe('DatabaseEnvSchema and parseEnv', () => {
+  const database = { DATABASE_URL: 'postgresql://app:app@localhost:5432/app' };
+
+  it('needs only what a database-only process needs — no signing secret', () => {
+    expect(parseEnv(DatabaseEnvSchema, database)).toEqual({ ...database, APP_NAME: 'app' });
+  });
+
+  it('lists every problem at once, by path', () => {
+    expect(() => parseEnv(DatabaseEnvSchema, {})).toThrow(/DATABASE_URL/);
+  });
+
+  it('leaves validateEnv as strict as it was: the API still needs JWT_SECRET', () => {
+    expect(() => validateEnv(database)).toThrow(/JWT_SECRET/);
   });
 });
