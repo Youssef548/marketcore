@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from '../auth/auth.module';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { AccessTokenGuard } from './guards/access-token.guard';
+import { BuyerGuard } from './guards/buyer.guard';
 import { OrganizationGuard } from './guards/organization.guard';
 import { RolesGuard } from './guards/roles.guard';
 
@@ -11,7 +12,8 @@ import { RolesGuard } from './guards/roles.guard';
  *
  * Order is load-bearing and is the order below: the access token establishes who
  * is calling, the organization guard establishes which tenant they may act in,
- * and the roles guard authorizes within it. Nest applies APP_GUARD providers in
+ * the buyer guard which buyer a tenant-free route acts for, and the roles guard
+ * authorizes within a tenant. Nest applies APP_GUARD providers in
  * the order they are declared, so the tenant exists by the time RolesGuard runs.
  *
  * Every route is therefore guarded unless it opts out with `@Public()`,
@@ -24,6 +26,7 @@ import { RolesGuard } from './guards/roles.guard';
   providers: [
     { provide: APP_GUARD, useClass: AccessTokenGuard },
     { provide: APP_GUARD, useClass: OrganizationGuard },
+    { provide: APP_GUARD, useClass: BuyerGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
