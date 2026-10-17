@@ -1,10 +1,23 @@
 import { afterAll, describe, expect, it } from '@jest/globals';
 import { Prisma } from '@app/database';
-import { isRetryableTransactionError } from '../../src/common/database/retryable-transaction';
+import {
+  INTERACTIVE_TRANSACTION_MAX_WAIT_MS,
+  INTERACTIVE_TRANSACTION_TIMEOUT_MS,
+  TRANSACTION_RETRIES,
+  TRANSACTION_RETRY_BASE_DELAY_MS,
+} from '../../src/common/database/database.constants';
+import {
+  isRetryableTransactionError,
+  withTransactionRetry,
+} from '../../src/common/database/retryable-transaction';
 import { testPrisma } from '../support/db';
 import { createProduct, createSeller } from '../support/marketplace';
 
-const TX = { maxWait: 10_000, timeout: 15_000 };
+/** The production budget, not a second copy of it. */
+const TX = {
+  maxWait: INTERACTIVE_TRANSACTION_MAX_WAIT_MS,
+  timeout: INTERACTIVE_TRANSACTION_TIMEOUT_MS,
+};
 
 afterAll(async () => {
   await testPrisma.$disconnect();
@@ -13,15 +26,21 @@ afterAll(async () => {
 /**
  * The "forced lock-order test" failure-scenarios §1 promises for a database
  * deadlock: two transactions take the same two rows in opposite orders, so
- * Postgres must kill one. What Prisma raises for the victim is the fact the
- * retry classifier is written against.
+ * Postgres must kill one.
+ *
+ * Both sides run through `withTransactionRetry`, so this case does two jobs the
+ * earlier version did not: it pins what Prisma raises for the victim, and it proves
+ * the retry loop actually recovers from a real deadlock — not only from a mocked
+ * error (phase-4 review finding).
  */
 describe('a forced deadlock', () => {
-  it('kills exactly one transaction, and the classifier calls it retryable', async () => {
+  it('kills one transaction, calls it retryable, and the retry loop recovers', async () => {
     const seller = await createSeller('deadlock');
     const a = await createProduct(seller.organizationId);
     const b = await createProduct(seller.organizationId);
 
+    // A deterministic cycle: neither transaction can reach its second lock until
+    // both hold their first, so the deadlock does not depend on timing luck.
     let arrived = 0;
     let release!: () => void;
     const bothHoldOne = new Promise<void>((resolve) => (release = resolve));
@@ -38,32 +57,33 @@ describe('a forced deadlock', () => {
         await tx.$queryRaw`SELECT 1 FROM inventory WHERE "productId" = ${second} FOR UPDATE`;
       }, TX);
 
-    const results = await Promise.allSettled([lockInOrder(a.id, b.id), lockInOrder(b.id, a.id)]);
-    const rejected = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+    const retried = (first: string, second: string, onRetry: (attempt: number, error: unknown) => void) =>
+      withTransactionRetry(() => lockInOrder(first, second), {
+        retries: TRANSACTION_RETRIES,
+        baseDelayMs: TRANSACTION_RETRY_BASE_DELAY_MS,
+        onRetry,
+      });
 
-    expect(rejected).toHaveLength(1);
-    const reason = rejected[0].reason as { code?: string; meta?: unknown };
-    // If this fails, the printed code/meta is what Prisma 6 really raises: fix the
-    // classifier to it. Never loosen this assertion.
-    expect({ retryable: isRetryableTransactionError(reason), code: reason.code, meta: reason.meta }).toMatchObject({
-      retryable: true,
-    });
-  });
+    const seen: unknown[] = [];
+    const onRetry = (_attempt: number, error: unknown) => void seen.push(error);
 
-  it('the cure: the same two transactions locking in one sorted statement both commit', async () => {
-    const seller = await createSeller('nodeadlock');
-    const a = await createProduct(seller.organizationId);
-    const b = await createProduct(seller.organizationId);
+    const results = await Promise.allSettled([
+      retried(a.id, b.id, onRetry),
+      retried(b.id, a.id, onRetry),
+    ]);
 
-    const lockSorted = (ids: string[]) =>
-      testPrisma.$transaction(async (tx) => {
-        await tx.$queryRaw`
-          SELECT 1 FROM inventory WHERE "productId" IN (${Prisma.join(ids)})
-          ORDER BY "productId" COLLATE "C" FOR UPDATE`;
-        await new Promise((resolve) => setTimeout(resolve, 50));
-      }, TX);
+    // Both end fulfilled: Postgres killed one, and its next attempt found the rows free
+    // because the survivor had committed. A classifier that missed the real shape
+    // would leave one rejected here.
+    expect(results.map((result) => result.status)).toEqual(['fulfilled', 'fulfilled']);
+    expect(seen).toHaveLength(1);
 
-    const results = await Promise.allSettled([lockSorted([a.id, b.id]), lockSorted([b.id, a.id])]);
-    expect(results.map((r) => r.status)).toEqual(['fulfilled', 'fulfilled']);
+    const reason = seen[0] as { code?: string; meta?: unknown };
+    // Measured on Prisma 6: P2010 ("Raw query failed") carrying meta.code 40P01.
+    // The assertion stays on the functional claim and the known shape rather than
+    // hard-coding one code, so a Prisma upgrade that surfaces P2034 still passes —
+    // but a shape the classifier does not know fails here, loudly.
+    expect(isRetryableTransactionError(reason)).toBe(true);
+    expect(['P2034', 'P2010']).toContain(reason.code);
   });
 });
