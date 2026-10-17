@@ -1,30 +1,37 @@
 import { describe, expect, it } from 'vitest';
 import { messageFrom, safeRedirect } from './browser';
 
+/** The console, as the caller names it. The fallback is the caller's fact, not this module's. */
+const CONSOLE = '/admin';
+
 describe('safeRedirect', () => {
   it('keeps a path on this site', () => {
-    expect(safeRedirect('/dashboard/orders')).toBe('/dashboard/orders');
-    expect(safeRedirect('/dashboard?a=1')).toBe('/dashboard?a=1');
+    expect(safeRedirect('/admin/orders', CONSOLE)).toBe('/admin/orders');
+    expect(safeRedirect('/admin?a=1', CONSOLE)).toBe('/admin?a=1');
   });
 
-  it('falls back when there is nothing to go to', () => {
-    expect(safeRedirect(null)).toBe('/dashboard');
-    expect(safeRedirect('')).toBe('/dashboard');
+  it('falls back to the path its caller named, not to one of its own', () => {
+    // The landing a signed-in visitor gets is decided where it is known: this module
+    // cannot tell whether the console, the storefront or a first-run screen is the
+    // right answer, and it is the only place that would have to be changed to say so.
+    expect(safeRedirect(null, CONSOLE)).toBe('/admin');
+    expect(safeRedirect('', CONSOLE)).toBe('/admin');
+    expect(safeRedirect(null, '/register')).toBe('/register');
   });
 
   it('refuses an absolute URL to another origin', () => {
     // The attack this exists for: a login link carrying ?next= to a convincing copy
     // of the login page, so the next password is typed into someone else's form.
-    expect(safeRedirect('https://evil.test/login')).toBe('/dashboard');
-    expect(safeRedirect('http://evil.test')).toBe('/dashboard');
-    expect(safeRedirect('javascript:alert(1)')).toBe('/dashboard');
+    expect(safeRedirect('https://evil.test/login', CONSOLE)).toBe('/admin');
+    expect(safeRedirect('http://evil.test', CONSOLE)).toBe('/admin');
+    expect(safeRedirect('javascript:alert(1)', CONSOLE)).toBe('/admin');
   });
 
   it('refuses a protocol-relative URL, which a naive check lets through', () => {
     // `//evil.test` starts with `/` and is still an absolute URL, so testing only
     // for a leading slash would pass it straight to the router.
-    expect(safeRedirect('//evil.test')).toBe('/dashboard');
-    expect(safeRedirect('\\/evil.test')).toBe('/dashboard');
+    expect(safeRedirect('//evil.test', CONSOLE)).toBe('/admin');
+    expect(safeRedirect('\\/evil.test', CONSOLE)).toBe('/admin');
   });
 });
 

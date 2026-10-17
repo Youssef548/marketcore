@@ -9,6 +9,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 import LoginPage from './page';
+import { ADMIN_PATH } from '@/lib/session/routing';
 
 const fetchMock = vi.fn();
 
@@ -68,14 +69,14 @@ describe('the sign-in form', () => {
   });
 
   it('goes where it was asked to go when the sign-in succeeds', async () => {
-    mocks.get.mockImplementation((key: string) => (key === 'next' ? '/dashboard/orders' : null));
+    mocks.get.mockImplementation((key: string) => (key === 'next' ? '/admin/orders' : null));
     fetchMock.mockResolvedValue(response(204, null));
 
     render(<LoginPage />);
     fillIn('owner@marketcore.test', 'correct-horse-battery');
     submit();
 
-    await waitFor(() => expect(mocks.replace).toHaveBeenCalledWith('/dashboard/orders'));
+    await waitFor(() => expect(mocks.replace).toHaveBeenCalledWith('/admin/orders'));
   });
 
   it('refuses to be redirected off this site, however it was asked', async () => {
@@ -88,7 +89,10 @@ describe('the sign-in form', () => {
     fillIn('owner@marketcore.test', 'correct-horse-battery');
     submit();
 
-    await waitFor(() => expect(mocks.replace).toHaveBeenCalledWith('/dashboard'));
+    // The fallback is the console's own address, passed in by this page rather than
+    // hardcoded in the helper — so the day a signed-in visitor must land somewhere
+    // else, this is the line that changes.
+    await waitFor(() => expect(mocks.replace).toHaveBeenCalledWith(ADMIN_PATH));
   });
 
   it('reports a server it cannot reach rather than failing silently', async () => {
