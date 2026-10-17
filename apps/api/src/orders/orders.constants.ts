@@ -39,6 +39,28 @@ export const ORDER_ITEM_SELECT = {
   unitPriceMinor: true,
 } as const;
 
+export const BUYER_ORDER_SUMMARY_SELECT = {
+  id: true,
+  checkoutId: true,
+  status: true,
+  totalMinor: true,
+  currency: true,
+  createdAt: true,
+  organization: { select: { name: true, slug: true } },
+  _count: { select: { items: true } },
+} as const;
+
+export const BUYER_ORDER_DETAIL_SELECT = {
+  id: true,
+  checkoutId: true,
+  status: true,
+  totalMinor: true,
+  currency: true,
+  createdAt: true,
+  organization: { select: { name: true, slug: true } },
+  items: { select: ORDER_ITEM_SELECT, orderBy: { productId: 'asc' } },
+} as const;
+
 export const CHECKOUT_SELECT = {
   id: true,
   status: true,

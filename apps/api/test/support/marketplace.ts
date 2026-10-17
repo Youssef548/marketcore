@@ -108,3 +108,30 @@ export async function availableOf(productId: string): Promise<number> {
 export const bearer = (token: string): Record<string, string> => ({
   Authorization: `Bearer ${token}`,
 });
+
+/** A placed checkout with one order of one item, written directly — for list and paging fixtures. */
+export async function placedOrder(
+  buyerId: string,
+  product: ProductFixture,
+  quantity = 1,
+): Promise<{ checkoutId: string; orderId: string }> {
+  const totalMinor = product.priceMinor * quantity;
+  const checkout = await testPrisma.checkout.create({
+    data: { buyerId, totalMinor, currency: product.currency },
+    select: { id: true },
+  });
+  const order = await testPrisma.order.create({
+    data: {
+      checkoutId: checkout.id,
+      organizationId: product.organizationId,
+      buyerId,
+      totalMinor,
+      currency: product.currency,
+      items: {
+        create: { productId: product.id, productName: product.name, quantity, unitPriceMinor: product.priceMinor },
+      },
+    },
+    select: { id: true },
+  });
+  return { checkoutId: checkout.id, orderId: order.id };
+}
