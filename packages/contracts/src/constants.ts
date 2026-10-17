@@ -91,6 +91,30 @@ export const SLUG_MIN_LENGTH = 3;
 export const SLUG_MAX_LENGTH = 50;
 
 /**
+ * A checkout's states in phase 4 (D84). `PAID` arrives in phase 6 with the first
+ * code that can write it — a state no operation can enter is scaffolding.
+ */
+export const CheckoutStatuses = {
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+  CANCELLED: 'CANCELLED',
+} as const;
+export type CheckoutStatus = (typeof CheckoutStatuses)[keyof typeof CheckoutStatuses];
+
+/** Every order of a checkout moves with it (domain-model §5), so the sets are equal. */
+export const OrderStatuses = {
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+  CANCELLED: 'CANCELLED',
+} as const;
+export type OrderStatus = (typeof OrderStatuses)[keyof typeof OrderStatuses];
+
+/**
+ * How long a checkout may stay unpaid before the worker cancels it (D70).
+ * Wire-level for the reason PASSWORD_MIN_LENGTH is: the placed screen states it,
+ * and the browser must not hold a second copy.
+ */
+export const CHECKOUT_PAYMENT_WINDOW_MINUTES = 30;
+
+/**
  * Turns a const object of wire values into the non-empty tuple `z.enum` needs.
  * Shared because otherwise every enum in this package repeats the same cast.
  */

@@ -6,6 +6,10 @@ export * from './tenant.interface';
 
 export * from './buyer';
 
+export * from './order';
+export * from './fee';
+export * from './checkout-policy';
+
 export * from './password';
 export * from './password.interface';
 export * from './refresh-token';

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   API_PREFIX,
+  CHECKOUT_PAYMENT_WINDOW_MINUTES,
+  CheckoutStatuses,
   CurrencyCodes,
   DependencyStates,
   FORWARDED_FOR_HEADER,
@@ -9,6 +11,7 @@ import {
   MemberRoles,
   ORGANIZATION_ID_HEADER,
   OrganizationStatuses,
+  OrderStatuses,
   ProductStatuses,
   READINESS_HTTP_STATUS,
   REQUEST_ID_HEADER,
@@ -92,5 +95,16 @@ describe('wire constants', () => {
 
     expect(values).toHaveLength(Object.keys(ProductStatuses).length);
     expect(values).toEqual(['DRAFT', 'PUBLISHED']);
+  });
+});
+
+describe('phase-4 value sets', () => {
+  it('a checkout and an order share the same two reachable states (D84)', () => {
+    expect(Object.values(CheckoutStatuses).sort()).toEqual(['CANCELLED', 'PENDING_PAYMENT']);
+    expect(Object.values(OrderStatuses).sort()).toEqual(['CANCELLED', 'PENDING_PAYMENT']);
+  });
+
+  it('states the payment window once, for the API, the worker and the placed screen (D70)', () => {
+    expect(CHECKOUT_PAYMENT_WINDOW_MINUTES).toBe(30);
   });
 });
