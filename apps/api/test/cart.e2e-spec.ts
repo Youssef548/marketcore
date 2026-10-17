@@ -11,6 +11,7 @@ import {
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
 import { expectContract } from './support/contracts';
+import { testPrisma } from './support/db';
 import {
   newTenant,
   productPayload,
@@ -171,5 +172,34 @@ describe('cart (e2e)', () => {
 
   it('requires a signed-in user', async () => {
     await request(server()).get('/api/v1/cart').expect(401);
+  });
+
+  it('accepts a quantity above the stock and flags it SHORT (D58, SRS-FR-CART-004)', async () => {
+    // The falsifier for the slice's headline ruling: stock is checked at checkout,
+    // not at add-to-cart. An implementation that refused or reserved here would
+    // leave this 400 instead of a 200 with `availability: SHORT`.
+    const token = await newBuyer();
+    const a = await publishedProduct(app, sellerA, { available: 1 });
+
+    const cart = expectContract(CartSchema, (await setLine(token, a.id, 10).expect(200)).body);
+
+    expect(lines(cart)[0]).toMatchObject({ quantity: 10, available: 1 });
+    expect(lines(cart)[0].availability).toBe(CartLineAvailabilities.SHORT);
+    expect(await stockOf(sellerA, a.id)).toBe(1);
+  });
+
+  it('prices a product at zero cannot be added, and does not break the cart', async () => {
+    // A published product repriced to 0 is refused at the source now; this proves the
+    // read path survives it anyway rather than turning every later cart read into a 500.
+    const token = await newBuyer();
+    const a = await publishedProduct(app, sellerA, { priceMinor: 1000 });
+    await setLine(token, a.id, 1).expect(200);
+
+    const seller = await newTenant(app, 'zeroprice');
+    const zero = await publishedProduct(app, seller, { priceMinor: 1000 });
+    await testPrisma.product.update({ where: { id: zero.id }, data: { priceMinor: 0 } });
+
+    await setLine(token, zero.id, 1).expect(404);
+    expect(lines(await getCart(token))).toHaveLength(1);
   });
 });

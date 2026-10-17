@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@app/database';
-import { buyerScope, type BuyerContext } from '@app/domain';
+import { MIN_PUBLISHABLE_PRICE_MINOR, buyerScope, type BuyerContext } from '@app/domain';
 import { PrismaService } from '@app/runtime';
 import { PUBLIC_PRODUCT_WHERE } from '../../storefront/storefront.constants';
 import { CART_LINE_ORDER, CART_LINE_SELECT } from '../cart.constants';
 import type { CartLineRow } from '../interfaces/cart.interface';
 
 /**
- * Every write here locks the buyer's cart row before touching a line (D83). The
+ * Every write that touches a line locks the buyer's cart row first (D83). The
  * checkout transaction takes the same row lock first, so a line cannot be added,
  * changed or removed between checkout reading the cart and emptying it. One order
  * everywhere — cart row, then lines — so the two can never deadlock.
+ *
+ * `ensureCart` is the exception that proves it is about lines: it is a bare
+ * INSERT … ON CONFLICT that creates the row, so there is nothing yet to lock.
  */
 @Injectable()
 export class CartRepository {
@@ -29,10 +32,18 @@ export class CartRepository {
     });
   }
 
-  /** A plain read: the cart never locks or writes Inventory (SRS-FR-CART-004). */
+  /**
+   * A plain read: the cart never locks or writes Inventory (SRS-FR-CART-004). The
+   * price floor is here as well as in the mapper so a product priced below it is a
+   * 404 rather than a row that violates `cart_items_added_price_positive`.
+   */
   findPublicPrice(productId: string): Promise<{ priceMinor: number } | null> {
     return this.prisma.product.findFirst({
-      where: { id: productId, ...PUBLIC_PRODUCT_WHERE },
+      where: {
+        id: productId,
+        priceMinor: { gte: MIN_PUBLISHABLE_PRICE_MINOR },
+        ...PUBLIC_PRODUCT_WHERE,
+      },
       select: { priceMinor: true },
     });
   }

@@ -56,4 +56,33 @@ describe('toCart', () => {
     const cart = toCart([row('a', { priceMinor: 1200 })]);
     expect(cart.sellers[0].lines[0]).toMatchObject({ addedUnitPriceMinor: 1000, currentUnitPriceMinor: 1200 });
   });
+
+  it('masks a line whose seller is disabled (D86)', () => {
+    // The other half of the masking rule: no route can disable an organization yet,
+    // so the unit layer is the only place this can be pinned.
+    const cart = toCart([
+      row('a', {
+        organization: {
+          id: 's1',
+          name: 'Seller s1',
+          slug: 'seller-s1',
+          status: OrganizationStatuses.DISABLED,
+        },
+      }),
+    ]);
+
+    expect(cart.sellers[0].lines[0]).toMatchObject({ available: 0, currentUnitPriceMinor: null });
+  });
+
+  it('masks a published product priced below the minimum, rather than failing the parse', () => {
+    // A published 0-priced product is not representable in a cart (the contract floors
+    // a price at 1). Before this, the parse threw and every cart read was a 500.
+    const cart = toCart([row('a', { priceMinor: 0 })]);
+
+    expect(cart.sellers[0].lines[0]).toMatchObject({
+      available: 0,
+      currentUnitPriceMinor: null,
+      availability: CartLineAvailabilities.SOLD_OUT,
+    });
+  });
 });

@@ -74,4 +74,23 @@ describe('CatalogService', () => {
       NotFoundException,
     );
   });
+
+  it('refuses to reprice a published product below the publishable minimum', async () => {
+    // A published product at 0 is not representable in a cart, so allowing it turns
+    // every later cart read into a 500 (phase-4 review finding).
+    const published = build(jest.fn().mockResolvedValue(product({ status: ProductStatuses.PUBLISHED })));
+
+    await expect(published.update(tenant, 'p1', { priceMinor: 0 })).rejects.toBeInstanceOf(
+      ConflictException,
+    );
+  });
+
+  it('lets a draft be priced at anything, because publishing is what checks the price', async () => {
+    const service = new CatalogService({
+      findById: jest.fn().mockResolvedValue(product()),
+      update: jest.fn().mockResolvedValue(1),
+    } as unknown as CatalogRepository);
+
+    await expect(service.update(tenant, 'p1', { priceMinor: 0 })).resolves.toBeUndefined();
+  });
 });
