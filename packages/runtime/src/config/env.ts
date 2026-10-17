@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
 /**
- * Validated once, at boot, so a misconfigured deploy fails immediately with a
- * list of what is wrong instead of throwing somewhere deep in a request.
- *
- * Shared by the API and the worker, which is why it lives in a package: neither
- * app may import the other.
+ * What every process that touches the database needs. The API and the worker
+ * each extend it (ADR 0001): the worker must not need a JWT secret to boot.
  */
-const EnvSchema = z.object({
+export const DatabaseEnvSchema = z.object({
   APP_NAME: z.string().min(1).default('app'),
   DATABASE_URL: z.string().url(),
+});
+
+const EnvSchema = DatabaseEnvSchema.extend({
   PORT: z.coerce.number().int().positive().default(3001),
   WEB_URL: z.string().default('http://localhost:3000'),
   // Signs access tokens. A minimum length is enforced here because a short secret
@@ -19,8 +19,9 @@ const EnvSchema = z.object({
 
 export type Env = z.infer<typeof EnvSchema>;
 
-export function validateEnv(source: NodeJS.ProcessEnv = process.env): Env {
-  const parsed = EnvSchema.safeParse(source);
+/** Validates `source` against `schema`, failing with every problem listed by path. */
+export function parseEnv<S extends z.ZodType>(schema: S, source: NodeJS.ProcessEnv = process.env): z.output<S> {
+  const parsed = schema.safeParse(source);
   if (!parsed.success) {
     throw new Error(
       `Invalid environment:\n${parsed.error.issues
@@ -29,4 +30,8 @@ export function validateEnv(source: NodeJS.ProcessEnv = process.env): Env {
     );
   }
   return parsed.data;
+}
+
+export function validateEnv(source: NodeJS.ProcessEnv = process.env): Env {
+  return parseEnv(EnvSchema, source);
 }

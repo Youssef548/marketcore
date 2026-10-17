@@ -1199,3 +1199,72 @@ old URLs permanently redirected (D92).
   this file already records for the design system.
 - **Milestone M0 closes on this change plus T-001** (`49f763a`, the four pages); the shell was the half
   T-001 deliberately left alone.
+
+---
+
+## Phase 4 Task 17 — `apps/worker` scaffold, environment, scheduler, and `check-db-env.mjs` — 2026-10-17
+
+**Claim:** the worker app is scaffolded as a plain Node process, its environment validation needs no
+JWT secret, the scheduler runs immediately and never overlaps runs, and `check-db-env.mjs` now
+covers the worker's `.env` without silently disabling the API/database comparison when the worker file
+is absent.
+**Branch:** `feat/phase-4-worker`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| Runtime env gains `DatabaseEnvSchema` / `parseEnv` | `pnpm --filter @app/runtime test` | **8 passed** — database-only env needs no `JWT_SECRET`; `validateEnv` still requires it |
+| Worker env defaults and floors | `pnpm --filter worker test` | **11 passed** — env, scheduler (4), and `check-db-env` (4) |
+| Worker scheduler behaviour | same | runs immediately; no overlap; stop waits; errors reported and continue |
+| `check-db-env` covers worker | same | exit 0 when all three agree; exit 1 when worker disagrees; still compares the other two when worker file is absent |
+| Boundary rules bite for the new app | probe `import '../../api/src/app.module'` in `apps/worker/src/scheduler.ts` | `pnpm --filter worker lint` fails with `boundaries/element-types`; reverting restores green |
+| Worker lint, typecheck, build | `pnpm --filter worker lint && pnpm --filter worker typecheck && pnpm --filter worker build` | all clean |
+| Domain unchanged | `pnpm --filter @app/domain test` | **80 passed** |
+
+### Delivered
+
+- **`packages/runtime/src/config/env.ts`** — exports `DatabaseEnvSchema` and `parseEnv`, while `validateEnv`
+  stays as strict as before.
+- **`apps/worker`** — new package with `DatabaseEnvSchema`-based `WorkerEnvSchema`, a non-overlapping
+  `startInterval` scheduler, and Vitest + ESLint + TypeScript configured.
+- **`scripts/check-db-env.mjs`** — honours `DB_ENV_ROOT`, adds `apps/worker/.env` as a third target, and
+  compares whenever at least two files are present (not `< targets.length`).
+
+### Not proven / deferred
+
+- **The whole-repo gate `pnpm turbo run lint typecheck test build` failed on `api#test`** because the API's
+  e2e and integration suites need `DATABASE_URL`, `JWT_SECRET` and a running PostgreSQL, which this
+  worktree does not have configured. The Task 17 deliverables themselves pass lint, typecheck and tests.
+- **No integration tests** — the `vitest.integration.config.ts` exists, but integration suites land with
+  Task 18.
+## 2026-10-17 — Phase 4 review round 1: every open PR reviewed, every blocking finding fixed
+
+Six PRs went through the two-model debate review (OpenAI vs xAI reviewers, both agreeing
+before a finding counts). Findings by PR:
+
+| PR | Findings | Disposition |
+|---|---|---|
+| #68 int-bounds | 1 P1 — price schemas had a ceiling and no floor; `-2147483649` reached Prisma and 500'd | Fixed `cb11bc0`: `POSTGRES_INT_MIN` beside the max, `.min()` on both price request schemas, 4 contract specs + the e2e mirror (create and PATCH answer 400). Contracts 77/77, catalog+inventory e2e 19/19, gate 33/33 |
+| #69 cart | 1 P1 — a product repriced to 0 makes cart reads throw and adds 500 | Agreed; fixed in-stack by #70 (the branch this finding spawned). Thread resolved |
+| #70 price floor | 1 Critical (closed by the branch) + 1 P2 — PATCH-vs-publish race can leave a published price at 0 | P2 accepted: cart masks it (sold-out / rejected add); serialization fix rides a follow-up PR. Thread resolved |
+| #71 retry | 0 | Clean review |
+| #73 worker | 1 P1 — `start`/`dev` targeted entry points the package did not provide; 1 P2 — a sync job throw escaped `onError` and killed the loop | Fixed `3161135`: a testable `startWorker` factory entry point (the placeholder tick the stacked #74 replaces), and `runJob` turning sync throws into rejections on the existing error path. Worker 15/15, gate 37/37, entry point booted under `node dist/main.js` |
+| #74 auto-cancel | review dispatched; the relay died mid-run on a provider usage limit — **not yet reviewed** | Re-dispatch pending |
+
+### Findings of the round worth keeping
+
+1. **The plan itself contained the P1 of #73.** Task 17's verbatim `package.json` references
+   `src/main.ts`, but the task's file list never creates it — the scaffold could not launch for two
+   stacked tasks. Reviews of the *diff* caught what review of the *plan* did not.
+2. **Every "500 for a 400" finding was the same shape twice.** `z.int()` had no ceiling, then no floor.
+   The fix pattern (named column bound in `constants.ts`, mirrored spec, e2e 400-not-500 assertion)
+   is now established on both sides of the column.
+
+### Infrastructure notes (electricity outage + provider limits)
+
+- The outage took down `marketcore-db-1`; `docker start marketcore-db-1` restored it. Fresh worktrees
+  still need root and `apps/api` `.env` copied from the main repo before e2e/integration suites.
+- Both relay providers hit 5-hour usage limits within minutes of each other (Command Code reset
+  12:16 AM; OpenCode "Go" exhausted at 20:08 UTC). The fleet was re-pinned to Command Code for both
+  review lanes — the vendor split survives as OpenAI `gpt-6-astra` vs xAI `grok-4.5`.

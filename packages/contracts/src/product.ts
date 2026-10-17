@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   CurrencyCodes,
   POSTGRES_INT_MAX,
+  POSTGRES_INT_MIN,
   ProductStatuses,
   wireValues,
 } from './constants';
@@ -9,9 +10,9 @@ import {
 export const CreateProductRequestSchema = z.object({
   name: z.string().min(1),
   // Integer minor units. A float here would be the money bug the domain model
-  // forbids, so the contract refuses it at the boundary; the ceiling is the
-  // column's, so an over-large value is a 400 rather than a 500 from Prisma.
-  priceMinor: z.int().max(POSTGRES_INT_MAX),
+  // forbids, so the contract refuses it at the boundary; the bounds are the
+  // column's, so an out-of-range value is a 400 rather than a 500 from Prisma.
+  priceMinor: z.int().min(POSTGRES_INT_MIN).max(POSTGRES_INT_MAX),
   currency: z.enum(wireValues(CurrencyCodes)),
 });
 export type CreateProductRequest = z.infer<typeof CreateProductRequestSchema>;
@@ -19,7 +20,7 @@ export type CreateProductRequest = z.infer<typeof CreateProductRequestSchema>;
 export const UpdateProductRequestSchema = z
   .object({
     name: z.string().min(1),
-    priceMinor: z.int().max(POSTGRES_INT_MAX),
+    priceMinor: z.int().min(POSTGRES_INT_MIN).max(POSTGRES_INT_MAX),
   })
   .partial();
 export type UpdateProductRequest = z.infer<typeof UpdateProductRequestSchema>;
