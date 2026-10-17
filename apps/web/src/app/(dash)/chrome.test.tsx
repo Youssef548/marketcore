@@ -12,6 +12,7 @@ vi.mock('next/navigation', async (importOriginal) => ({
 }));
 
 import { SessionProvider } from '@/lib/session/client';
+import { ADMIN_PATH } from '@/lib/session/routing';
 import { DashboardChrome } from './chrome';
 
 const SESSION = {
@@ -36,7 +37,7 @@ const fetchMock = vi.fn();
 beforeEach(() => {
   mocks.replace.mockClear();
   mocks.pathname.mockReset();
-  mocks.pathname.mockReturnValue('/dashboard');
+  mocks.pathname.mockReturnValue(ADMIN_PATH);
   fetchMock.mockReset();
   vi.stubGlobal('fetch', fetchMock);
 });

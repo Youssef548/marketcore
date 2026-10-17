@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ADMIN_PRODUCTS_PATH } from '@/lib/session/routing';
 import { useReadySession } from '@/lib/session/client';
 
 /**
@@ -47,7 +48,7 @@ export default function DashboardPage() {
       </dl>
 
       <p className="text-sm">
-        <Link className="font-medium text-action underline" href="/products">
+        <Link className="font-medium text-action underline" href={ADMIN_PRODUCTS_PATH}>
           Go to the catalog
         </Link>{' '}
         <span className="text-ink-muted">

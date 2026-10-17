@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { decideRoute, isCredentialPage, isProtected } from './routing';
+import { decideRoute, isCredentialPage, isProtected, movedTo } from './routing';
 
 describe('the route gate', () => {
   it('sends an anonymous visitor to sign in, carrying where they were going', () => {
-    expect(decideRoute('/dashboard', false)).toEqual({
+    expect(decideRoute('/admin', false)).toEqual({
       kind: 'redirect',
-      to: '/login?next=%2Fdashboard',
+      to: '/login?next=%2Fadmin',
     });
-    expect(decideRoute('/dashboard/orders', false)).toEqual({
+    expect(decideRoute('/admin/orders', false)).toEqual({
       kind: 'redirect',
-      to: '/login?next=%2Fdashboard%2Forders',
+      to: '/login?next=%2Fadmin%2Forders',
     });
   });
 
@@ -18,31 +18,56 @@ describe('the route gate', () => {
     expect(decideRoute('/register', false)).toEqual({ kind: 'next' });
   });
 
-  it('lets a signed-in visitor reach the dashboard', () => {
-    expect(decideRoute('/dashboard', true)).toEqual({ kind: 'next' });
-    expect(decideRoute('/dashboard/orders', true)).toEqual({ kind: 'next' });
+  it('lets a signed-in visitor reach the console', () => {
+    expect(decideRoute('/admin', true)).toEqual({ kind: 'next' });
+    expect(decideRoute('/admin/orders', true)).toEqual({ kind: 'next' });
   });
 
   it('turns a signed-in visitor away from the credential pages', () => {
     // There is nothing to gain from the login form once there is a session, and the
     // API would refuse the submission anyway.
-    expect(decideRoute('/login', true)).toEqual({ kind: 'redirect', to: '/dashboard' });
-    expect(decideRoute('/register', true)).toEqual({ kind: 'redirect', to: '/dashboard' });
+    expect(decideRoute('/login', true)).toEqual({ kind: 'redirect', to: '/admin' });
+    expect(decideRoute('/register', true)).toEqual({ kind: 'redirect', to: '/admin' });
   });
 
   it('does not treat a path that merely starts with the prefix as protected', () => {
-    // `/dashboarding` is a different route; a bare `startsWith('/dashboard')` would
-    // gate it and, worse, would gate any future `/dashboard-*` route by accident.
-    expect(isProtected('/dashboarding')).toBe(false);
-    expect(decideRoute('/dashboarding', false)).toEqual({ kind: 'next' });
+    // `/administration` is a different route; a bare `startsWith('/admin')` would
+    // gate it and, worse, would gate any future `/admin-*` route by accident.
+    expect(isProtected('/administration')).toBe(false);
+    expect(decideRoute('/administration', false)).toEqual({ kind: 'next' });
   });
 
   it('names exactly the routes it guards', () => {
-    expect(isProtected('/dashboard')).toBe(true);
-    expect(isProtected('/dashboard/')).toBe(true);
+    expect(isProtected('/admin')).toBe(true);
+    expect(isProtected('/admin/')).toBe(true);
     expect(isProtected('/')).toBe(false);
     expect(isCredentialPage('/login')).toBe(true);
     expect(isCredentialPage('/register')).toBe(true);
     expect(isCredentialPage('/registration')).toBe(false);
+  });
+});
+
+/**
+ * D92 — the operator console lives under `/admin`, and the two URLs it used before
+ * move permanently. The move is decided before the gate: an old URL is about the
+ * address, not about the session, and a signed-out visitor to `/dashboard` must be
+ * carried to sign in *for `/admin`* rather than for the dead address.
+ */
+describe('the console\u2019s moved URLs', () => {
+  it('moves them whichever way the session is', () => {
+    expect(decideRoute('/dashboard', false)).toEqual({ kind: 'moved', to: '/admin' });
+    expect(decideRoute('/dashboard', true)).toEqual({ kind: 'moved', to: '/admin' });
+    expect(decideRoute('/products', false)).toEqual({ kind: 'moved', to: '/admin/products' });
+    expect(decideRoute('/products', true)).toEqual({ kind: 'moved', to: '/admin/products' });
+  });
+
+  it('moves nothing else, so the rule cannot grow into a prefix it was never given', () => {
+    // Only the two URLs the console actually served moved. A deeper path is not a
+    // route at all — inventing a destination for it would be guessing where a page
+    // that never existed should now live.
+    expect(movedTo('/products/123')).toBeNull();
+    expect(movedTo('/dashboard/orders')).toBeNull();
+    expect(movedTo('/admin')).toBeNull();
+    expect(decideRoute('/products/123', false)).toEqual({ kind: 'next' });
   });
 });

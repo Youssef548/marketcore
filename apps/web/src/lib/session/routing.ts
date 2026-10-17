@@ -6,14 +6,38 @@ import type { RoutingDecision } from './interfaces/routing.interface';
  * Kept apart from `middleware.ts` so it can be tested directly. The middleware
  * adapter only turns a decision into a `NextResponse`, and that part is small
  * enough to be obviously right.
+ *
+ * Every URL the console serves is named here once, so a page, the rail and the gate
+ * cannot disagree about where it lives.
  */
 
-export const DASHBOARD_PATH = '/dashboard';
+/** The operator console (D92). `/admin` is the overview; everything else hangs below it. */
+export const ADMIN_PATH = '/admin';
+export const ADMIN_PRODUCTS_PATH = `${ADMIN_PATH}/products`;
 export const LOGIN_PATH = '/login';
 export const REGISTER_PATH = '/register';
 
+/**
+ * The console's old URLs, and where they live now.
+ *
+ * `/dashboard` and `/products` were the console's address for two phases, so a
+ * bookmark, a search result and a link someone was sent still hold them. They move
+ * the visitor rather than answering 404 for a URL that was correct until yesterday.
+ * Only the two routes that existed are listed: a deeper path was never a page, and
+ * inventing a destination for it would be guessing.
+ */
+const MOVED_PATHS: Readonly<Record<string, string>> = {
+  '/dashboard': ADMIN_PATH,
+  '/products': ADMIN_PRODUCTS_PATH,
+};
+
+/** Where a moved URL now lives, or null when the path never moved. */
+export function movedTo(pathname: string): string | null {
+  return MOVED_PATHS[pathname] ?? null;
+}
+
 export function isProtected(pathname: string): boolean {
-  return pathname === DASHBOARD_PATH || pathname.startsWith(`${DASHBOARD_PATH}/`);
+  return pathname === ADMIN_PATH || pathname.startsWith(`${ADMIN_PATH}/`);
 }
 
 export function isCredentialPage(pathname: string): boolean {
@@ -30,10 +54,18 @@ export function isCredentialPage(pathname: string): boolean {
  * is caught by `/api/session`, which can also rotate it — so this decides routing,
  * not authorization.
  *
- * `next` is carried through so that a followed link into the dashboard resumes
- * there after signing in rather than dumping the visitor on the default page.
+ * `next` is carried through so that a followed link into the console resumes there
+ * after signing in rather than dumping the visitor on the default page.
  */
 export function decideRoute(pathname: string, signedIn: boolean): RoutingDecision {
+  // Before the gate, because a move is about the address and not about the session:
+  // `/dashboard` while signed out must still become `/admin`, and ask for credentials
+  // *then*, so the `next` the visitor comes back to is an address that lives.
+  const moved = movedTo(pathname);
+  if (moved !== null) {
+    return { kind: 'moved', to: moved };
+  }
+
   if (!signedIn && isProtected(pathname)) {
     return { kind: 'redirect', to: `${LOGIN_PATH}?next=${encodeURIComponent(pathname)}` };
   }
@@ -41,7 +73,7 @@ export function decideRoute(pathname: string, signedIn: boolean): RoutingDecisio
   // A signed-in visitor has no use for the credential pages; the API would refuse
   // the login they submitted anyway.
   if (signedIn && isCredentialPage(pathname)) {
-    return { kind: 'redirect', to: DASHBOARD_PATH };
+    return { kind: 'redirect', to: ADMIN_PATH };
   }
 
   return { kind: 'next' };

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ADMIN_PATH, ADMIN_PRODUCTS_PATH } from '@/lib/session/routing';
 import type { RailProps } from './interfaces/rail.interface';
 
 /**
@@ -10,15 +11,16 @@ import type { RailProps } from './interfaces/rail.interface';
  * Every entry is a route that exists — no section is listed ahead of its page, the
  * same line this repository draws for tokens and models. The active item is derived
  * from the pathname rather than passed down, so the rail cannot claim a page the
- * router is not on.
+ * router is not on. The hrefs are the console's own URLs, named once in
+ * `@/lib/session/routing` rather than typed here.
  *
  * It carries navigation and nothing else: the tenant lives in the top bar, where it
  * is visible beside the page it scopes rather than screaming its own box into a
  * column that is otherwise about movement.
  */
 const NAV = [
-  { href: '/dashboard', label: 'Overview' },
-  { href: '/products', label: 'Products' },
+  { href: ADMIN_PATH, label: 'Overview' },
+  { href: ADMIN_PRODUCTS_PATH, label: 'Products' },
 ] as const;
 
 export function Rail({ appName }: RailProps) {
@@ -31,7 +33,7 @@ export function Rail({ appName }: RailProps) {
     >
       <Link
         className="flex items-center gap-2.5 px-1.5 text-sm font-semibold text-ink-on-rail"
-        href="/dashboard"
+        href={ADMIN_PATH}
       >
         {/* The mark is the direction's, and it is decoration: the name beside it is
          * what a screen reader reads. */}
