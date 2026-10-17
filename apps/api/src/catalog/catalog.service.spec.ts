@@ -14,6 +14,7 @@ const build = (findById: jest.Mock) =>
     update: jest.fn(),
     updateStatus: jest.fn(),
     findInventory: jest.fn(),
+    setAvailable: jest.fn(),
   } as unknown as CatalogRepository);
 
 const product = (overrides: Record<string, unknown> = {}) => ({

@@ -5,6 +5,7 @@ import { ErrorCodes, InventorySchema } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
 import { expectContract } from './support/contracts';
+import { testPrisma } from './support/db';
 import { newTenant, productPayload, tenantHeaders } from './support/fixtures';
 
 describe('set inventory (e2e, D81)', () => {
@@ -64,6 +65,44 @@ describe('set inventory (e2e, D81)', () => {
 
   it.each([{ available: -1 }, { available: 1.5 }, {}])('refuses %o with 400', async (body) => {
     const res = await put(owner, body).expect(400);
+    expect(res.body.error.code).toBe(ErrorCodes.VALIDATION_ERROR);
+  });
+
+  it('reads zero as a real count, not as absent', async () => {
+    const res = await put(owner, { available: 0 }).expect(200);
+
+    expect(res.body.available).toBe(0);
+  });
+
+  it('sets available only, and leaves reserved alone', async () => {
+    // `reserved` is not this route's business. Held units are set out of band, then
+    // the absolute write must leave them untouched rather than re-announcing them.
+    await testPrisma.inventory.update({ where: { productId }, data: { reserved: 4 } });
+
+    const res = await put(owner, { available: 11 }).expect(200);
+
+    expect(res.body).toMatchObject({ available: 11, reserved: 4 });
+  });
+
+  it('answers 404 for a product that does not exist', async () => {
+    const res = await request(app.getHttpServer())
+      .put('/api/v1/products/00000000-0000-0000-0000-000000000000/inventory')
+      .set(tenantHeaders(owner.accessToken, owner.organizationId))
+      .send({ available: 1 })
+      .expect(404);
+
+    expect(res.body.error.code).toBe(ErrorCodes.NOT_FOUND);
+  });
+
+  it('refuses an extra key, because the request contract is strict', async () => {
+    await put(owner, { available: 1, reserved: 2 }).expect(400);
+  });
+
+  it('refuses a count above the column, as a 400 rather than a 500', async () => {
+    // `z.int()` alone accepted 2^31, which then died inside Prisma as an internal
+    // error (phase-4 review finding).
+    const res = await put(owner, { available: 2_147_483_648 }).expect(400);
+
     expect(res.body.error.code).toBe(ErrorCodes.VALIDATION_ERROR);
   });
 });

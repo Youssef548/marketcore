@@ -115,6 +115,30 @@ describe('catalog (e2e)', () => {
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
   });
 
+  it('refuses a price below the column, as a 400 rather than a 500', async () => {
+    // The mirror of the inventory ceiling test: `z.int()` had no floor, so
+    // -2^31 - 1 passed validation and then died inside Prisma (phase-4 review
+    // finding, agreed by two reviewers).
+    const below = -2_147_483_649;
+
+    const created = await request(app.getHttpServer())
+      .post('/api/v1/products')
+      .set(tenantHeaders(tenant.accessToken, tenant.organizationId))
+      .send(productPayload({ name: 'Underpriced', priceMinor: below }))
+      .expect(400);
+
+    expect(created.body.error.code).toBe('VALIDATION_ERROR');
+
+    const product = await createProduct(900);
+    const updated = await request(app.getHttpServer())
+      .patch(`/api/v1/products/${product.id}`)
+      .set(tenantHeaders(tenant.accessToken, tenant.organizationId))
+      .send({ priceMinor: below })
+      .expect(400);
+
+    expect(updated.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
   it('lists only the caller tenant products', async () => {
     const other = await newTenant(app, 'othercatalog');
     const mine = await createProduct(700);
