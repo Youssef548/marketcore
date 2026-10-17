@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { SESSION_COOKIES } from '@/lib/session/cookies';
+import { ADMIN_PATH, LOGIN_PATH } from '@/lib/session/routing';
 
 /**
  * The front door, which decides nothing for itself.
@@ -12,5 +13,5 @@ import { SESSION_COOKIES } from '@/lib/session/cookies';
 export default async function HomePage() {
   const jar = await cookies();
 
-  redirect(jar.has(SESSION_COOKIES.REFRESH) ? '/dashboard' : '/login');
+  redirect(jar.has(SESSION_COOKIES.REFRESH) ? ADMIN_PATH : LOGIN_PATH);
 }

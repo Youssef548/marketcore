@@ -8,6 +8,7 @@ import { Alert, AlertVariants, ArrowRightIcon, Button, ControlSizes, Field, Page
 import { firstIssuePerField } from '@/lib/forms/issues';
 import { postJson } from '@/lib/forms/post-json';
 import { safeRedirect } from '@/lib/http/browser';
+import { ADMIN_PATH } from '@/lib/session/routing';
 
 /**
  * Sign in.
@@ -48,8 +49,10 @@ function LoginForm() {
     setPending(false);
 
     if (result.ok) {
-      // `next` is attacker-controllable, so it is constrained to this site.
-      router.replace(safeRedirect(params.get('next')));
+      // `next` is attacker-controllable, so it is constrained to this site — and the
+      // path a visitor lands on when there is nothing to return to is named here,
+      // because this page is what sends them there.
+      router.replace(safeRedirect(params.get('next'), ADMIN_PATH));
       return;
     }
 

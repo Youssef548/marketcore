@@ -20,17 +20,22 @@ export async function messageFrom(response: Response): Promise<string> {
  * Where to go after signing in, constrained to this site.
  *
  * `?next=` is attacker-controllable by definition — it exists so a victim can be
- * sent to it — so an unvalidated value is an open redirect: a login link that lands
- * on a convincing copy of the login page and harvests the next password. Only a path
- * on this origin is accepted.
+ * sent to it — so an unvalidated value here is an open redirect: a login link that
+ * lands on a convincing copy of the login page and harvests the next password. Only
+ * a path on this origin is accepted.
  *
  * `//evil.test` is rejected along with `https://evil.test`: a protocol-relative URL
  * starts with `/` and is absolute, which is exactly the case a naive
  * `startsWith('/')` check lets through.
+ *
+ * Where a signed-in visitor lands when there is nothing to go back to is the
+ * *caller's* fact, not this module's: the caller knows which surface owns that
+ * visitor, and naming it here would put a route this helper does not serve inside a
+ * generic HTTP module.
  */
-export function safeRedirect(target: string | null): string {
+export function safeRedirect(target: string | null, fallback: string): string {
   if (target === null || !target.startsWith('/') || target.startsWith('//')) {
-    return '/dashboard';
+    return fallback;
   }
 
   return target;
