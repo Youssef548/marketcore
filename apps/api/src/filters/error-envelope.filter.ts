@@ -63,7 +63,13 @@ export class ErrorEnvelopeFilter implements ExceptionFilter {
         typeof body === 'string'
           ? body
           : ((body as { message?: string }).message ?? exception.message);
-      return { status: exception.getStatus(), code: this.codeFor(exception), message };
+      // A typed refusal (checkout's 409) is thrown as `new ConflictException({
+      // message, details })`; its details are contract, not decoration.
+      const details =
+        typeof body === 'object' && body !== null && 'details' in body
+          ? (body as { details?: unknown }).details
+          : undefined;
+      return { status: exception.getStatus(), code: this.codeFor(exception), message, details };
     }
 
     // Never surface an internal message to the caller; it is logged above.

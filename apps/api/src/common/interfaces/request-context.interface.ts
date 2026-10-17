@@ -1,5 +1,5 @@
 import type { RequestWithId } from '@app/runtime';
-import type { TenantContext } from '@app/domain';
+import type { BuyerContext, TenantContext } from '@app/domain';
 
 export interface AuthenticatedUser {
   id: string;
@@ -16,4 +16,6 @@ export interface AuthenticatedUser {
 export interface AuthenticatedRequest extends RequestWithId {
   user?: AuthenticatedUser;
   tenant?: TenantContext;
+  /** Set by BuyerGuard on tenant-free routes (D75). */
+  buyer?: BuyerContext;
 }
