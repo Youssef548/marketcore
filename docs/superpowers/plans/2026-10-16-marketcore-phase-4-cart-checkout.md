@@ -9706,3 +9706,4 @@ wrong, with the correction a later reader should apply instead of the snippet in
 
 | # | Where | Defect | Resolution |
 |---|---|---|---|
+| 1 | Task 5, `test/buyer-order.spec.ts` | The snippet omits `itemCount` by destructuring it to `_omitted`, but this repo's ESLint (`@typescript-eslint/no-unused-vars`) does not exempt underscore-prefixed bindings, so the file fails `pnpm lint`. | The detail is built from the fields it has, with a comment naming what is deliberately absent — the same assertion without the unused binding. Do not disable the rule. |
