@@ -17,6 +17,9 @@ const CHECKS = [
   'order_items_unit_price_positive',
 ];
 
+const VALID_MINOR = 1000;
+const NON_POSITIVE_MINOR = 0;
+
 async function checkoutFixture() {
   const seller = await createSeller('constraint');
   const product = await createProduct(seller.organizationId);
@@ -72,6 +75,67 @@ describe('phase-4 database constraints', () => {
 
     await testPrisma.cartItem.create({ data: line });
     await expect(testPrisma.cartItem.create({ data: line })).rejects.toThrow();
+  });
+
+  it('refuses a cart item with a non-positive added price', async () => {
+    const seller = await createSeller('added-price');
+    const product = await createProduct(seller.organizationId);
+    const buyer = await createBuyer();
+    const cart = await testPrisma.cart.create({ data: { buyerId: buyer.id } });
+
+    await expect(
+      testPrisma.cartItem.create({
+        data: {
+          cartId: cart.id,
+          productId: product.id,
+          quantity: 1,
+          addedUnitPriceMinor: NON_POSITIVE_MINOR,
+        },
+      }),
+    ).rejects.toThrow(/cart_items_added_price_positive/);
+  });
+
+  it('refuses a checkout with a non-positive total', async () => {
+    const buyer = await createBuyer();
+
+    await expect(
+      testPrisma.checkout.create({
+        data: {
+          buyerId: buyer.id,
+          totalMinor: NON_POSITIVE_MINOR,
+          currency: CurrencyCodes.EGP,
+        },
+      }),
+    ).rejects.toThrow(/checkouts_total_positive/);
+  });
+
+  it('refuses an order with a non-positive total', async () => {
+    const { order } = await checkoutFixture();
+
+    await expect(
+      testPrisma.order.create({
+        data: { ...order, totalMinor: NON_POSITIVE_MINOR },
+      }),
+    ).rejects.toThrow(/orders_total_positive/);
+  });
+
+  it('refuses an order item with a non-positive unit price', async () => {
+    const { product, order } = await checkoutFixture();
+    const created = await testPrisma.order.create({
+      data: { ...order, totalMinor: VALID_MINOR },
+    });
+
+    await expect(
+      testPrisma.orderItem.create({
+        data: {
+          orderId: created.id,
+          productId: product.id,
+          productName: product.name,
+          quantity: 1,
+          unitPriceMinor: NON_POSITIVE_MINOR,
+        },
+      }),
+    ).rejects.toThrow(/order_items_unit_price_positive/);
   });
 
   it('creates checkouts PENDING_PAYMENT by default', async () => {
