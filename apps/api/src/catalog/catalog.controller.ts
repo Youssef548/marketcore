@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Put } from '@nestjs/common';
 import { ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse } from '@nestjs/swagger';
 import type { Inventory, Product } from '@app/contracts';
 import type { TenantContext } from '@app/domain';
@@ -7,6 +7,7 @@ import {
   CreateProductRequestDto,
   InventoryDto,
   ProductDto,
+  SetInventoryRequestDto,
   UpdateProductRequestDto,
 } from './dto/catalog.dto';
 import { CatalogService } from './catalog.service';
@@ -64,5 +65,16 @@ export class CatalogController {
   @ApiOkResponse({ type: InventoryDto })
   inventory(@Tenant() tenant: TenantContext, @Param('id') id: string): Promise<Inventory> {
     return this.catalogService.inventory(tenant, id);
+  }
+
+  /** Absolute, not a delta: the seller states what is on the shelf (D81). */
+  @Put(':id/inventory')
+  @ApiOkResponse({ type: InventoryDto })
+  setInventory(
+    @Tenant() tenant: TenantContext,
+    @Param('id') id: string,
+    @Body() body: SetInventoryRequestDto,
+  ): Promise<Inventory> {
+    return this.catalogService.setInventory(tenant, id, body.available);
   }
 }
