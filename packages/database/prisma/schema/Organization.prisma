@@ -13,6 +13,7 @@ model Organization {
 
   members  OrganizationMember[]
   products Product[]
+  orders   Order[]
 
   @@map("organizations")
 }

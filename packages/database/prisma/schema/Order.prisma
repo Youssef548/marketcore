@@ -1,0 +1,28 @@
+enum OrderStatus {
+  PENDING_PAYMENT
+  CANCELLED
+}
+
+// One seller per order (D56). Reachable by the seller through tenantScope and by
+// the buyer through buyerScope, never by a bare id (ADR 010 amendment).
+// (checkoutId, organizationId) is unique: the database, not only the code, says a
+// checkout has at most one order per seller.
+model Order {
+  id             String       @id @default(uuid())
+  checkoutId     String
+  organizationId String
+  buyerId        String
+  status         OrderStatus  @default(PENDING_PAYMENT)
+  totalMinor     Int
+  currency       CurrencyCode
+  createdAt      DateTime     @default(now())
+
+  checkout     Checkout     @relation(fields: [checkoutId], references: [id], onDelete: Restrict)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  buyer        User         @relation(fields: [buyerId], references: [id], onDelete: Restrict)
+  items        OrderItem[]
+
+  @@unique([checkoutId, organizationId])
+  @@index([buyerId, createdAt])
+  @@map("orders")
+}
