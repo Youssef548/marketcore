@@ -1133,3 +1133,69 @@ of phase 4 is built.
 - **ADR 002 is written and `Proposed`**: row locks in `productId` order inside one short transaction,
   with conditional updates kept for the worker's restock. It becomes `Accepted` when phase 4 implements it.
 - **T-002 grew** by the `/admin` move and the landing change; it still closes M0 and still precedes phase 4.
+
+---
+
+## T-002 — the shared shell on Stitch, and the console under `/admin` — 2026-10-17 (M0)
+
+**Exit gate:** the shell every operator page sits in is the Stitch 001 layout — a grouped rail, a
+breadcrumb top bar, and each page owning its own `h1` — and the console lives under `/admin` with its
+old URLs permanently redirected (D92).
+**Branches:** `feat/t002-admin-routes` → `feat/t002-landings` → `feat/t002-shell-chrome` (stacked)
+**Plan:** `docs/superpowers/plans/2026-10-16-marketcore-stitch-reskin.md`
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **33/33 tasks**, 0 failed |
+| Web unit | `pnpm --filter web test` | **89 passed**, 15 files |
+| Design system | `pnpm --filter @app/ui test` | **37 passed**, 8 files |
+| Behavioural, real browser over TLS | `docker compose -f docker-compose.e2e.yml up -d --build --wait` + `pnpm --filter e2e test:behavioural` | **21 passed** (20 before; +1 for the moved URLs) |
+| The old URLs move **permanently** | same | `/dashboard` answers **308** and the browser ends on `/admin`; `/products` lands on `/admin/products` |
+| The page owns the document's only `h1` | same | the products page's `level 1 · 'Products'`, and the banner carries a breadcrumb reading `Catalog / Products` |
+| The rail groups, and marks where you are | `pnpm --filter web test` | the `complementary` landmark holds the `Dashboard` and `Catalog` headings and the current entry carries `aria-current="page"` |
+| One fact, one place survives the re-skin | `pnpm --filter web test` | the tenant and the user are still only in the top bar, and in no rail node |
+
+### Delivered
+
+- **The console under `/admin` (D92).** The two route segments moved. `ADMIN_PATH` and
+  `ADMIN_PRODUCTS_PATH` name the URLs once; the moved-path table and its `movedTo` live beside them,
+  and `decideRoute` gained a `moved` arm that `middleware.ts` turns into a **308** before the auth gate
+  runs — so `/dashboard` signed out becomes `/admin` *and then* asks for credentials.
+- **The shell on Stitch 001.** A grouped rail (`NAV_SECTIONS`, uppercase `.navhead` section labels at
+  the 12px floor) and a breadcrumb top bar replacing the bare title. `navigation.ts` is one registry
+  the rail and the crumb both read, so "which section is this page in" is one fact. The `h1` left the
+  shell for each page's own head through `PageHeading level={HeadingLevels.H1}`.
+- **Every landing names `/admin`.** `safeRedirect` takes its fallback from its caller rather than
+  hardcoding a route; the front door and the sign-in page pass `ADMIN_PATH`. That argument is the seam
+  D91 changes when the storefront exists.
+- **The rails of the design that answer nothing are absent** — no search box, no ⌘K, no notification
+  badge, no nav counts, no Money or Admin group. Only the two pages that exist are drawn.
+
+### Findings
+
+1. **The `h1` was two statements of one fact.** The top bar and the products page both named the page
+   — the same ambiguity this file has recorded twice before (the signed-in email, the products title).
+   Moving the title onto the page removes the duplicate rather than scoping a locator around it, and
+   makes the outline descend from the page's own `h1` to its `h2` sections.
+2. **A permanent redirect has to be decided where the address is, not after the gate.** Putting the
+   move first means a signed-out visitor to `/dashboard` is carried to sign in *for `/admin`*, not for
+   the address that is about to disappear — which the `next` they return to would otherwise preserve.
+
+### Deviations from the plan
+
+- **D91 is deferred, not delivered.** Landing every signed-in user on the storefront needs `/browse`,
+  which is T-021's route and does not exist yet, so there is nothing to land on; post-sign-in landing
+  stays at `/admin`. Cost if the ruling is wrong: the storefront phase must make the landing change
+  itself — one line in `login/page.tsx`, whose redirect target this change already makes an argument.
+- **`safeRedirect` takes its fallback as a parameter** rather than importing a constant: where a
+  signed-in visitor lands is the caller's fact, not the helper's. Cost if wrong: one extra parameter
+  on a helper with a single caller.
+
+### Not proven / deferred
+
+- **No automated visual check** of the re-skinned shell — screenshots were taken by hand, the same gap
+  this file already records for the design system.
+- **Milestone M0 closes on this change plus T-001** (`49f763a`, the four pages); the shell was the half
+  T-001 deliberately left alone.
