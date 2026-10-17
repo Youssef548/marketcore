@@ -1,12 +1,10 @@
 import {
   CartSchema,
-  OrganizationStatuses,
-  ProductStatuses,
   type Cart,
   type CartLine,
   type Seller,
 } from '@app/contracts';
-import { cartLineAvailability, groupBySeller } from '@app/domain';
+import { MIN_PUBLISHABLE_PRICE_MINOR, cartLineAvailability, groupBySeller, isPurchasable } from '@app/domain';
 import type { CartLineRow } from './interfaces/cart.interface';
 
 interface SellerLine {
@@ -17,9 +15,15 @@ interface SellerLine {
 
 function toSellerLine(row: CartLineRow): SellerLine {
   const { product } = row;
-  const purchasable =
-    product.status === ProductStatuses.PUBLISHED &&
-    product.organization.status === OrganizationStatuses.ACTIVE;
+  const visible = isPurchasable({
+    status: product.status,
+    organizationStatus: product.organization.status,
+  });
+  // A published product priced below the minimum is not representable in a cart (the
+  // contract floors a price at 1) and must not be offered at a price the checkout
+  // would refuse. Masked, exactly as a non-public product is (D86), so a row in that
+  // state degrades to "sold out" instead of failing the parse with a 500.
+  const purchasable = visible && product.priceMinor >= MIN_PUBLISHABLE_PRICE_MINOR;
   // D86: a product that stopped being public reveals neither its price nor its stock.
   const available = purchasable ? (product.inventory?.available ?? 0) : 0;
 

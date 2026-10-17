@@ -7,6 +7,7 @@ import {
   type ProductStatus,
 } from '@app/contracts';
 import {
+  MIN_PUBLISHABLE_PRICE_MINOR,
   ProductTransitionOutcomes,
   planProductTransition,
   type TenantContext,
@@ -45,6 +46,21 @@ export class CatalogService {
     id: string,
     input: { name?: string; priceMinor?: number },
   ): Promise<void> {
+    // A published product must not be repriced below the minimum the publish rule
+    // already enforces. Nothing in the schema stops it (there is no CHECK on
+    // `priceMinor`), and a published product priced at 0 or below is not
+    // representable in a cart — the contract floors a price at 1 — so it would turn
+    // every later cart read into a 500 (phase-4 review finding).
+    if (input.priceMinor !== undefined && input.priceMinor < MIN_PUBLISHABLE_PRICE_MINOR) {
+      const product = await this.catalogRepository.findById(tenant, id);
+      if (product === null) throw new NotFoundException(ProductMessages.NOT_FOUND);
+      if (product.status === ProductStatuses.PUBLISHED) {
+        throw new ConflictException(
+          ProductTransitionMessages[ProductTransitionOutcomes.UNPUBLISHABLE],
+        );
+      }
+    }
+
     const updated = await this.catalogRepository.update(tenant, id, input);
     if (updated === 0) throw new NotFoundException(ProductMessages.NOT_FOUND);
   }
