@@ -20,6 +20,9 @@ model User {
 
   memberships OrganizationMember[]
   sessions    Session[]
+  cart        Cart?
+  checkouts   Checkout[]
+  orders      Order[]
 
   @@map("users")
 }
