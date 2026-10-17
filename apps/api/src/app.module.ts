@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@app/runtime';
 import { AuthModule } from './auth/auth.module';
+import { CartModule } from './cart/cart.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { HealthController } from './modules/health/health.controller';
 import { HealthRepository } from './modules/health/repositories/health.repository';
@@ -26,6 +27,7 @@ import { StorefrontModule } from './storefront/storefront.module';
     OrganizationsModule,
     CatalogModule,
     StorefrontModule,
+    CartModule,
     SecurityModule,
   ],
   controllers: [HealthController],
