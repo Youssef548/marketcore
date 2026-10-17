@@ -28,6 +28,11 @@ snapshot the product name (D90).
 | D92 | **The operator console lives under `/admin`** — `/admin` (overview), `/admin/products`, and so on, as `docs/architecture.md` and the Stitch route map already say. `/dashboard` and `/products` redirect permanently. Moved with the shell re-skin (T-002), which frees the root for the storefront. | 23 |
 | D93 | **Checkout crosses module edges through repositories, not tables.** `CheckoutRepository` opens the transaction and calls `InventoryRepository` and `CartRepository` methods that take the transaction client; their modules export those repositories. Architecture rule 4 holds with no exception, and no Prisma type reaches a service. | 16 |
 
+## Assumption confirmed
+
+D80 — only an organization **owner** approves or rejects a buyer's refund request — is confirmed and
+loses its `[ASSUMPTION]` mark in the SRS.
+
 ## Errata applied
 
 | Document | Correction | Finding |

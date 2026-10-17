@@ -53,7 +53,7 @@ The storefront and the operator UI are one Next.js app behind one BFF. Buyer rou
 | D77 | Checkout confirmation is concrete: `POST /checkouts` carries the lines the buyer confirmed (`productId`, `quantity`, `unitPriceMinor`). The server places the order only if every confirmed price still equals the current price. |
 | D78 | The platform fee is a constant, `PLATFORM_FEE_BPS = 1000` (10%), in `packages/domain`, applied per seller order: fee = floor(total × bps / 10 000), seller share = total − fee, so rounding favours the seller. |
 | D79 | The auto-cancel worker runs every 60 seconds and cancels at most 100 checkouts per run. |
-| D80 | Approving or rejecting a refund request is `@OwnerOnly()` `[ASSUMPTION — a member may not move money]`. |
+| D80 | Approving or rejecting a refund request is `@OwnerOnly()`: a member may not move money. Confirmed by the owner, 2026-10-17. |
 
 ## 3. Functional requirements
 

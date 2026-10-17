@@ -914,7 +914,7 @@ checked is that the documents agree with each other:
 - **ADR 014 is written ahead of its phase**, against the ADR folder's just-in-time rule. It records a
   decision the user made now (D63) so phase 4's checkout shape does not have to guess it; it stays
   `Proposed` and is reviewed at phase 6's start.
-- **D80 is an assumption:** only an owner approves a refund. Unconfirmed.
+- **D80 is confirmed (2026-10-17):** only an organization owner approves or rejects a refund.
 - **SRS-NFR-PERF-001 is a target, not a measurement** — phase 13.
 - **Release 2 has stories and rules but no acceptance criteria**; they are written when it is planned.
 - **The shared shell (rail and top bar) is not on Stitch yet.** The re-skin covered the four pages,
