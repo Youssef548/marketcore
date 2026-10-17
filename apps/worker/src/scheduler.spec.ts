@@ -54,4 +54,38 @@ describe('startInterval', () => {
     expect(job).toHaveBeenCalledTimes(2);
     await stop();
   });
+
+  it('reports a synchronous throw through onError and still schedules the next tick', async () => {
+    const onError = vi.fn();
+    const job = vi
+      .fn<() => Promise<void>>()
+      .mockImplementationOnce(() => {
+        throw new Error('clock broke');
+      })
+      .mockResolvedValue(undefined);
+    const stop = startInterval(job, 1_000, { onError });
+
+    // The throw became a rejection, so onError runs on a microtask, not before it.
+    await vi.advanceTimersByTimeAsync(0);
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'clock broke' }));
+    expect(job).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(job).toHaveBeenCalledTimes(2); // the loop survived the synchronous throw
+    await stop();
+  });
+
+  it('routes a rejected promise to onError unchanged — the same error, once per failure', async () => {
+    const failure = new Error('db down');
+    const onError = vi.fn();
+    const job = vi.fn<() => Promise<void>>().mockRejectedValueOnce(failure).mockResolvedValue(undefined);
+    const stop = startInterval(job, 1_000, { onError });
+
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledWith(failure); // identity, not a copy
+    expect(job).toHaveBeenCalledTimes(2);
+    await stop();
+  });
 });
