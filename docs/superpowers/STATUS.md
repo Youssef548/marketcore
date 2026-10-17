@@ -914,7 +914,7 @@ checked is that the documents agree with each other:
 - **ADR 014 is written ahead of its phase**, against the ADR folder's just-in-time rule. It records a
   decision the user made now (D63) so phase 4's checkout shape does not have to guess it; it stays
   `Proposed` and is reviewed at phase 6's start.
-- **D80 is an assumption:** only an owner approves a refund. Unconfirmed.
+- **D80 is confirmed (2026-10-17):** only an organization owner approves or rejects a refund.
 - **SRS-NFR-PERF-001 is a target, not a measurement** — phase 13.
 - **Release 2 has stories and rules but no acceptance criteria**; they are written when it is planned.
 - **The shared shell (rail and top bar) is not on Stitch yet.** The re-skin covered the four pages,
@@ -1081,3 +1081,55 @@ later, with the function already the core of it.
 2. **`git grep -E` cannot match `\s` or `\b`** (POSIX ERE), so the first scan for this pattern found
    nothing. The scan that counted was PCRE, and the rule is the check that stays.
 
+
+## Conventions reach every agent — 2026-10-16 (guidance)
+
+**Claim:** the rules behind BL-001 … BL-003 are found by an agent working in any part of the repo,
+not only in NestJS code.
+**Branch:** `bl3/05-agent-guidance`
+
+### Delivered
+
+- **`typescript-code-conventions`**, a new skill for every app and package: named values, const-object
+  enums, named shapes, types in `*.interface.ts`, shared at the second sighting, builders, our types
+  only. Its general rules moved out of `nestjs-code-conventions`, which keeps only the two NestJS ones
+  (module folders, repository layer) and points to it — one source per rule.
+- **`.claude/skills/`** links both, and `git-delivery-workflow`. Only `e2e` was linked before.
+- **`CLAUDE.md`** is `@AGENTS.md`, so a tool that reads only `CLAUDE.md` gets the same instructions.
+- **AGENTS.md** carries one pointer to the skill instead of two restated rules.
+
+### Findings
+
+1. **The rules existed and could not fire.** `nestjs-code-conventions` already said "do not use bare
+   union types" and "types live in their own file". Its description triggered on controllers,
+   services and DTOs, so web and UI work never reached it — and it was not linked into `.claude/skills/`,
+   so Claude Code could not discover it at all. The patterns BL-001 … BL-003 removed were written in
+   exactly the code the skill could not reach.
+2. **The skill's literal check finds more than this work fixed** — tagged-union status strings and theme
+   names compared as literals. Recorded as BL-004 rather than widened into this change.
+
+### Not proven
+
+- That a new session loads the skills: discovery happens at session start, so it cannot be observed from
+  the session that added them. The links resolve and each `SKILL.md` has valid frontmatter.
+
+## Phase-4 rulings — 2026-10-17 (CR-002, baseline v2.1)
+
+**Claim:** phase 4 can start from documents that agree with each other and with the code — not that any
+of phase 4 is built.
+**Change request:** `docs/superpowers/specs/2026-10-17-cr-002-phase-4-rulings.md`
+
+### Delivered
+
+- D81–D90 ratified as the phase-4 plan wrote them.
+- **D91** every signed-in user lands on the storefront; **D92** the console moves to `/admin`;
+  **D93** checkout's cross-module writes go through the owning modules' repositories, so architecture
+  rule 4 keeps no exception.
+- SRS 1.1 and PRD 1.1 corrected for the plan's findings; the phase-4 plan and the Release 1 plan follow
+  D91–D93.
+
+### Not proven / deferred
+
+- **ADR 002 is written and `Proposed`**: row locks in `productId` order inside one short transaction,
+  with conditional updates kept for the worker's restock. It becomes `Accepted` when phase 4 implements it.
+- **T-002 grew** by the `/admin` move and the landing change; it still closes M0 and still precedes phase 4.

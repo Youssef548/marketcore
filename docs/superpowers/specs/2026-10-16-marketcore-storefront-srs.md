@@ -1,6 +1,6 @@
 # Software Requirements — MarketCore buyer storefront, Release 1
 
-**Version:** 1.0 · **Based on PRD baseline:** v2 (`2026-10-16-marketcore-storefront-prd.md`) · **Date:** 2026-10-16
+**Version:** 1.1 · **Based on PRD baseline:** v2.1 (CR-002) (`2026-10-16-marketcore-storefront-prd.md`) · **Date:** 2026-10-16
 **Decisions:** D52–D74 in `2026-10-16-cr-001-buyer-storefront.md`; this document adds D75–D80.
 **Design records:** ADR 010 (amended), ADR 0001 (amended), ADR 014.
 
@@ -53,7 +53,7 @@ The storefront and the operator UI are one Next.js app behind one BFF. Buyer rou
 | D77 | Checkout confirmation is concrete: `POST /checkouts` carries the lines the buyer confirmed (`productId`, `quantity`, `unitPriceMinor`). The server places the order only if every confirmed price still equals the current price. |
 | D78 | The platform fee is a constant, `PLATFORM_FEE_BPS = 1000` (10%), in `packages/domain`, applied per seller order: fee = floor(total × bps / 10 000), seller share = total − fee, so rounding favours the seller. |
 | D79 | The auto-cancel worker runs every 60 seconds and cancels at most 100 checkouts per run. |
-| D80 | Approving or rejecting a refund request is `@OwnerOnly()` `[ASSUMPTION — a member may not move money]`. |
+| D80 | Approving or rejecting a refund request is `@OwnerOnly()`: a member may not move money. Confirmed by the owner, 2026-10-17. |
 
 ## 3. Functional requirements
 
@@ -67,13 +67,14 @@ All paths are under `/api/v1`. Every failure uses the shared error envelope.
 | SRS-FR-CAT-002 | `GET /storefront/products/:id` returns one `PUBLISHED` product; a draft, an unknown id, or a product of an inactive organization answers 404 `NOT_FOUND`. | PRD-FR-CAT-002 |
 | SRS-FR-CAT-003 | Both responses are parsed through the `PublicProduct` zod schema (`id`, `name`, `priceMinor`, `currency`, `available`, `seller: { name, slug }`). The schema is `.strict()`; it is the allowlist. | PRD-FR-CAT-003, RULE-CAT-001 |
 | SRS-FR-CAT-004 | `available` is `Inventory.available` read in the same query; it is not cached. | PRD-FR-CAT-003, D61 |
+| SRS-FR-CAT-005 | `PUT /products/:id/inventory { available }` sets a product's stock: a tenant route, absolute and idempotent. | D81 |
 
 ### 3.2 Cart — F-CART-01
 
 | SRS ID | Requirement | Traces to |
 |---|---|---|
 | SRS-FR-CART-001 | `GET /cart` returns the buyer's cart, creating an empty one on first read. One `Cart` row per buyer (unique `buyerId`). | PRD-FR-CART-001 |
-| SRS-FR-CART-002 | `PUT /cart/items/:productId` with `{ quantity }` sets a line; `DELETE /cart/items/:productId` removes it. Both are idempotent by construction. | PRD-FR-CART-005 |
+| SRS-FR-CART-002 | `PUT /cart/items/:productId` with `{ quantity }` sets a line; `DELETE /cart/items/:productId` removes it. Both are idempotent by construction. A new line snapshots `addedUnitPriceMinor`; a quantity change never updates it (D82). | PRD-FR-CART-005 |
 | SRS-FR-CART-003 | Setting a line for a product that is not `PUBLISHED` answers 404 `NOT_FOUND`. | PRD-FR-CART-001 |
 | SRS-FR-CART-004 | A cart write never reads-for-update or writes `Inventory`. | PRD-FR-CART-002, D58 |
 | SRS-FR-CART-005 | Each line in a cart response carries `currentUnitPriceMinor`, `available` and a derived `availability` of `OK`, `SHORT` (available < quantity) or `SOLD_OUT` (available = 0). | PRD-FR-CART-003 |
@@ -86,11 +87,11 @@ All paths are under `/api/v1`. Every failure uses the shared error envelope.
 |---|---|---|
 | SRS-FR-CHK-001 | `POST /checkouts` takes `{ lines: [{ productId, quantity, unitPriceMinor }] }` — the lines the buyer confirmed on the review step (D77). | PRD-FR-CHK-001, -002 |
 | SRS-FR-CHK-002 | In **one transaction**: lock the `Inventory` rows of every line with `SELECT … FOR UPDATE` **ordered by `productId`**; re-read every product's price and status; then either commit everything below or nothing. | PRD-FR-CHK-003, RULE-CHK-002 |
-| SRS-FR-CHK-003 | If any line is not `PUBLISHED`, short of stock, or priced differently from its confirmed `unitPriceMinor`, roll back and answer 409 `CONFLICT` with `details.lines: [{ productId, reason: SOLD_OUT \| SHORT \| PRICE_CHANGED, available, currentUnitPriceMinor }]` listing every failing line, not only the first. | PRD-FR-CHK-004, INV-11 |
+| SRS-FR-CHK-003 | If any line is not `PUBLISHED`, short of stock, or priced differently from its confirmed `unitPriceMinor`, roll back and answer 409 `CONFLICT` with `details.lines: [{ productId, reason: SOLD_OUT \| SHORT \| PRICE_CHANGED, available, currentUnitPriceMinor }]` listing every failing line, not only the first, one reason per line in the order `SOLD_OUT` > `SHORT` > `PRICE_CHANGED` (D85). | PRD-FR-CHK-004, INV-11 |
 | SRS-FR-CHK-004 | On success: decrement each line's `available`; insert one `Checkout` (`PENDING_PAYMENT`, `placedAt = now()`); insert one `Order` per seller organization with its `OrderItem`s and snapshotted `unitPriceMinor`; return 201 with the checkout and its orders. | PRD-FR-CHK-003, -005 |
 | SRS-FR-CHK-005 | All lines must share one currency; a mixed request answers 400 `VALIDATION_ERROR` before any lock is taken. | RULE-CHK-001, D71 |
 | SRS-FR-CHK-006 | The request's lines must equal the buyer's current cart lines (same products, same quantities); otherwise 409 `CONFLICT` with `details.reason: CART_CHANGED`. | PRD-FR-CHK-001 |
-| SRS-FR-CHK-007 | On success the cart is emptied in the same transaction. On failure the cart is unchanged. | PRD-FR-CHK-004 |
+| SRS-FR-CHK-007 | On success the cart is emptied in the same transaction. On failure the cart is unchanged. The cart row is locked first, so a concurrent second checkout of the same cart finds it empty and gets 409 `CONFLICT` with `details.reason: CART_CHANGED` (D83). | PRD-FR-CHK-004 |
 | SRS-FR-CHK-008 | From phase 5, `POST /checkouts` requires an `Idempotency-Key` header. Keys are unique per `(buyerId, key)`. A repeat with the same body returns the original 201 response; the same key with a different body answers 409 `CONFLICT`. | PRD-FR-CHK-006, INV-2 |
 | SRS-FR-CHK-009 | `GET /checkouts/:id` returns the buyer's own checkout; another buyer's id answers 404. | PRD-FR-CHK-007, INV-12 |
 
@@ -98,7 +99,7 @@ All paths are under `/api/v1`. Every failure uses the shared error envelope.
 
 | SRS ID | Requirement | Traces to |
 |---|---|---|
-| SRS-FR-CXL-001 | Every 60 seconds the worker runs, in one transaction: `UPDATE checkout SET status = 'CANCELLED' WHERE id IN (SELECT id FROM checkout WHERE status = 'PENDING_PAYMENT' AND placed_at < now() - interval '30 minutes' ORDER BY placed_at LIMIT 100 FOR UPDATE SKIP LOCKED) RETURNING id`. | PRD-FR-CHK-008, D79 |
+| SRS-FR-CXL-001 | Every 60 seconds the worker runs, in one transaction: `UPDATE checkouts SET status = 'CANCELLED' WHERE id IN (SELECT id FROM checkouts WHERE status = 'PENDING_PAYMENT' AND "placedAt" < now() - interval '30 minutes' ORDER BY "placedAt" LIMIT 100 FOR UPDATE SKIP LOCKED) RETURNING id`. | PRD-FR-CHK-008, D79 |
 | SRS-FR-CXL-002 | In the same transaction, for the returned checkouts only: set their orders to `CANCELLED`, and add each order item's quantity back to `Inventory.available`, locking inventory rows in `productId` order. | PRD-FR-CHK-008, INV-15 |
 | SRS-FR-CXL-003 | A checkout whose status is no longer `PENDING_PAYMENT` is never touched, so a run racing a payment or another run restores nothing twice. | INV-15 |
 | SRS-FR-CXL-004 | Each run logs one JSON line: `event: checkout.autocancel.run`, `cancelled`, `durationMs`. | SRS-NFR-OBS-001 |
@@ -116,7 +117,7 @@ All paths are under `/api/v1`. Every failure uses the shared error envelope.
 
 | SRS ID | Requirement | Traces to |
 |---|---|---|
-| SRS-FR-BORD-001 | `GET /buyer/orders` lists orders where `buyerId` is the `BuyerContext`'s user, newest first, cursor-paginated. | PRD-FR-BORD-001 |
+| SRS-FR-BORD-001 | `GET /buyer/orders` lists orders where `buyerId` is the `BuyerContext`'s user, ordered by (`createdAt` desc, `id` desc), 20 per page, the last id as an opaque cursor (D89). | PRD-FR-BORD-001 |
 | SRS-FR-BORD-002 | `GET /buyer/orders/:id` returns items, unit prices, total, status, `checkoutId` and seller `{ name, slug }`; another buyer's order answers 404. | PRD-FR-BORD-002, INV-12 |
 | SRS-FR-BORD-003 | Buyer order queries compose their filter from `buyerScope(buyer)` in `packages/domain` and never from `tenantScope`. | RULE-BORD-001, ADR 010 |
 
@@ -160,9 +161,10 @@ Anonymous browsing is not in scope: the PRD requires a signed-in user for every 
 | Entity | Fields (new or changed) | Constraints |
 |---|---|---|
 | Cart | `id`, `buyerId`, `updatedAt` | Unique `buyerId` |
-| CartItem | `cartId`, `productId`, `quantity` | Unique (`cartId`, `productId`); CHECK `quantity BETWEEN 1 AND 10` |
+| CartItem | `cartId`, `productId`, `quantity`, `addedUnitPriceMinor` (D82) | Unique (`cartId`, `productId`); CHECK `quantity BETWEEN 1 AND 10` |
 | Checkout | `id`, `buyerId`, `status`, `totalMinor`, `currency`, `placedAt` | Index (`status`, `placedAt`) for the auto-cancel scan |
-| Order | + `checkoutId` | FK to Checkout; index (`buyerId`, `createdAt`) |
+| Order | + `checkoutId`, `NOT NULL` from its first migration — `Order` is new in phase 4, so nothing is backfilled | FK to Checkout; unique (`checkoutId`, `organizationId`); index (`buyerId`, `createdAt`) |
+| OrderItem | + `productName` (D90) | Snapshotted with `unitPriceMinor` |
 | IdempotencyKey | `buyerId` replaces `organizationId` | Unique (`buyerId`, `key`) |
 | Payment | `checkoutId` replaces `orderId` | Unique `checkoutId` |
 | Refund | + `orderId`, status `REJECTED` | Partial unique: one `REQUESTED`/`PROCESSING` per `orderId` |
@@ -183,7 +185,8 @@ Retention: carts are kept until emptied; checkouts, orders and ledger rows are n
 ## 8. Error handling
 
 No new error codes. Stock, price and cart-change failures are 409 `CONFLICT` with a typed
-`details` shape in `packages/contracts`, so the web app branches on `details.lines[].reason`, never
+`details` shape in `packages/contracts`, which the error filter forwards from any `HttpException`
+built with it (CR-002, finding 1), so the web app branches on `details.lines[].reason`, never
 on `message`. A Postgres deadlock or serialization failure inside checkout is retried up to 3 times
 with jitter before 409 is returned (failure-scenarios: database deadlock).
 

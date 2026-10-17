@@ -147,3 +147,24 @@ Two ways a type was left unnamed, found reviewing `@app/ui`'s `Card`:
 Lint fails a literal union and an inline object type, in implementation and interface files alike,
 with fixtures proving each fires and each exception passes.
 
+
+---
+
+## BL-004 — Literal values still compared in logic
+
+**Raised:** 2026-10-16 · **Priority:** Could · **Size:** S
+
+### Problem
+
+`typescript-code-conventions` Rule 1 (name every value) is not lint-enforced, and its check finds
+literals that predate it, for example:
+
+- `apps/web/src/app/(dash)/theme-toggle.tsx` compares `'dark'` and `'light'` although
+  `lib/theme/theme.ts` already has `THEMES`.
+- `apps/web/src/app/(dash)/chrome.tsx` and `products/page.tsx` compare `state.status` against
+  `'anonymous'`, `'loading'`, `'ready'`, `'failed'`: the tags of `SessionState` and the page's `State`.
+
+### Done when
+
+Every hit of the skill's check 2 is a named constant or carries a written reason, and the tag
+values each exist once, as constants, with the tagged unions built from them.
