@@ -10,6 +10,7 @@ import {
   type Product,
 } from '@app/contracts';
 import { Alert, Button, ButtonVariants, Card, Field, HeadingLevels, PageHeading } from '@app/ui';
+import { formatMoney } from '@/lib/money';
 import { createProduct, useReadySession } from '@/lib/session/client';
 
 const ProductsSchema = z.array(ProductSchema);
@@ -18,20 +19,6 @@ type State =
   | { status: 'loading' }
   | { status: 'ready'; products: Product[] }
   | { status: 'failed'; message: string };
-
-/** The locale a currency is read in, so EGP renders `E£` rather than standing in as a code. */
-const LOCALES: Record<CurrencyCode, string> = {
-  EGP: 'en-EG',
-  USD: 'en-US',
-  EUR: 'en-IE',
-};
-
-const money = (amountMinor: number, currency: string): string =>
-  new Intl.NumberFormat(LOCALES[currency as CurrencyCode] ?? 'en-US', {
-    style: 'currency',
-    currency,
-    currencyDisplay: 'narrowSymbol',
-  }).format(amountMinor / 100);
 
 /** The prices in the seed and the API are major units with two decimals, held as minor. */
 const toMinor = (price: string): number | null => {
@@ -225,7 +212,7 @@ export default function ProductsPage() {
                           </span>
                         </td>
                         <td className="px-5 py-3.5 text-right font-mono text-ink tabular-nums sm:px-6">
-                          {money(product.priceMinor, product.currency)}
+                          {formatMoney(product.priceMinor, product.currency)}
                         </td>
                       </tr>
                     );

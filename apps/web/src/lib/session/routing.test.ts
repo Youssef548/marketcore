@@ -71,3 +71,20 @@ describe('the console\u2019s moved URLs', () => {
     expect(decideRoute('/products/123', false)).toEqual({ kind: 'next' });
   });
 });
+
+describe('storefront routes are signed-in only (SRS §5)', () => {
+  it.each(['/browse', '/p/shirt-66666666-6666-4666-8666-666666666666', '/cart', '/checkout', '/orders/k1/placed', '/account/orders'])(
+    '%s sends an anonymous visitor to sign in, and back',
+    (path) => {
+      expect(decideRoute(path, false)).toEqual({
+        kind: 'redirect',
+        to: `/login?next=${encodeURIComponent(path)}`,
+      });
+    },
+  );
+
+  it('does not catch routes that merely share a prefix', () => {
+    expect(isProtected('/products')).toBe(false);
+    expect(isProtected('/pricing')).toBe(false);
+  });
+});

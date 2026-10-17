@@ -1,20 +1,37 @@
 import { z } from 'zod';
 import { createApiClient } from '@app/api-client';
 import {
+  BuyerOrderPageSchema,
+  BuyerOrderSchema,
+  CartSchema,
+  CheckoutSchema,
   OrganizationSchema,
   ProductSchema,
+  PublicProductPageSchema,
+  PublicProductSchema,
   TokenPairSchema,
   UserSummarySchema,
+  type BuyerOrder,
+  type BuyerOrderPage,
+  type Cart,
+  type Checkout,
+  type CreateCheckoutRequest,
   type CreateOrganizationRequest,
   type CreateProductRequest,
   type LoginRequest,
   type Organization,
   type Product,
+  type PublicProduct,
+  type PublicProductPage,
   type RegisterRequest,
+  type SetCartLineRequest,
   type TokenPair,
   type UserSummary,
 } from '@app/contracts';
 import { apiBaseUrl } from '../api/config';
+
+const withCursor = (path: string, cursor: string | undefined): string =>
+  cursor === undefined ? path : `${path}?cursor=${encodeURIComponent(cursor)}`;
 
 /**
  * The calls this app makes to the API.
@@ -87,5 +104,33 @@ export function createResources(accessToken?: string) {
         body,
         headers: { 'x-organization-id': organizationId },
       }),
+
+    // Buyer routes (D75): tenant-free, so no x-organization-id — the API resolves
+    // the buyer from the token alone.
+    storefrontProducts: (cursor?: string): Promise<PublicProductPage> =>
+      client.get(withCursor('/storefront/products', cursor), PublicProductPageSchema),
+
+    storefrontProduct: (id: string): Promise<PublicProduct> =>
+      client.get(`/storefront/products/${encodeURIComponent(id)}`, PublicProductSchema),
+
+    cart: (): Promise<Cart> => client.get('/cart', CartSchema),
+
+    setCartLine: (productId: string, body: SetCartLineRequest): Promise<Cart> =>
+      client.put(`/cart/items/${encodeURIComponent(productId)}`, CartSchema, { body }),
+
+    removeCartLine: (productId: string): Promise<Cart> =>
+      client.delete(`/cart/items/${encodeURIComponent(productId)}`, CartSchema),
+
+    placeCheckout: (body: CreateCheckoutRequest): Promise<Checkout> =>
+      client.post('/checkouts', CheckoutSchema, { body }),
+
+    checkout: (id: string): Promise<Checkout> =>
+      client.get(`/checkouts/${encodeURIComponent(id)}`, CheckoutSchema),
+
+    buyerOrders: (cursor?: string): Promise<BuyerOrderPage> =>
+      client.get(withCursor('/buyer/orders', cursor), BuyerOrderPageSchema),
+
+    buyerOrder: (id: string): Promise<BuyerOrder> =>
+      client.get(`/buyer/orders/${encodeURIComponent(id)}`, BuyerOrderSchema),
   };
 }

@@ -36,8 +36,15 @@ export function movedTo(pathname: string): string | null {
   return MOVED_PATHS[pathname] ?? null;
 }
 
+/** Storefront routes (PRD §7.4). Signed-in only (SRS §5), but no organization needed. */
+export const STOREFRONT_PREFIXES = ['/browse', '/p', '/cart', '/checkout', '/orders', '/account'] as const;
+
+const PROTECTED_PREFIXES = [ADMIN_PATH, ...STOREFRONT_PREFIXES];
+
 export function isProtected(pathname: string): boolean {
-  return pathname === ADMIN_PATH || pathname.startsWith(`${ADMIN_PATH}/`);
+  return PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 }
 
 export function isCredentialPage(pathname: string): boolean {
