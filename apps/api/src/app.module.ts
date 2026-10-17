@@ -6,6 +6,7 @@ import { CatalogModule } from './catalog/catalog.module';
 import { HealthController } from './modules/health/health.controller';
 import { HealthRepository } from './modules/health/repositories/health.repository';
 import { HealthService } from './modules/health/health.service';
+import { OrdersModule } from './orders/orders.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { SecurityModule } from './security/security.module';
 import { StorefrontModule } from './storefront/storefront.module';
@@ -28,6 +29,7 @@ import { StorefrontModule } from './storefront/storefront.module';
     CatalogModule,
     StorefrontModule,
     CartModule,
+    OrdersModule,
     SecurityModule,
   ],
   controllers: [HealthController],
