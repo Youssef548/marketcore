@@ -1,0 +1,22 @@
+enum CheckoutStatus {
+  PENDING_PAYMENT
+  CANCELLED
+}
+
+// One "Place order" (D56): one buyer, one currency, one order per seller, and —
+// from phase 6 — one payment. (status, placedAt) serves the auto-cancel scan.
+model Checkout {
+  id         String         @id @default(uuid())
+  buyerId    String
+  status     CheckoutStatus @default(PENDING_PAYMENT)
+  totalMinor Int
+  currency   CurrencyCode
+  placedAt   DateTime       @default(now())
+
+  buyer  User    @relation(fields: [buyerId], references: [id], onDelete: Restrict)
+  orders Order[]
+
+  @@index([status, placedAt])
+  @@index([buyerId])
+  @@map("checkouts")
+}

@@ -1,8 +1,10 @@
 import { $Enums } from '@prisma/client';
 import { describe, expect, it } from '@jest/globals';
 import {
+  CheckoutStatuses,
   CurrencyCodes,
   MemberRoles,
+  OrderStatuses,
   OrganizationStatuses,
   ProductStatuses,
   SessionRevocationReasons,
@@ -37,5 +39,13 @@ describe('enum drift', () => {
 
   it('session revocation reasons agree', () => {
     expect(values($Enums.SessionRevocationReason)).toEqual(values(SessionRevocationReasons));
+  });
+
+  it('checkout statuses agree', () => {
+    expect(values($Enums.CheckoutStatus)).toEqual(values(CheckoutStatuses));
+  });
+
+  it('order statuses agree', () => {
+    expect(values($Enums.OrderStatus)).toEqual(values(OrderStatuses));
   });
 });

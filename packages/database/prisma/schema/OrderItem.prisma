@@ -1,0 +1,16 @@
+// Snapshots: unitPriceMinor (PRD-FR-CHK-005) and productName (D90). An order's
+// history does not change when the product does.
+model OrderItem {
+  id             String @id @default(uuid())
+  orderId        String
+  productId      String
+  productName    String
+  quantity       Int
+  unitPriceMinor Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([orderId, productId])
+  @@map("order_items")
+}

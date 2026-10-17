@@ -67,7 +67,7 @@ export async function login(
 export async function newTenant(
   app: INestApplication,
   prefix: string,
-): Promise<{ accessToken: string; organizationId: string }> {
+): Promise<{ accessToken: string; organizationId: string; slug: string }> {
   const accessToken = await registerAndLogin(app, `${unique(prefix)}@marketcore.test`);
   const created = await request(app.getHttpServer())
     .post('/api/v1/organizations')
@@ -75,7 +75,36 @@ export async function newTenant(
     .send(organizationPayload(prefix))
     .expect(201);
 
-  return { accessToken, organizationId: created.body.id as string };
+  return {
+    accessToken,
+    organizationId: created.body.id as string,
+    slug: created.body.slug as string,
+  };
+}
+
+/** A priced, stocked, PUBLISHED product, created through the seller's own routes. */
+export async function publishedProduct(
+  app: INestApplication,
+  tenant: { accessToken: string; organizationId: string },
+  overrides: Partial<{ name: string; priceMinor: number; currency: string; available: number }> = {},
+): Promise<{ id: string; name: string; priceMinor: number }> {
+  const { available = 5, ...product } = overrides;
+  const headers = tenantHeaders(tenant.accessToken, tenant.organizationId);
+  const created = await request(app.getHttpServer())
+    .post('/api/v1/products')
+    .set(headers)
+    .send(productPayload({ name: unique('item'), ...product }))
+    .expect(201);
+  const id = created.body.id as string;
+
+  await request(app.getHttpServer())
+    .put(`/api/v1/products/${id}/inventory`)
+    .set(headers)
+    .send({ available })
+    .expect(200);
+  await request(app.getHttpServer()).post(`/api/v1/products/${id}/publish`).set(headers).expect(204);
+
+  return { id, name: created.body.name as string, priceMinor: created.body.priceMinor as number };
 }
 
 /** The headers a tenant-scoped request needs: the token and the organization it acts in. */

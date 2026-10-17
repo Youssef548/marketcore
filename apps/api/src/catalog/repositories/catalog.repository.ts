@@ -83,4 +83,17 @@ export class CatalogRepository {
       select: { productId: true, available: true, reserved: true },
     });
   }
+
+  /**
+   * `updateMany` with the tenant filter through the relation, like findInventory:
+   * an inventory row is never writable by product id alone. Waits behind a
+   * checkout's row lock rather than racing it.
+   */
+  async setAvailable(tenant: TenantContext, productId: string, available: number): Promise<number> {
+    const updated = await this.prisma.inventory.updateMany({
+      where: { productId, product: { ...tenantScope(tenant) } },
+      data: { available },
+    });
+    return updated.count;
+  }
 }

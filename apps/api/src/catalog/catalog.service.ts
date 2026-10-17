@@ -63,6 +63,12 @@ export class CatalogService {
     return inventory;
   }
 
+  async setInventory(tenant: TenantContext, id: string, available: number): Promise<Inventory> {
+    const updated = await this.catalogRepository.setAvailable(tenant, id, available);
+    if (updated === 0) throw new NotFoundException(ProductMessages.NOT_FOUND);
+    return this.inventory(tenant, id);
+  }
+
   private async transition(tenant: TenantContext, id: string, to: ProductStatus): Promise<void> {
     const product = await this.catalogRepository.findById(tenant, id);
     if (product === null) throw new NotFoundException(ProductMessages.NOT_FOUND);

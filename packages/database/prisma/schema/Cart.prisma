@@ -1,0 +1,13 @@
+// One server-side cart per buyer (D55, SRS-FR-CART-001). It records intent only:
+// nothing here reserves stock (D58).
+model Cart {
+  id        String   @id @default(uuid())
+  buyerId   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  buyer User       @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  items CartItem[]
+
+  @@map("carts")
+}
