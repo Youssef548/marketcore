@@ -75,7 +75,7 @@ async function signIn(page: Page, email: string) {
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(TEST_PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page).toHaveURL(/\/dashboard/);
+  await expect(page).toHaveURL(/\/admin/);
 }
 
 /**
@@ -170,7 +170,7 @@ test.describe('web: the session in a real browser', () => {
     // without asking and the catalog is deterministic.
     await signIn(page, 'owner@marketcore.test');
 
-    await page.goto(`${WEB}/products`);
+    await page.goto(`${WEB}/admin/products`);
 
     // The top bar names the page. Scoped to the banner because the page carries its own
     // heading with the same words — the shell's claim and the page's, and the locator
@@ -198,14 +198,14 @@ test.describe('web: the session in a real browser', () => {
 
     // Both tabs load at once, which is the shape that leaks a rotation: each would hold
     // the same refresh cookie and each would try to use it.
-    await Promise.all([first.goto(`${WEB}/dashboard`), second.goto(`${WEB}/dashboard`)]);
+    await Promise.all([first.goto(`${WEB}/admin`), second.goto(`${WEB}/admin`)]);
 
     await expect(first.getByRole('banner').getByText('owner@marketcore.test')).toBeVisible();
     await expect(second.getByRole('banner').getByText('owner@marketcore.test')).toBeVisible();
 
     // Still signed in after the fact: the session was rotated, not revoked. A replay
     // would have answered 401 here and sent both tabs to sign in.
-    await first.goto(`${WEB}/products`);
+    await first.goto(`${WEB}/admin/products`);
     await expect(first.getByRole('cell', { name: 'Nile Cotton Shirt' })).toBeVisible();
   });
 
@@ -229,7 +229,7 @@ test.describe('web: the session in a real browser', () => {
     await expect(page.getByRole('complementary')).toHaveCount(0);
 
     // And it is a gate, not a hint: asking for a tenant page directly does not get past it.
-    await page.goto(`${WEB}/products`);
+    await page.goto(`${WEB}/admin/products`);
     await expect(
       page.getByRole('heading', { name: /not in an organization yet/i }),
     ).toBeVisible();
@@ -305,9 +305,31 @@ test.describe('web: the session in a real browser', () => {
     await page.getByRole('button', { name: 'Sign out' }).click();
     await expect(page).toHaveURL(/\/login/);
 
-    // The gate, not just the UI: asking for the dashboard again is refused.
+    // The gate, not just the UI: asking for the console again is refused, and the
+    // address it carries to sign-in is the console's, not the one it was asked for.
+    await page.goto(`${WEB}/admin`);
+    await expect(page).toHaveURL(/\/login\?next=%2Fadmin/);
+  });
+
+  test('moves the console\u2019s old URLs permanently to /admin', async ({ page }) => {
+    // D92. `/dashboard` and `/products` were the console's address until this change,
+    // so they are answered with a permanent redirect rather than a 404. A browser is
+    // the right layer for this: only a browser follows the hop, and only a browser can
+    // be caught asking for the old address in the first place.
+    const statuses: number[] = [];
+    page.on('response', (response) => {
+      if (new URL(response.url()).pathname === '/dashboard') statuses.push(response.status());
+    });
+
     await page.goto(`${WEB}/dashboard`);
-    await expect(page).toHaveURL(/\/login\?next=%2Fdashboard/);
+
+    expect(statuses, 'the old URL answers 308, not a temporary redirect').toContain(308);
+    await expect(page).toHaveURL(/\/login\?next=%2Fadmin$/);
+
+    // Signed in, the same old URL lands on the page it has always meant.
+    await signIn(page, 'owner@marketcore.test');
+    await page.goto(`${WEB}/products`);
+    await expect(page).toHaveURL(/\/admin\/products$/);
   });
 
   test('asks which organization to act in, and remembers the answer', async ({ page, request }) => {
