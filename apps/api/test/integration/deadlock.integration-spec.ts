@@ -1,5 +1,4 @@
 import { afterAll, describe, expect, it } from '@jest/globals';
-import { Prisma } from '@app/database';
 import {
   INTERACTIVE_TRANSACTION_MAX_WAIT_MS,
   INTERACTIVE_TRANSACTION_TIMEOUT_MS,
