@@ -1130,6 +1130,6 @@ of phase 4 is built.
 
 ### Not proven / deferred
 
-- **ADR 002 (row locking for limited inventory) is still only an index line.** It gates phase 4 and is
-  written next, immediately before the phase, as the ADR folder's rule asks.
+- **ADR 002 is written and `Proposed`**: row locks in `productId` order inside one short transaction,
+  with conditional updates kept for the worker's restock. It becomes `Accepted` when phase 4 implements it.
 - **T-002 grew** by the `/admin` move and the landing change; it still closes M0 and still precedes phase 4.

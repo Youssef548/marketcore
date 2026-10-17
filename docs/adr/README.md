@@ -9,7 +9,7 @@ its constraint exists describes a guess, not a decision.
 | ADR | Decision | Gating phase | Status |
 |---|---|---|---|
 | [001](./0001-modular-monolith-with-worker.md) | Use a modular monolith with API and worker processes (amended: worker from phase 4) | Before application structure | Accepted |
-| 002 | Use PostgreSQL row locking for limited inventory | Before checkout implementation (phase 4) | Proposed |
+| [002](./002-postgres-row-locking-for-inventory.md) | Decide limited stock with PostgreSQL row locks at checkout | Before checkout implementation (phase 4) | Proposed |
 | 003 | Use request-scoped idempotency records | Before retry-safe checkout (phase 5) | Proposed |
 | 004 | Use a deterministic payment simulator before Stripe | Before payment implementation (phase 6) | Proposed |
 | 005 | Use an append-only double-entry ledger | Before financial balances (phase 8) | Proposed |
