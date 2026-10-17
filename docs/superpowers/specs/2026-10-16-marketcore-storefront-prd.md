@@ -1,6 +1,6 @@
 # Product Requirements — MarketCore buyer storefront
 
-**Version:** 1.0-draft · **Date:** 2026-10-16 · **Owner:** Youssef · **Status:** Baselined v2 (2026-10-16)
+**Version:** 1.1 (CR-002) · **Date:** 2026-10-16 · **Owner:** Youssef · **Status:** Baselined v2.1 (2026-10-17)
 **Change request:** `2026-10-16-cr-001-buyer-storefront.md` (decisions D52–D74 live there)
 **Extends:** `2026-09-19-marketcore-platform-design.md`, `docs/domain-model.md`
 
@@ -119,9 +119,9 @@ and the catalog screens — are listed in `ui/stitch/README.md`.
 | PRD-FR-CAT-002 | The system must never return a `DRAFT` product, or any product field outside RULE-CAT-001, on a public read. |
 | PRD-FR-CAT-003 | The product page must show name, price, currency, seller name and the current stock count. |
 
-- **Business rules:** RULE-CAT-001 — public product fields are: id, slug, name, priceMinor, currency, seller name and slug, stock count, status. Everything else stays tenant-private.
+- **Business rules:** RULE-CAT-001 — public product fields are: id, name, priceMinor, currency, seller name and slug, stock count. Everything else stays tenant-private (D76: products have no slug).
 - **Acceptance criteria**
-  - AC-US-CAT-001-1: Given organizations A and B each with one published and one draft product, When a buyer with no membership opens Browse, Then exactly the two published products appear.
+  - AC-US-CAT-001-1: Given organizations A and B each with one published and one draft product, When a buyer with no membership opens Browse, Then both published products appear and no draft product appears anywhere in the page.
   - AC-US-CAT-001-2: Given a draft product id from organization A, When a buyer requests it publicly, Then the response is 404.
   - AC-US-CAT-002-1: Given a published product with stock 1, When a buyer opens its page, Then it shows "1 left" and the seller's name.
 
@@ -147,7 +147,7 @@ and the catalog screens — are listed in `ui/stitch/README.md`.
   - AC-US-CART-001-1: Given products from sellers A and B, When the buyer adds both, Then the cart shows two seller groups and stock for both products is unchanged.
   - AC-US-CART-002-1: Given a cart line of quantity 2 whose stock drops to 1, When the buyer opens the cart, Then the line shows "Only 1 left".
   - AC-US-CART-001-2: Given a cart line of quantity 10, When the buyer adds one more, Then the request is refused and the line stays at 10.
-  - AC-US-CART-002-2: Given buyer X's cart id, When buyer Y requests it, Then the response is 404.
+  - AC-US-CART-002-2: Given buyer X's cart holds a line, When buyer Y reads their own cart, Then X's line is not in it.
 
 ### F-CHK-01: All-or-nothing checkout
 

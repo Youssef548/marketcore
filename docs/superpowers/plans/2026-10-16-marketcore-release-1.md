@@ -33,7 +33,7 @@ what they consume — a checkout's payment instead of an order's.
 | Task | Description | Story | SRS | Size | Depends on |
 |---|---|---|---|---|---|
 | T-001 | Re-skin sign in, register, onboarding, products to Stitch 040/046/032/048 — **done**, `49f763a` | — | SRS-NFR-A11Y-001 | M | — |
-| T-002 | Re-skin the shared shell (left rail, top bar) to the Stitch dashboard (001): grouped rail, breadcrumb top bar, user chip. Only chrome that works ships — no search, ⌘K or notifications until a feature backs them. The top bar's `h1` moves into the page header, and the behavioural test that reads it moves with it. | — | SRS-NFR-A11Y-001 | M | T-001 |
+| T-002 | Re-skin the shared shell (left rail, top bar) to the Stitch dashboard (001): grouped rail, breadcrumb top bar, user chip. Only chrome that works ships — no search, ⌘K or notifications until a feature backs them. The top bar's `h1` moves into the page header, and the behavioural test that reads it moves with it. Also moves the console to `/admin` with permanent redirects (D92), and lands every signed-in user on the storefront, the first-run screen becoming **Start selling** (D91). | — | SRS-NFR-A11Y-001 | M | T-001 |
 | T-010 | `packages/domain`: `BuyerContext`, `buyerScope`, `PLATFORM_FEE_BPS`, checkout and order transitions incl. `CANCELLED` | US-CHK-002 | SRS-FR-BORD-003, D78 | S | — |
 | T-011 | `packages/contracts`: `PublicProduct` (strict), cart, checkout, buyer-order schemas; the 409 `details.lines` shape | US-CAT-002, US-CHK-002 | SRS-FR-CAT-003, SRS-FR-CHK-003 | M | — |
 | T-012 | Migration: `Cart`, `CartItem` (CHECK 1–10), `Checkout`, `Order` + `OrderItem` with `checkoutId`; indexes | — | §6 | M | T-010 |
@@ -124,8 +124,8 @@ real PostgreSQL (failure-scenarios §4).
 
 Local and CI only in Release 1; AWS arrives in phase 14 as already planned.
 
-- **Migrations** are additive (new tables, new nullable `checkoutId` backfilled before it becomes
-  required). Rollback is the previous migration plus a reset of the dev database; no production data
+- **Migrations** are additive (new tables; `Order` is new in phase 4, so its `checkoutId` is `NOT NULL`
+  from the first migration — nothing to backfill, CR-002). Rollback is the previous migration plus a reset of the dev database; no production data
   exists to migrate.
 - **CI** runs the worker's integration suite from phase 4, which needs `apps/worker/.env` covered by
   `check-db-env.mjs` (T-050) before the first worker test lands.

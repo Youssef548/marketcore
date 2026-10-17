@@ -1112,3 +1112,24 @@ not only in NestJS code.
 
 - That a new session loads the skills: discovery happens at session start, so it cannot be observed from
   the session that added them. The links resolve and each `SKILL.md` has valid frontmatter.
+
+## Phase-4 rulings — 2026-10-17 (CR-002, baseline v2.1)
+
+**Claim:** phase 4 can start from documents that agree with each other and with the code — not that any
+of phase 4 is built.
+**Change request:** `docs/superpowers/specs/2026-10-17-cr-002-phase-4-rulings.md`
+
+### Delivered
+
+- D81–D90 ratified as the phase-4 plan wrote them.
+- **D91** every signed-in user lands on the storefront; **D92** the console moves to `/admin`;
+  **D93** checkout's cross-module writes go through the owning modules' repositories, so architecture
+  rule 4 keeps no exception.
+- SRS 1.1 and PRD 1.1 corrected for the plan's findings; the phase-4 plan and the Release 1 plan follow
+  D91–D93.
+
+### Not proven / deferred
+
+- **ADR 002 (row locking for limited inventory) is still only an index line.** It gates phase 4 and is
+  written next, immediately before the phase, as the ADR folder's rule asks.
+- **T-002 grew** by the `/admin` move and the landing change; it still closes M0 and still precedes phase 4.

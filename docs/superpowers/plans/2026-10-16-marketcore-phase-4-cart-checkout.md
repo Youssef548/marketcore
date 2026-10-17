@@ -4060,12 +4060,13 @@ git commit -m "feat(api): bounded, jittered retry for deadlocked transactions, p
 6. Decrement each line, insert one `Checkout`, one `Order` per seller with snapshotted items, delete
    the cart's lines (FR-CHK-007). One commit.
 
-**The one cross-module write (finding 16).** Steps 1–6 touch `carts`, `cart_items` and `inventory`,
-which other modules own. Architecture rule 4 forbids writing another module's tables "without an
-explicit application boundary"; the boundary here is this repository and its transaction. The
-alternative — passing a `Prisma.TransactionClient` through `CartService` and a catalog service —
-puts a Prisma type in three services, which the layering rule calls a defect. The gate task records
-the exception in `docs/architecture.md`.
+**The cross-module writes go through repositories (D93, CR-002).** Steps 1–6 touch `carts`,
+`cart_items` and `inventory`, which other modules own. `CheckoutRepository` opens the transaction and
+calls `CartRepository` (lock the cart, read and clear its lines) and `InventoryRepository` (lock rows in
+product-id order, decrement) through methods that take the `Prisma.TransactionClient`; the Cart and
+Catalog modules export those repositories. The transaction client stays in the repository layer — no
+service sees a Prisma type — and architecture rule 4 holds with no exception. Write those repository
+methods test-first in their own modules before Step 1 here.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -7207,10 +7208,10 @@ This task builds `StoreFrame` from the existing Quartz tokens (`bg-panel`, `bord
 `text-ink`, `text-ink-muted`) and the Stitch 057 top-bar layout; when T-002 lands its breadcrumb top
 bar and user chip, `StoreFrame` adopts them in that task, and nothing else in Tasks 21–24 changes.
 
-**Routing.** Storefront pages live under a new `(shop)` route group at the root (`/browse`, `/p/…`,
-`/cart`, `/checkout`, `/orders/…`, `/account/…`) as PRD §7.4 lists them. The operator UI stays at
-`/dashboard` and `/products` — architecture.md's `/admin` prefix is not what the code has (finding 23),
-and these paths do not collide with it either way.
+**Routing (D91, D92 — CR-002).** Storefront pages live under a new `(shop)` route group at the root
+(`/browse`, `/p/…`, `/cart`, `/checkout`, `/orders/…`, `/account/…`) as PRD §7.4 lists them. Every
+signed-in user lands on `/browse` (D91). The operator console is under `/admin`, moved by T-002 before
+this phase starts (D92); if T-002 has not landed, stop and land it first rather than routing around it.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -9482,10 +9483,10 @@ Edit only what this phase made true or false — each line cites its decision:
   read products without a TenantContext". Cart and checkout also read products and inventory by id
   across tenants (finding 15). Replace with: "Buyer-side repositories — storefront, cart, checkout —
   read products only through `PUBLIC_PRODUCT_WHERE`, and only their public fields leave the server."
-- `docs/architecture.md` — under *Architecture rules*, rule 4 gains: "Exception, recorded: the
-  checkout transaction writes `inventory` and `cart_items` from the Orders module, because atomicity
-  across them is INV-11 (finding 16)." Under *Runtime shape*, the operator UI is at `/dashboard` and
-  `/products` today; `/admin` is a T-002 decision (finding 23).
+- `docs/architecture.md` — under *Architecture rules*, rule 4 gains: "Checkout's atomic writes to
+  `inventory` and `cart_items` go through `InventoryRepository` and `CartRepository`, sharing one
+  transaction client (D93)." Under *Runtime shape*: the console is under `/admin` and every signed-in
+  user lands on the storefront (D91, D92).
 - `docs/domain-model.md` — Order state table: a note that phase 4 ships `Pending payment` and
   `Cancelled` only (D84); entity table: `CartItem` gains `addedUnitPriceMinor` (D82), `OrderItem`
   gains `productName` (D90), `Order` has unique `(checkoutId, organizationId)`.
