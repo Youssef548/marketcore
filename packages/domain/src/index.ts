@@ -4,6 +4,8 @@
 export * from './tenant';
 export * from './tenant.interface';
 
+export * from './buyer';
+
 export * from './password';
 export * from './password.interface';
 export * from './refresh-token';
