@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { afterAll, describe, expect, it } from '@jest/globals';
 import { CurrencyCodes } from '@app/contracts';
 import { SimulatorVerdicts, buildBuyerContext, providerOperationKey, simulatedProviderRef } from '@app/domain';
@@ -36,7 +37,7 @@ const serviceWith = (provider: PaymentProvider) => new PaymentService(repository
 
 /** A checkout of one order, with a total that decides the simulator's verdict (ADR 004). */
 async function aCheckout(totalMinor: number) {
-  const seller = await createSeller();
+  const seller = await createSeller(`pay${randomUUID().slice(0, 8)}`);
   const buyer = await createBuyer();
   const checkout = await testPrisma.checkout.create({
     data: { buyerId: buyer.id, totalMinor, currency: CurrencyCodes.EGP },
