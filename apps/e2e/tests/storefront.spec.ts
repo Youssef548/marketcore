@@ -113,7 +113,10 @@ test.describe('storefront: a buyer in a real browser', () => {
     await page.goto(`${WEB}/account/orders`);
     await expect(page.getByRole('link', { name: SEEDED_SELLERS.NILE.name })).toBeVisible();
     await expect(page.getByRole('link', { name: SEEDED_SELLERS.DELTA.name })).toBeVisible();
+    // Both sellers' stock, not one: the two links above prove two orders exist, but
+    // only reading each seller's line back proves each line was decremented.
     expect(await availableOf(request, nile, shirt.id)).toBe(4);
+    expect(await availableOf(request, delta, oil.id)).toBe(4);
   });
 
   test('Journey 2: two buyers want the last unit — one wins, the other is back at the cart, flagged', async ({
