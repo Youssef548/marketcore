@@ -258,7 +258,7 @@ test.describe('web: the session in a real browser', () => {
     await expect(first.getByRole('cell', { name: 'Nile Cotton Shirt' })).toBeVisible();
   });
 
-  test('a brand-new user is asked for an organization before reaching the shell', async ({ page }) => {
+  test('a brand-new user is asked for an organization before reaching the shell (D101)', async ({ page }) => {
     const email = `${unique('web-first-run')}@marketcore.test`;
     const organization = `Onboarded ${Date.now()}`;
 
@@ -270,21 +270,18 @@ test.describe('web: the session in a real browser', () => {
 
     await signIn(page, email);
 
-    // A user who belongs to nothing gets the first-run screen, not a shell whose every
-    // tenant-scoped control answers "choose an organization first".
-    await expect(
-      page.getByRole('heading', { name: /not in an organization yet/i }),
-    ).toBeVisible();
+    // A user who belongs to nothing gets the first-run screen — called Start selling since
+    // D101, because that is what they are doing — and not a shell whose every tenant-scoped
+    // control answers "choose an organization first".
+    await expect(page.getByRole('heading', { name: /start selling/i })).toBeVisible();
     await expect(page.getByRole('complementary')).toHaveCount(0);
 
     // And it is a gate, not a hint: asking for a tenant page directly does not get past it.
     await page.goto(`${WEB}/admin/products`);
-    await expect(
-      page.getByRole('heading', { name: /not in an organization yet/i }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: /start selling/i })).toBeVisible();
 
     await page.getByLabel('Organization name').fill(organization);
-    await page.getByRole('button', { name: 'Create organization' }).click();
+    await page.getByRole('button', { name: 'Start selling' }).click();
 
     // Creating it admits the session to the shell, with the new organization as the tenant —
     // named in the top bar, which is where the shell keeps the tenant rather than the rail.
