@@ -68,6 +68,26 @@ describe('idempotent checkout (e2e)', () => {
     return { b, product, lines };
   }
 
+  it('answers twenty repeats of one key with one checkout (AC-US-CHK-003-1, INV-2)', async () => {
+    // The acceptance criterion in its own words, and the milestone's observable: twenty
+    // requests with one key, one checkout and one set of orders. The first places; the
+    // nineteen find an emptied cart and a committed key, and replay.
+    const { b, product, lines } = await cartHolding(2);
+    const key = `key-${randomUUID()}`;
+
+    const ids = new Set<string>();
+    for (let repeat = 0; repeat < 20; repeat++) {
+      ids.add(checkoutIdOf((await place(b.token, key, lines).expect(201)).body));
+    }
+
+    expect({ distinctCheckouts: ids.size }).toEqual({ distinctCheckouts: 1 });
+    expect(await testPrisma.checkout.count({ where: { buyerId: b.id } })).toBe(1);
+    expect(await testPrisma.order.count({ where: { buyerId: b.id } })).toBe(1);
+    expect(await testPrisma.idempotencyKey.count({ where: { buyerId: b.id } })).toBe(1);
+    expect(await availableOf(product.id)).toBe(3);
+    expect(await testPrisma.cartItem.count({ where: { cart: { buyerId: b.id } } })).toBe(0);
+  });
+
   it('answers a repeat with the checkout it already placed, and places nothing again (D95)', async () => {
     const { b, product, lines } = await cartHolding(2);
     const key = `key-${randomUUID()}`;
