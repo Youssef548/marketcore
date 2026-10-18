@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { Inject, Injectable, type LoggerService } from '@nestjs/common';
 import { Prisma } from '@app/database';
 import {
@@ -17,6 +18,7 @@ import {
   type LockedLineState,
 } from '@app/domain';
 import { LogEvents, PrismaService } from '@app/runtime';
+import { IdempotencyRepository } from './idempotency.repository';
 import { CartRepository } from '../../cart/repositories/cart.repository';
 import { InventoryRepository } from '../../catalog/repositories/inventory.repository';
 import {
@@ -59,6 +61,7 @@ const isPurchasable = (product: LockedProductRow): boolean =>
 export class CheckoutRepository {
   private readonly cartRepository: CartRepository;
   private readonly inventoryRepository: InventoryRepository;
+  private readonly idempotencyRepository: IdempotencyRepository;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -66,6 +69,7 @@ export class CheckoutRepository {
   ) {
     this.cartRepository = new CartRepository(prisma);
     this.inventoryRepository = new InventoryRepository(prisma);
+    this.idempotencyRepository = new IdempotencyRepository();
   }
 
   /** A plain read, taken before any lock (SRS-FR-CHK-005). */
@@ -77,7 +81,12 @@ export class CheckoutRepository {
     return rows.map((row) => row.currency);
   }
 
-  place(buyer: BuyerContext, lines: readonly ConfirmedLine[]): Promise<PlaceCheckoutOutcome> {
+  place(
+    buyer: BuyerContext,
+    key: string,
+    requestFingerprint: string,
+    lines: readonly ConfirmedLine[],
+  ): Promise<PlaceCheckoutOutcome> {
     // An empty request is not a checkout, and the reason it is refused early is not
     // cosmetic: step 3's single lock statement is `Prisma.join` over the productIds,
     // which is undefined for zero rows, so the transaction would throw out of Prisma
@@ -90,7 +99,7 @@ export class CheckoutRepository {
 
     return withTransactionRetry(
       () =>
-        this.prisma.$transaction((tx) => this.placeWithin(tx, buyer, lines), {
+        this.prisma.$transaction((tx) => this.placeWithin(tx, buyer, key, requestFingerprint, lines), {
           maxWait: INTERACTIVE_TRANSACTION_MAX_WAIT_MS,
           timeout: INTERACTIVE_TRANSACTION_TIMEOUT_MS,
         }),
@@ -113,16 +122,32 @@ export class CheckoutRepository {
   private async placeWithin(
     tx: Prisma.TransactionClient,
     buyer: BuyerContext,
+    key: string,
+    requestFingerprint: string,
     lines: readonly ConfirmedLine[],
   ): Promise<PlaceCheckoutOutcome> {
+    const checkoutId = randomUUID();
+    const scope = { buyerId: buyer.buyerId, key, requestFingerprint, checkoutId };
+    const claim = await this.idempotencyRepository.claim(tx, scope);
+    if (claim.kind === 'KEY_REUSED') return { kind: PlaceCheckoutOutcomes.KEY_REUSED };
+    if (claim.kind === 'REPLAY') {
+      return { kind: PlaceCheckoutOutcomes.REPLAYED, checkoutId: claim.checkoutId };
+    }
+
     // 1. The cart row first (D83): every cart write takes it too, so the lines read
     //    next cannot change before they are deleted in step 6.
     const cart = await this.cartRepository.lockForCheckout(tx, buyer);
-    if (cart === null) return { kind: PlaceCheckoutOutcomes.CART_CHANGED };
+    if (cart === null) {
+      await this.idempotencyRepository.release(tx, scope);
+      return { kind: PlaceCheckoutOutcomes.CART_CHANGED };
+    }
 
     // 2. The request must be the cart (SRS-FR-CHK-006).
     const cartLines = await this.cartRepository.readCheckoutLines(tx, cart.id);
-    if (!sameLines(cartLines, lines)) return { kind: PlaceCheckoutOutcomes.CART_CHANGED };
+    if (!sameLines(cartLines, lines)) {
+      await this.idempotencyRepository.release(tx, scope);
+      return { kind: PlaceCheckoutOutcomes.CART_CHANGED };
+    }
 
     // 3. Every inventory row, one statement, in lock order (RULE-CHK-002).
     const productIds = lines.map((line) => line.productId);
@@ -150,7 +175,10 @@ export class CheckoutRepository {
     // 5. The decision is pure and lives in @app/domain. Nothing has been written yet,
     //    so a rejection commits a read-only transaction: no stock, order or cart change.
     const conflicts = evaluateCheckoutLines(lines, state);
-    if (conflicts.length > 0) return { kind: PlaceCheckoutOutcomes.REJECTED, conflicts };
+    if (conflicts.length > 0) {
+      await this.idempotencyRepository.release(tx, scope);
+      return { kind: PlaceCheckoutOutcomes.REJECTED, conflicts };
+    }
 
     // 6. Every write, in one commit.
     const productFor = (productId: string): LockedProductRow => {
@@ -167,7 +195,7 @@ export class CheckoutRepository {
     // lock (SRS-FR-CHK-005), and a product's currency cannot be changed.
     const currency = productFor(lines[0].productId).currency;
     const checkout = await tx.checkout.create({
-      data: { buyerId: buyer.buyerId, totalMinor: sumLineTotals(lines), currency },
+      data: { id: checkoutId, buyerId: buyer.buyerId, totalMinor: sumLineTotals(lines), currency },
       select: { id: true },
     });
 

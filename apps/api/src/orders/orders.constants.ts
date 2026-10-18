@@ -7,6 +7,8 @@ export const PlaceCheckoutOutcomes = {
   PLACED: 'PLACED',
   REJECTED: 'REJECTED',
   CART_CHANGED: 'CART_CHANGED',
+  REPLAYED: 'REPLAYED',
+  KEY_REUSED: 'KEY_REUSED',
 } as const;
 
 /**
@@ -26,12 +28,17 @@ export const CheckoutMessages = {
   MIXED_CURRENCY: 'A checkout holds one currency',
   CONTENDED: 'Checkout is busy; try again',
   NOT_FOUND: 'Checkout not found',
+  KEY_REUSED: 'This key was used for a different order',
 } as const;
 
 export const BuyerOrderMessages = { NOT_FOUND: 'Order not found' } as const;
 
 /** Reasons logged for refusals that are not line conflicts. */
-export const CheckoutLogReasons = { MIXED_CURRENCY: 'MIXED_CURRENCY', CONTENDED: 'CONTENDED' } as const;
+export const CheckoutLogReasons = {
+  MIXED_CURRENCY: 'MIXED_CURRENCY',
+  CONTENDED: 'CONTENDED',
+  KEY_REUSED: 'KEY_REUSED',
+} as const;
 
 export const LOCKED_PRODUCT_SELECT = {
   id: true,

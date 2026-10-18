@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { afterAll, describe, expect, it } from '@jest/globals';
 import {
   CheckoutConflictReasons,
@@ -5,7 +6,7 @@ import {
   OrderStatuses,
   ProductStatuses,
 } from '@app/contracts';
-import { buildBuyerContext } from '@app/domain';
+import { buildBuyerContext, checkoutRequestFingerprint, type BuyerContext, type ConfirmedLine } from '@app/domain';
 import type { PrismaService } from '@app/runtime';
 import { PlaceCheckoutOutcomes } from '../../src/orders/orders.constants';
 import { CheckoutRepository } from '../../src/orders/repositories/checkout.repository';
@@ -25,6 +26,15 @@ afterAll(async () => {
 });
 
 const repository = new CheckoutRepository(testPrisma as unknown as PrismaService, captureLogger());
+
+/**
+ * One placement attempt, keyed. These tests are about what a checkout does to the cart,
+ * the stock and the orders — not about keys — so each call mints its own key and the
+ * fingerprint the API would compute for the lines it is sending. Every key is used exactly
+ * once here, which is the ordinary request; the reuse paths have their own spec.
+ */
+const placeOnce = (context: BuyerContext, lines: readonly ConfirmedLine[]) =>
+  repository.place(context, `key-${randomUUID()}`, checkoutRequestFingerprint(lines), lines);
 
 const confirmed = (product: ProductFixture, quantity: number, unitPriceMinor = product.priceMinor) => ({
   productId: product.id,
@@ -63,7 +73,7 @@ describe('CheckoutRepository.place', () => {
   it('three sellers → one checkout, three orders, stock decremented, cart emptied (AC-US-CHK-002-1)', async () => {
     const { sellers, products, buyer, lines, context } = await threeSellerCart([5, 5, 5], [1, 2, 3]);
 
-    const outcome = await repository.place(context, lines);
+    const outcome = await placeOnce(context, lines);
 
     expect(outcome.kind).toBe(PlaceCheckoutOutcomes.PLACED);
     const checkouts = await testPrisma.checkout.findMany({
@@ -98,7 +108,7 @@ describe('CheckoutRepository.place', () => {
     const { products, buyer, lines, context } = await threeSellerCart([5, 5, 2], [1, 1, 3]);
     const before = await snapshot(buyer.id, products.map((p) => p.id));
 
-    const outcome = await repository.place(context, lines);
+    const outcome = await placeOnce(context, lines);
 
     expect(outcome).toEqual({
       kind: PlaceCheckoutOutcomes.REJECTED,
@@ -118,7 +128,7 @@ describe('CheckoutRepository.place', () => {
     const { products, buyer, context } = await threeSellerCart([0, 5, 5], [1, 1, 1]);
     const lines = [confirmed(products[0], 1), confirmed(products[1], 1, 999), confirmed(products[2], 1)];
 
-    const outcome = await repository.place(context, lines);
+    const outcome = await placeOnce(context, lines);
 
     expect(outcome.kind).toBe(PlaceCheckoutOutcomes.REJECTED);
     if (outcome.kind !== PlaceCheckoutOutcomes.REJECTED) throw new Error('unreachable');
@@ -133,7 +143,7 @@ describe('CheckoutRepository.place', () => {
     const { products, lines, context } = await threeSellerCart([5, 5, 5], [1, 1, 1]);
     await testPrisma.product.update({ where: { id: products[1].id }, data: { status: ProductStatuses.DRAFT } });
 
-    const outcome = await repository.place(context, lines);
+    const outcome = await placeOnce(context, lines);
 
     expect(outcome).toEqual({
       kind: PlaceCheckoutOutcomes.REJECTED,
@@ -151,7 +161,7 @@ describe('CheckoutRepository.place', () => {
       { productId: second.id, quantity: 1, addedUnitPriceMinor: second.priceMinor },
     ]);
 
-    await repository.place(buildBuyerContext(buyer.id), [confirmed(first, 1), confirmed(second, 1)]);
+    await placeOnce(buildBuyerContext(buyer.id), [confirmed(first, 1), confirmed(second, 1)]);
 
     const orders = await testPrisma.order.findMany({ where: { buyerId: buyer.id }, include: { items: true } });
     expect(orders).toHaveLength(1);
@@ -162,7 +172,7 @@ describe('CheckoutRepository.place', () => {
     const { products, buyer, context } = await threeSellerCart([5, 5, 5], [1, 1, 1]);
     const before = await snapshot(buyer.id, products.map((p) => p.id));
 
-    expect(await repository.place(context, [confirmed(products[0], 2)])).toEqual({ kind: PlaceCheckoutOutcomes.CART_CHANGED });
+    expect(await placeOnce(context, [confirmed(products[0], 2)])).toEqual({ kind: PlaceCheckoutOutcomes.CART_CHANGED });
     expect(await snapshot(buyer.id, products.map((p) => p.id))).toEqual(before);
   });
 
@@ -171,7 +181,7 @@ describe('CheckoutRepository.place', () => {
     const product = await createProduct(seller.organizationId);
     const buyer = await createBuyer();
 
-    expect(await repository.place(buildBuyerContext(buyer.id), [confirmed(product, 1)])).toEqual({
+    expect(await placeOnce(buildBuyerContext(buyer.id), [confirmed(product, 1)])).toEqual({
       kind: PlaceCheckoutOutcomes.CART_CHANGED,
     });
   });

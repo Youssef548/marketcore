@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
@@ -10,6 +11,7 @@ import {
   CheckoutStatuses,
   CurrencyCodes,
   ErrorCodes,
+  IDEMPOTENCY_KEY_HEADER,
 } from '@app/contracts';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.setup';
@@ -40,8 +42,16 @@ describe('checkout (e2e)', () => {
   const buyer = async () => (await mintBuyers(app, 1))[0];
   const addToCart = (token: string, productId: string, quantity: number) =>
     request(server()).put(`/api/v1/cart/items/${productId}`).set(bearer(token)).send({ quantity }).expect(200);
-  const place = (token: string, lines: { productId: string; quantity: number; unitPriceMinor: number }[]) =>
-    request(server()).post('/api/v1/checkouts').set(bearer(token)).send({ lines });
+  /**
+   * One placement attempt. A fresh key by default, so an existing test keeps testing what
+   * it tested: two requests without a shared key are two attempts, not a retry (phase 5's
+   * own spec owns the retry).
+   */
+  const place = (
+    token: string,
+    lines: { productId: string; quantity: number; unitPriceMinor: number }[],
+    key = `key-${randomUUID()}`,
+  ) => request(server()).post('/api/v1/checkouts').set(bearer(token)).set(IDEMPOTENCY_KEY_HEADER, key).send({ lines });
 
   it('places one checkout of one order per seller and empties the cart (D56, SRS-FR-CHK-004)', async () => {
     const b = await buyer();
@@ -152,7 +162,13 @@ describe('checkout (e2e)', () => {
     { lines: Array.from({ length: 51 }, (_, i) => ({ productId: `p${i}`, quantity: 1, unitPriceMinor: 100 })) },
   ])('refuses a malformed body with 400 (§7)', async (body) => {
     const b = await buyer();
-    const res = await request(server()).post('/api/v1/checkouts').set(bearer(b.token)).send(body).expect(400);
+    // A valid key, so the 400 is the body's — the header must not be what refused it.
+    const res = await request(server())
+      .post('/api/v1/checkouts')
+      .set(bearer(b.token))
+      .set(IDEMPOTENCY_KEY_HEADER, `key-${randomUUID()}`)
+      .send(body)
+      .expect(400);
     expect(res.body.error.code).toBe(ErrorCodes.VALIDATION_ERROR);
   });
 

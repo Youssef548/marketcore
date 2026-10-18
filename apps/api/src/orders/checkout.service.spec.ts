@@ -8,11 +8,11 @@ import {
   type CurrencyCode,
 } from '@app/contracts';
 import { Prisma } from '@app/database';
-import { buildBuyerContext } from '@app/domain';
+import { buildBuyerContext, checkoutRequestFingerprint } from '@app/domain';
 import { LogEvents } from '@app/runtime';
 import { captureLogger } from '../../test/support/logger';
 import { CheckoutService } from './checkout.service';
-import { PlaceCheckoutOutcomes } from './orders.constants';
+import { CheckoutLogReasons, PlaceCheckoutOutcomes } from './orders.constants';
 
 const buyer = buildBuyerContext('buyer_1');
 const request = { lines: [{ productId: 'p1', quantity: 1, unitPriceMinor: 1000 }] };
@@ -48,7 +48,7 @@ describe('CheckoutService.place', () => {
   it('returns the placed checkout and logs one checkout.placed line with the request id (SRS-NFR-OBS-001)', async () => {
     const { service, logger } = setup(jest.fn().mockResolvedValue({ kind: PlaceCheckoutOutcomes.PLACED, checkoutId: 'k1' }));
 
-    const checkout = await service.place(buyer, request, 'req_1');
+    const checkout = await service.place(buyer, 'key-1', request, 'req_1');
 
     expect(checkout).toMatchObject({ id: 'k1', placedAt: '2026-10-16T10:00:00.000Z' });
     expect(checkout.orders[0].items[0].name).toBe('Shirt');
@@ -61,7 +61,7 @@ describe('CheckoutService.place', () => {
     const conflicts = [{ productId: 'p1', reason: CheckoutConflictReasons.SOLD_OUT, available: 0, currentUnitPriceMinor: 1000 }];
     const { service, logger } = setup(jest.fn().mockResolvedValue({ kind: PlaceCheckoutOutcomes.REJECTED, conflicts }));
 
-    const error = await service.place(buyer, request, 'req_2').catch((e: unknown) => e);
+    const error = await service.place(buyer, 'key-1', request, 'req_2').catch((e: unknown) => e);
 
     expect(error).toBeInstanceOf(ConflictException);
     expect((error as ConflictException).getResponse()).toMatchObject({ details: { lines: conflicts } });
@@ -74,7 +74,7 @@ describe('CheckoutService.place', () => {
   it('refuses a changed cart with 409 and details.reason CART_CHANGED', async () => {
     const { service } = setup(jest.fn().mockResolvedValue({ kind: PlaceCheckoutOutcomes.CART_CHANGED }));
 
-    const error = await service.place(buyer, request, 'req_3').catch((e: unknown) => e);
+    const error = await service.place(buyer, 'key-1', request, 'req_3').catch((e: unknown) => e);
     expect((error as ConflictException).getResponse()).toMatchObject({ details: { reason: CheckoutRefusals.CART_CHANGED } });
   });
 
@@ -82,7 +82,7 @@ describe('CheckoutService.place', () => {
     const place = jest.fn();
     const { service } = setup(place, [CurrencyCodes.EGP, CurrencyCodes.USD]);
 
-    await expect(service.place(buyer, request, 'req_4')).rejects.toBeInstanceOf(BadRequestException);
+    await expect(service.place(buyer, 'key-1', request, 'req_4')).rejects.toBeInstanceOf(BadRequestException);
     expect(place).not.toHaveBeenCalled();
   });
 
@@ -90,11 +90,64 @@ describe('CheckoutService.place', () => {
     const deadlock = new Prisma.PrismaClientKnownRequestError('deadlock', { code: 'P2034', clientVersion: 'test' });
     const { service } = setup(jest.fn().mockRejectedValue(deadlock));
 
-    await expect(service.place(buyer, request, 'req_5')).rejects.toBeInstanceOf(ConflictException);
+    await expect(service.place(buyer, 'key-1', request, 'req_5')).rejects.toBeInstanceOf(ConflictException);
   });
 
   it('rethrows anything that is not contention', async () => {
     const { service } = setup(jest.fn().mockRejectedValue(new Error('disk full')));
-    await expect(service.place(buyer, request, 'req_6')).rejects.toThrow('disk full');
+    await expect(service.place(buyer, 'key-1', request, 'req_6')).rejects.toThrow('disk full');
+  });
+
+  it('answers a repeat with the first checkout, re-read, and logs it as a replay (D95)', async () => {
+    const { service, logger, repository } = setup(
+      jest.fn().mockResolvedValue({ kind: PlaceCheckoutOutcomes.REPLAYED, checkoutId: 'k1' }),
+    );
+
+    const checkout = await service.place(buyer, 'key-1', request, 'req_7');
+
+    // The same checkout the buyer already has — re-read, not a frozen copy of the first
+    // response, so a status the worker has since changed is current.
+    expect(checkout).toMatchObject({ id: 'k1', placedAt: '2026-10-16T10:00:00.000Z' });
+    expect(repository.findForBuyer).toHaveBeenCalledWith(buyer, 'k1');
+    expect(logger.lines).toEqual([
+      {
+        level: 'log',
+        event: LogEvents.CHECKOUT_PLACED,
+        fields: { requestId: 'req_7', buyerId: 'buyer_1', checkoutId: 'k1', replayed: true },
+      },
+    ]);
+  });
+
+  it('refuses a key reused for a different request with 409 and details.reason KEY_REUSED (D95)', async () => {
+    const { service, logger } = setup(jest.fn().mockResolvedValue({ kind: PlaceCheckoutOutcomes.KEY_REUSED }));
+
+    const error = await service.place(buyer, 'key-1', request, 'req_8').catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(ConflictException);
+    expect((error as ConflictException).getStatus()).toBe(409);
+    expect((error as ConflictException).getResponse()).toMatchObject({
+      details: { reason: CheckoutRefusals.KEY_REUSED },
+    });
+    expect(logger.lines).toEqual([
+      {
+        level: 'log',
+        event: LogEvents.CHECKOUT_REJECTED,
+        fields: { requestId: 'req_8', buyerId: 'buyer_1', reasons: [CheckoutLogReasons.KEY_REUSED] },
+      },
+    ]);
+  });
+
+  it('passes the key and the canonical fingerprint of the request to the repository (D96)', async () => {
+    const place = jest.fn().mockResolvedValue({ kind: PlaceCheckoutOutcomes.PLACED, checkoutId: 'k1' });
+    const { service } = setup(place);
+
+    await service.place(buyer, 'key-1', request, 'req_9');
+
+    expect(place).toHaveBeenCalledWith(
+      buyer,
+      'key-1',
+      checkoutRequestFingerprint(request.lines),
+      request.lines,
+    );
   });
 });
