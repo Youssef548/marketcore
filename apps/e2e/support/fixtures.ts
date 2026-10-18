@@ -33,3 +33,13 @@ export function tenantHeaders(accessToken: string, organizationId: string): Reco
     [ORGANIZATION_ID_HEADER]: organizationId,
   };
 }
+
+/** The deterministic seed's two sellers (packages/database/prisma/seed.constants.ts). */
+export const SEEDED_SELLERS = {
+  NILE: { email: 'owner@marketcore.test', name: 'Nile Traders' },
+  DELTA: { email: 'outsider@marketcore.test', name: 'Delta Goods' },
+} as const;
+
+export const bearer = (accessToken: string): Record<string, string> => ({
+  authorization: `Bearer ${accessToken}`,
+});
