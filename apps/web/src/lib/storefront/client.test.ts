@@ -43,6 +43,21 @@ describe('storefront client', () => {
     await expect(storefront.cart()).rejects.toThrow();
   });
 
+  it('pays a checkout by id, with no body — the charge is the API\'s to decide (SRS-FR-PAY-001)', async () => {
+    respond(200, checkout);
+    const fetchMock = globalThis.fetch as unknown as ReturnType<typeof vi.fn>;
+
+    const paid = await storefront.payCheckout('c1');
+
+    expect(paid.status).toBe('PENDING_PAYMENT');
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('/api/checkouts/c1/pay');
+    expect(init.method).toBe('POST');
+    // No body and no idempotency key: a checkout is paid once, and the API derives the
+    // provider operation key from the checkout rather than from anything the browser sends.
+    expect(init.body).toBeUndefined();
+  });
+
   it('sends the attempt key as Idempotency-Key, beside the unchanged body (SRS-FR-CHK-008)', async () => {
     respond(201, checkout);
     const fetchMock = globalThis.fetch as unknown as ReturnType<typeof vi.fn>;

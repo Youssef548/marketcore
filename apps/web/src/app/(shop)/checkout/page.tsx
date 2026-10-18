@@ -10,6 +10,9 @@ import { CART_PATH, CONFLICT_LINES, CONFLICT_QUERY, placedPath } from '@/lib/sto
 import { ReviewView } from './review-view';
 
 const CART_CHANGED_NOTICE = 'Your cart changed while you were reviewing it. Check it again.';
+const PAYMENT_DECLINED_NOTICE = 'That payment was declined. Nothing was charged — try again.';
+const PAYMENT_PENDING_NOTICE =
+  'We could not confirm the payment. If it went through, trying again will not charge you twice.';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -29,10 +32,29 @@ export default function CheckoutPage() {
   }, []);
   useEffect(load, [load]);
 
+  /** One button, two operations: place, then pay (D108). A refusal names which of them. */
   const place = async (lines: CheckoutLineRequest[]) => {
     setPlacing(true);
     try {
+      // The key is per mount, so a retry after a refusal replays this same checkout rather
+      // than placing a second one — which is what makes "try again" safe to offer.
       const checkout = await storefront.placeCheckout({ lines }, idempotencyKey);
+
+      try {
+        await storefront.payCheckout(checkout.id);
+      } catch (e: unknown) {
+        if (e instanceof StorefrontError && e.code === ErrorCodes.CONFLICT) {
+          // The money's refusal, not the cart's: stay here so the buyer can try again.
+          const details = CheckoutConflictDetailsSchema.safeParse(e.details);
+          const reason = details.success && 'reason' in details.data ? details.data.reason : null;
+          setNotice(reason === 'PAYMENT_PENDING' ? PAYMENT_PENDING_NOTICE : PAYMENT_DECLINED_NOTICE);
+          return;
+        }
+        // Anything else while paying is reported as the failure it is, and the checkout stays
+        // placed and unpaid: the buyer's order exists, and the orders screen shows it.
+        throw e;
+      }
+
       router.push(placedPath(checkout.id));
     } catch (e: unknown) {
       // Branch on code and details, never on message (SRS §8).

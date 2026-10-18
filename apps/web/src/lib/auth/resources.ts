@@ -137,6 +137,10 @@ export function createResources(accessToken?: string) {
     checkout: (id: string): Promise<Checkout> =>
       client.get(`/checkouts/${encodeURIComponent(id)}`, CheckoutSchema),
 
+    /** One charge for one checkout (SRS-FR-PAY-001). A repeat charges nothing and replays. */
+    payCheckout: (id: string): Promise<Checkout> =>
+      client.post(`/checkouts/${encodeURIComponent(id)}/pay`, CheckoutSchema, {}),
+
     buyerOrders: (cursor?: string): Promise<BuyerOrderPage> =>
       client.get(withCursor('/buyer/orders', cursor), BuyerOrderPageSchema),
 
