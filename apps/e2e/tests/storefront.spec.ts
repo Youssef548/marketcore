@@ -132,19 +132,33 @@ test.describe('storefront: a buyer in a real browser', () => {
     // real session cookie, not a second client with a token pasted in.
     const key = crypto.randomUUID();
     const body = { lines: [{ productId: mug.id, quantity: 1, unitPriceMinor: 3_000 }] };
-    const send = () =>
-      page.request.post(`${WEB}/api/checkouts`, {
-        headers: { [IDEMPOTENCY_KEY_HEADER]: key },
-        data: body,
-      });
+    /**
+     * The retry is made *by the page*, not by the test runner.
+     *
+     * `page.request` looks like the browser's session but is a separate HTTP client: it
+     * does not receive the browser's host-resolver rules, so it cannot even resolve
+     * `web.marketcore.test` (DNS for the pretended public name is deliberately not
+     * arranged), and a cookie set for that name is not sent to `localhost`. A same-origin
+     * `fetch` from the loaded page is both the only client that carries *this* session and
+     * exactly the path the app's own client takes.
+     */
+    const send = (): Promise<{ status: number; body: { id?: string } }> =>
+      page.evaluate(
+        ([header, attemptKey, payload]) =>
+          fetch('/api/checkouts', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', [header]: attemptKey },
+            body: JSON.stringify(payload),
+          }).then(async (response) => ({ status: response.status, body: await response.json() })),
+        [IDEMPOTENCY_KEY_HEADER, key, body] as const,
+      );
 
     const first = await send();
     const second = await send();
 
-    expect(first.status()).toBe(201);
-    expect(second.status()).toBe(201);
-    const placed = (await first.json()) as { id: string };
-    expect(((await second.json()) as { id: string }).id).toBe(placed.id);
+    expect(first.status).toBe(201);
+    expect(second.status).toBe(201);
+    expect(second.body.id).toBe(first.body.id);
 
     // The effect happened once: that is what the two 201s are claiming.
     expect(await availableOf(request, nile, mug.id)).toBe(4);
