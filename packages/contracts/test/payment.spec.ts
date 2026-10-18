@@ -7,7 +7,11 @@ import {
   PaymentStatuses,
 } from '../src/constants';
 import { CheckoutConflictDetailsSchema } from '../src/checkout';
-import { CheckoutCancelledDetailsSchema, PaymentDeclinedDetailsSchema } from '../src/payment';
+import {
+  CheckoutCancelledDetailsSchema,
+  PaymentDeclinedDetailsSchema,
+  PaymentPendingDetailsSchema,
+} from '../src/payment';
 
 describe('the payment wire vocabulary (SRS-FR-PAY-001…-004, D102, D106, D107)', () => {
   it('gives a checkout and its orders the PAID state the capture enters', () => {
@@ -22,9 +26,12 @@ describe('the payment wire vocabulary (SRS-FR-PAY-001…-004, D102, D106, D107)'
     expect(Object.keys(PaymentStatuses)).not.toContain('PENDING');
   });
 
-  it('names the two payment refusals', () => {
+  it('names the three payment refusals', () => {
     expect(PaymentRefusals.PAYMENT_DECLINED).toBe('PAYMENT_DECLINED');
     expect(PaymentRefusals.CHECKOUT_CANCELLED).toBe('CHECKOUT_CANCELLED');
+    // D111: a charge the provider could not confirm is its own answer, because the buyer
+    // must be told neither "declined" nor "paid".
+    expect(PaymentRefusals.PAYMENT_PENDING).toBe('PAYMENT_PENDING');
   });
 
   it('keeps the checkout refusal separate from the payment ones', () => {
@@ -40,6 +47,9 @@ describe('the payment refusal details (D106, D107)', () => {
     });
     expect(CheckoutCancelledDetailsSchema.parse({ reason: 'CHECKOUT_CANCELLED' })).toEqual({
       reason: 'CHECKOUT_CANCELLED',
+    });
+    expect(PaymentPendingDetailsSchema.parse({ reason: 'PAYMENT_PENDING' })).toEqual({
+      reason: 'PAYMENT_PENDING',
     });
   });
 
@@ -59,6 +69,7 @@ describe('the payment refusal details (D106, D107)', () => {
       { reason: 'KEY_REUSED' },
       { reason: 'PAYMENT_DECLINED' },
       { reason: 'CHECKOUT_CANCELLED' },
+      { reason: 'PAYMENT_PENDING' },
     ];
     for (const member of members) {
       expect(CheckoutConflictDetailsSchema.safeParse(member).success).toBe(true);
