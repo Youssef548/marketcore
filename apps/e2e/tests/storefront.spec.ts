@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext, type Browser, type Page } from '@playwright/test';
-import { OrganizationSchema, TokenPairSchema } from '@app/contracts';
+import { IDEMPOTENCY_KEY_HEADER, OrganizationSchema, TokenPairSchema } from '@app/contracts';
 import { serviceLogs } from '../support/compose';
 import {
   SEEDED_SELLERS,
@@ -119,6 +119,45 @@ test.describe('storefront: a buyer in a real browser', () => {
     expect(await availableOf(request, delta, oil.id)).toBe(4);
   });
 
+
+  test('a retried placement is one order, not two (SRS-FR-CHK-008, D95)', async ({ page, request }) => {
+    const mug = await stockedProduct(request, nile, { priceMinor: 3_000, available: 5 });
+    const email = await newBuyer(request);
+    await signInTo(page, email, '/browse');
+    await addToCart(page, mug.id);
+    await page.goto(`${WEB}/checkout`);
+
+    // The browser's own session, one key, sent twice — the retry a flaky network makes.
+    // `page.request` shares the page's cookie jar, so this is the real BFF path with a
+    // real session cookie, not a second client with a token pasted in.
+    const key = crypto.randomUUID();
+    const body = { lines: [{ productId: mug.id, quantity: 1, unitPriceMinor: 3_000 }] };
+    const send = () =>
+      page.request.post(`${WEB}/api/checkouts`, {
+        headers: { [IDEMPOTENCY_KEY_HEADER]: key },
+        data: body,
+      });
+
+    const first = await send();
+    const second = await send();
+
+    expect(first.status()).toBe(201);
+    expect(second.status()).toBe(201);
+    const placed = (await first.json()) as { id: string };
+    expect(((await second.json()) as { id: string }).id).toBe(placed.id);
+
+    // The effect happened once: that is what the two 201s are claiming.
+    expect(await availableOf(request, nile, mug.id)).toBe(4);
+
+    // And the buyer sees one order, read back through their own session.
+    const token = await login(request, email);
+    const orders = await request.get(`${API}/buyer/orders`, { headers: bearer(token) });
+    expect(((await orders.json()) as { items: unknown[] }).items).toHaveLength(1);
+
+    await page.goto(`${WEB}/account/orders`);
+    await expect(page.getByRole('link', { name: SEEDED_SELLERS.NILE.name })).toHaveCount(1);
+  });
+
   test('Journey 2: two buyers want the last unit — one wins, the other is back at the cart, flagged', async ({
     browser,
     request,
@@ -162,7 +201,8 @@ test.describe('storefront: a buyer in a real browser', () => {
 
     expect((await request.put(`${API}/cart/items/${kettle.id}`, { headers: bearer(token), data: { quantity: 2 } })).status()).toBe(200);
     const placed = await request.post(`${API}/checkouts`, {
-      headers: bearer(token),
+      // Every caller sends a key now (SRS-FR-CHK-008); this one is a single attempt.
+      headers: { ...bearer(token), [IDEMPOTENCY_KEY_HEADER]: crypto.randomUUID() },
       data: { lines: [{ productId: kettle.id, quantity: 2, unitPriceMinor: 5_000 }] },
     });
     expect(placed.status()).toBe(201);
