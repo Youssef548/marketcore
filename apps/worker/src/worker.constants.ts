@@ -3,12 +3,13 @@ export const WORKER_LOGGER_CONTEXT = 'worker';
 
 export const SHUTDOWN_SIGNALS = ['SIGTERM', 'SIGINT'] as const;
 
-/** The log event names this process emits. A log event name is a contract, not a literal. */
+/**
+ * The scheduler's own event. The auto-cancel job logs its outcomes through
+ * `LogEvents` (`checkout.autocancel.run` / `.failed`); this is only the net for a
+ * run that threw before the job could log it. A log event name is a contract.
+ */
 export const WorkerLogEvents = {
-  STARTED: 'worker.started',
-  /** The placeholder tick; the stacked Task 18 PR replaces it with the auto-cancel job's events. */
-  TICK: 'worker.tick',
-  TICK_FAILED: 'worker.tick.failed',
+  RUN_FAILED: 'worker.run.failed',
 } as const;
 
 /** Floors for the D87 overrides: below these a misconfiguration would spin the database. */
