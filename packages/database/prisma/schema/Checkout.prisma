@@ -16,6 +16,9 @@ model Checkout {
   buyer  User    @relation(fields: [buyerId], references: [id], onDelete: Restrict)
   orders Order[]
 
+  /** The key that placed this checkout, at most one (ADR 003). */
+  idempotencyKey IdempotencyKey?
+
   @@index([status, placedAt])
   @@index([buyerId])
   @@map("checkouts")

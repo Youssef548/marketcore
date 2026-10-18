@@ -1,0 +1,21 @@
+// One claimed request key (ADR 003, D94-D99).
+//
+// The row is inserted with the id of the checkout the request is about to create, before
+// that checkout exists, so the foreign key is DEFERRABLE INITIALLY DEFERRED. Prisma cannot
+// express that, and PostgreSQL cannot defer a CHECK, so the migration replaces the key it
+// generates: the deferral is what lets the claim be the transaction's first statement and
+// still guarantee, at commit, that a committed key names a checkout that exists.
+model IdempotencyKey {
+  id                 String   @id @default(uuid())
+  buyerId            String
+  key                String
+  requestFingerprint String
+  checkoutId         String   @unique
+  createdAt          DateTime @default(now())
+
+  buyer    User     @relation(fields: [buyerId], references: [id], onDelete: Restrict)
+  checkout Checkout @relation(fields: [checkoutId], references: [id], onDelete: Restrict)
+
+  @@unique([buyerId, key])
+  @@map("idempotency_keys")
+}
