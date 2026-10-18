@@ -8,14 +8,22 @@ import { StatusTransitionOutcomes, type StatusTransitionOutcome } from './order.
 
 export * from './order.interface';
 
-/** Phase 4's one legal move, for both aggregates: auto-cancel (D70). */
+/**
+ * Legal moves, for both aggregates: phase 4's auto-cancel (D70) and phase 6's capture.
+ *
+ * `PAID` has no outgoing move yet. The domain model's `Paid → Fulfilling` arrives with
+ * fulfilment, and this table grants only what this code can actually perform — a state a
+ * table let you enter would be a state an endpoint could enter by accident.
+ */
 const CHECKOUT_TRANSITIONS: Record<CheckoutStatus, readonly CheckoutStatus[]> = {
-  [CheckoutStatuses.PENDING_PAYMENT]: [CheckoutStatuses.CANCELLED],
+  [CheckoutStatuses.PENDING_PAYMENT]: [CheckoutStatuses.PAID, CheckoutStatuses.CANCELLED],
+  [CheckoutStatuses.PAID]: [],
   [CheckoutStatuses.CANCELLED]: [],
 };
 
 const ORDER_TRANSITIONS: Record<OrderStatus, readonly OrderStatus[]> = {
-  [OrderStatuses.PENDING_PAYMENT]: [OrderStatuses.CANCELLED],
+  [OrderStatuses.PENDING_PAYMENT]: [OrderStatuses.PAID, OrderStatuses.CANCELLED],
+  [OrderStatuses.PAID]: [],
   [OrderStatuses.CANCELLED]: [],
 };
 

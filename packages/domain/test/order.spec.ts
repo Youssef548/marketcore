@@ -6,19 +6,35 @@ import {
   planOrderTransition,
 } from '../src/order';
 
+/**
+ * The legal edges, and only these: the worker's auto-cancel (D70) and the capture (phase 6).
+ * `PAID` is terminal here — nothing in this code moves a paid order anywhere, and the
+ * domain model's `Paid → Fulfilling` belongs to fulfilment.
+ */
+const LEGAL_EDGES = [
+  [OrderStatuses.PENDING_PAYMENT, OrderStatuses.PAID],
+  [OrderStatuses.PENDING_PAYMENT, OrderStatuses.CANCELLED],
+] as const;
+
+const isLegal = (from: string, to: string): boolean =>
+  LEGAL_EDGES.some(([legalFrom, legalTo]) => legalFrom === from && legalTo === to);
+
 describe('planOrderTransition', () => {
-  it('allows the auto-cancel move, PENDING_PAYMENT → CANCELLED', () => {
+  it('allows the capture and the auto-cancel moves', () => {
+    expect(planOrderTransition(OrderStatuses.PENDING_PAYMENT, OrderStatuses.PAID)).toBe(
+      StatusTransitionOutcomes.ALLOWED,
+    );
     expect(planOrderTransition(OrderStatuses.PENDING_PAYMENT, OrderStatuses.CANCELLED)).toBe(
       StatusTransitionOutcomes.ALLOWED,
     );
   });
 
-  it('refuses every other pair, including CANCELLED → anything', () => {
+  it('refuses every other pair, including PAID → anything and CANCELLED → anything', () => {
     // The illegal table is the negative space of the legal one, so it is asserted
     // over every pair rather than over the pairs someone remembered.
     for (const from of wireValues(OrderStatuses)) {
       for (const to of wireValues(OrderStatuses)) {
-        if (from === OrderStatuses.PENDING_PAYMENT && to === OrderStatuses.CANCELLED) continue;
+        if (isLegal(from, to)) continue;
         expect({ from, to, outcome: planOrderTransition(from, to) }).toEqual({
           from,
           to,
@@ -30,12 +46,11 @@ describe('planOrderTransition', () => {
 });
 
 describe('planCheckoutTransition', () => {
-  it('moves with its orders: the same single legal edge', () => {
+  it('moves with its orders: the same two legal edges', () => {
     for (const from of wireValues(CheckoutStatuses)) {
       for (const to of wireValues(CheckoutStatuses)) {
-        const legal = from === CheckoutStatuses.PENDING_PAYMENT && to === CheckoutStatuses.CANCELLED;
         expect(planCheckoutTransition(from, to)).toBe(
-          legal ? StatusTransitionOutcomes.ALLOWED : StatusTransitionOutcomes.ILLEGAL_TRANSITION,
+          isLegal(from, to) ? StatusTransitionOutcomes.ALLOWED : StatusTransitionOutcomes.ILLEGAL_TRANSITION,
         );
       }
     }
