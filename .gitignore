@@ -35,3 +35,26 @@ apps/web/next-env.d.ts
 .e2e/failures/
 .e2e/logs/
 .e2e/videos/
+
+# Local agent tooling. These are per-machine installs, not project source — but the repository
+# does track seven skills of its own, so the rule is "ignore skill directories, re-include the
+# ones this repository owns" rather than "ignore .agents/". A blanket directory ignore would
+# hide a future change to a skill that *is* committed.
+.agents/skills/*/
+!.agents/skills/e2e/
+!.agents/skills/git-delivery-workflow/
+!.agents/skills/nestjs-code-conventions/
+!.agents/skills/phase-loop/
+!.agents/skills/ship-task/
+!.agents/skills/small-stacked-prs/
+!.agents/skills/typescript-code-conventions/
+
+# The delegate fleet's own installs, and the machinery around them.
+.claude/worktrees/
+.commandcode/taste/
+.playwright-mcp/
+skills-lock.json
+
+# Rendered exports. The 31 diagrams this repository tracks are SVG; a PNG is a render of the
+# .excalidraw source beside it, so the source is what belongs in git.
+docs/superpowers/*.png
