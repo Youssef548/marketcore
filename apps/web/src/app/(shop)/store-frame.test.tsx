@@ -13,6 +13,13 @@ import { SessionProvider } from '@/lib/session/client';
 import { StoreFrame } from './store-frame';
 
 const BUYER = { user: { id: 'u1', email: 'buyer@marketcore.test' }, organizations: [], activeOrganizationId: null };
+const SELLER = {
+  user: { id: 'u2', email: 'seller@marketcore.test' },
+  organizations: [
+    { id: 'org-1', name: 'Nile Traders', slug: 'nile-traders', status: 'ACTIVE', role: 'OWNER' },
+  ],
+  activeOrganizationId: 'org-1',
+};
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -38,6 +45,16 @@ describe('StoreFrame', () => {
     expect(screen.getByRole('link', { name: 'Cart' }).getAttribute('href')).toBe('/cart');
     expect(screen.getByRole('link', { name: 'My orders' }).getAttribute('href')).toBe('/account/orders');
     expect(screen.queryByText(/create an organization/i)).toBeNull();
+    // And the way to the screen that does create one, which is what the front door used
+    // to be (D101). Without it this buyer is stranded on a storefront with no shop.
+    expect(screen.getByRole('link', { name: 'Start selling' }).getAttribute('href')).toBe('/admin');
+  });
+
+  it('names the same link for what a seller will find there (D101)', async () => {
+    renderFrame(200, SELLER);
+
+    expect(await screen.findByText('page body')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Seller console' }).getAttribute('href')).toBe('/admin');
   });
 
   it('sends an anonymous visitor to sign in and back to this page', async () => {

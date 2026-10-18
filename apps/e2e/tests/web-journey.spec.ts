@@ -192,6 +192,24 @@ test.describe('web: the session in a real browser', () => {
     await expect(page).toHaveURL(/\/browse$/);
   });
 
+  test('a buyer with no organization can still reach Start selling (D101)', async ({ page, request }) => {
+    // The regression this change could have caused, in a real browser: the front door no
+    // longer leads to the console, and the console is where an organization is created.
+    // Without the storefront's own link, a new user would land on /browse — a storefront
+    // for a shop they do not have — with no way to the screen that creates one.
+    const email = `${unique('newseller')}@marketcore.test`;
+    expect((await request.post(`${API}/auth/register`, { data: credentials(email) })).status()).toBe(201);
+
+    await signInWithNothingToReturnTo(page, email);
+    await expect(page).toHaveURL(/\/browse$/);
+
+    await page.getByRole('link', { name: 'Start selling' }).click();
+
+    await expect(page).toHaveURL(/\/admin/);
+    await expect(page.getByRole('heading', { name: 'Start selling' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Start selling' })).toBeVisible();
+  });
+
   test('lists the products of the organization the session acts in', async ({ page }) => {
     // The seeded owner belongs to Nile Traders alone, so the organization resolves
     // without asking and the catalog is deterministic.
