@@ -78,6 +78,16 @@ export class CheckoutRepository {
   }
 
   place(buyer: BuyerContext, lines: readonly ConfirmedLine[]): Promise<PlaceCheckoutOutcome> {
+    // An empty request is not a checkout, and the reason it is refused early is not
+    // cosmetic: step 3's single lock statement is `Prisma.join` over the productIds,
+    // which is undefined for zero rows, so the transaction would throw out of Prisma
+    // instead of returning an outcome. `sameLines([], [])` is true, so an empty cart
+    // would not stop it either. The wire contract rejects this first
+    // (`CheckoutRequestSchema`'s `lines.min(1)` → 400 VALIDATION_ERROR); this keeps
+    // the method total for callers that construct the repository directly, and opens
+    // no transaction for a request that cannot be placed.
+    if (lines.length === 0) return Promise.resolve({ kind: PlaceCheckoutOutcomes.CART_CHANGED });
+
     return withTransactionRetry(
       () =>
         this.prisma.$transaction((tx) => this.placeWithin(tx, buyer, lines), {
