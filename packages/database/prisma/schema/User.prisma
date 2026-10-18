@@ -23,6 +23,8 @@ model User {
   cart        Cart?
   checkouts   Checkout[]
   orders      Order[]
+  /** The request keys this buyer has claimed (ADR 003). Scoped to the buyer, not the cart. */
+  idempotencyKeys IdempotencyKey[]
 
   @@map("users")
 }
