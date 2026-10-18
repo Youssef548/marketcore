@@ -11,11 +11,13 @@ remain consistent when failures and concurrent requests occur?
 > money stay consistent. Every claim below is meant to be checkable by a command rather than taken on
 > trust — and where something is not yet proven, it says so.
 
-**Status: phases 0–3 of 15, plus the first web slice and its design system.** Identity, tenancy and
-catalog are built; `apps/web` signs a user in, holds the session in `httpOnly` cookies, selects an
-organization, and is designed to the system in [`docs/design/deliverables`](./docs/design/deliverables).
-The concurrency, idempotency, ledger and payout guarantees are designed and specified, not yet
-implemented — see [Roadmap](#roadmap).
+**Status: phases 0–4 of 15 — Release 1's first milestone, M1, is met.** Identity, tenancy and catalog
+are built; a buyer browses every seller's published products through one storefront, fills one cart
+across sellers, and checks out once — which creates every seller's order or none, sells the last unit
+exactly once, and restores an abandoned checkout's stock exactly once. `apps/web` renders that
+storefront behind a BFF, and is designed to the system in
+[`docs/design/deliverables`](./docs/design/deliverables). The idempotency, ledger and payout
+guarantees are designed and specified, not yet implemented — see [Roadmap](#roadmap).
 
 **Scope:** an operator UI for sellers *and* a multi-seller buyer storefront — public buyers browse
 every seller's published products, fill one cart across sellers, and check out once. The
@@ -44,15 +46,16 @@ Ten invariants, each restated as the observable that proves it, live in
 
 | Invariant | Observable | Status |
 |---|---|---|
-| Inventory never goes negative | 100 concurrent checkouts for one unit: exactly one success, stock 0, one order | constraint proven · race is phase 4 |
+| Inventory never goes negative | 100 concurrent checkouts for one unit: exactly one success, stock 0, one order | **proven, phase 4** |
 | A checkout idempotency key creates at most one operation | 20 repeat requests with one key produce one order | phase 5 |
 | A webhook causes each side effect at most once | Repeated delivery produces one state transition and one ledger transaction | phase 8 |
 | Ledger transactions balance | Signed entries sum to zero per currency | phase 8 |
 | A payout executes at most once | Two workers racing the same payout call the provider once | phase 11 |
 | One tenant cannot read another's data | Cross-tenant fetch returns 404/403, never data | **proven, phase 2** |
-| A checkout creates every seller's order or none | A 3-seller cart with one line short of stock creates 0 orders and changes no stock | phase 4 |
-| A buyer reads only their own orders and cart | Cross-buyer fetch returns 404, never data | phase 4 |
-| An abandoned checkout restores its stock exactly once | An unpaid checkout older than 30 minutes is cancelled once, however many runs see it | phase 4 |
+| A checkout creates every seller's order or none | A 3-seller cart with one line short of stock creates 0 orders and changes no stock | **proven, phase 4** |
+| A buyer reads only their own orders and cart | Cross-buyer fetch returns 404, never data | **proven, phase 4** |
+| An abandoned checkout restores its stock exactly once | An unpaid checkout older than 30 minutes is cancelled once, however many runs see it | **proven, phase 4** |
+| The storefront does only what the API authorizes | A buyer's browser cannot create a product, and cannot read another buyer's cart or order | **proven, phase 4** |
 
 ---
 
@@ -130,11 +133,12 @@ docker compose up -d
 corepack enable && pnpm install
 cp .env.example .env
 cp apps/api/.env.example apps/api/.env
+cp apps/worker/.env.example apps/worker/.env
 cp packages/database/.env.example packages/database/.env
 
 pnpm --filter @app/database db:deploy   # apply migrations
 pnpm --filter @app/database db:seed     # two organizations, their members, and a product each
-pnpm dev                                # api on :3001, web on :3000
+pnpm dev                                # api on :3001, web on :3000, worker cancelling unpaid checkouts
 ```
 
 The seed is deterministic and idempotent, and its users can authenticate — `owner@marketcore.test`
@@ -166,7 +170,7 @@ present in the logs — so a client complaint can be joined to a log line.
 The whole repository in one command:
 
 ```bash
-pnpm turbo run lint typecheck test build      # 33 tasks: lint, types, unit, e2e, integration, build
+pnpm turbo run lint typecheck test build      # 37 tasks: lint, types, unit, e2e, integration, build
 ```
 
 And the layers that need more than one process:
@@ -174,7 +178,7 @@ And the layers that need more than one process:
 ```bash
 pnpm --filter api test                       # unit + in-process e2e + integration against real Postgres
 docker compose -f docker-compose.e2e.yml up -d --build --wait
-pnpm --filter e2e test:behavioural           # 14 tests: real image, real TLS, real browser
+pnpm --filter e2e test:behavioural           # 24 tests: real image, real TLS, real browser
 docker compose -f docker-compose.e2e.yml down -v
 ```
 
@@ -187,10 +191,11 @@ The flagship scenarios, and where each is proven:
 | Refresh race — two concurrent claims, one rotation | `pnpm --filter api test:integration` | **proven** |
 | Inventory constraints enforced by the database | `pnpm --filter api test:integration` | **proven** |
 | Cookie flags as a browser actually received them | `pnpm --filter e2e test:behavioural` | **proven** |
-| Last-item race — 100 buyers, 1 unit | `pnpm --filter api test:concurrency` | phase 4 |
-| All-or-nothing checkout — one short line, zero orders | `pnpm --filter api test:integration` | phase 4 |
-| Cross-buyer isolation — one buyer cannot read another's order | `pnpm --filter api test:e2e` | phase 4 |
-| Abandoned checkout — cancelled and restocked once | `pnpm --filter worker test:integration` | phase 4 |
+| Last-item race — 100 buyers, 1 unit, 20 runs in a row | `pnpm --filter api test:concurrency` | **proven** |
+| All-or-nothing checkout — one short line, zero orders | `pnpm --filter api test:integration` | **proven** |
+| Cross-buyer isolation — one buyer cannot read another's order | `pnpm --filter api test:e2e` | **proven** |
+| Abandoned checkout — cancelled and restocked once | `pnpm --filter worker test:integration` | **proven** |
+| Storefront end to end — browse a cart, add to it, check out, see the order | `pnpm --filter e2e test:behavioural` | **proven** |
 | Duplicate checkout — 20 repeats, one order | `pnpm --filter api test:e2e` | phase 5 |
 | Duplicate payment webhook — one ledger transaction | `pnpm --filter api test:e2e` | phase 8 |
 | Outbox recovery — killed mid-flight, processed once | `pnpm --filter worker test:e2e` | phase 10 |
@@ -231,10 +236,15 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md), each with the beh
   screen instead of the shell**. `POST /organizations` was always there and the app never called it;
   it does now, and the caller becomes the owner.
 
+- **Phase 4 — cart and checkout.** One cart across sellers, checkout that creates each seller's
+  order atomically or none at all, the last-unit race held to exactly one winner across 20 runs of 100
+  concurrent buyers, cross-buyer and cross-tenant isolation on carts and orders, and a worker that
+  cancels an unpaid checkout after 30 minutes exactly once. The storefront grew with it: browse, cart,
+  checkout, and orders behind the BFF, and four real-browser journeys over real TLS.
+
 **In progress**
 
-- Phase 4: the multi-seller cart, all-or-nothing checkout, the stock-1 race, and a minimal worker
-  that cancels unpaid checkouts after 30 minutes.
+- Phase 5: request-scoped idempotency — one key, one operation, one response replayed.
 
 **Planned**
 
@@ -262,21 +272,23 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
 
 - **No published load numbers.** k6 results arrive in phase 13; until then there is nothing to measure
   and no number here to distrust.
-- **Seven tables, and concurrency is proven on exactly one of them.** `User`, `Organization`,
-  `OrganizationMember`, `Session`, `RefreshToken`, `Product` and `Inventory` exist. Each is exercised
-  by unit, e2e or integration tests — but the only concurrency claim made so far is the refresh race.
+- **Twelve tables, and concurrency is proven on three of them.** `User`, `Organization`,
+  `OrganizationMember`, `Session`, `RefreshToken`, `Product`, `Inventory`, `Cart`, `CartItem`,
+  `Checkout`, `Order` and `OrderItem` exist. The concurrency claims made so far are the refresh race,
+  the last-unit race (20 runs of 100 buyers), and overlapping carts under contention.
 - **Access tokens cannot be revoked.** Revocation applies to sessions and refresh tokens only, so a
   stolen access token remains valid until it expires — which is why the TTL is short.
 - **No email is sent by anything.** Member administration adds an existing user by email; invitations,
   delivery and password reset do not exist.
-- **The worker does not exist yet.** It arrives in phase 4 as a plain process that cancels unpaid
-  checkouts, and gains queues in phase 10. The boundary that forces `packages/runtime` is already in
-  place.
+- **The worker is one job and one queue.** It exists as a plain process that cancels an unpaid
+  checkout after 30 minutes, using a queue table and a transactional claim; it gains outbox,
+  subscriptions, payouts and audit in phases 10–11.
 - **Two themes ship, and a person chooses.** `apps/web` renders Quartz or Graphite from a cookie the
   server reads, so the page arrives painted. The default is light whatever the operating system says.
-- **The products page exists, and it is thin.** Name, status and price, for the organization the
-  session acts in. Editing, inventory and images are the catalog phase's work; the board is the
-  specification for the rest.
+- **The storefront is a buyer's path, not a shopfront.** Browse a seller's published products, add to
+  one cart, check out, and see your own orders — that is the whole surface. Search, addresses,
+  reviews, saved cards and delivery belong to later phases, and product editing is still an API-level
+  concern.
 - **One organization can be created, and only as the first one.** The onboarding screen closes that
   dead end. Creating a *second* organization for someone who already has one is not built — the BFF
   route supports it, and it is a button beside the switcher when it is wanted.
@@ -288,6 +300,10 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
   fixture workspace. Their globs were written relative to the repo root, and flat config resolves them
   against each package's own config directory, so they matched no real file. They are package-relative
   now, and a fixture package with its own config proves each fires where turbo actually runs it.
+- **Orders sit in `Pending payment` and go no further.** Payment is phase 6; until then a placed
+  order is a real order, visible to both sides, that nothing ever pays for.
+- **No idempotency key exists.** Checkout's exactly-once-ness is enforced by row locks and status
+  transitions, not by a key a client can replay — the request-scoped key arrives in phase 5.
 - **No visual regression testing.** No stable rendering environment; a flaky visual gate is worse than
   none.
 

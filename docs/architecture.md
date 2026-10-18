@@ -75,6 +75,9 @@ tested and documented, and extend the project only when the preceding exit gates
 3. Controllers translate transport input. Application services coordinate use cases. Domain logic
    enforces invariants.
 4. Modules do not modify another module's tables directly without an explicit application boundary.
+   Checkout's atomic writes to `inventory` and `cart_items` go through `InventoryRepository` and
+   `CartRepository`, sharing one transaction client (D93) — the boundary is the repository, not a
+   separate service.
 5. External providers are accessed through interfaces, so the deterministic simulator and the Stripe
    adapter can be swapped without touching callers.
 6. Every asynchronous consumer is safe under at-least-once delivery. Publication can be repeated;
@@ -122,17 +125,21 @@ and outbox write all commit atomically in one process and one database transacti
 demonstrates independent scaling of request and background workloads without paying for service
 decomposition, which the plan lists as a non-goal.
 
-The worker arrives in Phase 4 with one job: cancel checkouts still unpaid after 30 minutes and
-restore their stock. It is a plain process on an interval — no Redis, no queue — because the
-exactly-once guarantee comes from a conditional update on the checkout's status, not from the
-transport. Phase 10 adds BullMQ queues to the same process. The concrete consequence of the separate process — the worker cannot import `apps/api`, so
+The worker arrived in Phase 4 with one job: cancel checkouts still unpaid after 30 minutes and
+restore their stock. It is a plain process on an interval — no Redis, no queue — and its claims
+select due `checkouts` rows with `FOR UPDATE SKIP LOCKED`, so two runs divide the work instead of
+both taking it. The exactly-once guarantee comes from a conditional update on the checkout's
+status, not from the transport. Phase 10 adds BullMQ queues to the same process. The concrete
+consequence of the separate process — the worker cannot import `apps/api`, so
 shared plumbing lives in `packages/runtime` — is recorded in
 `docs/adr/0001-modular-monolith-with-worker.md`.
 
-`apps/web` serves both surfaces through one BFF: the operator UI under `/admin`, and the buyer
-storefront at the root. A buyer is a user with no organization membership; the storefront reads
+`apps/web` serves both surfaces through one Next.js app: the seller console under `/admin` (with
+`/dashboard` permanently redirected there), and the buyer storefront under `/browse`, `/cart`,
+`/checkout` and `/orders`. A buyer is a user with no organization membership; the storefront reads
 published products across organizations and the buyer's own cart and orders, never a tenant's
-private data.
+private data. The console's addresses and the storefront's do not collide, which is why one app can
+serve both without a route namespace split.
 
 ## Repository layout
 

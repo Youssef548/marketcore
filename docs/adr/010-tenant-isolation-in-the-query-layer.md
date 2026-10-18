@@ -88,10 +88,11 @@ The storefront adds two read paths that are not tenant reads, and each gets its 
 a hole in this one.
 
 - **Public catalog.** `GET /storefront/products[/:id]` reads `PUBLISHED` products across every active
-  organization. It is the one repository method allowed to read products without a `TenantContext`,
-  and its output is parsed through the `.strict()` `PublicProduct` contract schema — the schema is the
-  allowlist, so a private field cannot leave by accident. INV-9 is narrowed to say so: published
-  product fields and stock are public; drafts, orders, members and the ledger are not.
+  organization. **Buyer-side repositories — storefront, cart, checkout — read products only through
+  `PUBLIC_PRODUCT_WHERE`, and only their public fields leave the server.** Their output is parsed
+  through the `.strict()` `PublicProduct` contract schema — the schema is the allowlist, so a private
+  field cannot leave by accident. INV-9 is narrowed to say so: published product fields and stock are
+  public; drafts, orders, members and the ledger are not.
 - **Buyer scope.** Buyer routes are `@TenantFree()`. A guard builds a `BuyerContext` from the
   authenticated user id, and buyer-scoped repositories (cart, checkout, buyer orders) take it and
   compose their `where` from `buyerScope(buyer)` in `packages/domain` — the same shape as

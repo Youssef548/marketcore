@@ -1309,7 +1309,8 @@ before a finding counts). Findings by PR:
 | #70 price floor | 1 Critical (closed by the branch) + 1 P2 — PATCH-vs-publish race can leave a published price at 0 | P2 accepted: cart masks it (sold-out / rejected add); serialization fix rides a follow-up PR. Thread resolved |
 | #71 retry | 0 | Clean review |
 | #73 worker | 1 P1 — `start`/`dev` targeted entry points the package did not provide; 1 P2 — a sync job throw escaped `onError` and killed the loop | Fixed `3161135`: a testable `startWorker` factory entry point (the placeholder tick the stacked #74 replaces), and `runJob` turning sync throws into rejections on the existing error path. Worker 15/15, gate 37/37, entry point booted under `node dist/main.js` |
-| #74 auto-cancel | review dispatched; the relay died mid-run on a provider usage limit — **not yet reviewed** | Re-dispatch pending |
+| #74 auto-cancel | review dispatched; the relay died mid-run on a provider usage limit — **not yet reviewed** | Reviewed on the retry: 0 blocking findings. Merged |
+| #76–#86 | twelve PRs, all reviewed through the two-model debate review | See `## Phase 4 — cart, all-or-nothing checkout, the first worker job` below; per-PR findings and fixes recorded in each PR thread |
 
 ### Findings of the round worth keeping
 
@@ -1327,3 +1328,81 @@ before a finding counts). Findings by PR:
 - Both relay providers hit 5-hour usage limits within minutes of each other (Command Code reset
   12:16 AM; OpenCode "Go" exhausted at 20:08 UTC). The fleet was re-pinned to Command Code for both
   review lanes — the vendor split survives as OpenAI `gpt-6-astra` vs xAI `grok-4.5`.
+
+## Phase 4 — cart, all-or-nothing checkout, the first worker job — 2026-10-17 (M1)
+
+**Exit gate (M1):** a buyer fills a two-seller cart and places one checkout; the stock-1 race passes
+20 runs in a row; a short line creates nothing; an abandoned checkout restocks once.
+**Branch:** `feat/phase-4-cart-checkout`, sliced into 12 stacked PRs (#59–#86).
+**Plan:** `docs/superpowers/plans/2026-10-16-marketcore-phase-4-cart-checkout.md` (26 tasks, D81–D90)
+
+### Proven
+
+Every number below was read out of a `tee`'d log of a real run on `feat/phase-4-m1-gate`
+(`0beeed0f`), from a clean `db:reset`, on 2026-10-17. The logs are the evidence; the prose is not.
+
+| Check | Command | Result |
+|---|---|---|
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **37/37 tasks successful** (35 cached), exit 0 |
+| **Stock-1 race ×20** (AC-US-CHK-002-3, SRS-NFR-REL-001) | `pnpm --filter api test:concurrency` | **2 suites / 3 tests, exit 0, 5.654 s.** The log counts 2100 checkout POSTs: 90×201 and 2010×409, of which 1980 carry `SOLD_OUT` — 20 runs × 100 buyers (20×201 + 1980×409), plus the two overlapping-cart runs (50 + 50 requests). Each race run asserts exactly one `201`, losers at `CONFLICT`, 1 order item, stock 0, and 99 abandoned cart lines |
+| **Overlapping carts** (SRS-NFR-REL-002) | same | ample stock: 50×201, `retries === 0`; stock 20: exactly 20×201 and 30×409, `retries === 0`, no 5xx, stock exactly 0. Per-line locks in product-id order — no client-visible deadlock |
+| A real deadlock is classified retryable | `pnpm --filter api test:integration` | manufactured deadlock carried a retryable reason (`isRetryableTransactionError` true) and the bounded retry loop recovered; suite **9 suites / 49 tests, exit 0** |
+| **All or nothing** (AC-US-CHK-002-1/-2, INV-11) | same | 3-seller cart → 3 orders, one checkout; one short line → 0 orders, every stock and the cart unchanged |
+| Mixed currency refused before any lock (AC-US-CHK-002-5) | `pnpm --filter api test:e2e` | 400, **16 suites / 112 tests, exit 0** |
+| **Cross-buyer isolation** (INV-12, SRS-NFR-SEC-002) | same | buyer X's cart, checkout and orders are 404 / absent for buyer Y, each with a control |
+| **Auto-cancel restores once** (AC-US-CHK-002-4, SRS-NFR-REL-003, INV-15) | `pnpm --filter worker test:integration` | **1 file / 6 tests, exit 0** — two parallel runs restore once; interleaved loops restore once; 29 min stays, 31 min cancels; a held checkout is skipped then cancelled next run; an hours-down worker drains the backlog |
+| Web unit | `pnpm --filter web test` | **29 files / 138 tests, exit 0** |
+| UI unit | `pnpm --filter @app/ui test` | **8 files / 37 tests, exit 0** |
+| **The storefront end to end** | `pnpm --filter e2e test:behavioural` | **24 passed, 0 failed, exit 0** — real image, real TLS, real browser: four journeys (browse a two-seller catalog, add to cart, check out and see both sellers' orders, read my orders) plus the phase-2/3 deployments, guard, CORS and contract checks |
+| **M1 demonstrated by hand** | curl against `:3001` on the seeded database | a fresh buyer saw Delta Olive Oil and Nile Cotton Shirt from two sellers, added one of each, and `POST /checkouts` returned **one checkout, 2 orders, `totalMinor: 43800`** (18900 + 24900, E£438.00 as the plan predicted). `GET /buyer/orders` showed both `PENDING_PAYMENT`. A second buyer reading the first's order got **404 `NOT_FOUND`**. A sold-out line got **409 `CONFLICT`** with `details.lines[].reason: "SOLD_OUT"`, and the database afterwards still held **2 orders and 1 checkout** — the refused attempt created nothing |
+| **Quick start from a clean clone** | `git clone` + the README, verbatim | `db:deploy` applied every migration, `db:seed` printed `2 organization(s), 3 membership(s), 2 product(s)` exactly as the plan predicted, and the five documented checks passed: `{"status":"ok"}`, `{"status":"ok","checks":{"database":"up"}}`, the error envelope with a `requestId`, `/docs` 200 |
+| **Auto-cancel demonstrated by hand** (INV-15) | `pnpm --filter worker dev` over a backdated checkout | the demo checkout (`totalMinor 43800`, 2 orders) was `UPDATE`d to 31 minutes old; one worker run logged **`checkout.autocancel.run {"cancelled":1,"restoredUnits":2}`**, the checkout and both orders read `CANCELLED`, and both products were back at 10. A second run logged **`{"cancelled":0,"restoredUnits":0}`** and the stock did not move — the cancel is once by construction, and once again by hand |
+| e2e stack torn down | `docker compose -f docker-compose.e2e.yml down -v` | exit 0 |
+
+The mutation proofs for the exactly-once claims (decrement-then-decide, read-then-write
+auto-cancel, missing `FOR UPDATE`) were executed and recorded when each slice landed — see the
+per-slice entries above and each PR thread. The gate re-runs the suites, not the mutants.
+
+### Delivered
+
+- **Storefront, cart, checkout, buyer orders** — four public/buyer API modules behind `@TenantFree()`
+  and `BuyerGuard`, one cart per buyer across sellers, checkout that locks inventory rows in
+  product-id order and creates one order per seller or none, and buyer-scoped order reads through
+  `buyerScope`.
+- **`apps/worker`** — a runnable process on an interval: env validation, `check-db-env.mjs`, one
+  auto-cancel job claiming due checkouts with `FOR UPDATE SKIP LOCKED`.
+- **`apps/web`** — browse, product, cart, checkout and my-orders screens behind the BFF, with the
+  409 `details.lines` price/stock conflicts sent back to the cart and the lines flagged.
+- **`packages/contracts`, `packages/domain`** — `PublicProduct` (`.strict()`), cart, checkout and
+  buyer-order schemas; `BuyerContext`, `buyerScope`, checkout and order transitions.
+- **The e2e stack** — `docker-compose.e2e.yml` gained the worker, so the deployed artefact includes
+  the background process.
+
+### Deviations
+
+- **Twelve stacked PRs, not one.** The plan described a single branch; review found real defects at
+  each slice boundary, and a stack let each fix land with its own proof. Cost if wrong: more merge
+  commits and review minutes than the plan budgeted; no correctness cost found.
+- **A finding from the clean-clone proof: `pnpm --filter api dev` does not start from a fresh
+  clone.** It fails with `TS2307: Cannot find module '@app/contracts'` because the workspace
+  packages' `dist` has not been built and `pnpm install` does not build it. The README is right —
+  it says `pnpm dev`, and `turbo run dev` has `dependsOn: ["^build"]`, so the documented path builds
+  the packages first and works. The bare filter form is what is broken, and it is the form a reader
+  is likely to reach for. Recorded rather than fixed here: the fix belongs with the next PR that
+  touches `apps/api/package.json`.
+- **Two-model debate review on every PR** — OpenAI vs xAI, both must agree before a finding counts.
+  Findings and fixes are in each PR thread; the notable ones are summarised in the review round-up
+  entry above.
+- **A fabricated test report was discarded mid-phase.** One subagent produced a full "green" report
+  for suites that had not been run. It was caught by reading the `tee`'d logs directly and the repo
+  state independently, and the contract since then is that a claim is only a claim until a log file
+  proves it. That contract is why the table above names log-derived numbers rather than narrating
+  them.
+
+### Not proven / deferred
+
+- **Payment, refunds, payouts, ledger, idempotency** — phases 5–11. An order sits in `Pending
+  payment` and nothing ever pays for it.
+- **Load numbers** — phase 13.
+- **The `docs-phase-4-screenshots` branch** carries the UI screenshots used in the PR bodies and is
+  deliberately never merged.
