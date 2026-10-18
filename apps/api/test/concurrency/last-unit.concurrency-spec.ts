@@ -5,6 +5,7 @@ import {
   CheckoutConflictReasons,
   CheckoutLineConflictDetailsSchema,
   ErrorCodes,
+  IDEMPOTENCY_KEY_HEADER,
 } from '@app/contracts';
 import { AppModule } from '../../src/app.module';
 import { configureApp } from '../../src/app.setup';
@@ -23,6 +24,11 @@ jest.setTimeout(600_000);
 const RACE_RUNS = 20;
 const RACERS = 100;
 const PRICE_MINOR = 1000;
+/**
+ * One key string, and every racer a different buyer, so the keys never meet (D99).
+ * These racers are competing for stock, not retrying each other.
+ */
+const ATTEMPT_KEY = 'last-unit';
 
 describe('the last unit (concurrency)', () => {
   let app: INestApplication;
@@ -54,7 +60,13 @@ describe('the last unit (concurrency)', () => {
       const body = { lines: [{ productId: product.id, quantity: 1, unitPriceMinor: PRICE_MINOR }] };
 
       const responses = await Promise.all(
-        buyers.map((buyer) => request(baseUrl).post('/api/v1/checkouts').set(bearer(buyer.token)).send(body)),
+        buyers.map((buyer) =>
+          request(baseUrl)
+            .post('/api/v1/checkouts')
+            .set(bearer(buyer.token))
+            .set(IDEMPOTENCY_KEY_HEADER, ATTEMPT_KEY)
+            .send(body),
+        ),
       );
 
       const statuses: Record<number, number> = {};
