@@ -70,12 +70,26 @@ function contrast(a: Rgb, b: Rgb): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
+/**
+ * Signs in on the way to the console.
+ *
+ * `next` is explicit because a signed-in visitor with nothing to return to now lands
+ * on the storefront (D101). Every caller below goes on to use the console, so this
+ * asks for it rather than assuming the default.
+ */
 async function signIn(page: Page, email: string) {
-  await page.goto(`${WEB}/login`);
+  await page.goto(`${WEB}/login?next=%2Fadmin`);
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(TEST_PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page).toHaveURL(/\/admin/);
+}
+
+async function signInWithNothingToReturnTo(page: Page, email: string) {
+  await page.goto(`${WEB}/login`);
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password').fill(TEST_PASSWORD);
+  await page.getByRole('button', { name: 'Sign in' }).click();
 }
 
 /**
@@ -163,6 +177,19 @@ test.describe('web: the session in a real browser', () => {
     expect(luminance(darkBackground), 'the chosen theme is dark').toBeLessThan(0.3);
     expect(contrast(darkBackground, darkText), 'body text clears 4.5:1 in the dark theme')
       .toBeGreaterThanOrEqual(4.5);
+  });
+
+  test('lands a signed-in visitor on the storefront, not the console (D101)', async ({ page }) => {
+    // The seeded owner has an organization, so this is about the default destination
+    // rather than about the first-run screen: even someone who *can* use the console is
+    // sent to the products first, and reaches the console from the rail.
+    await signInWithNothingToReturnTo(page, 'owner@marketcore.test');
+    await expect(page).toHaveURL(/\/browse$/);
+
+    // The front door agrees, which is the other half of D91: `/` is a redirect and
+    // nothing else, and it must send a session to the same place the form does.
+    await page.goto(`${WEB}/`);
+    await expect(page).toHaveURL(/\/browse$/);
   });
 
   test('lists the products of the organization the session acts in', async ({ page }) => {

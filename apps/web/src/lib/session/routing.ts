@@ -18,6 +18,16 @@ export const LOGIN_PATH = '/login';
 export const REGISTER_PATH = '/register';
 
 /**
+ * Where a signed-in visitor lands when nothing more specific was asked for (D101).
+ *
+ * The storefront, not the console: a buyer who signed in to look at products has no
+ * organization and no use for a console whose every control says "choose an organization
+ * first". The console is still one address away, and `/admin` is still where an
+ * organization is created — this only decides the default destination.
+ */
+export const STOREFRONT_PATH = '/browse';
+
+/**
  * The console's old URLs, and where they live now.
  *
  * `/dashboard` and `/products` were the console's address for two phases, so a
@@ -80,7 +90,7 @@ export function decideRoute(pathname: string, signedIn: boolean): RoutingDecisio
   // A signed-in visitor has no use for the credential pages; the API would refuse
   // the login they submitted anyway.
   if (signedIn && isCredentialPage(pathname)) {
-    return { kind: 'redirect', to: ADMIN_PATH };
+    return { kind: 'redirect', to: STOREFRONT_PATH };
   }
 
   return { kind: 'next' };
