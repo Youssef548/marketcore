@@ -11,6 +11,7 @@ export * from './fee';
 export * from './checkout-policy';
 export * from './checkout';
 export * from './idempotency';
+export * from './payments';
 
 export * from './password';
 export * from './password.interface';

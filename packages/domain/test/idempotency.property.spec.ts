@@ -11,10 +11,18 @@ const aLine = fc.record({
   unitPriceMinor: fc.integer({ min: 1, max: 1_000_000 }),
 });
 
+/**
+ * Only lines the wire can carry: `CheckoutRequestSchema` refuses two lines for one
+ * product, so a duplicate is not a request this function will ever see. It mattered —
+ * `sort` is stable, so two permutations of duplicate ids keep their relative order and
+ * the fingerprints differ, which made this property fail on some seeds and not others.
+ */
+const lines = fc.uniqueArray(aLine, { maxLength: 12, selector: (line) => line.productId });
+
 describe('checkoutRequestFingerprint properties (D96)', () => {
   it('is invariant under any permutation of the lines', () => {
     fc.assert(
-      fc.property(fc.array(aLine, { maxLength: 12 }), (lines) => {
+      fc.property(lines, (lines) => {
         const shuffled = fc.sample(fc.shuffledSubarray(lines, { minLength: lines.length }), 1)[0]!;
         return checkoutRequestFingerprint(linesOf(shuffled)) === checkoutRequestFingerprint(linesOf(lines));
       }),
@@ -23,7 +31,7 @@ describe('checkoutRequestFingerprint properties (D96)', () => {
 
   it('always produces a JSON object with one entry per line and the three wire fields', () => {
     fc.assert(
-      fc.property(fc.array(aLine, { maxLength: 12 }), (lines) => {
+      fc.property(lines, (lines) => {
         const parsed = JSON.parse(checkoutRequestFingerprint(linesOf(lines))) as {
           lines: { productId: string; quantity: number; unitPriceMinor: number }[];
         };

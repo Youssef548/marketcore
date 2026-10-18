@@ -98,10 +98,10 @@ describe('wire constants', () => {
   });
 });
 
-describe('phase-4 value sets', () => {
-  it('a checkout and an order share the same two reachable states (D84)', () => {
-    expect(Object.values(CheckoutStatuses).sort()).toEqual(['CANCELLED', 'PENDING_PAYMENT']);
-    expect(Object.values(OrderStatuses).sort()).toEqual(['CANCELLED', 'PENDING_PAYMENT']);
+describe('the checkout and order value sets', () => {
+  it('a checkout and an order share the same three reachable states (D84, D102)', () => {
+    expect(Object.values(CheckoutStatuses).sort()).toEqual(['CANCELLED', 'PAID', 'PENDING_PAYMENT']);
+    expect(Object.values(OrderStatuses).sort()).toEqual(['CANCELLED', 'PAID', 'PENDING_PAYMENT']);
   });
 
   it('states the payment window once, for the API, the worker and the placed screen (D70)', () => {

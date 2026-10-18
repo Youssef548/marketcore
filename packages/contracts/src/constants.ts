@@ -91,11 +91,12 @@ export const SLUG_MIN_LENGTH = 3;
 export const SLUG_MAX_LENGTH = 50;
 
 /**
- * A checkout's states in phase 4 (D84). `PAID` arrives in phase 6 with the first
- * code that can write it — a state no operation can enter is scaffolding.
+ * A checkout's states (D84, D102). `PAID` arrived in phase 6 with the capture that can
+ * write it; it is entered only by settling a payment, never by a client.
  */
 export const CheckoutStatuses = {
   PENDING_PAYMENT: 'PENDING_PAYMENT',
+  PAID: 'PAID',
   CANCELLED: 'CANCELLED',
 } as const;
 export type CheckoutStatus = (typeof CheckoutStatuses)[keyof typeof CheckoutStatuses];
@@ -103,9 +104,35 @@ export type CheckoutStatus = (typeof CheckoutStatuses)[keyof typeof CheckoutStat
 /** Every order of a checkout moves with it (domain-model §5), so the sets are equal. */
 export const OrderStatuses = {
   PENDING_PAYMENT: 'PENDING_PAYMENT',
+  PAID: 'PAID',
   CANCELLED: 'CANCELLED',
 } as const;
 export type OrderStatus = (typeof OrderStatuses)[keyof typeof OrderStatuses];
+
+/**
+ * A payment's states (D102). There is no `PENDING`: the row is created *by* the attempt,
+ * so nothing can observe a payment between "created" and "attempted", and a state no
+ * operation can enter is scaffolding. `PARTIALLY_REFUNDED` arrives with phase 9's
+ * per-order refunds.
+ */
+export const PaymentStatuses = {
+  PROCESSING: 'PROCESSING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+} as const;
+export type PaymentStatus = (typeof PaymentStatuses)[keyof typeof PaymentStatuses];
+
+/**
+ * The typed refusals a payment answers with (D106, D107), carried in
+ * `error.details.reason` exactly as the checkout refusals are — one way for a client to
+ * read a refusal, whichever operation produced it.
+ */
+export const PaymentRefusals = {
+  PAYMENT_DECLINED: 'PAYMENT_DECLINED',
+  CHECKOUT_CANCELLED: 'CHECKOUT_CANCELLED',
+} as const;
+export type PaymentRefusal = (typeof PaymentRefusals)[keyof typeof PaymentRefusals];
 
 /**
  * How long a checkout may stay unpaid before the worker cancels it (D70).
