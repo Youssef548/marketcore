@@ -55,7 +55,8 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 | Order | id, checkoutId, organizationId, buyerId, status, totalMinor, currency | One seller per order; totals immutable after creation; unique (checkoutId, organizationId) is a database constraint, not only a code path | 4 |
 | OrderItem | orderId, productId, quantity, unitPriceMinor, productName | Positive quantity; snapshotted price and name | 4 |
 | IdempotencyKey | id, buyerId, key, requestFingerprint, checkoutId, createdAt | Unique (buyerId, key); unique checkoutId; `checkoutId` is `NOT NULL` behind a **deferred** foreign key; key length 1–64 is a CHECK (see `‡`) | 5 |
-| Payment | id, checkoutId, status, amountMinor, currency, providerRef | One logical capture per checkout | 6 |
+| Payment | id, checkoutId, status, amountMinor, currency, attempts, providerRef, refundedReason, capturedAt | Unique `checkoutId`; unique `providerRef`; a positive amount and a non-negative attempt count are CHECKs, and `refundedReason`/`capturedAt` are present exactly when the status says so (see `§`)| 6 |
+| ProviderCharge | operationKey, providerRef, amountMinor, currency, capturedAt | Primary key is the operation key: one row per provider operation, written before the verdict is returned | 6 |
 | PaymentAttempt | paymentId, attempt, status, request, response | Unique provider operation key | 6 |
 | WebhookEvent | provider, eventId, type, payload, status | Unique (provider, eventId) | 6 |
 | LedgerAccount | id, organizationId, type, currency, ownerRef | Unique account identity and currency | 8 |

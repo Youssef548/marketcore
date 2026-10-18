@@ -50,9 +50,9 @@ what they consume — a checkout's payment instead of an order's.
 | T-060 | `GET /buyer/orders[/:id]` through `buyerScope` — **done**, `f286ec4` (#80) | US-BORD-001, -002 | SRS-FR-BORD-001 … 003 | S | T-040 |
 | T-061 | Web: my orders and buyer order detail (Stitch 017, 003) — **done**, `66c4031` (#85) | US-BORD-001, -002 | — | M | T-042, T-060 |
 | T-070 | Idempotency: `IdempotencyKey (buyerId, key)`, replay and body-mismatch — **done**, `cfc0f51` (#89–#98) | US-CHK-003 | SRS-FR-CHK-008 | M | T-040 |
-| T-080 | Payment per checkout through the simulator; capture locks the checkout; capture-after-cancel refunds | US-PAY-001 | SRS-FR-PAY-001, -003, -004 | L | T-051, T-070 |
+| T-080 | Payment per checkout through the simulator; capture locks the checkout; capture-after-cancel refunds — **done**, `58ac2c6` (#100–#111, open for review) | US-PAY-001 | SRS-FR-PAY-001, -003, -004 | L | T-051, T-070 |
 | T-081 | Ledger posting of the split (seller shares + fee) | US-PAY-002 | SRS-FR-PAY-002 | M | T-080, phase 8 ledger |
-| T-082 | Web: payment step on the review screen | US-PAY-001 | — | M | T-042, T-080 |
+| T-082 | Web: payment step on the review screen — **done**, `58ac2c6` (#111) | US-PAY-001 | — | M | T-042, T-080 |
 | T-090 | `POST /buyer/orders/:id/refund-requests`; `approve`/`reject` (`@OwnerOnly`); per-order ledger reversal | US-REF-001, -002 | SRS-FR-REF-001 … 004 | L | T-081, phase 9 refunds |
 | T-091 | Web: request refund on buyer order detail; approve/reject on Refunds (Stitch 020) | US-REF-001, -002 | — | M | T-061, T-090 |
 
@@ -77,7 +77,7 @@ their endpoint exists.
 | M0 — one look | The four shipped pages and the shared shell on Stitch layouts, both themes | D74 | `pnpm turbo run lint typecheck test build`, behavioural suite |
 | M1 — phase-4 gate | A buyer fills a two-seller cart and places one checkout; the stock-1 race passes 20 runs in a row; a short line creates nothing; an abandoned checkout restocks once | F-CAT, F-CART, F-CHK, F-BORD, D70 | `pnpm --filter api test:concurrency`, `test:integration`, `test:e2e`; `pnpm --filter worker test:integration` — **met 2026-10-17**, all four suites green from a clean DB; evidence in the Phase 4 entry of `docs/superpowers/STATUS.md` |
 | M2 — phase-5 gate | 20 repeats of one key make one checkout | SRS-FR-CHK-008 | `pnpm --filter api test:e2e` — **met 2026-10-18**: the case named in the output (`Tests: 124 skipped, 1 passed` for `-t "twenty repeats of one key"`), the e2e suite green at 17 suites / 125 tests, and the 100-simultaneous repeats green in `test:concurrency`; evidence in the Phase 5 entry of `docs/superpowers/STATUS.md` |
-| M3 — phases 6–8 gate | One charge pays a two-seller checkout; the ledger split sums to zero; capture-after-cancel refunds | F-PAY-01 | `pnpm --filter api test:integration` |
+| M3 — phases 6–8 gate | One charge pays a two-seller checkout; the ledger split sums to zero; capture-after-cancel refunds | F-PAY-01 | `pnpm --filter api test:integration` — **still open by design**: phase 6 proves the first and third clauses; the second is T-081, which the task table above binds to phase 8's ledger |
 | M4 — phase-9 gate | A buyer's refund request, approved by one seller, leaves the other seller untouched; racing refunds never exceed the capture | F-REF-01 | `pnpm --filter api test:integration` |
 
 Release 1 is done at M4. Release 2 starts after phase 11's gate.

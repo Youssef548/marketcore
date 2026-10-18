@@ -359,4 +359,10 @@ export const PayCheckoutOutcomes = {
 
 | Where | What was wrong | What changed |
 |---|---|---|
-| — | none yet | — |
+| The plan's outcome list (task 4) | It had four outcomes; a provider timeout is a fifth thing the buyer must be told, and "declined" or "paid" would both be lies. | **D111**: a timeout answers `PENDING`, writes nothing, and the row stays `PROCESSING`. The wire refusal (`PAYMENT_PENDING`) landed in #108. |
+| ADR 004's port (task 4) | The port could only capture, so a capture meeting a cancelled checkout could not learn whether an earlier attempt had already charged — and asking by capturing again would charge again. | **D112**: the port gained `lookup`, which is also what real providers expose. It closed the hole the first review round found in D107. |
+| The success shape (task 5) | The plan did not say what the route answers on success. | The **checkout**, read back, so a replay shows the checkout as it is now and a retry is indistinguishable from a first attempt (#109). |
+| `createSeller()` in a spec (task 4b) | Called with no argument: typechecked under `ts-jest`, rejected by `tsc`. | The label is passed. Worth recording: ts-jest is not a typechecker, and `turbo run typecheck` is what caught it. |
+| The concurrency fixture (task 6) | Built a checkout whose order had **no items**, so the route's own response failed `CheckoutSchema` and fifty payments answered 500. | The fixture creates an order item. The contract refused to serialize a checkout that could not exist. |
+| A key built from a JWT (task 5) | An e2e helper derived the idempotency key from the buyer's token; a JWT's dots are not in the key's alphabet, so every placement was a 400. | A fresh key per attempt. |
+| `git` branch hygiene (process) | Task 2's work was pushed under a branch name that did not exist locally, and once committed onto an already-merged branch. | Both recovered; recorded because the second would have re-merged work that was already on `main`. |

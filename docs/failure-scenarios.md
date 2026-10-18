@@ -15,10 +15,10 @@ hope.
 | Client times out after checkout commit | Retry returns the original operation | Repeated-checkout idempotency test (INV-2, AC-US-CHK-003-1) — `apps/api/test/idempotency.e2e-spec.ts` (20 repeats, one key), `apps/api/test/concurrency/idempotency.concurrency-spec.ts` (100 reports arriving at once, 10 runs) | phase 5 |
 | A buyer double-clicks "Place order" | One checkout, and both responses name it | Duplicate-click idempotency test (INV-2, D95) — `apps/api/test/idempotency.e2e-spec.ts`; the first claim is the transaction's step 0, so the loser blocks on the uncommitted unique index entry and then replays | phase 5 |
 | The same key arrives with a different cart | `409 CONFLICT`, `details.reason: KEY_REUSED`; the first checkout untouched | Fingerprint mismatch test (SRS-FR-CHK-008, D96) — `apps/api/test/idempotency.e2e-spec.ts` | phase 5 |
-| Payment provider times out | Job retries safely without duplicate capture | Simulator timeout scenario | 4 |
+| Payment provider times out | Job retries safely without duplicate capture | Deterministic timeout amount (`%100 == 17`) — `apps/api/test/integration/payment-capture.integration-spec.ts`, `apps/api/test/payments.e2e-spec.ts`: the charge is recorded, the caller is told `PAYMENT_PENDING`, and the retry settles on the charge rather than making a second | phase 6 |
 | Webhook is duplicated | Duplicate is stored or ignored without repeated effects | Unique event constraint test (INV-4) | 5 |
 | Webhook arrives out of order | State machine applies or ignores it safely | Ordered and reordered event tests | 5 |
-| Worker crashes after provider success | Recovery reconciles the provider outcome and records it once | Kill worker at controlled checkpoint (INV-10) | 8 |
+| Worker crashes after provider success | Recovery reconciles the provider outcome and records it once | The provider's lookup answers what the key already did (D112) — `apps/api/test/integration/payment-capture.integration-spec.ts`: a `PROCESSING` row beside a recorded charge is refunded, never charged again | phase 6 |
 | Redis is unavailable | Core database remains consistent and work is recoverable | Dependency outage test and runbook | 8 |
 | Database deadlock occurs | Bounded retry handles retryable transaction failure | Forced lock-order test | 3 |
 | Email sending fails | Payment and ledger remain successful | Notification retry test | 10 |
