@@ -50,10 +50,10 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 | Product | id, organizationId, name, priceMinor, currency, status | Tenant-scoped product access | 3 |
 | Inventory | productId, available, reserved, version | Non-negative quantities; unique productId. `reserved` stays 0 — stock is decided at checkout, never held | 3 |
 | Cart | id, buyerId, updatedAt | One per buyer | 4 |
-| CartItem | cartId, productId, quantity | Quantity 1–10; unique (cartId, productId) | 4 |
+| CartItem | cartId, productId, quantity, addedUnitPriceMinor | Quantity 1–10; unique (cartId, productId); the unit price at the moment the line was added, so a later price change is detectable | 4 |
 | Checkout | id, buyerId, status, totalMinor, currency, placedAt | One currency; groups one order per seller; owns the payment | 4 |
-| Order | id, checkoutId, organizationId, buyerId, status, totalMinor, currency | One seller per order; totals immutable after creation | 4 |
-| OrderItem | orderId, productId, quantity, unitPriceMinor | Positive quantity; snapshotted price | 4 |
+| Order | id, checkoutId, organizationId, buyerId, status, totalMinor, currency | One seller per order; totals immutable after creation; unique (checkoutId, organizationId) is a database constraint, not only a code path | 4 |
+| OrderItem | orderId, productId, quantity, unitPriceMinor, productName | Positive quantity; snapshotted price and name | 4 |
 | IdempotencyKey | buyerId, key, requestHash, status, response | Unique (buyerId, key) | 5 |
 | Payment | id, checkoutId, status, amountMinor, currency, providerRef | One logical capture per checkout | 6 |
 | PaymentAttempt | paymentId, attempt, status, request, response | Unique provider operation key | 6 |
@@ -158,6 +158,10 @@ it, and a state no endpoint can enter is scaffolding. It arrives with the operat
 | Pending payment → Cancelled (checkout unpaid 30 minutes; stock restored) | Cancelled → Paid |
 | Paid → Fulfilling | |
 | Fulfilling → Completed | |
+
+Phase 4 ships only the two states at the top of the table — `Pending payment` and `Cancelled` —
+because payment is phase 6 (D84). The later transitions are specified here so the states that arrive
+have somewhere to go, not because an endpoint can enter them today.
 
 Every order of a checkout moves together on payment and on cancellation.
 

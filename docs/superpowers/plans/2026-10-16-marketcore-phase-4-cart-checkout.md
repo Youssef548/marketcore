@@ -9414,7 +9414,7 @@ git commit -m "test(e2e): journeys 1 and 2 in a real browser, and the worker res
 - Consumes: everything.
 - Produces: the M1 STATUS entry and a pull request.
 
-- [ ] **Step 1: Run every gate command from a clean database and keep the output**
+- [x] **Step 1: Run every gate command from a clean database and keep the output**
 
 ```bash
 docker compose up -d
@@ -9446,7 +9446,7 @@ Expected, line by line:
 Copy the real counts and durations; an expectation above that does not match is either a plan
 defect (record it at the end of this document) or a code defect (fix the code).
 
-- [ ] **Step 2: Demonstrate M1 by hand once**
+- [x] **Step 2: Demonstrate M1 by hand once**
 
 With `docker compose up -d`, `pnpm --filter api dev`, `pnpm --filter worker dev`, `pnpm --filter web dev`:
 register a new user, open `/browse`, add **Nile Cotton Shirt** and **Delta Olive Oil** (seeded, stock 10
@@ -9457,7 +9457,7 @@ and within a minute the worker logs `checkout.autocancel.run` with `"cancelled":
 `Cancelled` on My orders and both stocks are back at 10. This is M1's claim in one sitting a
 reviewer can repeat.
 
-- [ ] **Step 3: Prove the quick start from a clean clone**
+- [x] **Step 3: Prove the quick start from a clean clone**
 
 ```bash
 git clone "$PWD" "$TMPDIR/mc-p4" && cd "$TMPDIR/mc-p4"
@@ -9470,7 +9470,7 @@ pnpm turbo run lint typecheck test build
 Expected: every command succeeds with no edits. (Use the session scratchpad if `$TMPDIR` is not
 writable.)
 
-- [ ] **Step 4: Bring the documents level with the code**
+- [x] **Step 4: Bring the documents level with the code**
 
 Edit only what this phase made true or false — each line cites its decision:
 

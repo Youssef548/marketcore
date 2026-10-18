@@ -21,11 +21,11 @@ hope.
 | Database deadlock occurs | Bounded retry handles retryable transaction failure | Forced lock-order test | 3 |
 | Email sending fails | Payment and ledger remain successful | Notification retry test | 10 |
 | Two payout workers race | One claim and one provider call | Concurrent worker integration test (INV-8) | 9 |
-| One line of a multi-seller checkout is short of stock | No order, no stock change, every failing line reported | All-or-nothing checkout test (INV-11) | phase 4 |
-| A price changes after the buyer confirmed it | Checkout refused with `PRICE_CHANGED`; nothing committed | Confirmed-price mismatch test (SRS-FR-CHK-003) | phase 4 |
-| Overlapping carts lock the same rows in different orders | Rows lock in product-id order; no deadlock reaches the client | Overlapping-cart concurrency test (SRS-NFR-REL-002) | phase 4 |
-| Two auto-cancel runs see the same expired checkout | Cancelled once, stock restored once | Parallel worker-run test (INV-15) | phase 4 |
-| The worker is down past the 30-minute window | Unpaid checkouts are cancelled on the next run; nothing is lost, only late | Worker-restart test | phase 4 |
+| One line of a multi-seller checkout is short of stock | No order, no stock change, every failing line reported | All-or-nothing checkout test (INV-11) — `apps/api/test/integration/checkout.integration-spec.ts` | phase 4 |
+| A price changes after the buyer confirmed it | Checkout refused with `PRICE_CHANGED`; nothing committed | Confirmed-price mismatch test (SRS-FR-CHK-003) — `apps/api/test/checkout.e2e-spec.ts` | phase 4 |
+| Overlapping carts lock the same rows in different orders | Rows lock in product-id order; no deadlock reaches the client | Overlapping-cart concurrency test (SRS-NFR-REL-002) — `apps/api/test/concurrency/overlapping-carts.concurrency-spec.ts` | phase 4 |
+| Two auto-cancel runs see the same expired checkout | Cancelled once, stock restored once | Parallel worker-run test (INV-15) — `apps/worker/test/auto-cancel.integration-spec.ts` | phase 4 |
+| The worker is down past the 30-minute window | Unpaid checkouts are cancelled on the next run; nothing is lost, only late | Worker-restart test — `apps/worker/test/auto-cancel.integration-spec.ts` | phase 4 |
 | A payment captures after the checkout was auto-cancelled | No order becomes Paid; the capture is refunded in full | Capture-after-cancel test (SRS-FR-PAY-004) | phase 6 |
 | Two sellers' refunds race against one payment | Cumulative refunds never exceed the capture | Multi-seller refund-cap test (INV-5) | phase 9 |
 
@@ -37,17 +37,17 @@ accordingly.
 
 | Test | Setup | Assertions | Week | Shapes design |
 |---|---|---|---|---|
-| Last item race | Stock 1, 100 concurrent checkout requests | One success, 99 conflicts, stock 0, one order | 3 | **yes** — forces row lock inside a short transaction |
-| Repeated checkout | Same request and key submitted 20 times | One order, one reservation, one payment intent | 4 | |
+| Last item race | Stock 1, 100 concurrent checkout requests × 20 runs | One success, 99 conflicts, stock 0, one order — every run | 3 | **yes** — forces row lock inside a short transaction |
+| Repeated checkout | Same request and key submitted 20 times | One order, one reservation, one payment intent | 5 | |
 | Duplicate payment webhook | Same provider event delivered repeatedly | One state transition, one ledger transaction | 5 | |
 | Ledger balance | Generate captures, refunds, and payouts | Every transaction sums to zero by currency | 8 | |
 | Outbox crash recovery | Crash after commit, before publication acknowledgement | Event is published after recovery, effect occurs once | 8 | **yes** — forces claim leases |
 | Tenant isolation | User from tenant A requests tenant B resource | Not found or forbidden, without data leakage | 2 | |
 | Payout race | Two workers claim the same eligible payout | Provider transfer is initiated once | 9 | **yes** — forces a single atomic claim |
 | Refund cap | Concurrent refunds exceed the captured amount | Only the valid cumulative amount succeeds | 9 | |
-| All-or-nothing checkout | 3-seller cart, one line short | 0 orders, every stock unchanged, every failing line reported | phase 4 | **yes** — forces one transaction across sellers |
-| Cross-buyer isolation | Buyer X requests buyer Y's cart, checkout, order | 404, never data; X reads X's own | phase 4 | |
-| Abandoned checkout | Two worker runs over expired unpaid checkouts | Each cancelled once; stock restored once | phase 4 | **yes** — forces the conditional update |
+| All-or-nothing checkout | 3-seller cart, one line short | 0 orders, every stock unchanged, every failing line reported | phase 4 | **yes** — forces one transaction across sellers (`apps/api/test/integration/checkout.integration-spec.ts`) |
+| Cross-buyer isolation | Buyer X requests buyer Y's cart, checkout, order | 404, never data; X reads X's own | phase 4 | (`apps/api/test/cart.e2e-spec.ts`, `apps/api/test/buyer-orders.e2e-spec.ts`) |
+| Abandoned checkout | Two worker runs over expired unpaid checkouts | Each cancelled once; stock restored once | phase 4 | **yes** — forces the conditional update (`apps/worker/test/auto-cancel.integration-spec.ts`) |
 
 ## 3. How the two views relate
 
