@@ -70,12 +70,26 @@ function contrast(a: Rgb, b: Rgb): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
+/**
+ * Signs in on the way to the console.
+ *
+ * `next` is explicit because a signed-in visitor with nothing to return to now lands
+ * on the storefront (D101). Every caller below goes on to use the console, so this
+ * asks for it rather than assuming the default.
+ */
 async function signIn(page: Page, email: string) {
-  await page.goto(`${WEB}/login`);
+  await page.goto(`${WEB}/login?next=%2Fadmin`);
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(TEST_PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
   await expect(page).toHaveURL(/\/admin/);
+}
+
+async function signInWithNothingToReturnTo(page: Page, email: string) {
+  await page.goto(`${WEB}/login`);
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password').fill(TEST_PASSWORD);
+  await page.getByRole('button', { name: 'Sign in' }).click();
 }
 
 /**
@@ -165,6 +179,37 @@ test.describe('web: the session in a real browser', () => {
       .toBeGreaterThanOrEqual(4.5);
   });
 
+  test('lands a signed-in visitor on the storefront, not the console (D101)', async ({ page }) => {
+    // The seeded owner has an organization, so this is about the default destination
+    // rather than about the first-run screen: even someone who *can* use the console is
+    // sent to the products first, and reaches the console from the rail.
+    await signInWithNothingToReturnTo(page, 'owner@marketcore.test');
+    await expect(page).toHaveURL(/\/browse$/);
+
+    // The front door agrees, which is the other half of D91: `/` is a redirect and
+    // nothing else, and it must send a session to the same place the form does.
+    await page.goto(`${WEB}/`);
+    await expect(page).toHaveURL(/\/browse$/);
+  });
+
+  test('a buyer with no organization can still reach Start selling (D101)', async ({ page, request }) => {
+    // The regression this change could have caused, in a real browser: the front door no
+    // longer leads to the console, and the console is where an organization is created.
+    // Without the storefront's own link, a new user would land on /browse — a storefront
+    // for a shop they do not have — with no way to the screen that creates one.
+    const email = `${unique('newseller')}@marketcore.test`;
+    expect((await request.post(`${API}/auth/register`, { data: credentials(email) })).status()).toBe(201);
+
+    await signInWithNothingToReturnTo(page, email);
+    await expect(page).toHaveURL(/\/browse$/);
+
+    await page.getByRole('link', { name: 'Start selling' }).click();
+
+    await expect(page).toHaveURL(/\/admin/);
+    await expect(page.getByRole('heading', { name: 'Start selling' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Start selling' })).toBeVisible();
+  });
+
   test('lists the products of the organization the session acts in', async ({ page }) => {
     // The seeded owner belongs to Nile Traders alone, so the organization resolves
     // without asking and the catalog is deterministic.
@@ -213,7 +258,7 @@ test.describe('web: the session in a real browser', () => {
     await expect(first.getByRole('cell', { name: 'Nile Cotton Shirt' })).toBeVisible();
   });
 
-  test('a brand-new user is asked for an organization before reaching the shell', async ({ page }) => {
+  test('a brand-new user is asked for an organization before reaching the shell (D101)', async ({ page }) => {
     const email = `${unique('web-first-run')}@marketcore.test`;
     const organization = `Onboarded ${Date.now()}`;
 
@@ -225,21 +270,18 @@ test.describe('web: the session in a real browser', () => {
 
     await signIn(page, email);
 
-    // A user who belongs to nothing gets the first-run screen, not a shell whose every
-    // tenant-scoped control answers "choose an organization first".
-    await expect(
-      page.getByRole('heading', { name: /not in an organization yet/i }),
-    ).toBeVisible();
+    // A user who belongs to nothing gets the first-run screen — called Start selling since
+    // D101, because that is what they are doing — and not a shell whose every tenant-scoped
+    // control answers "choose an organization first".
+    await expect(page.getByRole('heading', { name: /start selling/i })).toBeVisible();
     await expect(page.getByRole('complementary')).toHaveCount(0);
 
     // And it is a gate, not a hint: asking for a tenant page directly does not get past it.
     await page.goto(`${WEB}/admin/products`);
-    await expect(
-      page.getByRole('heading', { name: /not in an organization yet/i }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: /start selling/i })).toBeVisible();
 
     await page.getByLabel('Organization name').fill(organization);
-    await page.getByRole('button', { name: 'Create organization' }).click();
+    await page.getByRole('button', { name: 'Start selling' }).click();
 
     // Creating it admits the session to the shell, with the new organization as the tenant —
     // named in the top bar, which is where the shell keeps the tenant rather than the rail.

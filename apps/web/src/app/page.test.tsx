@@ -18,12 +18,12 @@ describe('the front door', () => {
     mocks.has.mockClear();
   });
 
-  it('sends a visitor holding a refresh cookie to the console', async () => {
+  it('sends a visitor holding a refresh cookie to the storefront (D101)', async () => {
     mocks.has.mockReturnValue(true);
 
     await HomePage();
 
-    expect(mocks.redirect).toHaveBeenCalledWith('/admin');
+    expect(mocks.redirect).toHaveBeenCalledWith('/browse');
   });
 
   it('sends everyone else to sign in', async () => {

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Alert } from '@app/ui';
-import { LOGIN_PATH } from '@/lib/session/routing';
+import { ADMIN_PATH, LOGIN_PATH } from '@/lib/session/routing';
 import { useSession } from '@/lib/session/client';
 import type { StoreFrameProps } from './interfaces/store-frame.interface';
 
@@ -13,6 +13,17 @@ const NAV = [
   { href: '/cart', label: 'Cart' },
   { href: '/account/orders', label: 'My orders' },
 ] as const;
+
+/**
+ * The way to `/admin`, named for what the visitor will find there (D101).
+ *
+ * A signed-in visitor now lands on the storefront rather than the console, so this link
+ * is the only path to `/admin` the interface offers — and without it a seller, and a user
+ * who belongs to nothing at all, would be stranded: the console is where an organization
+ * is created, and for a user who has none that screen is called *Start selling*.
+ */
+const consoleLabel = (organizationCount: number): string =>
+  organizationCount === 0 ? 'Start selling' : 'Seller console';
 
 /**
  * The storefront's chrome (Stitch 057's top bar). Unlike DashboardChrome it
@@ -64,7 +75,10 @@ export function StoreFrame({ appName, children }: StoreFrameProps) {
               </Link>
             ))}
           </nav>
-          <span className="ml-auto text-sm text-ink-muted">{state.session.user.email}</span>
+          <Link href={ADMIN_PATH} className="ml-auto text-sm text-ink-muted hover:text-ink">
+            {consoleLabel(state.session.organizations.length)}
+          </Link>
+          <span className="text-sm text-ink-muted">{state.session.user.email}</span>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>

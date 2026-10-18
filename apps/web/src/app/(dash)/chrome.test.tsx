@@ -164,11 +164,11 @@ describe('the signed-in shell', () => {
 
     renderShell();
 
-    expect(await screen.findByRole('heading', { name: /not in an organization yet/i })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: /start selling/i })).toBeTruthy();
     // And specifically *not* the shell: a rail with nothing to pick, and pages whose every
     // control answers "choose an organization first", is the dead end this replaces.
     expect(screen.queryByRole('complementary')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Create organization' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Start selling' })).toBeTruthy();
   });
 
   it('says who is signed in on the first-run screen, so "wrong account?" can be answered', async () => {
@@ -178,7 +178,7 @@ describe('the signed-in shell', () => {
 
     renderShell();
 
-    await screen.findByRole('heading', { name: /not in an organization yet/i });
+    await screen.findByRole('heading', { name: /start selling/i });
     expect(screen.getByRole('banner').textContent).toContain('Signed in as owner@marketcore.test');
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeTruthy();
     // The product is named by the app's name, not a literal the deployment cannot change.
@@ -192,12 +192,12 @@ describe('the signed-in shell', () => {
     fetchMock.mockResolvedValueOnce(response(200, NO_ORGANIZATIONS));
 
     renderShell();
-    await screen.findByRole('heading', { name: /not in an organization yet/i });
+    await screen.findByRole('heading', { name: /start selling/i });
 
     fireEvent.change(screen.getByLabelText('Organization name'), {
       target: { value: 'Nile Traders' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Create organization' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Start selling' }));
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(

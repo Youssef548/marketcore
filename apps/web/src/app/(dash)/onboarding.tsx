@@ -73,7 +73,7 @@ export function Onboarding({ appName, email, onCreated }: OnboardingProps) {
             >
               <BuildingIcon />
             </span>
-            <PageHeading className="mb-2.5">You&rsquo;re not in an organization yet</PageHeading>
+            <PageHeading className="mb-2.5">Start selling</PageHeading>
             <p className="max-w-[24rem] text-sm leading-relaxed text-ink-muted">
               {appName} keeps products, orders and money inside an organization. Create one and you
               are its owner.
@@ -112,7 +112,7 @@ export function Onboarding({ appName, email, onCreated }: OnboardingProps) {
           {/* `busy` rather than `disabled`: a disabled submit button drops keyboard focus and
            * sends the user back to the top of the form mid-submit. */}
           <Button type="submit" size={ControlSizes.LG} busy={pending} className="w-full">
-            {pending ? 'Creating…' : 'Create organization'}
+            {pending ? 'Creating…' : 'Start selling'}
             {!pending && <ArrowRightIcon />}
           </Button>
 

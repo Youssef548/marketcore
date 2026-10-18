@@ -9,7 +9,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 import LoginPage from './page';
-import { ADMIN_PATH } from '@/lib/session/routing';
+import { STOREFRONT_PATH } from '@/lib/session/routing';
 
 const fetchMock = vi.fn();
 
@@ -89,10 +89,10 @@ describe('the sign-in form', () => {
     fillIn('owner@marketcore.test', 'correct-horse-battery');
     submit();
 
-    // The fallback is the console's own address, passed in by this page rather than
-    // hardcoded in the helper — so the day a signed-in visitor must land somewhere
-    // else, this is the line that changes.
-    await waitFor(() => expect(mocks.replace).toHaveBeenCalledWith(ADMIN_PATH));
+    // The fallback is the storefront's address (D101), passed in by this page rather
+    // than hardcoded in the helper — so a signed-in visitor with no next lands on the
+    // products they signed in for, not on a console they may not be able to use.
+    await waitFor(() => expect(mocks.replace).toHaveBeenCalledWith(STOREFRONT_PATH));
   });
 
   it('reports a server it cannot reach rather than failing silently', async () => {

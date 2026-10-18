@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { SESSION_COOKIES } from '@/lib/session/cookies';
-import { ADMIN_PATH, LOGIN_PATH } from '@/lib/session/routing';
+import { LOGIN_PATH, STOREFRONT_PATH } from '@/lib/session/routing';
 
 /**
  * The front door, which decides nothing for itself.
@@ -13,5 +13,5 @@ import { ADMIN_PATH, LOGIN_PATH } from '@/lib/session/routing';
 export default async function HomePage() {
   const jar = await cookies();
 
-  redirect(jar.has(SESSION_COOKIES.REFRESH) ? ADMIN_PATH : LOGIN_PATH);
+  redirect(jar.has(SESSION_COOKIES.REFRESH) ? STOREFRONT_PATH : LOGIN_PATH);
 }

@@ -26,8 +26,10 @@ describe('the route gate', () => {
   it('turns a signed-in visitor away from the credential pages', () => {
     // There is nothing to gain from the login form once there is a session, and the
     // API would refuse the submission anyway.
-    expect(decideRoute('/login', true)).toEqual({ kind: 'redirect', to: '/admin' });
-    expect(decideRoute('/register', true)).toEqual({ kind: 'redirect', to: '/admin' });
+    // To the storefront, not the console (D101): a buyer who signed in and belongs to no
+    // organization would otherwise be sent to a screen whose every control is inert.
+    expect(decideRoute('/login', true)).toEqual({ kind: 'redirect', to: '/browse' });
+    expect(decideRoute('/register', true)).toEqual({ kind: 'redirect', to: '/browse' });
   });
 
   it('does not treat a path that merely starts with the prefix as protected', () => {
