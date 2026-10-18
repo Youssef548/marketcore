@@ -27,6 +27,13 @@ import { PROVIDER_CHARGE_STORE } from './payments.constants';
 export class SimulatorPaymentProvider implements PaymentProvider {
   constructor(@Inject(PROVIDER_CHARGE_STORE) private readonly store: ProviderChargeStore) {}
 
+  async lookup(operationKey: string): Promise<ProviderCapture | null> {
+    const recorded = await this.store.find(operationKey);
+    return recorded === null
+      ? null
+      : { kind: SimulatorVerdicts.CAPTURED, providerRef: recorded.providerRef, capturedAt: recorded.capturedAt };
+  }
+
   async capture({ operationKey, amountMinor, currency }: PaymentCaptureRequest): Promise<ProviderCapture> {
     const recorded = await this.store.find(operationKey);
     if (recorded !== null) {
