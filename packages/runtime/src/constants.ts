@@ -40,4 +40,8 @@ export const LogEvents = {
   CHECKOUT_REJECTED: 'checkout.rejected',
   /** A deadlock or serialization victim being retried (SRS §8). Expected to be zero. */
   CHECKOUT_TRANSACTION_RETRIED: 'checkout.transaction.retried',
+  PAYMENT_CAPTURED: 'payment.captured',
+  PAYMENT_DECLINED: 'payment.declined',
+  PAYMENT_PENDING: 'payment.pending',
+  PAYMENT_REFUNDED: 'payment.refunded',
 } as const;

@@ -28,4 +28,17 @@ export interface PaymentCaptureRequest {
  */
 export interface PaymentProvider {
   capture(request: PaymentCaptureRequest): Promise<ProviderCapture>;
+
+  /**
+   * What this operation has already done, if anything (D112) — `null` when nothing was ever
+   * charged under the key.
+   *
+   * Two paths need it and neither can ask by capturing. A capture that meets a **cancelled**
+   * checkout must not charge, but must know whether an earlier attempt's charge is sitting
+   * there to refund (the hole the phase-6 review found in D107); and a retry after a crash
+   * between the charge and the commit can settle on what the lookup finds instead of calling
+   * the provider again. Real providers expose exactly this lookup; the simulator answers
+   * from its store.
+   */
+  lookup(operationKey: string): Promise<ProviderCapture | null>;
 }
