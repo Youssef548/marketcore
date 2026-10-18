@@ -4,7 +4,7 @@ import { SimulatorVerdicts, buildBuyerContext, providerOperationKey } from '@app
 import { LogEvents } from '@app/runtime';
 import { captureLogger } from '../../test/support/logger';
 import { PaymentService } from './payment.service';
-import { PayCheckoutOutcomes } from './payments.constants';
+import { PayCheckoutOutcomes, PaymentRefundReasons } from './payments.constants';
 
 const buyer = buildBuyerContext('buyer_1');
 const checkout = {
@@ -134,7 +134,7 @@ describe('PaymentService.pay (SRS-FR-PAY-001/003/004, D103–D111)', () => {
 
   it('refunds a charge an earlier attempt left behind when the checkout is already cancelled (D107)', async () => {
     const charge = { kind: SimulatorVerdicts.CAPTURED, providerRef: 'sim_pay_c1', capturedAt: new Date() };
-    const { service, repository, provider } = setup(
+    const { service, repository, provider, logger } = setup(
       { claim: jest.fn().mockResolvedValue({ kind: 'CANCELLED', payment }) },
       { lookup: jest.fn().mockResolvedValue(charge) },
     );
@@ -142,6 +142,12 @@ describe('PaymentService.pay (SRS-FR-PAY-001/003/004, D103–D111)', () => {
     expect(await service.pay(buyer, checkout.id, 'req_7')).toEqual({ kind: PayCheckoutOutcomes.CANCELLED });
     expect(provider.lookup).toHaveBeenCalledWith(providerOperationKey('c1'));
     expect(repository.refundCancelled).toHaveBeenCalledWith(checkout.id, charge);
+    // The structured reason, not the human message: this has to be the same string the
+    // refundedReason column holds, or a log line cannot be joined to the row it describes.
+    expect(logger.lines[0]).toMatchObject({
+      event: LogEvents.PAYMENT_REFUNDED,
+      fields: { reason: PaymentRefundReasons.CHECKOUT_CANCELLED },
+    });
     // And it is a refund, not a charge: this path must never call the provider's capture.
     expect(provider.capture).not.toHaveBeenCalled();
   });
