@@ -26,8 +26,9 @@ inside a database transaction:
 ```
 tx A  ── lock the checkout, read its status
       │   PAID      → already paid: answer with the checkout, charge nothing
-      │   CANCELLED → nothing to charge and nothing to refund (D107): 409 CHECKOUT_CANCELLED,
-      │               the provider is never called and no payment row is written
+      │   CANCELLED → 409 CHECKOUT_CANCELLED, and the provider is never called (D107):
+      │               no charge recorded      → nothing to refund, no new row written
+      │               a charge recorded by an earlier TIMEOUT → that payment is REFUNDED
       │   otherwise → claim the payment row (PROCESSING, attempts + 1)
       └─ commit        (short: no network call while a lock is held)
 
@@ -259,9 +260,14 @@ export const PayCheckoutOutcomes = {
 - [ ] 50 concurrent `pay` requests on one checkout: **all** answer `200` with the same checkout, and
       `provider_charges` holds exactly **one** row (the derived operation key is what makes that
       true); 10 runs with fresh rows.
-- [ ] A cancellation racing the charge: the checkout is cancelled while a `17`-amount charge is in
-      flight, and the outcome is exactly one of the two legal ones — `PAID` with no refund, or
-      `REFUNDED` with no `PAID` order — never both and never neither.
+- [ ] A cancellation racing the charge, on an amount that **captures** (a `17` amount times out and
+      would leave `PROCESSING`, which is neither outcome): the checkout is cancelled between tx A and
+      tx B, and the result is exactly one of the two legal ones — `PAID` with no refund if the settle
+      got there first, or `REFUNDED` with no `PAID` order if the cancel did — never both, never neither.
+- [ ] A **timed-out** charge whose checkout is cancelled afterwards: the `17` attempt leaves the payment
+      `PROCESSING`, the worker cancels the checkout, and the next attempt finds a `CANCELLED` checkout
+      **with a charge recorded** under the derived key — so it is `REFUNDED` for it and answers `409`
+      (D107's second case). This is the case the first review round found missing.
 - [ ] Green on `pnpm --filter api test:concurrency`.
 - [ ] Commit: `test(api): one charge when fifty requests pay at once, and when a cancel lands mid-flight (T-080)`
 
