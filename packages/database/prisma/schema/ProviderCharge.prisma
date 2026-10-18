@@ -1,0 +1,16 @@
+// The simulator's own idempotency record (ADR 004).
+//
+// The provider charges once per operation key and remembers what it charged, so a retry of
+// a lost response finds the charge instead of making a second one. The key is the primary
+// key because it *is* the identity of the operation: one row per `pay_<checkoutId>`,
+// enforced by the database, and written before the verdict is returned.
+model ProviderCharge {
+  operationKey String       @id
+  providerRef  String
+  amountMinor  Int
+  currency     CurrencyCode
+  capturedAt   DateTime
+  createdAt    DateTime     @default(now())
+
+  @@map("provider_charges")
+}
