@@ -9,6 +9,7 @@ import {
 } from '../src/constants';
 import {
   CheckoutConflictDetailsSchema,
+  CheckoutKeyReusedDetailsSchema,
   CheckoutLineConflictDetailsSchema,
   CheckoutSchema,
   CreateCheckoutRequestSchema,
@@ -74,8 +75,16 @@ describe('the 409 details (SRS-FR-CHK-003, -006, §8)', () => {
       reason: CheckoutRefusals.CART_CHANGED,
     });
   });
-  it('refuses an empty line list and an unknown reason', () => {
+  it('names a key that was already used for a different body (ADR 003)', () => {
+    const details = { reason: CheckoutRefusals.KEY_REUSED };
+    expect(CheckoutKeyReusedDetailsSchema.parse(details)).toEqual(details);
+    expect(CheckoutConflictDetailsSchema.parse(details)).toEqual(details);
+  });
+  it('refuses an empty line list, an unknown reason and extra keys beside KEY_REUSED', () => {
     expect(CheckoutLineConflictDetailsSchema.safeParse({ lines: [] }).success).toBe(false);
     expect(CheckoutConflictDetailsSchema.safeParse({ reason: 'NOPE' }).success).toBe(false);
+    expect(
+      CheckoutConflictDetailsSchema.safeParse({ reason: CheckoutRefusals.KEY_REUSED, extra: 1 }).success,
+    ).toBe(false);
   });
 });

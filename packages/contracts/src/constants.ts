@@ -141,9 +141,26 @@ export const CheckoutConflictReasons = {
 export type CheckoutConflictReason =
   (typeof CheckoutConflictReasons)[keyof typeof CheckoutConflictReasons];
 
-/** A refusal about the request as a whole rather than one line (SRS-FR-CHK-006). */
-export const CheckoutRefusals = { CART_CHANGED: 'CART_CHANGED' } as const;
+/** A refusal about the request as a whole rather than one line (SRS-FR-CHK-006, -008). */
+export const CheckoutRefusals = {
+  CART_CHANGED: 'CART_CHANGED',
+  KEY_REUSED: 'KEY_REUSED',
+} as const;
 export type CheckoutRefusal = (typeof CheckoutRefusals)[keyof typeof CheckoutRefusals];
+
+/**
+ * The one header `POST /checkouts` requires from phase 5 (SRS-FR-CHK-008, ADR 003).
+ *
+ * The bound and the alphabet are wire rules, so they live here: the API validates with
+ * them, the browser mints a key that satisfies them, and the database repeats the bound
+ * as a CHECK. A preflight asks for this header by name, so the string is a constant a
+ * CORS configuration reads rather than a literal in a route.
+ */
+export const IDEMPOTENCY_KEY_HEADER = 'Idempotency-Key';
+export const IDEMPOTENCY_KEY_MIN_LENGTH = 1;
+export const IDEMPOTENCY_KEY_MAX_LENGTH = 64;
+/** No spaces, no punctuation beyond `-` and `_`: a key survives a header and a URL. */
+export const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9_-]+$/;
 
 /**
  * The largest value the database column can hold: every money and quantity column

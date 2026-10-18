@@ -16,5 +16,6 @@ export * from './product';
 export * from './pagination';
 export * from './storefront';
 export * from './cart';
+export * from './idempotency';
 export * from './checkout';
 export * from './buyer-order';
