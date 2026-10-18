@@ -24,16 +24,20 @@ capture that is three steps rather than one transaction, because a network call 
 inside a database transaction:
 
 ```
-tx A  ── insert/claim the payment row (PROCESSING), lock the checkout, read its status
-      │   if CANCELLED → nothing to charge: record REFUNDED and stop
+tx A  ── lock the checkout, read its status
+      │   PAID      → already paid: answer with the checkout, charge nothing
+      │   CANCELLED → nothing to charge and nothing to refund (D107): 409 CHECKOUT_CANCELLED,
+      │               the provider is never called and no payment row is written
+      │   otherwise → claim the payment row (PROCESSING, attempts + 1)
       └─ commit        (short: no network call while a lock is held)
 
 provider.capture({ operationKey: pay_<checkoutId>, amountMinor, currency })
-                      (outside any transaction; typed TIMEOUT, not a thrown error)
+                      (outside any transaction; a typed verdict, never a thrown error)
 
 tx B  ── lock the checkout again and re-read its status
-      │   SUCCEEDED → payment SUCCEEDED + checkout PAID + every order PAID  (one transaction)
-      │   CANCELLED → payment REFUNDED, no order PAID                        (SRS-FR-PAY-004)
+      │   SUCCEEDED → payment SUCCEEDED (with the providerRef) + checkout PAID
+      │               + every order PAID                              (one transaction)
+      │   CANCELLED → payment REFUNDED, no order PAID                  (SRS-FR-PAY-004)
       └─ commit
 ```
 
@@ -51,7 +55,7 @@ crash.
 | D104 | The provider operation key is `pay_<checkoutId>` — derived, not minted (ADR 004). |
 | D105 | `POST /checkouts/:id/pay` answers with the **checkout**, so a client reads one shape; a repeat on a `SUCCEEDED` payment charges nothing and answers the same checkout. Not the buyer's checkout → `404` (INV-12's existing control). |
 | D106 | A decline is `409 CONFLICT` with `details.reason: PAYMENT_DECLINED`, the payment goes `FAILED`, the checkout stays `PENDING_PAYMENT`, and the buyer may try again — **the same payment row**, because one checkout has one payment, with `attempts` counting the provider calls. |
-| D107 | A charge that lands on a `CANCELLED` checkout is `REFUNDED` with `refundedReason: CHECKOUT_CANCELLED`, no order becomes `PAID` (SRS-FR-PAY-004). If the checkout is already cancelled **before** tx A, the provider is never called and the answer is `409 CONFLICT` `details.reason: CHECKOUT_CANCELLED`: there is nothing to refund, and inventing a charge to refund would be a worse lie than a refusal. |
+| D107 | A charge that lands on a `CANCELLED` checkout is `REFUNDED` with `refundedReason: CHECKOUT_CANCELLED`, no order becomes `PAID` (SRS-FR-PAY-004) — that is tx B's branch, where the charge has already happened. If the checkout is already `CANCELLED` when **tx A** reads it, the provider is never called and the answer is `409 CONFLICT` `details.reason: CHECKOUT_CANCELLED`: there is nothing to refund, and inventing a charge to refund would be a worse lie than a refusal. |
 | D108 | The review screen places, then pays: two calls, in that order, and a decline returns the buyer to the review step with the reason. The steps are separate because the API's are — a combined endpoint would hide which of the two failed. |
 | D109 | Phase 6 charges the checkout **total**; the fee and the seller shares are computed in phase 8 with the ledger (T-081). No percentage is introduced anywhere in phase 6, so nothing has to be unlearned. |
 | D110 | The simulator's own store (`provider_charges`, keyed by operation key) is a real table written **before** the verdict is returned, so "the provider charged and the response was lost" is representable and the retry path is testable rather than mocked. |
@@ -154,22 +158,32 @@ model Payment {
 **Interfaces:**
 
 ```ts
-export const PaymentProviderRefusals = { DECLINED: 'DECLINED', TIMEOUT: 'TIMEOUT' } as const;
+/** The port phase 7 reimplements against Stripe test mode. ADR 004, and the shape is the ADR's. */
+export type ProviderCapture =
+  | { kind: 'CAPTURED'; providerRef: string; capturedAt: Date }
+  | { kind: 'DECLINED' }
+  | { kind: 'TIMEOUT' };
 
 export interface PaymentProvider {
   capture(request: {
     operationKey: string;
     amountMinor: number;
     currency: CurrencyCode;
-  }): Promise<SimulatorVerdict>;
+  }): Promise<ProviderCapture>;
 }
 ```
 
+The adapter's order of business is the ADR's: **the store is consulted before the rule.** A charge
+already recorded under the key answers `CAPTURED` with the recorded `providerRef`; otherwise the
+verdict comes from `simulatorVerdict`, and a `CAPTURED` or `TIMEOUT` verdict is recorded *before* it is
+answered.
+
 **Steps:**
-- [ ] Failing tests: a captured amount returns `CAPTURED` and records one `provider_charges` row; a
-      second call with the same key returns the **recorded** verdict and does not write a second row
-      (the lost-response rule); `13` returns `DECLINED`, `17` charges-then-returns `TIMEOUT` and the
-      retry finds the charge; the `providerRef` is stable per key.
+- [ ] Failing tests: a captured amount returns `{ kind: 'CAPTURED' }` with a `providerRef` and records
+      one `provider_charges` row; `13` returns `{ kind: 'DECLINED' }` and records **nothing**; `17`
+      records a charge and answers `{ kind: 'TIMEOUT' }`, and the **retry with the same key answers
+      `CAPTURED` with the same `providerRef`** and still one row (the lost-response rule); a second call
+      after any success never writes a second row; the `providerRef` is stable per key.
 - [ ] Implement; green; lint and typecheck.
 - [ ] Commit: `feat(api): the payment provider port and its deterministic simulator (T-080)`
 

@@ -33,13 +33,18 @@ checkout, and an "at most once" guarantee that does not depend on the provider b
 1. **The port is `PaymentProvider`**, with one method:
 
    ```ts
+   export type ProviderCapture =
+     | { kind: 'CAPTURED'; providerRef: string; capturedAt: Date }
+     | { kind: 'DECLINED' }
+     | { kind: 'TIMEOUT' };
+
    capture(request: { operationKey: string; amountMinor: number; currency: CurrencyCode }): Promise<ProviderCapture>
-   // ProviderCapture = { providerRef: string; capturedAt: Date }
-   // refusals are typed results, not exceptions: { kind: 'DECLINED' } | { kind: 'TIMEOUT' }
    ```
 
-   A typed `TIMEOUT` rather than a thrown error, because a timeout is an outcome the caller must
-   handle and record, not an accident of transport.
+   All three are **typed results rather than exceptions**: each is an outcome the caller must record,
+   and `TIMEOUT` is the one that says "we do not know yet". The `providerRef` travels **in the result**,
+   not beside it: phase 8 posts the ledger against it, so a port that returned a bare verdict would have
+   to be widened the moment the ledger lands — which is to say phase 7, not phase 8.
 
 2. **The operation key is derived from the checkout, not minted per attempt:** `pay_<checkoutId>`.
    This is the deliberate opposite of ADR 003's client key. A client mints its own key because only the
@@ -59,11 +64,12 @@ checkout, and an "at most once" guarantee that does not depend on the provider b
    Tests choose a path by choosing a price, so no test can pass by accident of a mock's configuration,
    and the same input always produces the same verdict in any process, in any order.
 
-4. **The simulator commits its record before it answers.** Its store (`provider_charges`, keyed by
-   `operationKey`) records the verdict and the `providerRef` first, so "the provider charged and the
-   response was lost" is representable: attempt 1 records a charge and returns `TIMEOUT`, attempt 2 with
-   the same key finds the record and returns it. That is what a real provider's idempotency does, and it
-   is the only way the retry path can be tested rather than assumed.
+4. **The simulator commits its record before it answers, and consults it before the rule.** Its store
+   (`provider_charges`, keyed by `operationKey`) records the verdict and the `providerRef` first, so
+   "the provider charged and the response was lost" is representable: attempt 1 records a charge and
+   answers `TIMEOUT`, attempt 2 with the same key finds the record **and answers `CAPTURED` with the
+   same `providerRef`** rather than re-deriving a verdict from the amount. That is what a real
+   provider's idempotency does, and it is the only way the retry path can be tested rather than assumed.
 
 5. **"At most once" is enforced here, not there.** `payments.checkoutId` is unique and capture marks the
    checkout and its orders `PAID` in the same transaction. A provider that captured twice would still
