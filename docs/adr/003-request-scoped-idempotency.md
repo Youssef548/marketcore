@@ -1,9 +1,9 @@
 # 003 Use request-scoped idempotency records
 
 - **Date:** 2026-10-18
-- **Status:** Proposed
+- **Status:** Accepted
 - **Phase:** 5 — gates retry-safe checkout
-- **Implements:** _pending_ — `docs/superpowers/plans/2026-10-18-marketcore-phase-5-idempotency.md`
+- **Implements:** #89, #90, #91, #92, #93, #96, #97 — `docs/superpowers/plans/2026-10-18-marketcore-phase-5-idempotency.md`
 
 ## Context
 

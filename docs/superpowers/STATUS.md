@@ -1406,3 +1406,105 @@ per-slice entries above and each PR thread. The gate re-runs the suites, not the
 - **Load numbers** — phase 13.
 - **The `docs-phase-4-screenshots` branch** carries the UI screenshots used in the PR bodies and is
   deliberately never merged.
+
+---
+
+## Phase 5 — retry-safe checkout: one key, one operation — 2026-10-18 (M2)
+
+**Exit gate (M2):** twenty `POST /checkouts` carrying one `Idempotency-Key` leave one checkout and one
+set of orders, with the stock decremented once.
+**Branches:** `feat/phase-5-idempotency`, sliced into 11 stacked PRs (#88–#98); this entry is the
+last one, `phase5-gate-and-docs`.
+**Plan:** `docs/superpowers/plans/2026-10-18-marketcore-phase-5-idempotency.md` (10 tasks, D94–D101)
+**ADR:** [003 — request-scoped idempotency](../adr/003-request-scoped-idempotency.md), now **Accepted**.
+
+### Proven
+
+Every number below was read out of a `tee`'d log of a real run on 2026-10-18: the whole-repo gate on
+`phase5-gate-and-docs` (off `cfc0f51`), and the behavioural suite on `verify/phase5-e2e`, which is
+`origin/main` plus exactly the two PRs that run gates (#95, #96). The logs are the evidence; the prose
+is not.
+
+| Check | Command | Result |
+|---|---|---|
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **37/37 tasks successful** (21 cached), exit 0, 1 m 59 s |
+| **M2 — 20 repeats, one key, one checkout** (AC-US-CHK-003-1, INV-2) | `pnpm --filter api exec jest --config ./test/jest-e2e.json -t "twenty repeats of one key"` | `Tests: 124 skipped, 1 passed, 125 total` — the case named in the output, which is what the milestone row asks for |
+| **The key on the wire** (SRS-FR-CHK-008, D94–D96, D98, D99) | `pnpm --filter api test:e2e` | **17 suites / 125 tests, exit 0.** Same key twice → one checkout id, one order, stock once, cart empty; a *fresh* key after the cart was emptied → `409 CART_CHANGED` (the control that makes the replay mean something); changed quantity → `409 CONFLICT` `details.reason: KEY_REUSED`; reordered lines → the same checkout; a `SOLD_OUT` refusal leaves **no key row** and the same key then places; missing / 65-char / `'has space'` / `'has/slash'` → `400 VALIDATION_ERROR`, no key, no checkout; one key string for two buyers → two checkouts, two rows; no token and no key → `401` |
+| **The duplicates that arrive together** (D97) | `pnpm --filter api test:concurrency` | **3 suites / 5 tests, exit 0.** 100 simultaneous repeats of one key against one cart: 100 × `201` naming **one** checkout, 1 checkout, 1 order per seller, 1 key row, stock moved once, cart empty — **10 consecutive runs** with fresh rows. Control: two *different* keys are two attempts — one `201`, one `409 CART_CHANGED` |
+| **The storage rules, proven around the application** | `pnpm --filter api test:integration` | **10 suites / 69 tests, exit 0.** The FK is deferrable *and* deferred in behaviour (claim the key, create the checkout it names, commit — only a deferral permits it); a committed key naming no checkout aborts the transaction and leaves nothing; `(buyerId, key)` unique; one checkout ↔ one key; `''` and 65 characters refused by the CHECK; `NULL checkoutId` refused when written around Prisma |
+| The constraint is installed, read from the catalogue | `docker exec marketcore-db-1 psql -U app -d app -tAc "SELECT conname, condeferrable, condeferred FROM pg_constraint WHERE conname LIKE 'idempotency%'"` | `idempotency_keys_checkoutId_fkey\|t\|t` — deferrable, deferred. The `buyerId` FK stays immediate, and the key-length CHECK reads `\|f\|f`. Asserted by a test, not just observed |
+| Service decisions | `pnpm --filter api exec jest` | **21 suites / 105 tests, exit 0.** A replay returns the checkout **re-read** through `findForBuyer` and logs `checkout.placed` with `replayed: true`; `KEY_REUSED` is `409` with `details.reason` and logs `checkout.rejected`; the repository receives the key and `checkoutRequestFingerprint(request.lines)` |
+| Contracts and domain | `pnpm --filter @app/contracts test`, `pnpm --filter @app/domain test` | **13 files / 87 tests** and **18 files / 93 tests**, exit 0 |
+| **Web unit** | `pnpm --filter web test` | **31 files / 145 tests, exit 0** — a key is minted per mount and differs per call, `placeCheckout` sends it as `Idempotency-Key` beside the unchanged body, and the BFF refuses a missing or malformed one with the API's own envelope **without calling the API** |
+| Worker | `pnpm --filter worker test` | 5 files / 19 tests, plus 1 file / 6 integration tests, exit 0 |
+| UI and the other packages | `pnpm --filter @app/ui test` | 8 files / 37 tests, exit 0 (`runtime` 30, `api-client` 8, `eslint-config` 21) |
+| **The retry a real browser makes** | `docker compose -f docker-compose.e2e.yml up -d --build --wait`, then `pnpm --filter e2e test:behavioural` | **27 passed, 0 failed, exit 0** — real image, real TLS through Caddy, real browser, the browser's own session. The retry is two same-origin `fetch`es from the loaded page: both `201` with **one** checkout id, one order in the buyer's own list, stock `5 → 4` |
+| D91 / D101 (the deferral T-002 recorded) | same | a signed-in visitor lands on `/browse`, from the sign-in form and from the front door; a brand-new user is asked for an organization and that screen is called **Start selling**; a buyer with no organization reaches it through the storefront's own link |
+| The pipeline is not trusted until it is racy | `pnpm --filter api test:e2e` under `turbo run …` parallelism, and back to back | green; and `pgrep -f "jest.js --config"` returns 0 after the run (the wedge in `Deviations` used to leave one alive for 35 minutes) |
+| The e2e stack torn down | `docker compose -f docker-compose.e2e.yml down -v` | exit 0 |
+
+Each exactly-once claim was falsified by mutation before it was believed:
+
+| Claim | Mutation | Result |
+|---|---|---|
+| A repeat replays rather than places | `claim.kind === 'REPLAY'` disabled in `placeWithin` | the four replay e2e cases fail |
+| `KEY_REUSED` is the fingerprint's answer | the fingerprint comparison removed in `claim` | `refuses the same key under a different request` fails |
+| The concurrency claim rests on the claim, not on the cart | `claim` treats every duplicate as `CLAIMED` | `100 simultaneous repeats … one checkout` fails on run 1 |
+
+### Delivered
+
+- **`packages/contracts`** — `IdempotencyKeySchema` (1–64, `[A-Za-z0-9_-]`), `IDEMPOTENCY_KEY_HEADER`, and
+  `CheckoutKeyReusedDetailsSchema` joining the checkout conflict union.
+- **`packages/domain`** — `checkoutRequestFingerprint`: the canonical request, lines sorted by
+  `productId` and projected to the three wire fields, stored verbatim rather than hashed.
+- **`packages/database`** — `idempotency_keys` with `UNIQUE (buyerId, key)`, `UNIQUE (checkoutId)`, a
+  `1–64` CHECK, and a hand-written `DEFERRABLE INITIALLY DEFERRED` foreign key to `checkouts`.
+- **`apps/api`** — `IdempotencyRepository` (`claim` / `release`); the claim as **step 0** of the checkout
+  transaction, before the cart lock; every refusal releasing the claim in the same transaction; the
+  required, validated header; `REPLAYED` and `KEY_REUSED` outcomes with their own log reasons.
+- **`apps/web`** — one key per placement attempt, minted when the review step mounts
+  (`useState(newAttemptKey)`, not `useRef(newAttemptKey())`), forwarded by the BFF, which answers a
+  missing key with the API's envelope and never mints one itself.
+- **Docs** — ADR 003 Accepted with its PRs; the guarantee, roadmap, limitations, domain model and
+  failure matrix brought level with the code.
+
+### Deviations
+
+- **Eleven stacked PRs, not one.** The plan described a single branch; each slice's proof lands with its
+  own diff and its own review. Cost if wrong: more review minutes; no correctness cost found.
+- **The controller's header decorator is hand-written.** `@Headers(name, pipe)` does not exist in Nest
+  11.2.5 — `Headers` is `(property?: string) => ParameterDecorator` — so the plan's line does not
+  compile. The decorator runs the contract schema through the same `ZodValidationPipe` class the global
+  pipe uses, so the refusal envelope is identical. Cost if wrong: one small file.
+- **`IdempotencyRepository` injects nothing.** The plan sketched a `PrismaService` mirroring the cart and
+  inventory repositories, but both methods take the caller's transaction client, so the field would have
+  been an unused dependency — and a key means nothing outside the transaction that arbitrates it.
+- **The e2e runner was changed out of the plan's scope (#98).** `testTimeout: 20000`, `forceExit: true`.
+  Not a phase-5 change; a phase-5 *need*: a timed-out request makes `app.close()` wait on in-flight
+  requests, so one flake became a jest process alive 35 minutes later that then poisoned every later run.
+  Cost if wrong: a genuinely slow test is tolerated for 20 s, and `forceExit` can hide a future leaked
+  handle — which is why `apps/api/test/README.md` names `--detectOpenHandles` instead.
+- **D91's fix went beyond the plan's bound.** The plan said the change "does not move the console"; the
+  review showed it had removed the interface's only path *to* it, so the storefront gained a link.
+- **#97 exists because the plan's own M2 wording and task 6 disagreed** — the milestone names twenty
+  sequential repeats, the race is a hundred simultaneous ones. Both are proven, and the criterion's
+  words now live in the e2e suite where the milestone asks for them.
+- **My own process error is recorded here because it cost real time:** `phase5-landing-d91` was cut from
+  `origin/main` before #92–#94 merged, so its tree lacked the phase-5 API work and a run there reported
+  16 suites / 112 tests. That was reported as an unexplained regression before `git merge-base` was
+  checked. Read the base of a branch before trusting its numbers.
+
+### Not proven / deferred
+
+- **Nothing expires a key.** A row is written per placement attempt and never pruned, so the table grows
+  with orders rather than with buyers. No user-visible behaviour depends on a row once its checkout is
+  read, and ADR 003's review date is when a second retry-safe write has a reason to reuse the shape — but
+  there is no TTL and no GC, and that is a limitation rather than a decision.
+- **One API process, ever.** The arbiter is a single PostgreSQL unique index, so the guarantee should
+  hold across instances; this repository only ever runs one API process, so that is reasoning, not
+  evidence.
+- **Payment, refunds, payouts, the ledger** — phases 6–11. Phase 5 makes a checkout placeable exactly
+  once; nothing pays for it.
+- **Load numbers** — phase 13.
+- **No by-hand `curl` demonstration this phase.** Phase 4's entry has one; here the real-browser suite is
+  the end-to-end evidence and the wire behaviour is enumerated from the e2e log rather than re-typed.
