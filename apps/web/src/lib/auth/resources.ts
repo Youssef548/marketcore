@@ -5,6 +5,7 @@ import {
   BuyerOrderSchema,
   CartSchema,
   CheckoutSchema,
+  IDEMPOTENCY_KEY_HEADER,
   OrganizationSchema,
   ProductSchema,
   PublicProductPageSchema,
@@ -18,6 +19,7 @@ import {
   type CreateCheckoutRequest,
   type CreateOrganizationRequest,
   type CreateProductRequest,
+  type IdempotencyKey,
   type LoginRequest,
   type Organization,
   type Product,
@@ -121,8 +123,16 @@ export function createResources(accessToken?: string) {
     removeCartLine: (productId: string): Promise<Cart> =>
       client.delete(`/cart/items/${encodeURIComponent(productId)}`, CartSchema),
 
-    placeCheckout: (body: CreateCheckoutRequest): Promise<Checkout> =>
-      client.post('/checkouts', CheckoutSchema, { body }),
+    /**
+     * The key travels as `Idempotency-Key` (SRS-FR-CHK-008). It is a parameter, like the
+     * body: two attempts to place an order are two operations, and a key held in this
+     * client would make the second attempt answer with the first's checkout.
+     */
+    placeCheckout: (body: CreateCheckoutRequest, idempotencyKey: IdempotencyKey): Promise<Checkout> =>
+      client.post('/checkouts', CheckoutSchema, {
+        body,
+        headers: { [IDEMPOTENCY_KEY_HEADER]: idempotencyKey },
+      }),
 
     checkout: (id: string): Promise<Checkout> =>
       client.get(`/checkouts/${encodeURIComponent(id)}`, CheckoutSchema),
