@@ -1,0 +1,34 @@
+// One payment per checkout (INV-3, ADR 004).
+//
+// `checkoutId` is unique here rather than merely checked in code: a second capture for one
+// checkout is refused by the database, which is what makes "at most once" hold even if a
+// provider charged twice. `providerRef` is unique for the same reason from the other side —
+// one provider operation cannot become two payments.
+//
+// There is no PENDING status (D102): the row is created by the attempt, so nothing can
+// observe a payment between "created" and "attempted". PROCESSING is the honest record of
+// a charge in flight, or of one whose answer was lost.
+enum PaymentStatus {
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  checkoutId     String        @unique
+  status         PaymentStatus @default(PROCESSING)
+  amountMinor    Int
+  currency       CurrencyCode
+  attempts       Int           @default(0)
+  providerRef    String?       @unique
+  refundedReason String?
+  capturedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  checkout Checkout @relation(fields: [checkoutId], references: [id], onDelete: Restrict)
+
+  @@map("payments")
+}

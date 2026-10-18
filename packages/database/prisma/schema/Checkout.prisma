@@ -1,5 +1,6 @@
 enum CheckoutStatus {
   PENDING_PAYMENT
+  PAID
   CANCELLED
 }
 
@@ -13,8 +14,9 @@ model Checkout {
   currency   CurrencyCode
   placedAt   DateTime       @default(now())
 
-  buyer  User    @relation(fields: [buyerId], references: [id], onDelete: Restrict)
-  orders Order[]
+  buyer   User     @relation(fields: [buyerId], references: [id], onDelete: Restrict)
+  orders  Order[]
+  payment Payment?
 
   /** The key that placed this checkout, at most one (ADR 003). */
   idempotencyKey IdempotencyKey?
