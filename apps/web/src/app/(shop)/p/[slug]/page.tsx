@@ -16,6 +16,18 @@ export default function ProductPage() {
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
+    // A new slug is a new product, so nothing from the last one may survive here.
+    // `error` is what makes the clearing load-bearing rather than tidy: the render
+    // below returns early on it, so an error left over from a URL that did not
+    // resolve would be the only thing this page could ever show again. `product`
+    // nulled is the loading state, and it also drops the previous selection — that
+    // `quantity` lives in ProductView, where it would outlive the product it was
+    // chosen for.
+    setError(null);
+    setProduct(null);
+    setAdding(false);
+    setAdded(false);
+
     storefront
       .product(productIdFromSlug(slug))
       .then(setProduct)
