@@ -35,9 +35,11 @@ provider.capture({ operationKey: pay_<checkoutId>, amountMinor, currency })
                       (outside any transaction; a typed verdict, never a thrown error)
 
 tx B  ── lock the checkout again and re-read its status
-      │   SUCCEEDED → payment SUCCEEDED (with the providerRef) + checkout PAID
-      │               + every order PAID                              (one transaction)
-      │   CANCELLED → payment REFUNDED, no order PAID                  (SRS-FR-PAY-004)
+      │   charge CAPTURED + checkout live     → payment SUCCEEDED (with the providerRef)
+      │                                          + checkout PAID + every order PAID  (one transaction)
+      │   charge CAPTURED + checkout CANCELLED → payment REFUNDED, no order PAID  (SRS-FR-PAY-004)
+      │   charge DECLINED                      → payment FAILED, checkout stays PENDING_PAYMENT (D106)
+      │   charge TIMEOUT                       → payment stays PROCESSING, nothing else moves (D103)
       └─ commit
 ```
 
@@ -55,7 +57,7 @@ crash.
 | D104 | The provider operation key is `pay_<checkoutId>` — derived, not minted (ADR 004). |
 | D105 | `POST /checkouts/:id/pay` answers with the **checkout**, so a client reads one shape; a repeat on a `SUCCEEDED` payment charges nothing and answers the same checkout. Not the buyer's checkout → `404` (INV-12's existing control). |
 | D106 | A decline is `409 CONFLICT` with `details.reason: PAYMENT_DECLINED`, the payment goes `FAILED`, the checkout stays `PENDING_PAYMENT`, and the buyer may try again — **the same payment row**, because one checkout has one payment, with `attempts` counting the provider calls. |
-| D107 | A charge that lands on a `CANCELLED` checkout is `REFUNDED` with `refundedReason: CHECKOUT_CANCELLED`, no order becomes `PAID` (SRS-FR-PAY-004) — that is tx B's branch, where the charge has already happened. If the checkout is already `CANCELLED` when **tx A** reads it, the provider is never called and the answer is `409 CONFLICT` `details.reason: CHECKOUT_CANCELLED`: there is nothing to refund, and inventing a charge to refund would be a worse lie than a refusal. |
+| D107 | A charge that lands on a `CANCELLED` checkout is `REFUNDED` with `refundedReason: CHECKOUT_CANCELLED`, no order becomes `PAID` (SRS-FR-PAY-004) — that is tx B's branch, where the charge has already happened. At **tx A** the checkout may already be `CANCELLED`, and there are two cases, not one: **no charge recorded** under the derived key → the provider is never called and the answer is `409 CONFLICT` `details.reason: CHECKOUT_CANCELLED` (inventing a charge to refund would be a worse lie than a refusal); **a charge *is* recorded** because an earlier attempt timed out → the payment is `REFUNDED` for it and the answer is the same `409`, because money moved and only a refund makes the books true. |
 | D108 | The review screen places, then pays: two calls, in that order, and a decline returns the buyer to the review step with the reason. The steps are separate because the API's are — a combined endpoint would hide which of the two failed. |
 | D109 | Phase 6 charges the checkout **total**; the fee and the seller shares are computed in phase 8 with the ledger (T-081). No percentage is introduced anywhere in phase 6, so nothing has to be unlearned. |
 | D110 | The simulator's own store (`provider_charges`, keyed by operation key) is a real table written **before** the verdict is returned, so "the provider charged and the response was lost" is representable and the retry path is testable rather than mocked. |
@@ -334,7 +336,16 @@ export const PayCheckoutOutcomes = {
    charge.** Refunding a charge that was never made is not representable. *Resolution:* D107 — the
    provider is never called and the answer is `409` `details.reason: CHECKOUT_CANCELLED`. Cost if
    wrong: one branch.
-6. **T-082 depends on T-042, which phase 4's plan does not list under that name.** The review screen
+6. **SRS §9 says "timeout retried by the worker with the same provider idempotency key", and phase 6
+   gives that retry no actor.** The derived key means a *client* retry resolves a timeout for free — the
+   second `pay` presents the same provider operation and the store answers `CAPTURED` — and D107's
+   second case closes the same door when the checkout has been cancelled in the meantime. A *worker*
+   job that sweeps `PROCESSING` payments nobody retried (a buyer who closed the tab) is **deferred to
+   phase 10**, with the outbox and the queue that make a scheduled sweep the right shape rather than a
+   second bespoke job in `apps/worker`. Cost if wrong: a payment left `PROCESSING` by a buyer who
+   never came back stays that way until phase 10 lands, and the money is with the provider, not lost —
+   the row is the record that says so.
+7. **T-082 depends on T-042, which phase 4's plan does not list under that name.** The review screen
    phase 4 shipped is where the payment step goes; the plan treats the dependency as satisfied.
    Cost if wrong: none identified — the screen exists.
 

@@ -9,7 +9,7 @@
 ## Context
 
 Phase 6 charges a checkout. Real money movement is out of scope for this project, so the provider is
-a contract — `PaymentProvider` in SRS §5's context diagram — with a simulator behind it, and phase 7
+a contract — `PaymentProvider` in SRS §2's context diagram — with a simulator behind it, and phase 7
 puts Stripe test mode behind the same contract.
 
 Three requirements shape it, and none of them is about the provider being nice:
@@ -44,12 +44,14 @@ checkout, and an "at most once" guarantee that does not depend on the provider b
    All three are **typed results rather than exceptions**: each is an outcome the caller must record,
    and `TIMEOUT` is the one that says "we do not know yet". The `providerRef` travels **in the result**,
    not beside it: phase 8 posts the ledger against it, so a port that returned a bare verdict would have
-   to be widened the moment the ledger lands — which is to say phase 7, not phase 8.
+   to be widened before the ledger could post against it — which is a change phase 7 would be making,
+   not phase 8.
 
 2. **The operation key is derived from the checkout, not minted per attempt:** `pay_<checkoutId>`.
    This is the deliberate opposite of ADR 003's client key. A client mints its own key because only the
-   client knows that two clicks are one intention; the *server* mints this one because a retry after a
-   crash — in a different process, with nothing in memory — must arrive at the same provider operation.
+   client knows that two clicks are one intention; the *server* **derives** this one because a retry
+   after a crash — in a different process, with nothing in memory — must arrive at the same provider
+   operation.
    Deriving it from the checkout makes that true by construction.
 
 3. **The simulator's verdict is a pure function of `(operationKey, amountMinor)`**, documented in
@@ -61,8 +63,10 @@ checkout, and an "at most once" guarantee that does not depend on the provider b
    | `amountMinor % 100 === 17` | `TIMEOUT` |
    | anything else | captured, with a `providerRef` derived from the key |
 
-   Tests choose a path by choosing a price, so no test can pass by accident of a mock's configuration,
-   and the same input always produces the same verdict in any process, in any order.
+   Tests choose a path by choosing a price, so no test can pass by accident of a mock's configuration.
+   The **rule** is pure and order-independent; the **provider's answer** is not, and deliberately so —
+   item 4 makes an already-recorded charge answer `CAPTURED` whatever the rule says, because that is
+   what a retry has to see.
 
 4. **The simulator commits its record before it answers, and consults it before the rule.** Its store
    (`provider_charges`, keyed by `operationKey`) records the verdict and the `providerRef` first, so
@@ -133,7 +137,8 @@ checkout, and an "at most once" guarantee that does not depend on the provider b
   `attempts`, and the refund fields. The unique keys, not the code path, are what make a second capture
   impossible.
 - The checkout's `PAID` transition and its orders' are one statement each, inside the transaction that
-  also writes the payment — so a checkout cannot be paid with an unpaid order or the reverse (INV-13).
+  also writes the payment — so a checkout cannot be paid with an unpaid order, or the reverse
+  (SRS-FR-PAY-003). INV-13 is the ledger split, and it is phase 8's.
 - Phase 7 implements the same port against Stripe test mode, with no change above it.
 - Phase 8's ledger posting uses `payment.providerRef` as its business reference, which is why the
   simulator must produce a stable one per operation key rather than a fresh id per call.
