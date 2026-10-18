@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LogLevels, createLogger, type LogLevelName } from '@app/runtime';
-import { runTick, startWorker, type WorkerLogger } from './main';
+import { startWorker, type WorkerLogger } from './main';
 import { WORKER_LOGGER_CONTEXT, WorkerLogEvents } from './worker.constants';
 
 /** A line this process would have printed, captured through the logger's injected sink. */
@@ -15,30 +15,69 @@ function captureLogger(): { logger: WorkerLogger; lines: CapturedLine[] } {
   return { logger, lines };
 }
 
-const tickLines = (lines: CapturedLine[]) => lines.filter(({ line }) => line.includes(WorkerLogEvents.TICK));
+const failLines = (lines: CapturedLine[]) =>
+  lines.filter(({ line }) => line.includes(WorkerLogEvents.RUN_FAILED));
 
 describe('worker main wiring', () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => vi.useRealTimers());
 
-  it('logs exactly one tick at debug level (the stacked Task 18 PR replaces this no-op job)', async () => {
-    const { logger, lines } = captureLogger();
+  it('runs the job immediately, then an interval after each run finishes', async () => {
+    const runOnce = vi.fn(async () => undefined);
+    const { logger } = captureLogger();
 
-    await runTick(logger);
+    const stop = startWorker({ intervalMs: 1_000 }, runOnce, logger);
 
-    expect(tickLines(lines)).toEqual([{ line: expect.stringContaining(WorkerLogEvents.TICK), level: LogLevels.DEBUG }]);
-  });
-
-  it('startWorker runs the tick on the env interval, and stop ends it', async () => {
-    const { logger, lines } = captureLogger();
-    const stop = startWorker({ intervalMs: 1_000 }, logger);
-
-    expect(tickLines(lines)).toHaveLength(1); // the first run is immediate
+    expect(runOnce).toHaveBeenCalledTimes(1); // the first run is immediate
     await vi.advanceTimersByTimeAsync(1_000);
-    expect(tickLines(lines)).toHaveLength(2);
+    expect(runOnce).toHaveBeenCalledTimes(2);
 
     await stop();
     await vi.advanceTimersByTimeAsync(10_000);
-    expect(tickLines(lines)).toHaveLength(2); // nothing runs after stop
+    expect(runOnce).toHaveBeenCalledTimes(2); // nothing runs after stop
+  });
+
+  it('logs a failed run at error level and keeps the next tick scheduled', async () => {
+    const runOnce = vi.fn(async () => {
+      throw new Error('database is down');
+    });
+    const { logger, lines } = captureLogger();
+
+    const stop = startWorker({ intervalMs: 1_000 }, runOnce, logger);
+
+    await vi.advanceTimersByTimeAsync(0); // let the rejection reach the error handler
+    expect(failLines(lines)).toHaveLength(1);
+    expect(failLines(lines)[0]?.level).toBe(LogLevels.ERROR);
+
+    // The failure did not end the chain: a later interval still runs the job.
+    await vi.advanceTimersByTimeAsync(1_000);
+    expect(runOnce).toHaveBeenCalledTimes(2);
+
+    await stop();
+  });
+
+  it('stop() waits for the run in flight instead of interrupting it', async () => {
+    let finishRun: () => void = () => undefined;
+    const runOnce = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finishRun = resolve;
+        }),
+    );
+    const { logger } = captureLogger();
+
+    const stop = startWorker({ intervalMs: 1_000 }, runOnce, logger);
+    expect(runOnce).toHaveBeenCalledTimes(1);
+
+    let stopped = false;
+    const stopping = stop().then(() => {
+      stopped = true;
+    });
+    await Promise.resolve();
+    expect(stopped).toBe(false); // a run is still in flight
+
+    finishRun();
+    await stopping;
+    expect(stopped).toBe(true);
   });
 });
