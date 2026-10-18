@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   SimulatorVerdicts,
   simulatedProviderRef,
@@ -6,6 +6,7 @@ import {
 } from '@app/domain';
 import type { ProviderCapture, PaymentCaptureRequest, PaymentProvider } from './interfaces/payment-provider.interface';
 import type { ProviderChargeStore } from './interfaces/provider-charge.interface';
+import { PROVIDER_CHARGE_STORE } from './payments.constants';
 
 /**
  * The provider behind the port until phase 7 (ADR 004).
@@ -24,7 +25,7 @@ import type { ProviderChargeStore } from './interfaces/provider-charge.interface
  */
 @Injectable()
 export class SimulatorPaymentProvider implements PaymentProvider {
-  constructor(private readonly store: ProviderChargeStore) {}
+  constructor(@Inject(PROVIDER_CHARGE_STORE) private readonly store: ProviderChargeStore) {}
 
   async capture({ operationKey, amountMinor, currency }: PaymentCaptureRequest): Promise<ProviderCapture> {
     const recorded = await this.store.find(operationKey);
