@@ -2,7 +2,11 @@ import type { CurrencyCode } from '@app/contracts';
 import { CurrencyCodes } from '@app/contracts';
 import { SimulatorVerdicts, providerOperationKey, simulatedProviderRef } from '@app/domain';
 import { SimulatorPaymentProvider } from './simulator-payment.provider';
-import type { ProviderChargeRecord, ProviderChargeStore } from './interfaces/provider-charge.interface';
+import type {
+  ProviderChargeRecord,
+  ProviderChargeStore,
+  RecordedCharge,
+} from './interfaces/provider-charge.interface';
 
 /**
  * An in-memory store with the one rule the real table enforces: one row per operation
@@ -14,9 +18,12 @@ class FakeStore implements ProviderChargeStore {
   async find(operationKey: string): Promise<ProviderChargeRecord | null> {
     return this.rows.get(operationKey) ?? null;
   }
-  async record(charge: ProviderChargeRecord): Promise<void> {
-    if (this.rows.has(charge.operationKey)) throw new Error('duplicate operation key');
+  /** Insert-if-absent, then return what is stored — the table's contract, in memory. */
+  async record(charge: ProviderChargeRecord): Promise<RecordedCharge> {
+    const existing = this.rows.get(charge.operationKey);
+    if (existing !== undefined) return { charge: existing, created: false };
     this.rows.set(charge.operationKey, charge);
+    return { charge, created: true };
   }
 }
 
@@ -85,6 +92,20 @@ describe('SimulatorPaymentProvider (ADR 004)', () => {
 
     expect(second.kind).toBe(SimulatorVerdicts.CAPTURED);
     expect(third.kind).toBe(SimulatorVerdicts.CAPTURED);
+    expect(store.rows.size).toBe(1);
+  });
+
+  it('survives two captures arriving together: one records, the loser reads the charge (no throw)', async () => {
+    // Both find nothing before either records — the race that a real unique index decides.
+    const { store, provider } = setup();
+
+    const [first, second] = await Promise.all([
+      provider.capture(request(amountTimeout)),
+      provider.capture(request(amountTimeout)),
+    ]);
+
+    // One call's answer was lost (that is what the amount means); the other saw the charge.
+    expect([first.kind, second.kind].sort()).toEqual([SimulatorVerdicts.CAPTURED, SimulatorVerdicts.TIMEOUT]);
     expect(store.rows.size).toBe(1);
   });
 

@@ -16,14 +16,26 @@ export interface ProviderChargeRecord {
   capturedAt: Date;
 }
 
+/** What `record` did, and what is stored: `created` is false when the key already had a charge. */
+export interface RecordedCharge {
+  charge: ProviderChargeRecord;
+  created: boolean;
+}
+
 /**
  * The store behind the provider, as a port.
  *
  * The adapter needs two things and nothing else, which is why this is an interface rather
  * than a Prisma client: the decisions stay unit-testable against a fake, and the table
  * that implements it is proven separately by writing around Prisma.
+ *
+ * `record` is **insert-if-absent, then return what is stored** — `INSERT … ON CONFLICT DO
+ * NOTHING` followed by a read, the same shape ADR 003 used for a request key. It must not
+ * throw when the key is taken: two captures for one operation can arrive together, and a
+ * duplicate insert that escaped as an exception would turn a retry into a 500 instead of
+ * the idempotent answer the port promises.
  */
 export interface ProviderChargeStore {
   find(operationKey: string): Promise<ProviderChargeRecord | null>;
-  record(charge: ProviderChargeRecord): Promise<void>;
+  record(charge: ProviderChargeRecord): Promise<RecordedCharge>;
 }

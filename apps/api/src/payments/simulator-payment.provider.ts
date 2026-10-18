@@ -39,7 +39,7 @@ export class SimulatorPaymentProvider implements PaymentProvider {
     const verdict = simulatorVerdict(amountMinor);
     if (verdict === SimulatorVerdicts.DECLINED) return { kind: SimulatorVerdicts.DECLINED };
 
-    const charge = {
+    const candidate = {
       operationKey,
       providerRef: simulatedProviderRef(operationKey),
       amountMinor,
@@ -47,7 +47,12 @@ export class SimulatorPaymentProvider implements PaymentProvider {
       capturedAt: new Date(),
     };
     // Before the answer, never after: a crash here leaves a charge the retry can find.
-    await this.store.record(charge);
+    // Insert-if-absent, because two captures for one operation can arrive together — and
+    // the loser must read the winner's charge rather than fail on a unique index.
+    const { charge, created } = await this.store.record(candidate);
+    if (!created) {
+      return { kind: SimulatorVerdicts.CAPTURED, providerRef: charge.providerRef, capturedAt: charge.capturedAt };
+    }
 
     return verdict === SimulatorVerdicts.TIMEOUT
       ? { kind: SimulatorVerdicts.TIMEOUT }
