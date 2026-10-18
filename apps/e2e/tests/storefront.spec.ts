@@ -137,7 +137,10 @@ test.describe('storefront: a buyer in a real browser', () => {
 
     await second.getByRole('button', { name: 'Place order' }).click();
     await expect(second).toHaveURL(/\/cart\?conflict=lines$/);
-    await expect(second.getByRole('alert')).toContainText(/changed/i);
+    // Narrowed to the banner: Next.js draws its own `role="alert"` route announcer on
+    // every page, so the bare query is two elements wide even though only one is the
+    // cart's.
+    await expect(second.getByRole('alert').filter({ hasText: /changed/i })).toContainText(/Fix the flagged lines/i);
     await expect(second.getByText('Sold out')).toBeVisible();
 
     // Nothing was created for the loser (D57).
