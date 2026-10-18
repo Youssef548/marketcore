@@ -9,12 +9,13 @@
     "dev": "nest start --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,test}/**/*.ts\"",
-    "test": "jest --passWithNoTests && jest --config ./test/jest-e2e.json --runInBand && jest --config ./test/jest-integration.json --runInBand",
+    "test": "jest --passWithNoTests && jest --config ./test/jest-e2e.json --runInBand && jest --config ./test/jest-integration.json --runInBand && jest --config ./test/jest-concurrency.json --runInBand",
     "test:coverage": "jest --config ./test/jest-coverage.json --coverage --runInBand",
     "test:mutation": "stryker run",
     "test:watch": "jest --watch",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
     "test:integration": "jest --config ./test/jest-integration.json --runInBand",
+    "test:concurrency": "jest --config ./test/jest-concurrency.json --runInBand",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

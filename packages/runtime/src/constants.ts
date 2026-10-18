@@ -30,4 +30,14 @@ export const STDERR_LOG_LEVELS = [LogLevels.ERROR, LogLevels.WARN] as const;
 /** Field values shared by both processes. A log event name is a contract, not a literal. */
 export const LogEvents = {
   HTTP_REQUEST_COMPLETED: 'http.request.completed',
+  /** SRS-FR-CXL-004: one line per auto-cancel run. */
+  CHECKOUT_AUTOCANCEL_RUN: 'checkout.autocancel.run',
+  CHECKOUT_AUTOCANCEL_FAILED: 'checkout.autocancel.failed',
+  WORKER_STARTED: 'worker.started',
+  WORKER_STOPPED: 'worker.stopped',
+  /** SRS-NFR-OBS-001: one line per checkout outcome, carrying the request id. */
+  CHECKOUT_PLACED: 'checkout.placed',
+  CHECKOUT_REJECTED: 'checkout.rejected',
+  /** A deadlock or serialization victim being retried (SRS §8). Expected to be zero. */
+  CHECKOUT_TRANSACTION_RETRIED: 'checkout.transaction.retried',
 } as const;

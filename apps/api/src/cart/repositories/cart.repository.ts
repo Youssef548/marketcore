@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@app/database';
-import { MIN_PUBLISHABLE_PRICE_MINOR, buyerScope, type BuyerContext } from '@app/domain';
+import { MIN_PUBLISHABLE_PRICE_MINOR, buyerScope, type BuyerContext, type LineQuantity } from '@app/domain';
 import { PrismaService } from '@app/runtime';
 import { PUBLIC_PRODUCT_WHERE } from '../../storefront/storefront.constants';
-import { CART_LINE_ORDER, CART_LINE_SELECT } from '../cart.constants';
+import { CART_LINE_ORDER, CART_LINE_QUANTITY_SELECT, CART_LINE_SELECT } from '../cart.constants';
 import type { CartLineRow } from '../interfaces/cart.interface';
 
 /**
@@ -65,6 +65,28 @@ export class CartRepository {
       const cart = await this.touchCart(tx, buyer);
       await tx.cartItem.deleteMany({ where: { cartId: cart.id, productId } });
     });
+  }
+
+  /**
+   * The checkout transaction's first lock (D83): the buyer's cart row, `FOR UPDATE`.
+   * Every cart write takes this row first too, so the lines read next cannot be
+   * added, changed or removed before checkout deletes them. `null` when the buyer
+   * has no cart at all.
+   */
+  async lockForCheckout(tx: Prisma.TransactionClient, buyer: BuyerContext): Promise<{ id: string } | null> {
+    const rows = await tx.$queryRaw<{ id: string }[]>`
+      SELECT id FROM carts WHERE "buyerId" = ${buyer.buyerId} FOR UPDATE`;
+    return rows[0] ?? null;
+  }
+
+  /** The lines under the lock, as `sameLines` compares them (SRS-FR-CHK-006). */
+  readCheckoutLines(tx: Prisma.TransactionClient, cartId: string): Promise<LineQuantity[]> {
+    return tx.cartItem.findMany({ where: { cartId }, select: CART_LINE_QUANTITY_SELECT });
+  }
+
+  /** The cart empties with the order that emptied it (SRS-FR-CHK-007). */
+  async clearCheckoutLines(tx: Prisma.TransactionClient, cartId: string): Promise<void> {
+    await tx.cartItem.deleteMany({ where: { cartId } });
   }
 
   /**

@@ -2,7 +2,7 @@
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": "..",
   "testEnvironment": "node",
-  "testRegex": "(src/.*\\.spec\\.ts$|test/.*\\.(e2e|integration)-spec\\.ts$)",
+  "testRegex": "(src/.*\\.spec\\.ts$|test/.*\\.(e2e|integration|concurrency)-spec\\.ts$)",
   "transform": { "^.+\\.(t|j)s$": "ts-jest" },
   "setupFiles": ["dotenv/config"],
   "moduleNameMapper": {
