@@ -88,11 +88,19 @@ The storefront adds two read paths that are not tenant reads, and each gets its 
 a hole in this one.
 
 - **Public catalog.** `GET /storefront/products[/:id]` reads `PUBLISHED` products across every active
-  organization. **Buyer-side repositories — storefront, cart, checkout — read products only through
-  `PUBLIC_PRODUCT_WHERE`, and only their public fields leave the server.** Their output is parsed
-  through the `.strict()` `PublicProduct` contract schema — the schema is the allowlist, so a private
-  field cannot leave by accident. INV-9 is narrowed to say so: published product fields and stock are
-  public; drafts, orders, members and the ledger are not.
+  organization. The storefront reads products only through `PUBLIC_PRODUCT_WHERE`, and its output is
+  parsed through the `.strict()` `PublicProduct` contract schema — the schema is the allowlist, so a
+  private field cannot leave by accident. The cart reads products through the same
+  `PUBLIC_PRODUCT_WHERE` but answers with the `.strict()` `CartSchema` instead, which carries a line's
+  product id, name, quantity, currency, both prices and its availability, plus the seller's name and
+  slug — and nothing else. Checkout is the one
+  deliberate exception: a plain pre-lock read takes only `currency` (SRS-FR-CHK-005, the mixed-currency
+  refusal), and after the inventory rows are locked it re-reads products by id *inside its own
+  transaction*, selecting only `id`, `name`, `priceMinor`, `currency`, `status` and the seller's
+  `id`/`status` (D93, `LOCKED_PRODUCT_SELECT`), because what it decides must be what is true now rather
+  than what was true when the cart was read — and it sells nothing a line's seller does not own or that
+  `isPurchasable` refuses. INV-9 is narrowed to say so: published product fields and stock are public;
+  drafts, orders, members and the ledger are not.
 - **Buyer scope.** Buyer routes are `@TenantFree()`. A guard builds a `BuyerContext` from the
   authenticated user id, and buyer-scoped repositories (cart, checkout, buyer orders) take it and
   compose their `where` from `buyerScope(buyer)` in `packages/domain` — the same shape as
