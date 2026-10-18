@@ -39,5 +39,17 @@ export const config = {
    * the tokens, and a redirect from middleware would replace its 401 with an HTML
    * response the fetch could not read.
    */
-  matcher: ['/admin/:path*', '/dashboard', '/products', '/login', '/register'],
+  matcher: [
+    '/admin/:path*',
+    '/dashboard',
+    '/products',
+    '/login',
+    '/register',
+    '/browse',
+    '/p/:path*',
+    '/cart',
+    '/checkout',
+    '/orders/:path*',
+    '/account/:path*',
+  ],
 };
