@@ -35,4 +35,9 @@ export const LogEvents = {
   CHECKOUT_AUTOCANCEL_FAILED: 'checkout.autocancel.failed',
   WORKER_STARTED: 'worker.started',
   WORKER_STOPPED: 'worker.stopped',
+  /** SRS-NFR-OBS-001: one line per checkout outcome, carrying the request id. */
+  CHECKOUT_PLACED: 'checkout.placed',
+  CHECKOUT_REJECTED: 'checkout.rejected',
+  /** A deadlock or serialization victim being retried (SRS §8). Expected to be zero. */
+  CHECKOUT_TRANSACTION_RETRIED: 'checkout.transaction.retried',
 } as const;

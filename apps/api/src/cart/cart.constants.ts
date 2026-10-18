@@ -18,3 +18,9 @@ export const CART_LINE_SELECT = {
 
 /** Lines in the order the buyer added them; the product id breaks a same-millisecond tie. */
 export const CART_LINE_ORDER = [{ createdAt: 'asc' }, { productId: 'asc' }] as const;
+
+/**
+ * What the checkout transaction reads from the cart once it holds the row (D83):
+ * just what `sameLines` compares against the confirmed request.
+ */
+export const CART_LINE_QUANTITY_SELECT = { productId: true, quantity: true } as const;
