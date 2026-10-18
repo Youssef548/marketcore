@@ -54,7 +54,7 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 | Checkout | id, buyerId, status, totalMinor, currency, placedAt | One currency; groups one order per seller; owns the payment | 4 |
 | Order | id, checkoutId, organizationId, buyerId, status, totalMinor, currency | One seller per order; totals immutable after creation; unique (checkoutId, organizationId) is a database constraint, not only a code path | 4 |
 | OrderItem | orderId, productId, quantity, unitPriceMinor, productName | Positive quantity; snapshotted price and name | 4 |
-| IdempotencyKey | buyerId, key, requestHash, status, response | Unique (buyerId, key) | 5 |
+| IdempotencyKey | id, buyerId, key, requestFingerprint, checkoutId, createdAt | Unique (buyerId, key); unique checkoutId; `checkoutId` is `NOT NULL` behind a **deferred** foreign key; key length 1–64 is a CHECK (see `‡`) | 5 |
 | Payment | id, checkoutId, status, amountMinor, currency, providerRef | One logical capture per checkout | 6 |
 | PaymentAttempt | paymentId, attempt, status, request, response | Unique provider operation key | 6 |
 | WebhookEvent | provider, eventId, type, payload, status | Unique (provider, eventId) | 6 |
@@ -74,6 +74,21 @@ Amounts use integer minor units (see §3). Every money-bearing aggregate carries
 **Ownership note.** `LedgerEntry` has no `updatedAt` and no soft-delete column. That is not an
 omission: INV-7 is enforced by the schema offering no way to violate it, which is stronger than a
 convention.
+
+**`‡` — the idempotency row was designed here, then built to a different shape.** This table first
+said `requestHash, status, response`: a hash of the body, and a stored response to replay. Phase 5 built
+it as `requestFingerprint, checkoutId`, and the difference is the design rather than a trimming:
+
+- **The fingerprint is the canonical request stored verbatim, not a hash.** Nothing compares a hash; the
+  stored string *is* the comparison, which makes a mismatch readable in a `psql` session and removes the
+  question of which canonicalisation a digest was taken over.
+- **There is no stored response.** A replay re-reads the checkout, so a checkout the worker has since
+  cancelled answers with its current status rather than a frozen body (ADR 003).
+- **`checkoutId` is minted by the claim, and its foreign key is `DEFERRABLE INITIALLY DEFERRED`.** The
+  claim is the first statement of the checkout transaction, so it names a checkout that does not exist
+  yet and is created two statements later. PostgreSQL cannot defer a `CHECK` — it defers `UNIQUE`,
+  `PRIMARY KEY`, `REFERENCES` and `EXCLUDE` — which is why the guarantee rides on the reference, with a
+  `NOT NULL` column behind it.
 
 **`†` — Session and RefreshToken were added during phase 2, not before it.** This table originally
 omitted them, which meant `docs/architecture.md`'s phase-2 scope ("refresh" and "revoke") had no

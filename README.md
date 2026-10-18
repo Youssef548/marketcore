@@ -16,8 +16,8 @@ are built; a buyer browses every seller's published products through one storefr
 across sellers, and checks out once — which creates every seller's order or none, sells the last unit
 exactly once, and restores an abandoned checkout's stock exactly once. `apps/web` renders that
 storefront behind a BFF, and is designed to the system in
-[`docs/design/deliverables`](./docs/design/deliverables). The idempotency, ledger and payout
-guarantees are designed and specified, not yet implemented — see [Roadmap](#roadmap).
+[`docs/design/deliverables`](./docs/design/deliverables). The ledger and payout guarantees are
+designed and specified, not yet implemented — see [Roadmap](#roadmap).
 
 **Scope:** an operator UI for sellers *and* a multi-seller buyer storefront — public buyers browse
 every seller's published products, fill one cart across sellers, and check out once. The
@@ -47,7 +47,7 @@ Ten invariants, each restated as the observable that proves it, live in
 | Invariant | Observable | Status |
 |---|---|---|
 | Inventory never goes negative | 100 concurrent checkouts for one unit: exactly one success, stock 0, one order | **proven, phase 4** |
-| A checkout idempotency key creates at most one operation | 20 repeat requests with one key produce one order | phase 5 |
+| A checkout idempotency key creates at most one operation | 20 repeat requests with one key produce one order | **proven, phase 5** |
 | A webhook causes each side effect at most once | Repeated delivery produces one state transition and one ledger transaction | phase 8 |
 | Ledger transactions balance | Signed entries sum to zero per currency | phase 8 |
 | A payout executes at most once | Two workers racing the same payout call the provider once | phase 11 |
@@ -178,7 +178,7 @@ And the layers that need more than one process:
 ```bash
 pnpm --filter api test                       # unit + in-process e2e + integration against real Postgres
 docker compose -f docker-compose.e2e.yml up -d --build --wait
-pnpm --filter e2e test:behavioural           # 24 tests: real image, real TLS, real browser
+pnpm --filter e2e test:behavioural           # 27 tests: real image, real TLS, real browser
 docker compose -f docker-compose.e2e.yml down -v
 ```
 
@@ -196,7 +196,8 @@ The flagship scenarios, and where each is proven:
 | Cross-buyer isolation — one buyer cannot read another's order | `pnpm --filter api test:e2e` | **proven** |
 | Abandoned checkout — cancelled and restocked once | `pnpm --filter worker test:integration` | **proven** |
 | Storefront end to end — browse a cart, add to it, check out, see the order | `pnpm --filter e2e test:behavioural` | **proven** |
-| Duplicate checkout — 20 repeats, one order | `pnpm --filter api test:e2e` | phase 5 |
+| **Duplicate checkout** — 20 repeats, one key, one order | `pnpm --filter api test:e2e` | **proven** |
+| **Duplicate checkout, simultaneously** — 100 repeats at once, 10 runs, one checkout | `pnpm --filter api test:concurrency` | **proven** |
 | Duplicate payment webhook — one ledger transaction | `pnpm --filter api test:e2e` | phase 8 |
 | Outbox recovery — killed mid-flight, processed once | `pnpm --filter worker test:e2e` | phase 10 |
 | Ledger balance — every transaction sums to zero | `pnpm --filter api test:integration` | phase 8 |
@@ -241,10 +242,19 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md), each with the beh
   concurrent buyers, cross-buyer and cross-tenant isolation on carts and orders, and a worker that
   cancels an unpaid checkout after 30 minutes exactly once. The storefront grew with it: browse, cart,
   checkout, and orders behind the BFF, and four real-browser journeys over real TLS.
+- **Phase 5 — retry-safe checkout.** `POST /checkouts` requires an `Idempotency-Key`. A repeat with the
+  same key and the same body answers with the checkout it already placed; the same key with a different
+  body is refused `409 CONFLICT` with `details.reason: KEY_REUSED`; a refused placement releases the key
+  instead of spending it. The claim is the **first statement of the checkout transaction** — the row is
+  inserted with the id of the checkout that transaction is about to create, behind a deferred foreign
+  key — so the arbiter is a unique index rather than a lock, and a hundred simultaneous repeats leave
+  one checkout. The browser mints one key per placement attempt and the BFF forwards it, refusing a
+  missing one with the API's own envelope. Signed-in visitors now land on the storefront rather than the
+  console, and the first-run screen is called **Start selling** (D91, D101).
 
 **In progress**
 
-- Phase 5: request-scoped idempotency — one key, one operation, one response replayed.
+- Nothing. Phase 5 closed on 2026-10-18; phase 6 (the deterministic payment simulator) is next.
 
 **Planned**
 
@@ -302,8 +312,11 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
   now, and a fixture package with its own config proves each fires where turbo actually runs it.
 - **Orders sit in `Pending payment` and go no further.** Payment is phase 6; until then a placed
   order is a real order, visible to both sides, that nothing ever pays for.
-- **No idempotency key exists.** Checkout's exactly-once-ness is enforced by row locks and status
-  transitions, not by a key a client can replay — the request-scoped key arrives in phase 5.
+- **Idempotency keys are never expired.** The `idempotency_keys` table gains a row per placement
+  attempt and nothing prunes it, so it grows with every order rather than with every buyer. Nothing
+  user-visible depends on a row once its checkout is read, and the ADR's review date is when the ledger
+  gives a second retry-safe write a reason to reuse the shape — but "it needs a TTL" is a real
+  limitation until phase 13 measures it.
 - **No visual regression testing.** No stable rendering environment; a flaky visual gate is worse than
   none.
 

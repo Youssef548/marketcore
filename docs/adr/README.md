@@ -10,7 +10,7 @@ its constraint exists describes a guess, not a decision.
 |---|---|---|---|
 | [001](./0001-modular-monolith-with-worker.md) | Use a modular monolith with API and worker processes (amended: worker from phase 4) | Before application structure | Accepted |
 | [002](./002-postgres-row-locking-for-inventory.md) | Decide limited stock with PostgreSQL row locks at checkout | Before checkout implementation (phase 4) | Accepted |
-| [003](./003-request-scoped-idempotency.md) | Use request-scoped idempotency records | Before retry-safe checkout (phase 5) | Proposed |
+| [003](./003-request-scoped-idempotency.md) | Use request-scoped idempotency records | Before retry-safe checkout (phase 5) | Accepted |
 | 004 | Use a deterministic payment simulator before Stripe | Before payment implementation (phase 6) | Proposed |
 | 005 | Use an append-only double-entry ledger | Before financial balances (phase 8) | Proposed |
 | 006 | Use a transactional outbox | Before asynchronous payment jobs (phase 10) | Proposed |
