@@ -8,8 +8,9 @@
     "start": "node dist/main.js",
     "dev": "tsx watch src/main.ts",
     "lint": "eslint \"{src,test}/**/*.ts\"",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
+    "test": "vitest run && vitest run -c vitest.integration.config.ts",
+    "test:coverage": "vitest run --coverage && vitest run -c vitest.integration.config.ts",
+    "test:integration": "vitest run -c vitest.integration.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

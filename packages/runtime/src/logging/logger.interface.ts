@@ -10,3 +10,9 @@ export interface JsonLoggerOptions {
 
 /** A structured record. Field values are merged in, so a request id can join a line. */
 export type LogFields = Record<string, unknown>;
+
+/**
+ * What `createLogger` returns, under a name the worker can import without
+ * depending on @nestjs/common itself.
+ */
+export type { LoggerService as Logger } from '@nestjs/common';

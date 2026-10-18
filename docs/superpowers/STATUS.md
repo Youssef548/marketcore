@@ -1238,6 +1238,65 @@ is absent.
   worktree does not have configured. The Task 17 deliverables themselves pass lint, typecheck and tests.
 - **No integration tests** — the `vitest.integration.config.ts` exists, but integration suites land with
   Task 18.
+
+---
+
+## Phase 4 Task 18 — the auto-cancel job: cancel once, restore once — 2026-10-17
+
+**Claim:** one conditional `UPDATE … FOR UPDATE SKIP LOCKED … RETURNING` cancels due checkouts and,
+in the same transaction, cancels their orders and restocks each product in checkout's lock order —
+so two runs, in this process or another, divide the due checkouts and every unit comes back exactly
+once (D70, INV-15); a second run over the same checkout changes nothing.
+**Branch:** `feat/phase-4-auto-cancel` (worktree `phase4-auto-cancel`).
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| RED before implementation | `pnpm --filter worker test` / `test:integration` | **FAIL as planned** — `Failed to load url ./auto-cancel.job` and `../src/auto-cancel/auto-cancel.job`; Task 17's 11 unit tests still passed |
+| Unit: cutoff arithmetic, one log line, never rejects | `pnpm --filter worker test` | **14 passed** — job 3 + Task 17's 11 |
+| Integration, real PostgreSQL | `pnpm --filter worker test:integration` | **6 passed** — two parallel runs restore once; interleaved batch-1 runs restore once; 31 min cancelled / 29 min left; non-PENDING_PAYMENT untouched; held checkout skipped without waiting then cancelled next run; hours-down worker drains backlog on first run |
+| The exactly-once test bites (Step 5 mutation) | read-then-write mutant (plain `SELECT` + unconditional `updateMany`), `pnpm --filter worker test:integration` | **3 failed as predicted** — both parallel cases over-restocked: `available` 119 where 100 was expected (19 units restored twice); the held-lock case also failed (no SKIP LOCKED → waited on the holder's 20 s transaction). Reverted; 6/6 green again |
+| Coverage floor | `pnpm --filter worker exec vitest run --coverage` | measured 43.12/80/66.66/43.12 (unit-only run); thresholds set five below: 38/75/61/38 |
+| The process runs and stops cleanly | `AUTO_CANCEL_INTERVAL_MS=1000 node apps/worker/dist/main.js & sleep 3; kill -TERM` | `worker.started` → three `checkout.autocancel.run` lines (first run drained 2 expired leftovers from the shared dev database, `restoredUnits:4`, then `cancelled:0`) → `worker.stopped {"signal":"SIGTERM"}`, `exit 0` |
+| Domain unchanged | `pnpm --filter @app/domain test` | **80 passed** |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **37/37 tasks successful** (Task 17's deferral closed: this worktree now has `apps/api/.env`, `packages/database/.env`, `apps/worker/.env` and a running PostgreSQL) |
+
+### Delivered
+
+- **`apps/worker/src/auto-cancel/`** — `auto-cancel.repository.ts` (the one transaction) and
+  `auto-cancel.job.ts` (cutoff from the clock, one JSON line per run, never rejects).
+- **`apps/worker/src/interfaces/auto-cancel.interface.ts`** — `AutoCancelResult`, `AutoCancelPolicy`,
+  `AutoCancelStore`.
+- **`apps/worker/src/main.ts`** — the runnable process: env validation, interval, SIGTERM/SIGINT stop.
+- **`apps/worker/test/`** — `support/logger.ts` (capturing logger), `support/fixtures.ts` (committed
+  checkout state written directly, because apps never import apps), `auto-cancel.integration-spec.ts`.
+- **`packages/runtime`** — four `LogEvents` (run/failed/started/stopped); `Logger` type alias so the
+  worker does not depend on `@nestjs/common` for one type.
+- **`apps/worker/package.json`** — `test`/`test:coverage` chain unit + integration; `test:integration`
+  script added. **`apps/worker/vitest.config.ts`** — coverage thresholds as above.
+
+### Deviations
+
+- **The branch was missing Task 6's tables.** The brief assumed them present; the branch had forked
+  before `81e0a32` landed on `origin/main`. Merged `origin/main` in (now `78d601a`) rather than
+  copying files into the working tree, so Task 18's uncommitted diff names only its own files. Cost if wrong: one merge commit to drop (`git reset --keep cf90188`); no Task-18
+  line is inside it.
+- **`test/support/fixtures.ts` needed `export const prisma: PrismaClient`** — the plan's verbatim
+  `= new PrismaClient()` trips TS2742 (unportable inferred type through pnpm's layout) under this
+  repo's tsconfig. Type annotation only; behaviour identical. Cost if wrong: none — typecheck and
+  all suites pass.
+- **Coverage floor is low by construction** (38/75/61/38): the measured run is unit-only; the
+  repository and `main.ts` are exercised by the integration suite, which CI runs right after
+  without coverage (the plan's own `test:coverage` shape). Cost if wrong: a regression in
+  DB-only paths would not move the unit metric — it would fail the integration suite instead.
+
+### Not proven / deferred
+
+- **No commit, no push** — explicitly instructed; the change is uncommitted in the working tree.
+- **The worker in the image, compose stack, turbo dry-run and CI** are Task 19's, including the
+  behavioural run of the real process behind compose.
+
 ## 2026-10-17 — Phase 4 review round 1: every open PR reviewed, every blocking finding fixed
 
 Six PRs went through the two-model debate review (OpenAI vs xAI reviewers, both agreeing
