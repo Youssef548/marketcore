@@ -7,5 +7,7 @@
   "setupFiles": ["dotenv/config"],
   "moduleNameMapper": {
     "^@app/(.*)$": "<rootDir>/../../packages/$1/src/index.ts"
-  }
+  },
+  "testTimeout": 20000,
+  "forceExit": true
 }
