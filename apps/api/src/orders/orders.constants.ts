@@ -9,6 +9,16 @@ export const PlaceCheckoutOutcomes = {
   CART_CHANGED: 'CART_CHANGED',
 } as const;
 
+/**
+ * How a request's key resolved (ADR 003). `REPLAY` and `KEY_REUSED` are the stored row's
+ * answer; `CLAIMED` is the caller's warrant to do the work.
+ */
+export const IdempotencyClaimKinds = {
+  CLAIMED: 'CLAIMED',
+  REPLAY: 'REPLAY',
+  KEY_REUSED: 'KEY_REUSED',
+} as const;
+
 /** Human-facing. Clients branch on `code` and `details`, never on these. */
 export const CheckoutMessages = {
   LINES_CONFLICT: 'Some lines cannot be ordered as confirmed',
