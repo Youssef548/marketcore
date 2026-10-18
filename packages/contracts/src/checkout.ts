@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { CheckoutCancelledDetailsSchema, PaymentDeclinedDetailsSchema } from './payment';
+import {
+  CheckoutCancelledDetailsSchema,
+  PaymentDeclinedDetailsSchema,
+  PaymentPendingDetailsSchema,
+} from './payment';
 import {
   CART_LINE_MAX_QUANTITY,
   CART_LINE_MIN_QUANTITY,
@@ -109,5 +113,6 @@ export const CheckoutConflictDetailsSchema = z.union([
   CheckoutKeyReusedDetailsSchema,
   PaymentDeclinedDetailsSchema,
   CheckoutCancelledDetailsSchema,
+  PaymentPendingDetailsSchema,
 ]);
 export type CheckoutConflictDetails = z.infer<typeof CheckoutConflictDetailsSchema>;

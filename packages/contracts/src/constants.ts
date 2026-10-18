@@ -131,6 +131,7 @@ export type PaymentStatus = (typeof PaymentStatuses)[keyof typeof PaymentStatuse
 export const PaymentRefusals = {
   PAYMENT_DECLINED: 'PAYMENT_DECLINED',
   CHECKOUT_CANCELLED: 'CHECKOUT_CANCELLED',
+  PAYMENT_PENDING: 'PAYMENT_PENDING',
 } as const;
 export type PaymentRefusal = (typeof PaymentRefusals)[keyof typeof PaymentRefusals];
 
