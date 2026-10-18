@@ -22,6 +22,18 @@ function repositoryRoot(): string {
 }
 
 /**
+ * A service's stdout, which is where the structured request log (for the API) and
+ * worker events are written.
+ */
+export function serviceLogs(service: 'api' | 'worker'): string {
+  return execFileSync(
+    'docker',
+    ['compose', '-f', join(repositoryRoot(), 'docker-compose.e2e.yml'), 'logs', '--no-log-prefix', service],
+    { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 },
+  );
+}
+
+/**
  * The API container's stdout, which is where the structured request log goes.
  *
  * This is what makes the proxy headers verifiable at all. Behind a reverse proxy the
@@ -30,18 +42,7 @@ function repositoryRoot(): string {
  * log line is the one observable.
  */
 export function apiLogs(): string {
-  return execFileSync(
-    'docker',
-    [
-      'compose',
-      '-f',
-      join(repositoryRoot(), 'docker-compose.e2e.yml'),
-      'logs',
-      '--no-log-prefix',
-      'api',
-    ],
-    { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 },
-  );
+  return serviceLogs('api');
 }
 
 /**
