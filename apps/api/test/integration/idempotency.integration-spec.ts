@@ -3,6 +3,9 @@ import { afterAll, describe, expect, it } from '@jest/globals';
 import { CurrencyCodes } from '@app/contracts';
 import { testPrisma } from '../support/db';
 import { createBuyer } from '../support/marketplace';
+import type { IdempotencyScope } from '../../src/orders/interfaces/idempotency.interface';
+import { IdempotencyClaimKinds } from '../../src/orders/orders.constants';
+import { IdempotencyRepository } from '../../src/orders/repositories/idempotency.repository';
 
 /**
  * ADR 003's storage rules, each proven by writing around the application (the week-2
@@ -169,5 +172,120 @@ describe('idempotency constraints (ADR 003)', () => {
     expect(row.id).toBeTruthy();
     expect(row.createdAt).toBeInstanceOf(Date);
     expect(row.requestFingerprint).toBe('f');
+  });
+});
+
+const repository = new IdempotencyRepository();
+
+const aFingerprint = '{"lines":[{"productId":"p1","quantity":1,"unitPriceMinor":1000}]}';
+
+/** A fresh buyer, a key nobody else holds, and the checkout id the caller minted. */
+async function newScope(overrides: Partial<IdempotencyScope> = {}): Promise<IdempotencyScope> {
+  const buyer = await createBuyer();
+  return {
+    buyerId: buyer.id,
+    key: `key-${randomUUID()}`,
+    requestFingerprint: aFingerprint,
+    checkoutId: randomUUID(),
+    ...overrides,
+  };
+}
+
+/**
+ * The caller's transaction (task 5 wires the real one): claim the key, then create the
+ * checkout the claim names. On any outcome but CLAIMED there is nothing to create — and
+ * returning early is what keeps a REPLAY from minting a second checkout.
+ */
+async function claimAndPlace(scope: IdempotencyScope) {
+  return testPrisma.$transaction(async (tx) => {
+    const claim = await repository.claim(tx, scope);
+    if (claim.kind !== IdempotencyClaimKinds.CLAIMED) return claim;
+    await tx.checkout.create({
+      data: { id: scope.checkoutId, buyerId: scope.buyerId, totalMinor: 1000, currency: CurrencyCodes.EGP },
+    });
+    return claim;
+  });
+}
+
+describe('IdempotencyRepository (ADR 003, D94–D100)', () => {
+  it('claims a request key and names the checkout the caller minted', async () => {
+    const scope = await newScope();
+
+    expect(await claimAndPlace(scope)).toEqual({ kind: IdempotencyClaimKinds.CLAIMED });
+
+    const row = await testPrisma.idempotencyKey.findUniqueOrThrow({
+      where: { buyerId_key: { buyerId: scope.buyerId, key: scope.key } },
+    });
+    expect(row.checkoutId).toBe(scope.checkoutId);
+    expect(row.requestFingerprint).toBe(scope.requestFingerprint);
+    expect(await testPrisma.checkout.count({ where: { buyerId: scope.buyerId } })).toBe(1);
+  });
+
+  it('replays a repeat of the same request with the first checkout, and mints nothing', async () => {
+    const scope = await newScope();
+    await claimAndPlace(scope);
+
+    // The retry carries its own freshly minted id; the row it finds is the answer.
+    const retry = { ...scope, checkoutId: randomUUID() };
+
+    expect(await claimAndPlace(retry)).toEqual({
+      kind: IdempotencyClaimKinds.REPLAY,
+      checkoutId: scope.checkoutId,
+    });
+    expect(await testPrisma.idempotencyKey.count({ where: { buyerId: scope.buyerId } })).toBe(1);
+    expect(await testPrisma.checkout.count({ where: { buyerId: scope.buyerId } })).toBe(1);
+  });
+
+  it('refuses the same key under a different request, and leaves the first claim standing', async () => {
+    const scope = await newScope();
+    await claimAndPlace(scope);
+
+    const changed = {
+      ...scope,
+      checkoutId: randomUUID(),
+      requestFingerprint: aFingerprint.replace('1000', '2000'),
+    };
+
+    expect(await claimAndPlace(changed)).toEqual({ kind: IdempotencyClaimKinds.KEY_REUSED });
+
+    const row = await testPrisma.idempotencyKey.findUniqueOrThrow({
+      where: { buyerId_key: { buyerId: scope.buyerId, key: scope.key } },
+    });
+    expect(row.requestFingerprint).toBe(scope.requestFingerprint);
+    expect(await testPrisma.checkout.count({ where: { buyerId: scope.buyerId } })).toBe(1);
+  });
+
+  it('releases a claim, leaving no row and a key that can be claimed again (D98)', async () => {
+    const scope = await newScope();
+
+    await testPrisma.$transaction(async (tx) => {
+      expect(await repository.claim(tx, scope)).toEqual({ kind: IdempotencyClaimKinds.CLAIMED });
+      await repository.release(tx, { buyerId: scope.buyerId, key: scope.key });
+    });
+
+    expect(await testPrisma.idempotencyKey.count({ where: { buyerId: scope.buyerId } })).toBe(0);
+    expect(await claimAndPlace(scope)).toEqual({ kind: IdempotencyClaimKinds.CLAIMED });
+    expect(await testPrisma.idempotencyKey.count({ where: { buyerId: scope.buyerId } })).toBe(1);
+  });
+
+  it('scopes a key to its buyer, so one key string serves two buyers (D99)', async () => {
+    const key = `shared-${randomUUID()}`;
+    const first = await newScope({ key });
+    const second = await newScope({ key });
+
+    expect((await claimAndPlace(first)).kind).toBe(IdempotencyClaimKinds.CLAIMED);
+    expect((await claimAndPlace(second)).kind).toBe(IdempotencyClaimKinds.CLAIMED);
+    expect(await testPrisma.idempotencyKey.count({ where: { key } })).toBe(2);
+  });
+
+  it('answers REPLAY for a repeat that arrives after the first request released nothing', async () => {
+    const scope = await newScope();
+    await claimAndPlace(scope);
+    await claimAndPlace({ ...scope, checkoutId: randomUUID() });
+
+    expect(await claimAndPlace({ ...scope, checkoutId: randomUUID() })).toEqual({
+      kind: IdempotencyClaimKinds.REPLAY,
+      checkoutId: scope.checkoutId,
+    });
   });
 });
