@@ -3,7 +3,13 @@ import { SimulatorVerdicts, providerOperationKey, type BuyerContext } from '@app
 import { LogEvents } from '@app/runtime';
 import type { PayCheckoutOutcome } from './interfaces/payment.interface';
 import type { PaymentProvider } from './interfaces/payment-provider.interface';
-import { PAYMENT_PROVIDER, PAYMENTS_LOGGER, PaymentMessages, PayCheckoutOutcomes } from './payments.constants';
+import {
+  PAYMENT_PROVIDER,
+  PAYMENTS_LOGGER,
+  PaymentMessages,
+  PaymentRefundReasons,
+  PayCheckoutOutcomes,
+} from './payments.constants';
 import { PaymentRepository } from './repositories/payment.repository';
 
 /**
@@ -41,7 +47,7 @@ export class PaymentService {
       if (recorded !== null && recorded.kind === SimulatorVerdicts.CAPTURED) {
         await this.payments.refundCancelled(checkout.id, recorded);
         this.logged(LogEvents.PAYMENT_REFUNDED, requestId, buyer, checkout.id, {
-          reason: PaymentMessages.CANCELLED,
+          reason: PaymentRefundReasons.CHECKOUT_CANCELLED,
         });
       }
       return { kind: PayCheckoutOutcomes.CANCELLED };
@@ -58,7 +64,9 @@ export class PaymentService {
       case SimulatorVerdicts.CAPTURED: {
         const settlement = await this.payments.settle(checkout.id, capture);
         if (settlement.kind === 'REFUNDED') {
-          this.logged(LogEvents.PAYMENT_REFUNDED, requestId, buyer, checkout.id, { reason: 'CHECKOUT_CANCELLED' });
+          this.logged(LogEvents.PAYMENT_REFUNDED, requestId, buyer, checkout.id, {
+            reason: PaymentRefundReasons.CHECKOUT_CANCELLED,
+          });
           return { kind: PayCheckoutOutcomes.CANCELLED };
         }
         // A concurrent capture of the same checkout reached tx B first. The charge is
