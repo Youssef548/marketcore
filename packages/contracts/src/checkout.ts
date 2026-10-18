@@ -93,8 +93,18 @@ export const CheckoutCartChangedDetailsSchema = z
   .object({ reason: z.literal(CheckoutRefusals.CART_CHANGED) })
   .strict();
 
+/**
+ * `error.details` of a 409 refusing a key already used for a different body
+ * (SRS-FR-CHK-008, ADR 003). A client that mints one key per attempt never sees it;
+ * a client that reuses one key across two carts is being told which of the two it is.
+ */
+export const CheckoutKeyReusedDetailsSchema = z
+  .object({ reason: z.literal(CheckoutRefusals.KEY_REUSED) })
+  .strict();
+
 export const CheckoutConflictDetailsSchema = z.union([
   CheckoutLineConflictDetailsSchema,
   CheckoutCartChangedDetailsSchema,
+  CheckoutKeyReusedDetailsSchema,
 ]);
 export type CheckoutConflictDetails = z.infer<typeof CheckoutConflictDetailsSchema>;
