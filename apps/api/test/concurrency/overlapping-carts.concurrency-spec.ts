@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { IDEMPOTENCY_KEY_HEADER } from '@app/contracts';
 import { LogEvents } from '@app/runtime';
 import { AppModule } from '../../src/app.module';
 import { configureApp } from '../../src/app.setup';
@@ -27,6 +28,8 @@ jest.setTimeout(600_000);
 
 const BUYERS = 50;
 const PRICE_MINOR = 500;
+/** One key string; a different buyer per racer, so the keys never meet (D99). */
+const ATTEMPT_KEY = 'overlapping';
 const ORDERINGS = [
   [0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0],
 ] as const;
@@ -73,6 +76,7 @@ describe('overlapping carts (concurrency)', () => {
         request(baseUrl)
           .post('/api/v1/checkouts')
           .set(bearer(buyer.token))
+          .set(IDEMPOTENCY_KEY_HEADER, ATTEMPT_KEY)
           .send({ lines: linesFor(i).map((line) => ({ ...line, unitPriceMinor: PRICE_MINOR })) }),
       ),
     );
