@@ -1,9 +1,13 @@
 # 002 Decide limited stock with PostgreSQL row locks at checkout
 
 - **Date:** 2026-10-17
-- **Status:** Proposed
+- **Status:** Accepted
 - **Phase:** 4 — gates the checkout transaction
-- **Implements:** _pending_ — `docs/superpowers/plans/2026-10-16-marketcore-phase-4-cart-checkout.md`, Tasks 12–15
+- **Implements:** [`#71`](https://github.com/Youssef548/marketcore/pull/71) (retryable transactions),
+  [`#77`](https://github.com/Youssef548/marketcore/pull/77)–[`#79`](https://github.com/Youssef548/marketcore/pull/79)
+  (`CheckoutRepository.place`, the checkout routes and the stock-1 race) — Tasks 12–15 of
+  `docs/superpowers/plans/2026-10-16-marketcore-phase-4-cart-checkout.md`; M1 met at
+  [`#87`](https://github.com/Youssef548/marketcore/pull/87).
 
 ## Context
 
