@@ -45,6 +45,9 @@ jobs:
       # it fails if migrations were not applied first, so the ordering a
       # reviewer runs by hand stays exercised on every push.
       - run: pnpm --filter @app/database db:seed
+      # The flagship race (SRS-NFR-REL-001) also runs inside test:coverage below; run it
+      # first on its own so its 20 runs report separately.
+      - run: pnpm --filter api test:concurrency
       # `test:coverage` rather than `test`: it runs the same suites — for the API,
       # unit, e2e and integration in one Jest invocation — and additionally enforces
       # the coverage thresholds. Running both would run everything twice.
@@ -95,6 +98,9 @@ jobs:
       - name: API logs
         if: failure()
         run: docker compose -f docker-compose.e2e.yml logs --no-log-prefix api
+      - name: Worker logs
+        if: failure()
+        run: docker compose -f docker-compose.e2e.yml logs --no-log-prefix worker
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

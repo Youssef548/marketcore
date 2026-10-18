@@ -70,6 +70,20 @@ services:
       timeout: 3s
       retries: 30
 
+  # The worker, as a separate process against the same database (ADR 0001). Its
+  # window is 20 seconds here instead of D70's 30 minutes (D87), so the behavioural
+  # suite can watch an abandoned checkout restock; the code path is the same.
+  worker:
+    image: marketcore-e2e-worker
+    build: { context: ., dockerfile: apps/worker/Dockerfile }
+    environment:
+      APP_NAME: marketcore
+      DATABASE_URL: postgresql://app:app@db:5432/app_e2e
+      AUTO_CANCEL_INTERVAL_MS: 1000
+      CHECKOUT_PAYMENT_WINDOW_MS: 20000
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
   # The web app is part of this stack because cookies are not fully testable without
   # it: whether a browser *stores* an httpOnly, Secure, SameSite cookie is decided by
   # the browser, over real TLS, and no in-process suite can take that branch.
