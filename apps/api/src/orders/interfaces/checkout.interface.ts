@@ -10,8 +10,10 @@ import type { PlaceCheckoutOutcomes } from '../orders.constants';
 
 export type PlaceCheckoutOutcome =
   | { kind: typeof PlaceCheckoutOutcomes.PLACED; checkoutId: string }
+  | { kind: typeof PlaceCheckoutOutcomes.REPLAYED; checkoutId: string }
   | { kind: typeof PlaceCheckoutOutcomes.REJECTED; conflicts: LineConflict[] }
-  | { kind: typeof PlaceCheckoutOutcomes.CART_CHANGED };
+  | { kind: typeof PlaceCheckoutOutcomes.CART_CHANGED }
+  | { kind: typeof PlaceCheckoutOutcomes.KEY_REUSED };
 
 /** A product as the checkout transaction re-reads it after the inventory locks. */
 export interface LockedProductRow {

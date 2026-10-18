@@ -7,7 +7,7 @@ import {
   type LoggerService,
 } from '@nestjs/common';
 import { CheckoutRefusals, type Checkout, type CreateCheckoutRequest } from '@app/contracts';
-import { singleCurrency, type BuyerContext } from '@app/domain';
+import { checkoutRequestFingerprint, singleCurrency, type BuyerContext } from '@app/domain';
 import { LogEvents } from '@app/runtime';
 import { isRetryableTransactionError } from '../common/database/retryable-transaction';
 import { toCheckout } from './checkout.mapper';
@@ -27,7 +27,12 @@ export class CheckoutService {
     @Inject(ORDERS_LOGGER) private readonly logger: LoggerService,
   ) {}
 
-  async place(buyer: BuyerContext, request: CreateCheckoutRequest, requestId: string): Promise<Checkout> {
+  async place(
+    buyer: BuyerContext,
+    key: string,
+    request: CreateCheckoutRequest,
+    requestId: string,
+  ): Promise<Checkout> {
     const productIds = request.lines.map((line) => line.productId);
 
     // SRS-FR-CHK-005: refused before any lock. An unknown id has no currency and is
@@ -38,10 +43,13 @@ export class CheckoutService {
       throw new BadRequestException(CheckoutMessages.MIXED_CURRENCY);
     }
 
-    const outcome = await this.placeOrRefuse(buyer, request, requestId);
+    const outcome = await this.placeOrRefuse(buyer, key, request, requestId);
     switch (outcome.kind) {
       case PlaceCheckoutOutcomes.PLACED:
         this.logger.log(LogEvents.CHECKOUT_PLACED, { requestId, buyerId: buyer.buyerId, checkoutId: outcome.checkoutId });
+        return this.findOne(buyer, outcome.checkoutId);
+      case PlaceCheckoutOutcomes.REPLAYED:
+        this.logger.log(LogEvents.CHECKOUT_PLACED, { requestId, buyerId: buyer.buyerId, checkoutId: outcome.checkoutId, replayed: true });
         return this.findOne(buyer, outcome.checkoutId);
       case PlaceCheckoutOutcomes.REJECTED:
         this.rejected(requestId, buyer, outcome.conflicts.map((conflict) => conflict.reason));
@@ -51,6 +59,12 @@ export class CheckoutService {
         throw new ConflictException({
           message: CheckoutMessages.CART_CHANGED,
           details: { reason: CheckoutRefusals.CART_CHANGED },
+        });
+      case PlaceCheckoutOutcomes.KEY_REUSED:
+        this.rejected(requestId, buyer, [CheckoutLogReasons.KEY_REUSED]);
+        throw new ConflictException({
+          message: CheckoutMessages.KEY_REUSED,
+          details: { reason: CheckoutRefusals.KEY_REUSED },
         });
     }
   }
@@ -65,11 +79,12 @@ export class CheckoutService {
   /** SRS §8: contention that survived three retries is a 409, never a 500. */
   private async placeOrRefuse(
     buyer: BuyerContext,
+    key: string,
     request: CreateCheckoutRequest,
     requestId: string,
   ): Promise<PlaceCheckoutOutcome> {
     try {
-      return await this.checkoutRepository.place(buyer, request.lines);
+      return await this.checkoutRepository.place(buyer, key, checkoutRequestFingerprint(request.lines), request.lines);
     } catch (error) {
       if (!isRetryableTransactionError(error)) throw error;
       this.rejected(requestId, buyer, [CheckoutLogReasons.CONTENDED]);

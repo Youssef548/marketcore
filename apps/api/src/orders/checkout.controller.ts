@@ -7,22 +7,23 @@ import { UNKNOWN_REQUEST_ID, getRequestId } from '@app/runtime';
 import { Buyer } from '../security/decorators/buyer.decorator';
 import { TenantFree } from '../security/decorators/tenant-free.decorator';
 import { CheckoutService } from './checkout.service';
+import { IdempotencyKey } from './decorators/idempotency-key.decorator';
 import { CheckoutDto, CreateCheckoutRequestDto } from './dto/orders.dto';
 
 @Controller('checkouts')
 export class CheckoutController {
   constructor(private readonly checkoutService: CheckoutService) {}
 
-  /** No Idempotency-Key until phase 5 (SRS-FR-CHK-008); D83 makes a double submit harmless meanwhile. */
   @Post()
   @TenantFree()
   @ApiCreatedResponse({ type: CheckoutDto })
   place(
     @Buyer() buyer: BuyerContext,
+    @IdempotencyKey() key: string,
     @Body() body: CreateCheckoutRequestDto,
     @Req() request: Request,
   ): Promise<Checkout> {
-    return this.checkoutService.place(buyer, body, getRequestId(request) ?? UNKNOWN_REQUEST_ID);
+    return this.checkoutService.place(buyer, key, body, getRequestId(request) ?? UNKNOWN_REQUEST_ID);
   }
 
   @Get(':id')
