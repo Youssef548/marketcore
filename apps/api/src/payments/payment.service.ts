@@ -61,6 +61,13 @@ export class PaymentService {
           this.logged(LogEvents.PAYMENT_REFUNDED, requestId, buyer, checkout.id, { reason: 'CHECKOUT_CANCELLED' });
           return { kind: PayCheckoutOutcomes.CANCELLED };
         }
+        // A concurrent capture of the same checkout reached tx B first. The charge is
+        // already one charge — the derived key saw to that — and this request did not
+        // settle anything, so it must not report itself as the one that did.
+        if (settlement.kind === 'ALREADY_PAID') {
+          this.logged(LogEvents.PAYMENT_CAPTURED, requestId, buyer, checkout.id, { replayed: true });
+          return { kind: PayCheckoutOutcomes.ALREADY_PAID };
+        }
         this.logged(LogEvents.PAYMENT_CAPTURED, requestId, buyer, checkout.id, {
           providerRef: capture.providerRef,
         });

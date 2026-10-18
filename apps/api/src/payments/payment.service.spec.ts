@@ -107,6 +107,20 @@ describe('PaymentService.pay (SRS-FR-PAY-001/003/004, D103–D111)', () => {
     expect(logger.lines[0]).toMatchObject({ event: LogEvents.PAYMENT_REFUNDED });
   });
 
+  it('reports the capture that lost the settle race as a replay, not as its own capture', async () => {
+    // Two captures of one checkout can both get past tx A; the first to tx B settles, and the
+    // second finds it already paid. The charge was still one charge — the derived key ensures
+    // that — but this request did not settle it, and its answer and its log must say so.
+    const { service, logger } = setup({ settle: jest.fn().mockResolvedValue({ kind: 'ALREADY_PAID' }) });
+
+    expect(await service.pay(buyer, checkout.id, 'req_10')).toEqual({ kind: PayCheckoutOutcomes.ALREADY_PAID });
+    expect(logger.lines[0]).toMatchObject({
+      event: LogEvents.PAYMENT_CAPTURED,
+      fields: { requestId: 'req_10', replayed: true },
+    });
+    expect(logger.lines[0]).not.toHaveProperty('fields.providerRef');
+  });
+
   it('answers an already-paid checkout without calling the provider at all', async () => {
     const { service, provider, logger } = setup({ claim: jest.fn().mockResolvedValue({ kind: 'ALREADY_PAID' }) });
 
