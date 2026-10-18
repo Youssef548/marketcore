@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { CheckoutConflictDetailsSchema, ErrorCodes, type Cart, type CheckoutLineRequest } from '@app/contracts';
 import { Alert } from '@app/ui';
+import { newAttemptKey } from '@/lib/storefront/attempt';
 import { StorefrontError, storefront } from '@/lib/storefront/client';
 import { CART_PATH, CONFLICT_LINES, CONFLICT_QUERY, placedPath } from '@/lib/storefront/routes';
 import { ReviewView } from './review-view';
@@ -16,6 +17,12 @@ export default function CheckoutPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
+  /**
+   * One key per mount of this step (D100), which is one placement attempt: every retry of
+   * this screen carries it, and a reload mints a new one. Lazily initialised — passing
+   * `newAttemptKey()` would call it on every render and make each retry a new attempt.
+   */
+  const [idempotencyKey] = useState(newAttemptKey);
 
   const load = useCallback(() => {
     storefront.cart().then(setCart).catch((e: unknown) => setError(e instanceof Error ? e.message : 'Could not load the cart'));
@@ -25,7 +32,7 @@ export default function CheckoutPage() {
   const place = async (lines: CheckoutLineRequest[]) => {
     setPlacing(true);
     try {
-      const checkout = await storefront.placeCheckout({ lines });
+      const checkout = await storefront.placeCheckout({ lines }, idempotencyKey);
       router.push(placedPath(checkout.id));
     } catch (e: unknown) {
       // Branch on code and details, never on message (SRS §8).

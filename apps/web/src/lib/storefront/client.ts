@@ -6,9 +6,11 @@ import {
   CheckoutSchema,
   ErrorCodes,
   ErrorEnvelopeSchema,
+  IDEMPOTENCY_KEY_HEADER,
   PublicProductPageSchema,
   PublicProductSchema,
   type CreateCheckoutRequest,
+  type IdempotencyKey,
 } from '@app/contracts';
 
 /** A refusal from the BFF, with the API's code and typed details intact. */
@@ -36,9 +38,9 @@ async function call<T>(input: string, schema: z.ZodType<T>, init?: RequestInit):
   return schema.parse(body);
 }
 
-const json = (method: string, body: unknown): RequestInit => ({
+const json = (method: string, body: unknown, headers: Record<string, string> = {}): RequestInit => ({
   method,
-  headers: { 'content-type': 'application/json' },
+  headers: { 'content-type': 'application/json', ...headers },
   body: JSON.stringify(body),
 });
 const cursorQuery = (cursor?: string) => (cursor === undefined ? '' : `?cursor=${encodeURIComponent(cursor)}`);
@@ -52,7 +54,16 @@ export const storefront = {
   setLine: (productId: string, quantity: number) =>
     call(`/api/cart/items/${segment(productId)}`, CartSchema, json('PUT', { quantity })),
   removeLine: (productId: string) => call(`/api/cart/items/${segment(productId)}`, CartSchema, { method: 'DELETE' }),
-  placeCheckout: (body: CreateCheckoutRequest) => call('/api/checkouts', CheckoutSchema, json('POST', body)),
+  /**
+   * One placement attempt, carrying the key that makes its retries the same attempt
+   * (SRS-FR-CHK-008). The body is unchanged; the key is the whole of the difference.
+   */
+  placeCheckout: (body: CreateCheckoutRequest, idempotencyKey: IdempotencyKey) =>
+    call(
+      '/api/checkouts',
+      CheckoutSchema,
+      json('POST', body, { [IDEMPOTENCY_KEY_HEADER]: idempotencyKey }),
+    ),
   checkout: (id: string) => call(`/api/checkouts/${segment(id)}`, CheckoutSchema),
   orders: (cursor?: string) => call(`/api/buyer/orders${cursorQuery(cursor)}`, BuyerOrderPageSchema),
   order: (id: string) => call(`/api/buyer/orders/${segment(id)}`, BuyerOrderSchema),

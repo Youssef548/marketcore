@@ -44,3 +44,31 @@ export function parseBody<T>(schema: z.ZodType<T>, value: unknown, requestId: st
     },
   };
 }
+
+/**
+ * A request header parsed against the contract the API validates it with.
+ *
+ * The same rule, the same `VALIDATION_ERROR` envelope and the same `issues` as a body —
+ * only the subject differs — so a browser cannot tell which hop refused it and does not
+ * have to. It sits beside `parseBody` because the two exist for the same reason: this
+ * layer is a boundary, and a boundary refuses before forwarding.
+ */
+export function parseHeader<T>(schema: z.ZodType<T>, value: string | null, requestId: string): BodyResult<T> {
+  const parsed = schema.safeParse(value ?? undefined);
+  if (parsed.success) return { ok: true, value: parsed.data };
+
+  return {
+    ok: false,
+    failure: {
+      status: 400,
+      body: {
+        error: {
+          code: ErrorCodes.VALIDATION_ERROR,
+          message: 'Request header failed validation',
+          requestId,
+          details: parsed.error.issues,
+        },
+      },
+    },
+  };
+}
