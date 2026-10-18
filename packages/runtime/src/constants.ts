@@ -30,4 +30,9 @@ export const STDERR_LOG_LEVELS = [LogLevels.ERROR, LogLevels.WARN] as const;
 /** Field values shared by both processes. A log event name is a contract, not a literal. */
 export const LogEvents = {
   HTTP_REQUEST_COMPLETED: 'http.request.completed',
+  /** SRS-FR-CXL-004: one line per auto-cancel run. */
+  CHECKOUT_AUTOCANCEL_RUN: 'checkout.autocancel.run',
+  CHECKOUT_AUTOCANCEL_FAILED: 'checkout.autocancel.failed',
+  WORKER_STARTED: 'worker.started',
+  WORKER_STOPPED: 'worker.stopped',
 } as const;
