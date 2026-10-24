@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Alert } from '@app/ui';
 import { ADMIN_PATH, LOGIN_PATH } from '@/lib/session/routing';
+import { SessionStatuses } from '@/lib/session/constants';
 import { useSession } from '@/lib/session/client';
 import type { StoreFrameProps } from './interfaces/store-frame.interface';
 
@@ -37,18 +38,19 @@ export function StoreFrame({ appName, children }: StoreFrameProps) {
   const { state } = useSession();
 
   useEffect(() => {
-    if (state.status === 'anonymous') router.replace(`${LOGIN_PATH}?next=${encodeURIComponent(pathname)}`);
+    if (state.status === SessionStatuses.ANONYMOUS)
+      router.replace(`${LOGIN_PATH}?next=${encodeURIComponent(pathname)}`);
   }, [state.status, router, pathname]);
 
-  if (state.status === 'loading') {
+  if (state.status === SessionStatuses.LOADING) {
     return (
       <main role="status" aria-live="polite" className="p-10 text-sm text-ink-muted">
         Loading…
       </main>
     );
   }
-  if (state.status === 'anonymous') return null;
-  if (state.status === 'failed') {
+  if (state.status === SessionStatuses.ANONYMOUS) return null;
+  if (state.status === SessionStatuses.FAILED) {
     return (
       <main className="mx-auto max-w-2xl p-10">
         <Alert>{state.message}</Alert>

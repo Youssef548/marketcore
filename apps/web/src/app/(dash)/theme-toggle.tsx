@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { THEMES, type Theme } from '@/lib/theme/theme';
+import { DEFAULT_THEME, Themes, type Theme } from '@/lib/theme/theme';
 
 /**
  * Switch between the two themes.
@@ -14,12 +14,14 @@ import { THEMES, type Theme } from '@/lib/theme/theme';
  */
 export function ThemeToggle() {
   const router = useRouter();
-  const [theme, setTheme] = useState<Theme>(THEMES[0]);
+  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
   const [pending, startTransition] = useTransition();
+  // With two themes, the theme a press switches to is simply the other one.
+  const other: Theme = theme === Themes.DARK ? Themes.LIGHT : Themes.DARK;
 
   useEffect(() => {
     const current = document.documentElement.dataset.theme;
-    if (current === 'dark' || current === 'light') setTheme(current);
+    if (current === Themes.DARK || current === Themes.LIGHT) setTheme(current);
   }, []);
 
   async function choose(next: Theme) {
@@ -35,10 +37,10 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      aria-label={`Switch to the ${theme === 'dark' ? 'light' : 'dark'} theme`}
-      aria-pressed={theme === 'dark'}
+      aria-label={`Switch to the ${other} theme`}
+      aria-pressed={theme === Themes.DARK}
       disabled={pending}
-      onClick={() => void choose(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => void choose(other)}
       className="grid h-8 w-8 place-items-center rounded-brand border border-control-edge bg-panel text-ink-muted hover:text-ink disabled:opacity-50"
     >
       {/* Both marks are drawn and one is hidden, so the control is the same size in
@@ -52,7 +54,7 @@ export function ThemeToggle() {
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
-        className={theme === 'dark' ? 'hidden' : 'block'}
+        className={theme === Themes.DARK ? 'hidden' : 'block'}
       >
         <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z" />
       </svg>
@@ -65,7 +67,7 @@ export function ThemeToggle() {
         stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
-        className={theme === 'dark' ? 'block' : 'hidden'}
+        className={theme === Themes.DARK ? 'block' : 'hidden'}
       >
         <circle cx="12" cy="12" r="4" />
         <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />

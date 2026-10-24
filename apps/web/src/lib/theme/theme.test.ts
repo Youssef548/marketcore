@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_THEME, parseTheme, SetThemeRequestSchema } from './theme';
+import { DEFAULT_THEME, parseTheme, SetThemeRequestSchema, Themes } from './theme';
 
 describe('theme', () => {
+  it('names the two themes once, spelled as the cookie and the CSS agree', () => {
+    // The values are on the wire three ways TypeScript cannot check: the cookie a
+    // browser already holds, the `data-theme` attribute the server paints, and the
+    // `[data-theme='dark']` selectors in the token layer. The constants are the
+    // one place the spelling lives, so this pins it.
+    expect(Themes).toEqual({ LIGHT: 'light', DARK: 'dark' });
+    expect(DEFAULT_THEME).toBe(Themes.LIGHT);
+  });
+
   it('defaults to light, so a dark operating system does not choose for anyone', () => {
     expect(parseTheme(undefined)).toBe('light');
     expect(DEFAULT_THEME).toBe('light');

@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { RoutingDecisionKinds } from '@/lib/session/constants';
 import { SESSION_COOKIES } from '@/lib/session/cookies';
 import { decideRoute } from '@/lib/session/routing';
 
@@ -18,11 +19,11 @@ export function middleware(request: NextRequest): NextResponse {
   const signedIn = request.cookies.has(SESSION_COOKIES.REFRESH);
   const decision = decideRoute(request.nextUrl.pathname, signedIn);
 
-  if (decision.kind === 'moved') {
+  if (decision.kind === RoutingDecisionKinds.MOVED) {
     return NextResponse.redirect(new URL(decision.to, request.url), PERMANENT_REDIRECT_STATUS);
   }
 
-  if (decision.kind === 'redirect') {
+  if (decision.kind === RoutingDecisionKinds.REDIRECT) {
     return NextResponse.redirect(new URL(decision.to, request.url));
   }
 

@@ -12,6 +12,7 @@ import {
 import { ErrorEnvelopeSchema } from '@app/contracts';
 import { SERVER_UNREACHABLE_MESSAGE } from '@/lib/forms/post-json';
 import { messageFrom } from '@/lib/http/browser';
+import { SessionStatuses, UNAUTHORIZED_STATUS } from './constants';
 import { SessionViewSchema } from './session';
 import type {
   ReadySession,
@@ -32,15 +33,15 @@ async function readSession(): Promise<SessionState> {
   try {
     response = await fetch('/api/session', { headers: { accept: 'application/json' } });
   } catch {
-    return { status: 'failed', message: SERVER_UNREACHABLE_MESSAGE };
+    return { status: SessionStatuses.FAILED, message: SERVER_UNREACHABLE_MESSAGE };
   }
 
-  if (response.status === 401) return { status: 'anonymous' };
+  if (response.status === UNAUTHORIZED_STATUS) return { status: SessionStatuses.ANONYMOUS };
 
   if (!response.ok) {
     const envelope = ErrorEnvelopeSchema.safeParse(await response.json().catch(() => null));
     return {
-      status: 'failed',
+      status: SessionStatuses.FAILED,
       message: envelope.success
         ? envelope.data.error.message
         : `Unexpected response (${response.status})`,
@@ -49,10 +50,13 @@ async function readSession(): Promise<SessionState> {
 
   const parsed = SessionViewSchema.safeParse(await response.json().catch(() => null));
   if (!parsed.success) {
-    return { status: 'failed', message: 'The server sent a session this version cannot read' };
+    return {
+      status: SessionStatuses.FAILED,
+      message: 'The server sent a session this version cannot read',
+    };
   }
 
-  return { status: 'ready', session: parsed.data };
+  return { status: SessionStatuses.READY, session: parsed.data };
 }
 
 interface SessionContextValue {
@@ -63,7 +67,7 @@ interface SessionContextValue {
 const SessionContext = createContext<SessionContextValue | null>(null);
 
 export function SessionProvider({ children }: PropsWithChildren) {
-  const [state, setState] = useState<SessionState>({ status: 'loading' });
+  const [state, setState] = useState<SessionState>({ status: SessionStatuses.LOADING });
 
   const reload = useCallback(async () => {
     setState(await readSession());
@@ -128,7 +132,7 @@ export function useReadySession(): ReadySession {
 export async function signOut(): Promise<void> {
   const response = await fetch('/api/auth/logout', { method: 'POST' });
 
-  if (!response.ok && response.status !== 401) {
+  if (!response.ok && response.status !== UNAUTHORIZED_STATUS) {
     throw new Error('Could not sign out');
   }
 }

@@ -15,10 +15,17 @@ import { createProduct, useReadySession } from '@/lib/session/client';
 
 const ProductsSchema = z.array(ProductSchema);
 
+/**
+ * The page's own load states, named once. The union below is built from them, so the
+ * tags the page narrows on and the tags it constructs are the same values by
+ * construction — the same shape `lib/session/constants.ts` gives the session's states.
+ */
+const PageStates = { LOADING: 'loading', READY: 'ready', FAILED: 'failed' } as const;
+
 type State =
-  | { status: 'loading' }
-  | { status: 'ready'; products: Product[] }
-  | { status: 'failed'; message: string };
+  | { status: typeof PageStates.LOADING }
+  | { status: typeof PageStates.READY; products: Product[] }
+  | { status: typeof PageStates.FAILED; message: string };
 
 /** The prices in the seed and the API are major units with two decimals, held as minor. */
 const toMinor = (price: string): number | null => {
@@ -40,16 +47,16 @@ const toMinor = (price: string): number | null => {
 export default function ProductsPage() {
   const { activeOrganization } = useReadySession();
   const organizationId = activeOrganization?.id ?? null;
-  const [state, setState] = useState<State>({ status: 'loading' });
+  const [state, setState] = useState<State>({ status: PageStates.LOADING });
   const [adding, setAdding] = useState(false);
 
   const load = useCallback(async () => {
     if (organizationId === null) {
-      setState({ status: 'ready', products: [] });
+      setState({ status: PageStates.READY, products: [] });
       return;
     }
 
-    setState({ status: 'loading' });
+    setState({ status: PageStates.LOADING });
 
     try {
       const response = await fetch('/api/products');
@@ -63,10 +70,13 @@ export default function ProductsPage() {
         );
       }
 
-      setState({ status: 'ready', products: ProductsSchema.parse(await response.json()) });
+      setState({
+        status: PageStates.READY,
+        products: ProductsSchema.parse(await response.json()),
+      });
     } catch (error: unknown) {
       setState({
-        status: 'failed',
+        status: PageStates.FAILED,
         message: error instanceof Error ? error.message : 'Could not load products',
       });
     }
@@ -76,7 +86,7 @@ export default function ProductsPage() {
     void load();
   }, [load]);
 
-  const products = state.status === 'ready' ? state.products : [];
+  const products = state.status === PageStates.READY ? state.products : [];
   const published = products.filter(({ status }) => status === ProductStatuses.PUBLISHED).length;
 
   // The Stitch products screen (048): a page head with the count and the primary action,
@@ -95,7 +105,7 @@ export default function ProductsPage() {
           <p className="mt-1 text-sm text-ink-muted">
             {activeOrganization === null
               ? 'Choose an organization above to see its catalog.'
-              : state.status === 'ready'
+              : state.status === PageStates.READY
                 ? `${products.length} ${products.length === 1 ? 'product' : 'products'} · ${activeOrganization.name}`
                 : `The catalog of ${activeOrganization.name}.`}
           </p>
@@ -118,9 +128,9 @@ export default function ProductsPage() {
         <Card as="p" className="px-5 py-4 text-sm text-ink-muted">
           No organization is selected. Choose one above and its catalog appears here.
         </Card>
-      ) : state.status === 'failed' ? (
+      ) : state.status === PageStates.FAILED ? (
         <Alert className="border-l-4">{state.message}</Alert>
-      ) : state.status === 'loading' ? (
+      ) : state.status === PageStates.LOADING ? (
         <Card role="status" className="space-y-3 p-5" aria-busy>
           <span className="sr-only">Loading products…</span>
           <div className="h-3 w-1/3 rounded bg-sunken" />

@@ -25,6 +25,11 @@ export const SESSION_COOKIES = {
  * rather than as an error.
  */
 export function cookiesAreSecure(): boolean {
+  // The `'true'` stays a literal, with a reason: it is the environment's own spelling
+  // of yes for this one flag, nothing else in the app agrees with it, and naming it
+  // would only add a second spelling of a word one reader reads. Any other value —
+  // including an unset one — is deliberately Secure-off, the same fallback `parseTheme`
+  // takes with a cookie it cannot trust.
   return process.env.SESSION_COOKIE_SECURE === 'true';
 }
 

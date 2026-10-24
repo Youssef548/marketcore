@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Alert } from '@app/ui';
 import { useSession, ReadySessionProvider } from '@/lib/session/client';
+import { SessionStatuses } from '@/lib/session/constants';
+import { LOGIN_PATH } from '@/lib/session/routing';
 import { Rail } from './rail';
 import { TopBar } from './top-bar';
 import { Onboarding } from './onboarding';
@@ -29,10 +31,10 @@ export function DashboardChrome({ appName, children }: DashboardChromeProps) {
     // Only a refusal sends someone to sign in. A failure to reach the server is not
     // evidence of being signed out, and treating it as such turns a blip into a
     // logout — the state below is rendered instead.
-    if (state.status === 'anonymous') router.replace('/login');
+    if (state.status === SessionStatuses.ANONYMOUS) router.replace(LOGIN_PATH);
   }, [state.status, router]);
 
-  if (state.status === 'loading') {
+  if (state.status === SessionStatuses.LOADING) {
     return (
       <main role="status" aria-live="polite" className="p-10 text-sm text-ink-muted">
         Loading your session…
@@ -40,12 +42,12 @@ export function DashboardChrome({ appName, children }: DashboardChromeProps) {
     );
   }
 
-  if (state.status === 'anonymous') {
+  if (state.status === SessionStatuses.ANONYMOUS) {
     // The redirect is in flight.
     return null;
   }
 
-  if (state.status === 'failed') {
+  if (state.status === SessionStatuses.FAILED) {
     return (
       <main className="mx-auto max-w-2xl p-10">
         <Alert>{state.message}</Alert>

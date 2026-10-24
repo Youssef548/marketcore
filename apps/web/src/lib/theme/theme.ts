@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { wireValues } from '@app/contracts';
 
 /**
  * Which theme, and the cookie that remembers it.
@@ -10,17 +11,22 @@ import { z } from 'zod';
  */
 export const THEME_COOKIE = 'mc_theme';
 
-export const THEMES = ['light', 'dark'] as const;
-export type Theme = (typeof THEMES)[number];
+/**
+ * The two themes, named once. A const-object enum rather than a literal pair, so the
+ * comparisons that narrow on a theme pass the member and the value lives in one place —
+ * the cookie, the `data-theme` attribute and the token layer's selectors all spell it.
+ */
+export const Themes = { LIGHT: 'light', DARK: 'dark' } as const;
+export type Theme = (typeof Themes)[keyof typeof Themes];
 
 /** Light, deliberately, rather than "whatever the OS is set to". See ADR 013. */
-export const DEFAULT_THEME: Theme = 'light';
+export const DEFAULT_THEME: Theme = Themes.LIGHT;
 
 export function parseTheme(value: string | undefined): Theme {
-  return value === 'dark' ? 'dark' : DEFAULT_THEME;
+  return value === Themes.DARK ? Themes.DARK : DEFAULT_THEME;
 }
 
-export const SetThemeRequestSchema = z.object({ theme: z.enum(['light', 'dark']) });
+export const SetThemeRequestSchema = z.object({ theme: z.enum(wireValues(Themes)) });
 
 /** Not a credential, but it lives as long as a session would and is server-read. */
 export function themeCookieAttributes(secure: boolean) {
