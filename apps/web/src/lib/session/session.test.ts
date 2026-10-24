@@ -9,7 +9,8 @@ import {
   type UserSummary,
 } from '@app/contracts';
 import { loadSession, resolveActiveOrganization } from './session';
-import type { SessionApi, SessionStore } from './interfaces/session.interface';
+import type { SessionApi } from './interfaces/session.interface';
+import type { FakeStore, FakeStoreSeed } from './interfaces/session-fakes.interface';
 
 const USER: UserSummary = { id: 'u1', email: 'owner@marketcore.test' };
 
@@ -29,14 +30,7 @@ const pair = (accessToken: string, refreshToken: string): TokenPair => ({
 /** The API's refusal, which is the ordinary case rather than an exceptional one. */
 const refusal = () => new ApiError(401, ErrorCodes.UNAUTHORIZED, 'Refresh token is not usable');
 
-interface FakeStore extends SessionStore {
-  saveTokens: ReturnType<typeof vi.fn>;
-  clear: ReturnType<typeof vi.fn>;
-}
-
-function fakeStore(
-  initial: { access?: string; refresh?: string; organization?: string } = {},
-): FakeStore {
+function fakeStore(initial: FakeStoreSeed = {}): FakeStore {
   const held = { ...initial };
 
   return {
