@@ -1,6 +1,7 @@
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 import type { Request } from 'express';
 import { IDEMPOTENCY_KEY_HEADER, IdempotencyKeySchema } from '@app/contracts';
+import { firstHeaderValue } from '@app/runtime';
 import { ZodValidationPipe } from 'nestjs-zod';
 
 /**
@@ -26,7 +27,7 @@ export const IdempotencyKey = createParamDecorator(
     const raw = context
       .switchToHttp()
       .getRequest<Request>().headers[IDEMPOTENCY_KEY_HEADER.toLowerCase()];
-    return pipe.transform(Array.isArray(raw) ? raw[0] : raw, {
+    return pipe.transform(firstHeaderValue(raw), {
       type: 'custom',
       data: IDEMPOTENCY_KEY_HEADER,
     });

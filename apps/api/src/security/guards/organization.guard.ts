@@ -8,6 +8,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { ORGANIZATION_ID_HEADER } from '@app/contracts';
 import { buildTenantContext } from '@app/domain';
+import { firstHeaderValue } from '@app/runtime';
 import { OrganizationRepository } from '../../organizations/repositories/organization.repository';
 import { MembershipRepository } from '../../organizations/repositories/membership.repository';
 import { SecurityMessages, SecurityMetadata } from '../security.constants';
@@ -25,8 +26,7 @@ export class OrganizationGuard implements CanActivate {
     if (this.skipped(context)) return true;
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
-    const header = request.headers[ORGANIZATION_ID_HEADER];
-    const organizationId = Array.isArray(header) ? header[0] : header;
+    const organizationId = firstHeaderValue(request.headers[ORGANIZATION_ID_HEADER]);
 
     if (organizationId === undefined || organizationId.length === 0) {
       throw new BadRequestException(SecurityMessages.MISSING_TENANT);

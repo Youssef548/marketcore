@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import type { Request } from 'express';
 import { REQUEST_ID_HEADER } from '@app/contracts';
 import { REQUEST_ID_MAX_LENGTH, REQUEST_ID_PATTERN } from '../constants';
+import { firstHeaderValue } from './header';
 import type { HttpMiddleware, RequestWithId } from './request.interface';
 
 function isAcceptable(candidate: unknown): candidate is string {
@@ -19,8 +20,7 @@ function isAcceptable(candidate: unknown): candidate is string {
  * log-injection vector, since it can forge what looks like a second record.
  */
 export const requestIdMiddleware: HttpMiddleware = (req, res, next) => {
-  const incoming = req.headers[REQUEST_ID_HEADER];
-  const candidate = Array.isArray(incoming) ? incoming[0] : incoming;
+  const candidate = firstHeaderValue(req.headers[REQUEST_ID_HEADER]);
   const requestId = isAcceptable(candidate) ? candidate : `req_${randomUUID()}`;
 
   (req as RequestWithId).requestId = requestId;
