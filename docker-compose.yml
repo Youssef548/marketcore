@@ -6,8 +6,11 @@ services:
       # renaming the project never means editing this file.
       POSTGRES_DB: ${DB_NAME:-app}
       POSTGRES_USER: ${DB_USER:-app}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-app}
-    ports: ["5432:5432"]
+      # Required, not defaulted: a published Postgres with a guessed password is a
+      # whole-database compromise for anyone who can reach the host. The port below
+      # is loopback-bound for the same reason.
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    ports: ["127.0.0.1:5432:5432"]
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-app} -d ${DB_NAME:-app}"]
