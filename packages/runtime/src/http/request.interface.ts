@@ -16,6 +16,11 @@ export interface RequestLogFields {
   method: string;
   path: string;
   status: number;
+  /**
+   * The client disconnected before the response was fully sent. `status` is then
+   * only what the handler had set so far, and may never have reached the client.
+   */
+  aborted: boolean;
   durationMs: number;
   /**
    * The hostname the client asked for. Behind a reverse proxy this is the public
@@ -29,7 +34,7 @@ export interface RequestLogFields {
   forwardedFor?: string;
 }
 
-/** Where a completed-request record goes. Injected so tests never touch a real logger. */
+/** Where a finished or aborted request's record goes. Injected so tests never touch a real logger. */
 export type RequestLogSink = (fields: RequestLogFields) => void;
 
 /** The express middleware shape, named so signatures read as prose. */

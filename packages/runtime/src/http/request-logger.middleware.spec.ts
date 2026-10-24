@@ -16,10 +16,25 @@ function fakeReq(
   } as unknown as Request;
 }
 
-function fakeRes(statusCode = 201): Response & EventEmitter {
-  const emitter = new EventEmitter() as Response & EventEmitter;
+type FakeResponse = Response & EventEmitter & { writableFinished: boolean };
+
+function fakeRes(statusCode = 201): FakeResponse {
+  const emitter = new EventEmitter() as FakeResponse;
   (emitter as unknown as { statusCode: number }).statusCode = statusCode;
+  emitter.writableFinished = false;
   return emitter;
+}
+
+/** What node does when the response was fully sent: `finish`, then `close`. */
+function completeResponse(res: FakeResponse): void {
+  res.writableFinished = true;
+  res.emit('finish');
+  res.emit('close');
+}
+
+/** What node does when the client disconnects first: `close` alone. */
+function abortResponse(res: FakeResponse): void {
+  res.emit('close');
 }
 
 describe('requestLoggerMiddleware', () => {
@@ -47,7 +62,7 @@ describe('requestLoggerMiddleware', () => {
     const res = fakeRes(201);
 
     requestLoggerMiddleware(log)(fakeReq('req_abc'), res, vi.fn() as unknown as NextFunction);
-    res.emit('finish');
+    completeResponse(res);
 
     expect(log).toHaveBeenCalledTimes(1);
     expect(log).toHaveBeenCalledWith(
@@ -67,7 +82,7 @@ describe('requestLoggerMiddleware', () => {
     const res = fakeRes(200);
 
     requestLoggerMiddleware(log)(fakeReq(undefined), res, vi.fn() as unknown as NextFunction);
-    res.emit('finish');
+    completeResponse(res);
 
     expect(log).toHaveBeenCalledWith(expect.objectContaining({ requestId: undefined, status: 200 }));
   });
@@ -88,7 +103,7 @@ describe('requestLoggerMiddleware', () => {
       res,
       vi.fn() as unknown as NextFunction,
     );
-    res.emit('finish');
+    completeResponse(res);
 
     expect(log).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -108,7 +123,7 @@ describe('requestLoggerMiddleware', () => {
       res,
       vi.fn() as unknown as NextFunction,
     );
-    res.emit('finish');
+    completeResponse(res);
 
     expect(log).toHaveBeenCalledWith(expect.objectContaining({ forwardedFor: '203.0.113.5' }));
   });
@@ -122,7 +137,7 @@ describe('requestLoggerMiddleware', () => {
       res,
       vi.fn() as unknown as NextFunction,
     );
-    res.emit('finish');
+    completeResponse(res);
 
     expect(log).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -130,6 +145,32 @@ describe('requestLoggerMiddleware', () => {
         forwardedProto: undefined,
         forwardedFor: undefined,
       }),
+    );
+  });
+
+  it('marks a completed response as not aborted, once, though both finish and close fire', () => {
+    const log = vi.fn();
+    const res = fakeRes(201);
+
+    requestLoggerMiddleware(log)(fakeReq('req_done'), res, vi.fn() as unknown as NextFunction);
+    completeResponse(res);
+
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith(expect.objectContaining({ requestId: 'req_done', aborted: false }));
+  });
+
+  it('still emits one record, marked aborted, when the client disconnects before the response finishes', () => {
+    // `finish` never fires for these. They are the slow and hung requests a
+    // client gave up on, the ones most worth seeing in the log.
+    const log = vi.fn();
+    const res = fakeRes(200);
+
+    requestLoggerMiddleware(log)(fakeReq('req_gone'), res, vi.fn() as unknown as NextFunction);
+    abortResponse(res);
+
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith(
+      expect.objectContaining({ requestId: 'req_gone', aborted: true, durationMs: expect.any(Number) }),
     );
   });
 });
