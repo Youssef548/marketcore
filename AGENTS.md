@@ -71,3 +71,17 @@ Final reports should name:
 - what is proven,
 - what is not proven or deferred,
 - any deviation from the plan and the cost if that ruling is wrong.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues on `Youssef548/marketcore`, through `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five default roles; each label string equals its role name. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: root `GLOSSARY.md`, `docs/domain-model.md` and `docs/adr/`. See `docs/agents/domain.md`.
