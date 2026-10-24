@@ -1571,7 +1571,7 @@ member rather than the string.
 | Check | Command | Result |
 |---|---|---|
 | The skill's check 2, before | the `typescript-code-conventions` PCRE scan | **22 hits in the six files whose logic compared tags** — theme-toggle 6, chrome 4, store-frame 4, products page 4, middleware 2, `theme.ts` 2 (`DEFAULT_THEME`, `parseTheme`) — every one a tag value spelled inline |
-| The skill's check 2, after | same | **no comparison hit remains in any of them**; the residue is named-constant definitions (`routes.ts`, `payments.ts`, `THEME_COOKIE`), the reasoned `cookies.ts` env flag, and — still without a written reason, deferred below — three CSS `[data-theme='dark']` selectors, five `packages/eslint-config` test-fixture inputs and four ui element defaults |
+| The skill's check 2, after | same | **no comparison hit remains in any of them**; the residue is named-constant definitions (`routes.ts`, `payments.ts`, `THEME_COOKIE`, and the five `packages/eslint-config` test fixtures' `export const one = 'one'` — the check's `packages/*/src/*` glob crosses `/` and reaches them), the reasoned `cookies.ts` env flag, and — still without a written reason, deferred below — the CSS `[data-theme='dark']` selectors and four ui element defaults |
 | The constants are the wire values | `pnpm --filter web exec vitest run src/lib/theme src/lib/session/client.test.tsx` | the two new tests pass — `Themes` pins the spelling the cookie, the painted attribute and the token layer's selectors agree on; `SessionStatuses` pins the four arms, hand-written from the union as it was |
 | The tags did not drift | `pnpm --filter web exec vitest run src/lib/session/routing.test.ts` | 15 passed — the gate's decisions are still asserted with hand-written literals, the independent source |
 | Behaviour unchanged | `pnpm --filter web test` | **147 passed, 31 files** (145 before; +2), including chrome's 11 and store-frame's 3 narrowing tests |
@@ -1628,10 +1628,9 @@ member rather than the string.
   each default *is* repeated by the `as ?? 'div'` runtime fallback, and naming them (a per-component
   member in `packages/ui/src/constants.ts`) is the honest fix. It did not fit this change's 15-file
   limit beside the ticket's named scope; the stacked follow-up PR takes it.
-- **Eight more check-2 hits carry no written reason yet**: the CSS selectors in `globals.css` and
-  `tokens.css` (the comments beside them explain the dark theme, not why the literal stays), and the
-  five `packages/eslint-config/test/fixtures/**/src/index.ts` inputs — the check's
-  `packages/*/src/*` glob crosses `/`, so it reaches them. The stacked follow-up PR takes them, with
+- **The CSS `[data-theme='dark']` selectors carry no written reason yet** (`globals.css`,
+  `tokens.css`: the comments beside them explain the dark theme, not why the literal stays). The
+  stacked follow-up PR takes them, with
   `PageStates`' move into a `constants.ts` (Rule 1's "where it lives") and `BACKLOG.md`'s stale
   `THEMES`. BL-004 is done when that PR merges, not this one.
 - **One intermediate full-gate run failed `api#test`** — output not captured, so the failing test
