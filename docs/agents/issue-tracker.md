@@ -16,6 +16,8 @@ Infer the repo from `git remote -v`; `gh` does this automatically when run insid
 
 **Run every `gh` call as the repo owner**: `export GH_TOKEN=$(gh auth token -u Youssef548)` at the start of the shell command, reads included. The machine's active `gh` account has read-only access here, so writes fail with `HTTP 404: Not Found`. Leave the active account as it is.
 
+**`ready-for-agent` starts a build.** The agent factory (`scripts/agent-factory/README.md`) builds any open issue Youssef548 labels `ready-for-agent` once its blockers are closed: `ready-for-agent` → `agent-working` → a PR that closes it, or `ready-for-human` with a comment saying why. Apply the label only to an issue that is ready to build unattended.
+
 ## Pull requests as a triage surface
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
