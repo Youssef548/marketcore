@@ -21,6 +21,11 @@ export type SessionState =
  * The active organization is resolved here rather than by each module that needs to
  * name the tenant, so membership is applied once and the two cannot disagree.
  */
+export interface SessionContextValue {
+  state: SessionState;
+  reload: () => Promise<void>;
+}
+
 export interface ReadySession {
   user: UserSummary;
   organizations: Organization[];

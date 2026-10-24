@@ -1,13 +1,9 @@
 import Link from 'next/link';
-import { CART_LINE_MAX_QUANTITY, type CartLine } from '@app/contracts';
+import { CART_LINE_MAX_QUANTITY } from '@app/contracts';
 import { Alert, Button } from '@app/ui';
 import { formatMoney } from '@/lib/money';
 import { lineAvailabilityLabel } from '@/lib/storefront/availability';
-import type { CartViewProps } from './interfaces/cart-view.interface';
-
-interface PriceProps {
-  line: CartLine;
-}
+import type { CartViewProps, PriceProps } from './interfaces/cart-view.interface';
 
 function Price({ line }: PriceProps) {
   const current = line.currentUnitPriceMinor;

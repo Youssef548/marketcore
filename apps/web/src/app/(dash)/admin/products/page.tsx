@@ -7,18 +7,13 @@ import {
   ProductSchema,
   ProductStatuses,
   type CurrencyCode,
-  type Product,
 } from '@app/contracts';
 import { Alert, Button, ButtonVariants, Card, Field, HeadingLevels, PageHeading } from '@app/ui';
 import { formatMoney } from '@/lib/money';
 import { createProduct, useReadySession } from '@/lib/session/client';
+import type { AddProductFormProps, CountProps, State } from './interfaces/products-page.interface';
 
 const ProductsSchema = z.array(ProductSchema);
-
-type State =
-  | { status: 'loading' }
-  | { status: 'ready'; products: Product[] }
-  | { status: 'failed'; message: string };
 
 /** The prices in the seed and the API are major units with two decimals, held as minor. */
 const toMinor = (price: string): number | null => {
@@ -231,11 +226,6 @@ export default function ProductsPage() {
 const HEADER_CELL =
   'whitespace-nowrap px-5 py-3 text-xs font-semibold uppercase tracking-wider text-ink-faint sm:px-6';
 
-interface CountProps {
-  label: string;
-  value: number;
-}
-
 /** One count card. A `dt`/`dd` pair, so the number is read with what it counts. */
 function Count({ label, value }: CountProps) {
   return (
@@ -261,10 +251,6 @@ function PlusIcon() {
       <path d="M8 3v10M3 8h10" />
     </svg>
   );
-}
-
-interface AddProductFormProps {
-  onCreated: () => Promise<void>;
 }
 
 /**

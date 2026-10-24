@@ -16,6 +16,7 @@ import { SessionViewSchema } from './session';
 import type {
   ReadySession,
   ReadySessionProviderProps,
+  SessionContextValue,
   SessionState,
 } from './interfaces/client.interface';
 
@@ -53,11 +54,6 @@ async function readSession(): Promise<SessionState> {
   }
 
   return { status: 'ready', session: parsed.data };
-}
-
-interface SessionContextValue {
-  state: SessionState;
-  reload: () => Promise<void>;
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null);
