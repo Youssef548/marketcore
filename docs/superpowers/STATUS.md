@@ -1511,6 +1511,87 @@ Each exactly-once claim was falsified by mutation before it was believed:
 
 ---
 
+## Phase 6 — the first payment: one charge, captured once — 2026-10-18 (M3 open by design)
+
+**Exit gate (M3, phases 6–8):** one charge pays a two-seller checkout; the ledger split sums to
+zero; capture-after-cancel refunds. **Phase 6 proves the first and third clauses; the second is
+T-081, which the release plan's own dependency column binds to phase 8's ledger**, so M3 stays open
+and no fee constant was introduced early to be unlearned.
+**Branch:** `feat/phase-6-payments` (opens with the ADR and the plan), then one slice per PR:
+#100–#111. **These PRs are open for the owner's approval; nothing in this phase is merged by the
+agent** (a rule that arrived mid-phase — see Deviations).
+**Plan:** `docs/superpowers/plans/2026-10-18-marketcore-phase-6-payments.md` (9 tasks, D102–D112)
+**ADR:** [004 — a deterministic payment simulator behind a provider port](../adr/004-deterministic-payment-simulator.md), **Accepted**.
+
+### Proven
+
+Numbers below were read out of `tee`'d logs of real runs on 2026-10-18, on the slice branches;
+the whole-repo gate ran on the most complete tree (`phase6-web-pay`).
+
+| Check | Command | Result |
+|---|---|---|
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **37/37 tasks successful**, exit 0 |
+| **One charge, fifty payments at once** (INV-3) | `pnpm --filter api test:concurrency` | **4 suites / 7 tests, exit 0.** Fifty simultaneous `POST /checkouts/:id/pay` on one checkout: every answer `200` naming **one** checkout, **one** `provider_charges` row, one payment row, no unpaid order — **10 consecutive runs**. The claim's lock is released before the provider call, so the fifty really do reach it together; the derived operation key is what makes them one operation |
+| The cancellation race | same | a cancellation issued alongside five payments: the outcome may be settled or refused, and the invariant holds either way — **a paid order never sits beside a refunded payment** |
+| **Capture, against real PostgreSQL** | `pnpm --filter api test:integration` | **13 suites / 106 tests, exit 0.** Paid → checkout + *every* order `PAID` and a `SUCCEEDED` payment for the total; declined → `FAILED`, checkout still payable, the next attempt counted **on the same row**; a cancellation **between the two transactions** → `REFUNDED` with `capturedAt`, no order paid; a charge recorded behind a cancelled checkout → refunded, with the provider **throwing if `capture` is ever called**; already cancelled with no charge → nothing written at all |
+| The wire | `pnpm --filter api test:e2e` | **18 suites / 130 tests, exit 0.** Paying answers with the checkout and every order `Paid`; a repeat charges nothing; a `1,013` total is `409 PAYMENT_DECLINED`; a `2,517` total is `409 PAYMENT_PENDING` and the retry settles it; another buyer's checkout is `404` with nothing charged; anonymous is `401` |
+| The service's decisions | `pnpm --filter api exec jest` | 22 suites / 112 tests, exit 0 — including a capture that lost the settle race reporting itself as a replay |
+| Contracts and domain | `pnpm --filter @app/contracts test`, `pnpm --filter @app/domain test` | 14 files / 96 tests and 20 files / 105 tests, exit 0 |
+| Web | `pnpm --filter web test` | 31 files / 146 tests, exit 0 — including the pay call's method, path and empty body |
+| UI and packages | `pnpm --filter @app/ui test` | 8 files / 37 tests, exit 0 (`runtime` 30, `api-client` 8, `eslint-config` 21) |
+
+Two claims were falsified by mutation before being believed:
+
+| Claim | Mutation | Result |
+|---|---|---|
+| The refund column is enforced, not decorative | `ALTER TABLE payments DROP CONSTRAINT payments_captured_when_settled` | 3 tests fail; restoring it then failed with `is violated by some row`, because the unconstrained run had written the rows the tests describe |
+| Two captures cannot throw on a shared key | the adapter's `created` branch removed | the race test fails |
+
+### Delivered
+
+- **`packages/contracts`** — `PAID` on checkout and order, `PaymentStatuses`, and three typed
+  refusals (`PAYMENT_DECLINED`, `PAYMENT_PENDING`, `CHECKOUT_CANCELLED`) joining the one conflict union.
+- **`packages/domain`** — `providerOperationKey` (derived, `pay_<checkoutId>`), `simulatorVerdict`
+  (pure, amount-based) and `simulatedProviderRef` (stable, because phase 8 posts against it).
+- **`packages/database`** — `payments` (unique `checkoutId`, unique `providerRef`, `attempts`,
+  `refundedReason`, `capturedAt`) and `provider_charges` (keyed by the operation key), with the
+  money invariants as CHECKs.
+- **`apps/api`** — the provider port with `capture` **and `lookup`**, a deterministic simulator that
+  records before it answers, the Prisma store, capture as **claim → charge → settle** (two short
+  transactions around a network call), refusals that leave the checkout payable, a refund for a charge
+  that lands on a cancelled checkout, and `POST /checkouts/:id/pay`.
+- **`apps/web`** — the payment step: one button, place then pay, two notices that tell the truth
+  about money, and a BFF forwarder with no translation.
+
+### Deviations
+
+- **The PRs are open, not merged.** A rule arrived mid-phase: the owner approves before anything
+  merges, and no more than one phase a day. Everything from #107 onward is the agent's work awaiting
+  that approval; the last agent-performed merge was #108, seconds before the rule.
+- **T-081 (the ledger split) is phase 8, not phase 6**, because the release plan's dependency column
+  says so. Cost if wrong: the phase's "paid" state is not yet a split of money, and `M3` cannot close
+  until phase 8.
+- **D111** — a provider timeout answers a fifth outcome, `PENDING`, rather than being folded into
+  "declined" or "paid". The plan had four.
+- **D112** — the port gained `lookup`, forced by a review finding: without it, a charge that landed
+  on a cancelled checkout could not be refunded without charging again.
+- **The success shape is the checkout**, read back rather than assembled from memory.
+- **The web payment flow has no page-level unit test.** The calls it makes are covered, and Task 8's
+  browser journey would cover the flow end to end, but that journey **has not been run** — see below.
+
+### Not proven / deferred
+
+- **The browser journey (Task 8) is not written or run.** The web step is proven only at the unit and
+  BFF level; nobody has paid in a real browser against the real stack.
+- **The ledger split** — T-081, phase 8. Nothing divides the captured money yet.
+- **Stripe** — phase 7, behind this same port; the simulator is not evidence about a real provider.
+- **A worker that sweeps `PROCESSING` payments nobody retried** (a buyer who closed the tab) — phase
+  10, with the queue that makes a scheduled sweep the right shape.
+- **One API process, ever**: the guarantee rests on one unique index plus one transaction, which
+  should hold across instances; this repository never runs two.
+
+---
+
 ## The roadmap page brought level with the delivered phases — 2026-10-24 (#148)
 
 **Claim:** `docs/roadmap.html` shows phases 0–5 as merged and phase 6 as in progress, matching this

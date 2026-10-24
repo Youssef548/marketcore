@@ -48,6 +48,7 @@ Ten invariants, each restated as the observable that proves it, live in
 |---|---|---|
 | Inventory never goes negative | 100 concurrent checkouts for one unit: exactly one success, stock 0, one order | **proven, phase 4** |
 | A checkout idempotency key creates at most one operation | 20 repeat requests with one key produce one order | **proven, phase 5** |
+| A checkout is charged at most once | 50 payments arriving together leave one provider operation and one payment | **proven, phase 6** |
 | A webhook causes each side effect at most once | Repeated delivery produces one state transition and one ledger transaction | phase 8 |
 | Ledger transactions balance | Signed entries sum to zero per currency | phase 8 |
 | A payout executes at most once | Two workers racing the same payout call the provider once | phase 11 |
@@ -198,6 +199,9 @@ The flagship scenarios, and where each is proven:
 | Storefront end to end — browse a cart, add to it, check out, see the order | `pnpm --filter e2e test:behavioural` | **proven** |
 | **Duplicate checkout** — 20 repeats, one key, one order | `pnpm --filter api test:e2e` | **proven** |
 | **Duplicate checkout, simultaneously** — 100 repeats at once, 10 runs, one checkout | `pnpm --filter api test:concurrency` | **proven** |
+| **One charge** — 50 payments at once, 10 runs, one provider operation | `pnpm --filter api test:concurrency` | **proven** |
+| A declined charge leaves the checkout payable, and says so | `pnpm --filter api test:e2e` | **proven** |
+| A charge lands on a cancelled checkout → refunded, no order paid | `pnpm --filter api test:integration` | **proven** |
 | Duplicate payment webhook — one ledger transaction | `pnpm --filter api test:e2e` | phase 8 |
 | Outbox recovery — killed mid-flight, processed once | `pnpm --filter worker test:e2e` | phase 10 |
 | Ledger balance — every transaction sums to zero | `pnpm --filter api test:integration` | phase 8 |
@@ -252,9 +256,19 @@ in [`docs/failure-scenarios.md`](./docs/failure-scenarios.md), each with the beh
   missing one with the API's own envelope. Signed-in visitors now land on the storefront rather than the
   console, and the first-run screen is called **Start selling** (D91, D101).
 
+**Done (continued)**
+
+- **Phase 6 — the first payment.** A buyer pays a checkout once: the charge goes through a
+  deterministic simulator behind a provider port, capture moves the checkout and **every** one of
+  its orders to `Paid` in one transaction, a declined charge leaves the checkout payable and says
+  which refusal it was, and a charge that lands on a checkout the worker cancelled is refunded
+  without ever marking an order paid. The operation key is derived from the checkout, so fifty
+  payments arriving together are one provider operation. The review screen grew the payment step.
+
 **In progress**
 
-- Nothing. Phase 5 closed on 2026-10-18; phase 6 (the deterministic payment simulator) is next.
+- Nothing merged-ready beyond phase 6's own PRs, which are open for review. Phase 7 (Stripe test
+  mode behind the same port) is next.
 
 **Planned**
 
@@ -310,8 +324,9 @@ rejected for a stated reason rather than deferred silently; see [`docs/architect
   fixture workspace. Their globs were written relative to the repo root, and flat config resolves them
   against each package's own config directory, so they matched no real file. They are package-relative
   now, and a fixture package with its own config proves each fires where turbo actually runs it.
-- **Orders sit in `Pending payment` and go no further.** Payment is phase 6; until then a placed
-  order is a real order, visible to both sides, that nothing ever pays for.
+- **A payment is captured, and not yet split.** The charge is real and the checkout is `Paid`, but
+  the seller shares and the platform fee are the ledger's work: **T-081 belongs to phase 8**, so
+  nothing divides the money yet and the `M3` gate stays open until it does.
 - **Idempotency keys are never expired.** The `idempotency_keys` table gains a row per placement
   attempt and nothing prunes it, so it grows with every order rather than with every buyer. Nothing
   user-visible depends on a row once its checkout is read, and the ADR's review date is when the ledger
