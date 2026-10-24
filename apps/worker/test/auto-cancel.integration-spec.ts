@@ -4,7 +4,8 @@ import { PrismaClient } from '@app/database';
 import { AUTO_CANCEL_BATCH_SIZE, CHECKOUT_PAYMENT_WINDOW_MS } from '@app/domain';
 import { AutoCancelJob } from '../src/auto-cancel/auto-cancel.job';
 import { AutoCancelRepository } from '../src/auto-cancel/auto-cancel.repository';
-import { LONG_AGO, availableOf, placedCheckout, prisma, stockedProduct, type ProductFixture } from './support/fixtures';
+import { LONG_AGO, availableOf, placedCheckout, prisma, stockedProduct } from './support/fixtures';
+import type { FixtureLine } from './support/interfaces/fixtures.interface';
 import { captureLogger } from './support/logger';
 
 const policy = { windowMs: CHECKOUT_PAYMENT_WINDOW_MS, batchSize: AUTO_CANCEL_BATCH_SIZE };
@@ -33,7 +34,7 @@ async function tenExpiredCheckouts() {
   const checkoutIds: string[] = [];
 
   for (let i = 0; i < 10; i++) {
-    const lines: { product: ProductFixture; quantity: number }[] = [
+    const lines: FixtureLine[] = [
       { product: p1, quantity: 1 + (i % 3) },
       { product: p2, quantity: 1 },
       ...(i % 2 === 0 ? [{ product: p3, quantity: 2 }] : []),

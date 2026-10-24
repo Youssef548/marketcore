@@ -1,13 +1,7 @@
-import type { Logger } from '@app/runtime';
-
-export interface CapturedLine {
-  level: string;
-  event: unknown;
-  fields: Record<string, unknown>;
-}
+import type { CapturedLine, CapturingLogger } from './interfaces/logger.interface';
 
 /** The API's capturing logger, repeated: apps never import apps (ADR 0001). */
-export function captureLogger(): Logger & { lines: CapturedLine[] } {
+export function captureLogger(): CapturingLogger {
   const lines: CapturedLine[] = [];
   const at =
     (level: string) =>
