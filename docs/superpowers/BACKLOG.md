@@ -152,7 +152,8 @@ with fixtures proving each fires and each exception passes.
 
 ## BL-004 — Literal values still compared in logic
 
-**Raised:** 2026-10-16 · **Priority:** Could · **Size:** S
+**Raised:** 2026-10-16 · **Priority:** Could · **Size:** S · **Status:** done — the BL-004 PR stack
+(#153, then the remaining-literals follow-up)
 
 ### Problem
 
@@ -160,7 +161,7 @@ with fixtures proving each fires and each exception passes.
 literals that predate it, for example:
 
 - `apps/web/src/app/(dash)/theme-toggle.tsx` compares `'dark'` and `'light'` although
-  `lib/theme/theme.ts` already has `THEMES`.
+  `lib/theme/theme.ts` already had `THEMES` (now the const-object `Themes`).
 - `apps/web/src/app/(dash)/chrome.tsx` and `products/page.tsx` compare `state.status` against
   `'anonymous'`, `'loading'`, `'ready'`, `'failed'`: the tags of `SessionState` and the page's `State`.
 

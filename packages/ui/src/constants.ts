@@ -20,6 +20,14 @@ export type ButtonVariant = (typeof ButtonVariants)[keyof typeof ButtonVariants]
 export const ControlSizes = { LG: 'lg', MD: 'md', SM: 'sm' } as const;
 export type ControlSize = (typeof ControlSizes)[keyof typeof ControlSizes];
 
+/**
+ * The element a polymorphic component renders when the caller passes no `as`. The generic's
+ * default (`typeof CARD_DEFAULT_ELEMENT`) and the runtime fallback (`as ?? CARD_DEFAULT_ELEMENT`)
+ * are the same element, so each is named once here and the two cannot drift.
+ */
+export const CARD_DEFAULT_ELEMENT = 'div';
+export const TEXT_LINK_DEFAULT_ELEMENT = 'a';
+
 export const CardVariants = { PANEL: 'panel', RAISED: 'raised' } as const;
 export type CardVariant = (typeof CardVariants)[keyof typeof CardVariants];
 

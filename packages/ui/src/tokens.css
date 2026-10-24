@@ -125,7 +125,10 @@
  * one thing the light set hid: the active rail item carries a *light* accent in this
  * theme, so `ink-on-rail` cannot be its text — the components use `ink-on-action`
  * there, which is dark here and light there. That is the token layer working as
- * intended: one class, two themes, no branch. */
+ * intended: one class, two themes, no branch.
+ *
+ * `'dark'` is spelled here rather than named because CSS cannot import a TypeScript constant: it
+ * is `Themes.DARK` in `apps/web/src/lib/theme/theme.ts`, and `theme.test.ts` pins that spelling. */
 [data-theme='dark'] {
   --palette-night-1000: oklch(0.1165 0.0142 272.6);
   --palette-night-975: oklch(0.141 0.0159 270.3);

@@ -12,15 +12,9 @@ import {
 import { Alert, Button, ButtonVariants, Card, Field, HeadingLevels, PageHeading } from '@app/ui';
 import { formatMoney } from '@/lib/money';
 import { createProduct, useReadySession } from '@/lib/session/client';
+import { PageStates } from './constants';
 
 const ProductsSchema = z.array(ProductSchema);
-
-/**
- * The page's own load states, named once. The union below is built from them, so the
- * tags the page narrows on and the tags it constructs are the same values by
- * construction — the same shape `lib/session/constants.ts` gives the session's states.
- */
-const PageStates = { LOADING: 'loading', READY: 'ready', FAILED: 'failed' } as const;
 
 type State =
   | { status: typeof PageStates.LOADING }

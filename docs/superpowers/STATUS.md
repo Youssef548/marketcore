@@ -1648,3 +1648,33 @@ member rather than the string.
   loading→anonymous→failed cascade in `chrome.tsx` and `store-frame.tsx` — two sightings, but the
   branches differ in copy, redirect target and admission rule, and a shared gate component is a
   design decision (T-002 territory), not a naming ticket's.
+
+---
+
+## BL-004 finished: the literals #153 left — 2026-10-24 (BL-004, #147)
+
+**Claim:** every hit of the `typescript-code-conventions` check 2 is now a named constant, its
+definition, or carries a written reason beside it; BL-004 is done.
+**Branch:** `refactor/bl-004-remaining-literals`, stacked on #153.
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The skill's check 2, whole repo | the skill's PCRE scan over `apps/*/src/*` and `packages/*/src/*` | **14 hits, none unexplained**: 10 named-constant definitions (`routes.ts` ×2, `THEME_COOKIE`, `payments.ts` ×2, the five eslint-config fixtures), the reasoned `cookies.ts` env flag, the two `[data-theme='dark']` selectors now carrying their reason, and `tokens.css:8`, prose in a comment. The four ui element defaults are gone |
+| ui and web still build and pass | `pnpm turbo run lint typecheck test build --filter web --filter @app/ui` | **8/8 tasks, exit 0** — ui 37 tests / 8 files, web 147 tests / 31 files |
+
+### Delivered
+
+- **`packages/ui/src/constants.ts`** — `CARD_DEFAULT_ELEMENT` and `TEXT_LINK_DEFAULT_ELEMENT`. `Card`
+  and `TextLink` default their generic to `typeof` the constant and fall back to the constant at
+  runtime, so the type default and the rendered element are one value.
+- **`admin/products/constants.ts`** — `PageStates` moved out of the page, beside it (Rule 1's "where
+  it lives"), the same placement as `(dash)/constants.ts`.
+- **The CSS selectors carry their reason**: CSS cannot import `Themes.DARK`, and `theme.test.ts`
+  pins the spelling the selector matches.
+- **`BACKLOG.md`** — BL-004 marked done; its stale `THEMES` reference updated.
+
+### Not proven / deferred
+
+- **The behavioural suite runs on the pull request**, as for #153.
