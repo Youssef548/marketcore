@@ -7,9 +7,32 @@ import {
   type LoggerService,
 } from '@nestjs/common';
 import { ZodValidationException } from 'nestjs-zod';
+import { ZodError } from 'zod';
 import type { Request, Response } from 'express';
-import { ErrorCodes, type ErrorCode } from '@app/contracts';
+import { ErrorCodes, type ErrorCode, type ErrorEnvelope } from '@app/contracts';
 import { UNKNOWN_REQUEST_ID, createLogger, getRequestId } from '@app/runtime';
+import {
+  ERROR_CODE_BY_STATUS,
+  ERROR_FILTER_LOGGER_CONTEXT,
+  ErrorEnvelopeMessages,
+} from './error-envelope.constants';
+
+/** A failure classified, before the request id turns it into an envelope. */
+interface Failure {
+  status: number;
+  code: ErrorCode;
+  message: string;
+  details?: unknown;
+}
+
+/**
+ * What body-parser throws, and anything else built on `http-errors`. `expose`
+ * is that library's own verdict that the message is safe to show the caller.
+ */
+interface ExposedHttpError extends Error {
+  status: number;
+  expose: true;
+}
 
 /**
  * The only way a failure leaves the API. Clients get a stable machine-readable
@@ -25,77 +48,97 @@ import { UNKNOWN_REQUEST_ID, createLogger, getRequestId } from '@app/runtime';
  */
 @Catch()
 export class ErrorEnvelopeFilter implements ExceptionFilter {
-  constructor(private readonly logger: LoggerService = createLogger('filter')) {}
+  constructor(
+    private readonly logger: LoggerService = createLogger(ERROR_FILTER_LOGGER_CONTEXT),
+  ) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const http = host.switchToHttp();
-    const response = http.getResponse<Response>();
     const requestId = getRequestId(http.getRequest<Request>()) ?? UNKNOWN_REQUEST_ID;
-    const { status, code, message, details } = this.map(exception);
+    const { status, code, message, details } = this.classify(exception);
 
-    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (isServerError(status)) {
       this.logger.error(exception instanceof Error ? exception.stack : String(exception), {
         requestId,
       });
     }
 
-    response.status(status).json({ error: { code, message, requestId, details } });
+    const envelope: ErrorEnvelope = { error: { code, message, requestId, details } };
+    http.getResponse<Response>().status(status).json(envelope);
   }
 
-  private map(exception: unknown): {
-    status: number;
-    code: ErrorCode;
-    message: string;
-    details?: unknown;
-  } {
+  private classify(exception: unknown): Failure {
     if (exception instanceof ZodValidationException) {
+      const zodError = exception.getZodError();
       return {
         status: HttpStatus.BAD_REQUEST,
         code: ErrorCodes.VALIDATION_ERROR,
-        message: 'Request validation failed',
-        details: (exception.getZodError() as { issues?: unknown }).issues,
+        message: ErrorEnvelopeMessages.VALIDATION_FAILED,
+        details: zodError instanceof ZodError ? zodError.issues : undefined,
       };
     }
 
     if (exception instanceof HttpException) {
-      const body = exception.getResponse();
-      const message =
-        typeof body === 'string'
-          ? body
-          : ((body as { message?: string }).message ?? exception.message);
-      // A typed refusal (checkout's 409) is thrown as `new ConflictException({
-      // message, details })`; its details are contract, not decoration.
-      const details =
-        typeof body === 'object' && body !== null && 'details' in body
-          ? (body as { details?: unknown }).details
-          : undefined;
-      return { status: exception.getStatus(), code: this.codeFor(exception), message, details };
+      const status = exception.getStatus();
+      // A deliberate 5xx keeps its status, but its text may name a host or a
+      // query, so it leaves like any other internal failure.
+      if (isServerError(status)) {
+        return { status, code: ErrorCodes.INTERNAL, message: ErrorEnvelopeMessages.INTERNAL };
+      }
+      // Nest already reduces the body to one string here: the body itself, or its
+      // `message` when that is a string — never the array a list of messages gives.
+      return {
+        status,
+        code: codeFor(status),
+        message: exception.message,
+        details: detailsOf(exception.getResponse()),
+      };
+    }
+
+    if (isExposedClientError(exception)) {
+      return { status: exception.status, code: codeFor(exception.status), message: exception.message };
     }
 
     // Never surface an internal message to the caller; it is logged above.
     return {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       code: ErrorCodes.INTERNAL,
-      message: 'Internal server error',
+      message: ErrorEnvelopeMessages.INTERNAL,
     };
   }
+}
 
-  private codeFor(exception: HttpException): ErrorCode {
-    switch (exception.getStatus()) {
-      case HttpStatus.BAD_REQUEST:
-        return ErrorCodes.VALIDATION_ERROR;
-      case HttpStatus.UNAUTHORIZED:
-        return ErrorCodes.UNAUTHORIZED;
-      case HttpStatus.FORBIDDEN:
-        return ErrorCodes.FORBIDDEN;
-      case HttpStatus.NOT_FOUND:
-        return ErrorCodes.NOT_FOUND;
-      case HttpStatus.CONFLICT:
-        return ErrorCodes.CONFLICT;
-      case HttpStatus.TOO_MANY_REQUESTS:
-        return ErrorCodes.TOO_MANY_REQUESTS;
-      default:
-        return ErrorCodes.INTERNAL;
-    }
-  }
+function codeFor(status: number): ErrorCode {
+  return (
+    ERROR_CODE_BY_STATUS[status] ??
+    (isClientError(status) ? ErrorCodes.CLIENT_ERROR : ErrorCodes.INTERNAL)
+  );
+}
+
+function isClientError(status: number): boolean {
+  return status >= HttpStatus.BAD_REQUEST && !isServerError(status);
+}
+
+function isServerError(status: number): boolean {
+  return status >= HttpStatus.INTERNAL_SERVER_ERROR;
+}
+
+/**
+ * A typed refusal (checkout's 409) is thrown as `new ConflictException({
+ * message, details })`; its details are contract, not decoration.
+ */
+function detailsOf(body: string | object): unknown {
+  return typeof body === 'object' && body !== null && 'details' in body ? body.details : undefined;
+}
+
+/** Only a 4xx: a 5xx message stays hidden even when its error says it may be shown. */
+function isExposedClientError(exception: unknown): exception is ExposedHttpError {
+  return (
+    exception instanceof Error &&
+    'expose' in exception &&
+    exception.expose === true &&
+    'status' in exception &&
+    typeof exception.status === 'number' &&
+    isClientError(exception.status)
+  );
 }

@@ -33,6 +33,7 @@ describe('error envelope', () => {
     // The exception filter is typed against this union; changing it is an API
     // change, so this test is a deliberate speed bump rather than a redundancy.
     expect(Object.keys(ErrorCodes).sort()).toEqual([
+      'CLIENT_ERROR',
       'CONFLICT',
       'FORBIDDEN',
       'INTERNAL',
