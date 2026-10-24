@@ -3,9 +3,7 @@ import { PrismaModule } from '@app/runtime';
 import { AuthModule } from './auth/auth.module';
 import { CartModule } from './cart/cart.module';
 import { CatalogModule } from './catalog/catalog.module';
-import { HealthController } from './modules/health/health.controller';
-import { HealthRepository } from './modules/health/repositories/health.repository';
-import { HealthService } from './modules/health/health.service';
+import { HealthModule } from './health/health.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
 import { OrganizationsModule } from './organizations/organizations.module';
@@ -25,6 +23,7 @@ import { StorefrontModule } from './storefront/storefront.module';
   // from the modules above it.
   imports: [
     PrismaModule,
+    HealthModule,
     AuthModule,
     OrganizationsModule,
     CatalogModule,
@@ -34,9 +33,5 @@ import { StorefrontModule } from './storefront/storefront.module';
     PaymentsModule,
     SecurityModule,
   ],
-  controllers: [HealthController],
-  // Repositories before services: the service depends on the repository, never
-  // on the Prisma client directly.
-  providers: [HealthRepository, HealthService],
 })
 export class AppModule {}

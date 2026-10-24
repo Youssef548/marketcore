@@ -7,7 +7,7 @@ import {
   type Health,
   type Readiness,
 } from '@app/contracts';
-import { Public } from '../../security/decorators/public.decorator';
+import { Public } from '../security/decorators/public.decorator';
 import { HealthDto, ReadinessDto } from './dto/health.dto';
 import { HealthService } from './health.service';
 
