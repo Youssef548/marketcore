@@ -21,6 +21,7 @@ import { LogEvents, PrismaService } from '@app/runtime';
 import { IdempotencyRepository } from './idempotency.repository';
 import { CartRepository } from '../../cart/repositories/cart.repository';
 import { InventoryRepository } from '../../catalog/repositories/inventory.repository';
+import { PUBLIC_PRODUCT_WHERE } from '../../storefront/storefront.constants';
 import {
   INTERACTIVE_TRANSACTION_MAX_WAIT_MS,
   INTERACTIVE_TRANSACTION_TIMEOUT_MS,
@@ -72,10 +73,20 @@ export class CheckoutRepository {
     this.idempotencyRepository = new IdempotencyRepository();
   }
 
-  /** A plain read, taken before any lock (SRS-FR-CHK-005). */
+  /**
+   * A plain read, taken before any lock (SRS-FR-CHK-005).
+   *
+   * Scoped to what a buyer could actually purchase, because the answer is observable:
+   * the caller turns a mixed result into a 400 and a missing cart into a 409, so an
+   * unscoped read would let any authenticated user confirm that a product id exists
+   * and which currency it is in — including a draft or another tenant's product. That
+   * is the identifier probe INV-9 forbids, and the same predicate every other
+   * buyer-side product read uses. A non-public line simply contributes no currency
+   * here and is refused later by the checkout's own line evaluation.
+   */
   async currenciesOf(productIds: readonly string[]): Promise<CurrencyCode[]> {
     const rows = await this.prisma.product.findMany({
-      where: { id: { in: [...productIds] } },
+      where: { id: { in: [...productIds] }, ...PUBLIC_PRODUCT_WHERE },
       select: { currency: true },
     });
     return rows.map((row) => row.currency);

@@ -3,7 +3,9 @@ import { afterAll, describe, expect, it } from '@jest/globals';
 import {
   CheckoutConflictReasons,
   CheckoutStatuses,
+  CurrencyCodes,
   OrderStatuses,
+  OrganizationStatuses,
   ProductStatuses,
 } from '@app/contracts';
 import { buildBuyerContext, checkoutRequestFingerprint, type BuyerContext, type ConfirmedLine } from '@app/domain';
@@ -184,5 +186,48 @@ describe('CheckoutRepository.place', () => {
     expect(await placeOnce(buildBuyerContext(buyer.id), [confirmed(product, 1)])).toEqual({
       kind: PlaceCheckoutOutcomes.CART_CHANGED,
     });
+  });
+});
+
+/**
+ * The pre-lock currency read answers before any cart or ownership check, and the caller
+ * turns a mixed answer into a 400 (`MIXED_CURRENCY`) and a complete one into 409
+ * (`CART_CHANGED`). That makes the read an identifier probe unless it is scoped: any
+ * authenticated user could otherwise learn that a product id exists and which currency
+ * it is in — for a draft, or another tenant's product (INV-9).
+ */
+describe('CheckoutRepository.currenciesOf', () => {
+  it('returns the currency of a product the buyer could buy', async () => {
+    const seller = await createSeller('curpub');
+    const product = await createProduct(seller.organizationId, { currency: CurrencyCodes.USD });
+
+    await expect(repository.currenciesOf([product.id])).resolves.toEqual([CurrencyCodes.USD]);
+  });
+
+  it('ignores a draft product, so its id cannot be probed for a currency', async () => {
+    const publishedSeller = await createSeller('curvis');
+    const draftSeller = await createSeller('curdraft');
+    const published = await createProduct(publishedSeller.organizationId, { currency: CurrencyCodes.USD });
+    const draft = await createProduct(draftSeller.organizationId, {
+      currency: CurrencyCodes.EUR,
+      status: ProductStatuses.DRAFT,
+    });
+
+    await expect(repository.currenciesOf([published.id, draft.id])).resolves.toEqual([CurrencyCodes.USD]);
+  });
+
+  it('ignores a product whose seller is not active', async () => {
+    const seller = await createSeller('curorg');
+    const product = await createProduct(seller.organizationId, { currency: CurrencyCodes.EUR });
+    await testPrisma.organization.update({
+      where: { id: seller.organizationId },
+      data: { status: OrganizationStatuses.DISABLED },
+    });
+
+    await expect(repository.currenciesOf([product.id])).resolves.toEqual([]);
+  });
+
+  it('returns nothing for an id that does not exist', async () => {
+    await expect(repository.currenciesOf([randomUUID()])).resolves.toEqual([]);
   });
 });

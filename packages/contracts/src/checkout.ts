@@ -13,6 +13,7 @@ import {
   CheckoutStatuses,
   CurrencyCodes,
   OrderStatuses,
+  POSTGRES_INT_MAX,
   wireValues,
 } from './constants';
 import { SellerSchema } from './storefront';
@@ -37,10 +38,26 @@ export const CreateCheckoutRequestSchema = z
       .max(CHECKOUT_MAX_LINES)
       .refine((lines) => new Set(lines.map((line) => line.productId)).size === lines.length, {
         message: 'Each product may appear once',
+      })
+      .refine((lines) => checkoutTotalMinor(lines) <= POSTGRES_INT_MAX, {
+        message: 'The checkout total is larger than this service can charge',
       }),
   })
   .strict();
 export type CreateCheckoutRequest = z.infer<typeof CreateCheckoutRequestSchema>;
+
+/**
+ * The total the request will become, in minor units.
+ *
+ * The price is not trusted here — the service re-reads it under the transaction and
+ * refuses a mismatch — but the two are equal for any request that can be placed, so
+ * bounding this bounds the `INTEGER` the checkout and order rows store. `quantity` is
+ * at most 10 and there are at most 50 lines, so the sum stays far inside a JS number;
+ * only the database column is narrow.
+ */
+function checkoutTotalMinor(lines: readonly CheckoutLineRequest[]): number {
+  return lines.reduce((sum, line) => sum + line.quantity * line.unitPriceMinor, 0);
+}
 
 /** An order line. `name` and `unitPriceMinor` are snapshots (PRD-FR-CHK-005, D90). */
 export const OrderItemSchema = z
