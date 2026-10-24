@@ -5,20 +5,12 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { NextFunction, Request, Response } from 'express';
 import { requestLoggerMiddleware } from './request-logger.middleware';
 import type { RequestLogFields } from './request.interface';
+import type { LoggedServer } from './request-logger.spec.interface';
 
 /** A route that answers at once. */
 const DONE_PATH = '/done';
 /** A route that never answers, so only the client can end it. */
 const HANG_PATH = '/hang';
-
-interface LoggedServer {
-  server: Server;
-  port: number;
-  /** Resolves with the first record the middleware logs. */
-  record: Promise<RequestLogFields>;
-  /** Resolves once the server has the hanging request in hand. */
-  hanging: Promise<void>;
-}
 
 /**
  * The fake-response spec assumes node's ordering: `close` follows `finish` on a

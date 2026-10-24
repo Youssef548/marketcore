@@ -10,14 +10,10 @@ import {
   tenantHeaders,
   unique,
 } from '../support/fixtures';
+import type { SellerSession } from './interfaces/storefront.interface';
 
 const API = '/api/v1';
 const WEB = 'https://web.marketcore.test:8443';
-
-interface Seller {
-  accessToken: string;
-  organizationId: string;
-}
 
 async function login(request: APIRequestContext, email: string, password = TEST_PASSWORD): Promise<string> {
   const res = await request.post(`${API}/auth/login`, { data: { email, password } });
@@ -25,7 +21,7 @@ async function login(request: APIRequestContext, email: string, password = TEST_
   return TokenPairSchema.parse(await res.json()).accessToken;
 }
 
-async function seller(request: APIRequestContext, email: string): Promise<Seller> {
+async function seller(request: APIRequestContext, email: string): Promise<SellerSession> {
   const accessToken = await login(request, email);
   const orgs = await request.get(`${API}/organizations`, { headers: bearer(accessToken) });
   const [organization] = OrganizationSchema.array().parse(await orgs.json());
@@ -34,7 +30,7 @@ async function seller(request: APIRequestContext, email: string): Promise<Seller
 
 async function stockedProduct(
   request: APIRequestContext,
-  owner: Seller,
+  owner: SellerSession,
   { priceMinor, available }: { priceMinor: number; available: number },
 ): Promise<{ id: string; name: string }> {
   const headers = tenantHeaders(owner.accessToken, owner.organizationId);
@@ -47,7 +43,7 @@ async function stockedProduct(
   return { id, name };
 }
 
-async function availableOf(request: APIRequestContext, owner: Seller, productId: string): Promise<number> {
+async function availableOf(request: APIRequestContext, owner: SellerSession, productId: string): Promise<number> {
   const res = await request.get(`${API}/products/${productId}/inventory`, {
     headers: tenantHeaders(owner.accessToken, owner.organizationId),
   });
@@ -81,8 +77,8 @@ async function buyerPage(browser: Browser): Promise<Page> {
 }
 
 test.describe('storefront: a buyer in a real browser', () => {
-  let nile: Seller;
-  let delta: Seller;
+  let nile: SellerSession;
+  let delta: SellerSession;
 
   test.beforeAll(async ({ request }) => {
     nile = await seller(request, SEEDED_SELLERS.NILE.email);
