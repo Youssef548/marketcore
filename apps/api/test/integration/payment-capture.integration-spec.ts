@@ -36,7 +36,7 @@ const serviceWith = (provider: PaymentProvider) => new PaymentService(repository
 
 /** A checkout of one order, with a total that decides the simulator's verdict (ADR 004). */
 async function aCheckout(totalMinor: number) {
-  const seller = await createSeller();
+  const seller = await createSeller('paycap');
   const buyer = await createBuyer();
   const checkout = await testPrisma.checkout.create({
     data: { buyerId: buyer.id, totalMinor, currency: CurrencyCodes.EGP },
