@@ -1517,13 +1517,14 @@ Each exactly-once claim was falsified by mutation before it was believed:
 file — weeks 1–3 (phases 0–4) and phase 5 merged, phase 6 open with its PRs landing but no gate
 entry yet. The page had not moved since it was written with only week 1 merged: phases 2–3 read
 "next", phase 4 "planned", the masthead counted 1/12.
-**Branch:** `feat/agent-factory` (issue #148)
+**Branch:** `agent/148-roadmap`, stacked on `fix/capture-spec-seller-prefix` (issue #148). Built by
+the agent factory's first canary run (OpenCode, `opencode-go/glm-5.3`).
 
 ### Proven
 
 | Check | Command | Result |
 |---|---|---|
-| The statuses as structure | `node .superpowers/148/roadmap-check.mjs` (scratch, this worktree) | **PASS** — weeks 1–3 done/"merged", week 4 active with "phase 5 merged" + "phase 6 in progress", weeks 5–12 planned, tags balanced; the same check on the pre-change page **fails on the exact reported staleness** |
+| The statuses as structure | `node .superpowers/148/roadmap-check.mjs` (scratch, not committed) | **PASS** — weeks 1–3 done/"merged", week 4 active with "phase 5 merged" + "phase 6 in progress", weeks 5–12 planned, tags balanced; the same check on the pre-change page **fails on the exact reported staleness** |
 | The statuses as rendered | headless Chromium, both themes | week 4's two pills read by computed colour — phase 5's in `--done`, phase 6's in `--next`; no console errors and no horizontal overflow at 1280/720/375px |
 | Whole-repo gate | `pnpm turbo run lint typecheck test build` | **37/37 tasks, twice, with this diff** (api 106 unit / 125 e2e / 122 integration / 5 concurrency; web 145; worker 19 + 6 integration; ui 37). Four later runs of the same command failed only `api#test` — three on the race below, one on the two flakes below it |
 
@@ -1549,7 +1550,8 @@ entry yet. The page had not moved since it was written with only week 1 merged: 
 
 - **One line outside the ticket's file scope.** The capture integration spec called `createSeller()`
   bare against the helper's `createSeller(prefix: string)` — TS2554, `api#typecheck` red at HEAD, so
-  the whole-repo gate could not pass for any change. Fixed as `createSeller('paycap')`, every sibling
+  the whole-repo gate could not pass for any change. Fixed on its own branch,
+  `fix/capture-spec-seller-prefix`, which this one stacks on, as `createSeller('paycap')`, every sibling
   spec's prefix convention; the spec is 7/7 against real PostgreSQL. The suite had stayed green at
   runtime because jest transpiles without checking, and the bare call only stringified `undefined`
   into the seller's name and slug. Cost if wrong: revert one line.
