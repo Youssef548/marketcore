@@ -1570,8 +1570,8 @@ member rather than the string.
 
 | Check | Command | Result |
 |---|---|---|
-| The skill's check 2, before | the `typescript-code-conventions` PCRE scan | **21 hits in the six files whose logic compared tags** — theme-toggle 6, chrome 4, store-frame 4, products page 4, middleware 2, `parseTheme` 1 — every one a tag value spelled inline |
-| The skill's check 2, after | same | **no comparison hit remains in any of them**; the residue is named-constant definitions (`routes.ts`, `payments.ts`, `THEME_COOKIE`), the reasoned `cookies.ts` env flag, CSS attribute selectors (reasoned where they stand), and the deferred ui element defaults below |
+| The skill's check 2, before | the `typescript-code-conventions` PCRE scan | **22 hits in the six files whose logic compared tags** — theme-toggle 6, chrome 4, store-frame 4, products page 4, middleware 2, `theme.ts` 2 (`DEFAULT_THEME`, `parseTheme`) — every one a tag value spelled inline |
+| The skill's check 2, after | same | **no comparison hit remains in any of them**; the residue is named-constant definitions (`routes.ts`, `payments.ts`, `THEME_COOKIE`), the reasoned `cookies.ts` env flag, and — still without a written reason, deferred below — three CSS `[data-theme='dark']` selectors, five `packages/eslint-config` test-fixture inputs and four ui element defaults |
 | The constants are the wire values | `pnpm --filter web exec vitest run src/lib/theme src/lib/session/client.test.tsx` | the two new tests pass — `Themes` pins the spelling the cookie, the painted attribute and the token layer's selectors agree on; `SessionStatuses` pins the four arms, hand-written from the union as it was |
 | The tags did not drift | `pnpm --filter web exec vitest run src/lib/session/routing.test.ts` | 15 passed — the gate's decisions are still asserted with hand-written literals, the independent source |
 | Behaviour unchanged | `pnpm --filter web test` | **147 passed, 31 files** (145 before; +2), including chrome's 11 and store-frame's 3 narrowing tests |
@@ -1610,6 +1610,16 @@ member rather than the string.
    have no consumer outside the app, and the routing tags are additionally pinned by
    `routing.test.ts`'s hand-written literal assertions.
 
+### Deviations
+
+- **`THEMES` (a tuple) became `Themes` (a const-object enum)** — the ticket said "compare the
+  `THEMES` constants", but a tuple has no members to compare (Finding 2). No importer is left.
+- **Two values beyond the ticket's files were named, on lines already being edited:** `chrome.tsx`
+  redirects through `LOGIN_PATH`, and review asked for the bare `401` in `client.tsx` to become
+  `UNAUTHORIZED_STATUS` (`lib/session/constants.ts`) — `middleware.ts` already names its `308`, so
+  "the protocol's number, spelled bare" was not a reason that held.
+- **BL-004 is split across two PRs** to keep each under 15 files; this one does not finish it.
+
 ### Not proven / deferred
 
 - **Four check-2 hits in `packages/ui` remain, deliberately**: the polymorphic generic defaults
@@ -1617,7 +1627,13 @@ member rather than the string.
   files. They are React's own element names (Rule 7's framework vocabulary), compared nowhere — but
   each default *is* repeated by the `as ?? 'div'` runtime fallback, and naming them (a per-component
   member in `packages/ui/src/constants.ts`) is the honest fix. It did not fit this change's 15-file
-  limit beside the ticket's named scope. Cost if wrong: four small files, one follow-up ticket.
+  limit beside the ticket's named scope; the stacked follow-up PR takes it.
+- **Eight more check-2 hits carry no written reason yet**: the CSS selectors in `globals.css` and
+  `tokens.css` (the comments beside them explain the dark theme, not why the literal stays), and the
+  five `packages/eslint-config/test/fixtures/**/src/index.ts` inputs — the check's
+  `packages/*/src/*` glob crosses `/`, so it reaches them. The stacked follow-up PR takes them, with
+  `PageStates`' move into a `constants.ts` (Rule 1's "where it lives") and `BACKLOG.md`'s stale
+  `THEMES`. BL-004 is done when that PR merges, not this one.
 - **One intermediate full-gate run failed `api#test`** — output not captured, so the failing test
   is unknown. The task passed alone immediately after (106 unit / 125 e2e / 122 integration /
   5 concurrency, exit 0) and the full gate passed on the repeat over the identical tree. Nothing in
@@ -1626,9 +1642,8 @@ member rather than the string.
 - **The behavioural suite runs on the pull request, not here** (no Docker in the run): the
   dark-theme journey — luminance, `data-theme` painting — is the end-to-end check that the constants
   still spell what the CSS selects; the new theme test pins that spelling locally in its place.
-- **Three adjacent literals found in review, none of them check-2 hits, recorded rather than
-  widened into this change:** the bare `401` in `client.tsx` (now carries a written reason on the
-  line this diff touched — the protocol's number, spelled bare everywhere the app reads it); the BFF
+- **Two adjacent literals found in review, neither of them a check-2 hit, recorded rather than
+  widened into this change:** the BFF
   route strings `fetch('/api/session')` and its siblings, wire values the route handlers own
   (untouched lines, backlog rather than this ticket); and the two shells' identical
   loading→anonymous→failed cascade in `chrome.tsx` and `store-frame.tsx` — two sightings, but the

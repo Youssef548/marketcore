@@ -12,7 +12,7 @@ import {
 import { ErrorEnvelopeSchema } from '@app/contracts';
 import { SERVER_UNREACHABLE_MESSAGE } from '@/lib/forms/post-json';
 import { messageFrom } from '@/lib/http/browser';
-import { SessionStatuses } from './constants';
+import { SessionStatuses, UNAUTHORIZED_STATUS } from './constants';
 import { SessionViewSchema } from './session';
 import type {
   ReadySession,
@@ -36,10 +36,7 @@ async function readSession(): Promise<SessionState> {
     return { status: SessionStatuses.FAILED, message: SERVER_UNREACHABLE_MESSAGE };
   }
 
-  // 401 is the API's own word for "there is no session" — the protocol's number,
-  // spelled bare everywhere this app reads it, and the one status that is a
-  // refusal rather than a failure.
-  if (response.status === 401) return { status: SessionStatuses.ANONYMOUS };
+  if (response.status === UNAUTHORIZED_STATUS) return { status: SessionStatuses.ANONYMOUS };
 
   if (!response.ok) {
     const envelope = ErrorEnvelopeSchema.safeParse(await response.json().catch(() => null));
@@ -135,7 +132,7 @@ export function useReadySession(): ReadySession {
 export async function signOut(): Promise<void> {
   const response = await fetch('/api/auth/logout', { method: 'POST' });
 
-  if (!response.ok && response.status !== 401) {
+  if (!response.ok && response.status !== UNAUTHORIZED_STATUS) {
     throw new Error('Could not sign out');
   }
 }

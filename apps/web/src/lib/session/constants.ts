@@ -25,3 +25,9 @@ export const RoutingDecisionKinds = {
   MOVED: 'moved',
 } as const;
 export type RoutingDecisionKind = (typeof RoutingDecisionKinds)[keyof typeof RoutingDecisionKinds];
+
+/**
+ * The API's word for "there is no session": the one status that is a refusal rather than a
+ * failure, read by the session provider and by sign-out.
+ */
+export const UNAUTHORIZED_STATUS = 401;
