@@ -1624,3 +1624,57 @@ treated them as server bugs.
 - **`ErrorEnvelopeSchema.code` is still `z.string()`**, not the `ErrorCodes` enum, so a client parsing
   the envelope does not learn about `CLIENT_ERROR` from the schema.
 - **`apps/api/src/http/cors-origins.ts`** is shared non-module code in a top-level folder too; not moved here.
+
+---
+
+## Every hand-written shape in interfaces/, private and test ones included — enforced — 2026-10-24
+
+**Claim:** no hand-written interface or type, exported or not, in source or in a test, is declared
+outside a `*.interface.ts` file, and lint fails the build if one is. Only a type derived from a value
+beside it (`z.infer`, `typeof`) stays put.
+**Branches (stacked, in merge order):** `refactor/shapes-in-interfaces-src` →
+`refactor/shapes-in-interfaces-tests-api` → `refactor/shapes-in-interfaces-tests-worker` →
+`refactor/shapes-in-interfaces-tests-rest` → `chore/types-rule-enforced`.
+
+### Found — how the rule drifted
+
+A review of #158 flagged two private interfaces in the error filter. The code had followed the rule
+as written: BL-001's second exception ("a private type stays in that file"), Rule 4 of
+`typescript-code-conventions` (repo and global copies), and the lint gate itself
+(`ExportNamedDeclaration > TSInterfaceDeclaration`) all allowed a private shape, and the gate never
+looked at test files at all. Tightening the selector and linting the repo found **20 declarations in
+17 files** — 5 in source (`cart.mapper`, the admin products page, `cart-view`, the session client),
+the rest in specs and test support code across api, worker, web, e2e, runtime and ui. #158 merged
+while this was in flight and added two more (`Sent`, `SpyLogger` in the error filter's spec); they
+moved in the api-tests slice.
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| Inventory under the new rule, before the moves | `pnpm turbo run lint --force --continue` | 6 of 10 lint tasks failed; 20 `no-restricted-syntax` hits in 17 files |
+| …and after them | same | **10/10**, zero hits |
+| Each slice stands alone | per slice, before the rebase onto #158: lint + typecheck of the touched packages, and their tests | A: web 145, api unit 122, cart e2e 15 · B1: api unit 122, idempotency e2e 13, checkout + capture integration 14, concurrency 5 · B2: worker 19 + 6 · C: lint/typecheck 12/12, web 145, runtime 38, ui 37 |
+| The gate can fail | new fixtures, run against the old `index.js` | `@app/eslint-config` **5 failed** / 27 — private shape (root and package-rooted config), shape in a test file, shape in test support code (both configs) |
+| …and passes with the fix | `pnpm --filter @app/eslint-config test` | **27/27** (was 21) |
+| It fires in a real package | a private `interface Probe` planted in `apps/api/src/common/`, `eslint` on it, deleted | `1:1 error An interface or hand-written type, exported or not, belongs in a <concern>.interface.ts file… no-restricted-syntax` |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build --force` | **37/37 tasks** on the whole stack, rebased onto `main` with #158 (api 131 unit / 128 e2e / 106 integration / 5 concurrency; eslint-config 27; web 145; contracts 96; worker 19 + 6; runtime 38; ui 37; domain 105) |
+
+### Delivered
+
+- `packages/eslint-config/index.js`: the shape selectors drop `ExportNamedDeclaration >`, and a new block
+  applies them to test files and to `test/` and `tests/` directories outside `src/`.
+- Fixtures: `private-shape.ts`, `private-shape.integration-spec.ts` (named so vitest does not collect
+  it), `test/support/helper.ts` and its `interfaces/` twin; `derived-type.ts` and `allowed-shapes.ts`
+  lose the private shapes they used to prove were allowed.
+- The rule text says the same thing in BL-001, the repo's `typescript-code-conventions` and the global
+  copy of that skill (with its `lint-rules.md`, which gains a fourth trap: a gate scoped narrower than
+  its rule is a written exception).
+
+### Not proven / deferred
+
+- **The Playwright e2e suite was not run.** Its two specs only had a type moved and a local `Seller`
+  renamed `SellerSession`; typecheck and lint cover that, the browser does not.
+- **Inline shapes that are not declarations are untouched in tests.** `NAMED_SHAPES` (literal unions,
+  inline object types) still applies to source only; a test's `property: 'backgroundColor' | 'color'`
+  parameter stays as it is.

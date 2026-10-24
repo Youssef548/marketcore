@@ -34,13 +34,18 @@ An **exported, hand-written** `interface` or `type` lives in an `interfaces/` fo
 that uses it, one concern per file, named `<concern>.interface.ts` — the `apps/api` convention,
 extended to every app and package.
 
-**Two exceptions, both deliberate:**
+**One exception, deliberate:**
 
 1. **A type derived from a value in the same file stays with that value**:
    `z.infer<typeof XSchema>`, `(typeof X)[keyof typeof X]`, `(typeof X)[number]`. Moving it splits a
    type from its single source, and in `packages/contracts` the schema *is* the source of truth for
    the wire format.
-2. **A private type** (not exported, used in one file) stays in that file.
+
+> **Revised 2026-10-24.** A second exception — "a private type (not exported, used in one file) stays
+> in that file" — is withdrawn. With it, and a lint gate that matched only exported declarations,
+> private shapes drifted into implementation and test files (20 declarations in 17 files, PR #158
+> among them). The rule now covers every hand-written interface or type, exported or not, in
+> source and in tests; `packages/eslint-config` enforces it and its fixtures prove each case fires.
 
 ### Scope — found 2026-10-16
 
