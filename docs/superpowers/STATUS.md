@@ -52,7 +52,20 @@ start verbatim, with no edits:
 - **One shared HTTP configuration** (`apps/api/src/app.setup.ts`) used by `main.ts` and the e2e suite.
 - **README rewritten** and executed; its content is verified, not aspirational.
 
+- A deliberate 5xx `HttpException` keeps its status but leaves with the generic message and no
+  details, like any other internal failure. Nothing in `apps/api/src` throws one today.
+
 ### Not proven / deferred
+
+- **A malformed-JSON 400 echoes part of the caller's body.** body-parser's message quotes the bytes
+  around the syntax error (`…"assword": hunter2sec"… is not valid JSON`), and the filter passes it
+  through. Same on `main`. It goes only back to the caller and 4xx are not logged, but a proxy that
+  records response bodies would keep it. A fixed message for `entity.parse.failed` is the fix; not
+  taken here.
+- **A list of messages collapses to Nest's fallback** (`Bad Request Exception`); the list is dropped.
+  Nothing throws one today.
+- The Week-1 entry above that calls `filters/error-envelope.dto.ts` "imported by nothing… left
+  untouched" is superseded by this one.
 
 - **`User` is the first model, one phase early.** It was pulled forward from phase 2 on review, and
   it is exercised rather than speculative: the migration creates it, the seed upserts into it, the
@@ -1556,3 +1569,58 @@ the agent factory's first canary run (OpenCode, `opencode-go/glm-5.3`).
   runtime because jest transpiles without checking, and the bare call only stringified `undefined`
   into the seller's name and slug. Cost if wrong: revert one line.
 
+
+---
+
+## Body-parser rejections leave as their real 4xx, and no 4xx claims to be INTERNAL — 2026-10-24
+
+**Claim:** every failure the error filter sends matches the contract's `ErrorEnvelope` at compile time.
+A request body-parser refuses (body over the limit, unsupported charset) gets its own 413/415 instead
+of a 500 and an error-level stack trace. A 4xx with no code of its own gets the new
+`ErrorCodes.CLIENT_ERROR` instead of `INTERNAL`. `message` is always a string, and no 5xx — thrown
+or not — sends its own text or details to the caller.
+**Branches:** `refactor/error-filter-to-common` (the move), with `fix/error-envelope-client-errors`
+stacked on it.
+
+### Found
+
+Before this change, on `main`, a scratch e2e (deleted) against `configureApp`:
+
+| Request | Status · code |
+|---|---|
+| malformed JSON | 400 · `VALIDATION_ERROR` |
+| JSON body over 100 KiB | **500 · `INTERNAL`**, plus a `PayloadTooLargeError` stack logged at error level |
+| `charset=klingon` | **500 · `INTERNAL`**, plus an `UnsupportedMediaTypeError` stack |
+
+body-parser throws `http-errors` objects (`status`, `expose`), not `HttpException`s, so the filter
+treated them as server bugs.
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The bugs, red first | `pnpm --filter api exec jest src/common/filters` · `pnpm --filter api exec jest --config ./test/jest-e2e.json test/validation.e2e-spec.ts` | before the fix: unit **3 failed** / 7 (unlisted 4xx → `CLIENT_ERROR`, a list of messages → one string, body-parser 413); e2e **2 failed** / 6 (413, 415) |
+| Review round, red first | same unit command, after the reviewer's findings | **2 failed** / 12: a `ServiceUnavailableException` sent its message and details out; an `HttpException` with a `null` body threw inside the filter |
+| …and green after | same two commands | unit **12/12**, e2e **6/6** — the 413 case also proves an inbound `x-request-id` survives a parser rejection |
+| The move changed nothing | `pnpm --filter api run lint`, `typecheck`, `exec jest`, `test:e2e` on the move commit alone, PR 2's work stashed | clean, clean, 122/122, 125/125 |
+| The contract change was deliberate | `@app/contracts` › "keeps the code set closed and stable" | went red on `CLIENT_ERROR`, as it was written to; the expected list now includes it |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build --force` | **37/37 tasks** (api 131 unit / 128 e2e / 106 integration / 5 concurrency; web 145; contracts 96; worker 19 + 6) |
+
+### Delivered
+
+- `apps/api/src/filters/` → `apps/api/src/common/filters/`, where AGENTS.md puts shared non-module code.
+- `error-envelope.dto.ts` deleted: nothing imported it, and importing it would have registered
+  `ErrorEnvelopeSchema` a second time, which makes `cleanupOpenApiDoc` throw (see the comment in
+  `packages/contracts/src/health.ts`).
+- The filter builds an `ErrorEnvelope`, uses Nest's own `HttpException.message` in place of an
+  unchecked cast, uses `instanceof ZodError` in place of a cast, and looks status codes up in a table
+  (`error-envelope.constants.ts`) that also names the messages and the logger context.
+
+### Not proven / deferred
+
+- **Only body-parser errors are trusted on `expose`.** Any error carrying `expose: true` with a 4xx
+  `status` gets that status and message. Nothing else in the API throws `http-errors` today, so this
+  is the library's guarantee, not something we tested beyond body-parser.
+- **`ErrorEnvelopeSchema.code` is still `z.string()`**, not the `ErrorCodes` enum, so a client parsing
+  the envelope does not learn about `CLIENT_ERROR` from the schema.
+- **`apps/api/src/http/cors-origins.ts`** is shared non-module code in a top-level folder too; not moved here.

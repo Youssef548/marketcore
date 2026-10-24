@@ -34,6 +34,8 @@ export const ErrorCodes = {
   NOT_FOUND: 'NOT_FOUND',
   CONFLICT: 'CONFLICT',
   TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS',
+  /** Any other 4xx (413, 415, …): the caller's fault, but with no code of its own. */
+  CLIENT_ERROR: 'CLIENT_ERROR',
   INTERNAL: 'INTERNAL',
 } as const;
 export type ErrorCode = keyof typeof ErrorCodes;
