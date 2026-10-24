@@ -7,7 +7,7 @@ import {
   providerOperationKey,
   simulatedProviderRef,
   simulatorVerdict,
-} from '../src/payments';
+} from '../../src/checkout/payments';
 
 describe('the provider operation key (ADR 004, D104)', () => {
   it('is derived from the checkout, so a retry in any process is the same operation', () => {

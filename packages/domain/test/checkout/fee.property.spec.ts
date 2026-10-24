@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { BPS_DENOMINATOR, PLATFORM_FEE_BPS, splitPlatformFee } from '../src/fee';
+import { BPS_DENOMINATOR, PLATFORM_FEE_BPS, splitPlatformFee } from '../../src/checkout/fee';
 
 // Int column ceiling: Order.totalMinor is a 32-bit Int (domain-model §3).
 const total = fc.integer({ min: 0, max: 2_147_483_647 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { checkoutRequestFingerprint } from '../src/idempotency';
+import { checkoutRequestFingerprint } from '../../src/checkout/idempotency';
 
 const linesOf = (lines: readonly { productId: string; quantity: number; unitPriceMinor: number }[]) =>
   lines as unknown as Parameters<typeof checkoutRequestFingerprint>[0];

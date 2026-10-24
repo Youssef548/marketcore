@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SLUG_MAX_LENGTH, SLUG_PATTERN } from '@app/contracts';
-import { slugify } from '../src/slug';
+import { slugify } from '../../src/tenancy/slug';
 
 describe('slugify', () => {
   it('turns a name into something the contract accepts', () => {

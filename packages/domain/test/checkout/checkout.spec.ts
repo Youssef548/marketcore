@@ -8,8 +8,8 @@ import {
   sameLines,
   singleCurrency,
   sumLineTotals,
-} from '../src/checkout';
-import type { LockedLineState } from '../src/checkout';
+} from '../../src/checkout/checkout';
+import type { LockedLineState } from '../../src/checkout/checkout';
 
 const state = (lines: LockedLineState[]) => new Map(lines.map((line) => [line.productId, line]));
 const open = (productId: string, available: number, currentUnitPriceMinor: number) => ({

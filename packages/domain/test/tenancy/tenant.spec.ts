@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MemberRoles } from '@app/contracts';
-import { buildTenantContext, tenantScope } from '../src/tenant';
+import { buildTenantContext, tenantScope } from '../../src/tenancy/tenant';
 
 describe('buildTenantContext', () => {
   it('carries the organization and the role the guard resolved', () => {

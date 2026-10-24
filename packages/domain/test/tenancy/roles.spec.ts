@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MemberRoles } from '@app/contracts';
-import { canManageMembership } from '../src/roles';
+import { canManageMembership } from '../../src/tenancy/roles';
 
 describe('role rules', () => {
   it('lets only an owner manage membership', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PASSWORD_MIN_LENGTH, PasswordPolicyViolations, checkPasswordPolicy } from '../src/password';
+import { PASSWORD_MIN_LENGTH, PasswordPolicyViolations, checkPasswordPolicy } from '../../src/auth/password';
 
 describe('checkPasswordPolicy', () => {
   it('accepts a password at the minimum length', () => {

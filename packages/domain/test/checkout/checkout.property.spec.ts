@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import { CART_LINE_MAX_QUANTITY, CheckoutConflictReasons } from '@app/contracts';
-import { evaluateCheckoutLines, groupBySeller, sumLineTotals } from '../src/checkout';
+import { evaluateCheckoutLines, groupBySeller, sumLineTotals } from '../../src/checkout/checkout';
 
 const line = fc.record({
   productId: fc.uuid(),
