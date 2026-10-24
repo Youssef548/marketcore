@@ -10,6 +10,7 @@
 // reading a middleware to find it.
 export * from './config/env';
 export * from './constants';
+export * from './http/header';
 export * from './http/request-id.middleware';
 export * from './http/request-logger.middleware';
 export * from './http/request.interface';

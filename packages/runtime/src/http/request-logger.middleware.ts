@@ -1,11 +1,7 @@
 import { FORWARDED_FOR_HEADER, FORWARDED_PROTO_HEADER } from '@app/contracts';
+import { firstHeaderValue } from './header';
 import { getRequestId } from './request-id.middleware';
 import type { HttpMiddleware, RequestLogFields, RequestLogSink } from './request.interface';
-
-/** Express gives a repeated header as an array; the first value is the one that counts. */
-function firstValue(header: string | string[] | undefined): string | undefined {
-  return Array.isArray(header) ? header[0] : header;
-}
 
 /**
  * One structured line per completed request, carrying the request id. This is
@@ -34,9 +30,9 @@ export function requestLoggerMiddleware(log: RequestLogSink): HttpMiddleware {
         path: req.originalUrl ?? req.url,
         status: res.statusCode,
         durationMs: Math.round(elapsedMs * 1000) / 1000,
-        host: firstValue(req.headers.host),
-        forwardedProto: firstValue(req.headers[FORWARDED_PROTO_HEADER]),
-        forwardedFor: firstValue(req.headers[FORWARDED_FOR_HEADER]),
+        host: firstHeaderValue(req.headers.host),
+        forwardedProto: firstHeaderValue(req.headers[FORWARDED_PROTO_HEADER]),
+        forwardedFor: firstHeaderValue(req.headers[FORWARDED_FOR_HEADER]),
       };
       log(fields);
     });
