@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { createLogger } from '@app/runtime';
+import { OrdersModule } from '../orders/orders.module';
 import { PaymentService } from './payment.service';
+import { PaymentsController } from './payments.controller';
 import { PAYMENTS_LOGGER, PAYMENT_PROVIDER, PROVIDER_CHARGE_STORE } from './payments.constants';
 import { PaymentRepository } from './repositories/payment.repository';
 import { ProviderChargeRepository } from './repositories/provider-charge.repository';
@@ -15,6 +17,8 @@ import { SimulatorPaymentProvider } from './simulator-payment.provider';
  * around the adapter.
  */
 @Module({
+  imports: [OrdersModule],
+  controllers: [PaymentsController],
   providers: [
     { provide: PAYMENTS_LOGGER, useFactory: () => createLogger('payments') },
     ProviderChargeRepository,

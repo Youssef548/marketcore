@@ -17,5 +17,8 @@ import { CheckoutRepository } from './repositories/checkout.repository';
     BuyerOrdersRepository,
     BuyerOrdersService,
   ],
+  // The payments module answers a capture with the checkout, so it reads through this
+  // service rather than reaching into the orders tables of its own.
+  exports: [CheckoutService],
 })
 export class OrdersModule {}
