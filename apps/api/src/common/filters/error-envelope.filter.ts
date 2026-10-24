@@ -16,23 +16,8 @@ import {
   ERROR_FILTER_LOGGER_CONTEXT,
   ErrorEnvelopeMessages,
 } from './error-envelope.constants';
-
-/** A failure classified, before the request id turns it into an envelope. */
-interface Failure {
-  status: number;
-  code: ErrorCode;
-  message: string;
-  details?: unknown;
-}
-
-/**
- * What body-parser throws, and anything else built on `http-errors`. `expose`
- * is that library's own verdict that the message is safe to show the caller.
- */
-interface ExposedHttpError extends Error {
-  status: number;
-  expose: true;
-}
+import type { ExposedHttpError } from './interfaces/exposed-http-error.interface';
+import type { Failure } from './interfaces/failure.interface';
 
 /**
  * The only way a failure leaves the API. Clients get a stable machine-readable
