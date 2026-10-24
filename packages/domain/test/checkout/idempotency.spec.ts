@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { byLockOrder } from '../src/checkout';
-import { checkoutRequestFingerprint } from '../src/idempotency';
+import { byLockOrder } from '../../src/checkout/checkout';
+import { checkoutRequestFingerprint } from '../../src/checkout/idempotency';
 import type { CheckoutLineRequest } from '@app/contracts';
 
 const line = (productId: string, quantity = 1, unitPriceMinor = 100): CheckoutLineRequest => ({

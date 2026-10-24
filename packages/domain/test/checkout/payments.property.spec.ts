@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { SimulatorVerdicts, simulatorVerdict } from '../src/payments';
+import { SimulatorVerdicts, simulatorVerdict } from '../../src/checkout/payments';
 
 /**
  * The verdict is a rule, so the properties that matter are totality and stability: every

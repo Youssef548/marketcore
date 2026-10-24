@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ProductStatuses } from '@app/contracts';
-import { ProductTransitionOutcomes, planProductTransition } from '../src/product';
+import { ProductTransitionOutcomes, planProductTransition } from '../../src/catalog/product';
 
 describe('planProductTransition', () => {
   it('allows publishing a priced draft', () => {

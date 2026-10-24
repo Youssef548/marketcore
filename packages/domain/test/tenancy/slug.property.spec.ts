@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import { SLUG_MAX_LENGTH, SLUG_PATTERN } from '@app/contracts';
-import { slugify } from '../src/slug';
+import { slugify } from '../../src/tenancy/slug';
 
 /**
  * Random generation cannot reach the case that matters here. The interesting input

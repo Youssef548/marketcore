@@ -4,7 +4,7 @@ import {
   StatusTransitionOutcomes,
   planCheckoutTransition,
   planOrderTransition,
-} from '../src/order';
+} from '../../src/checkout/order';
 
 /**
  * The legal edges, and only these: the worker's auto-cancel (D70) and the capture (phase 6).

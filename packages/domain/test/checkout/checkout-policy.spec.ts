@@ -5,7 +5,7 @@ import {
   AUTO_CANCEL_INTERVAL_MS,
   CHECKOUT_PAYMENT_WINDOW_MS,
   checkoutExpiresAt,
-} from '../src/checkout-policy';
+} from '../../src/checkout/checkout-policy';
 
 describe('auto-cancel policy (D70, D79)', () => {
   it('runs every 60 seconds and cancels at most 100 per run', () => {

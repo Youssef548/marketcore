@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import { RefreshTokenVerdicts } from '../src/refresh-token';
-import type { RefreshTokenState } from '../src/refresh-token.interface';
-import { decideRefreshTokenUse } from '../src/refresh-token';
+import { RefreshTokenVerdicts } from '../../src/auth/refresh-token';
+import type { RefreshTokenState } from '../../src/auth/refresh-token.interface';
+import { decideRefreshTokenUse } from '../../src/auth/refresh-token';
 
 /**
  * These properties encode the *precedence* the module documents, which is the part

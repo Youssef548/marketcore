@@ -5,7 +5,7 @@ import {
   MIN_PUBLISHABLE_PRICE_MINOR,
   ProductTransitionOutcomes,
   planProductTransition,
-} from '../src/product';
+} from '../../src/catalog/product';
 
 const status = fc.constantFrom(...wireValues(ProductStatuses));
 

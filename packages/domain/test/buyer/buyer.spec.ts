@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MemberRoles } from '@app/contracts';
-import { buildBuyerContext, buyerScope } from '../src/buyer';
-import { buildTenantContext, tenantScope } from '../src/tenant';
+import { buildBuyerContext, buyerScope } from '../../src/buyer/buyer';
+import { buildTenantContext, tenantScope } from '../../src/tenancy/tenant';
 
 describe('buildBuyerContext', () => {
   it('carries the authenticated user as the buyer', () => {

@@ -3,7 +3,7 @@ import {
   RefreshTokenVerdicts,
   decideRefreshTokenUse,
   type RefreshTokenState,
-} from '../src/refresh-token';
+} from '../../src/auth/refresh-token';
 
 const now = new Date('2026-09-19T12:00:00.000Z');
 const future = new Date('2026-10-19T12:00:00.000Z');

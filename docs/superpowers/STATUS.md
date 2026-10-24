@@ -1678,3 +1678,35 @@ moved in the api-tests slice.
 - **Inline shapes that are not declarations are untouched in tests.** `NAMED_SHAPES` (literal unions,
   inline object types) still applies to source only; a test's `property: 'backgroundColor' | 'color'`
   parameter stays as it is.
+
+## `packages/domain` grouped by business topic — 2026-10-24
+
+**Claim:** `packages/domain/src` and `test/` are one folder per business topic — `tenancy/`, `buyer/`,
+`checkout/`, `auth/`, `catalog/` — with each rule's `*.interface.ts` beside it, and nothing outside
+the package can tell: the public surface is still the single `@app/domain` entry point.
+**Branch:** `refactor/domain-topic-folders`.
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| A pure move | `git diff --cached -M --name-status` | 41 renames (21 at 100%, the rest only their import line) + `src/index.ts`; the only changed line that is not an import path is the `index.ts` header comment |
+| The package | `pnpm --filter @app/domain lint` · `typecheck` · `test` · `build` | exit 0 · exit 0 · **20 files / 105 tests** (the same 20 files) · `dist/src/<topic>/*.js` emitted |
+| Coverage gate still met | `pnpm --filter @app/domain test:coverage` | 90.94 / 97.89 / 92.85 / 90.94 against thresholds 81 / 91 / 83 / 81 |
+| Every consumer | `pnpm turbo run lint typecheck test build --force` | **37/37 tasks**, 0 cached |
+
+### Delivered
+
+- `tenancy/` tenant, roles, slug · `buyer/` buyer · `checkout/` checkout, checkout-policy, order, fee,
+  payments, idempotency · `auth/` password, refresh-token · `catalog/` product. `test/` mirrors it.
+- `slug.ts` sits in `tenancy/`, not `catalog/`: its one caller is `OrganizationService.create`, which
+  derives an organization's slug.
+- No config moved: Stryker mutates `src/**/*.ts`, `tsconfig` includes `src` and `test`, vitest uses
+  its default glob, and `package.json` exports only `"."` (no `@app/domain/...` deep import exists).
+
+### Not proven / deferred
+
+- **One PR of 42 files, over the 15-file limit — the user's call**, since every file is a rename.
+- **Stryker was not run.** Its `mutate` glob is unchanged and still matches every moved file.
+- **`checkout/` holds payments and fees.** When refunds, payouts or the ledger land, `payments/` is the
+  likely next folder.

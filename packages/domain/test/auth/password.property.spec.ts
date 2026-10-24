@@ -5,7 +5,7 @@ import {
   PASSWORD_MIN_LENGTH,
   PasswordPolicyViolations,
   checkPasswordPolicy,
-} from '../src/password';
+} from '../../src/auth/password';
 
 /**
  * The policy is a pair of boundaries, and a boundary is exactly the thing an
