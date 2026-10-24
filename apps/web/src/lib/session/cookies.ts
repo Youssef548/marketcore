@@ -17,15 +17,19 @@ export const SESSION_COOKIES = {
 /**
  * Whether cookies are marked `Secure`.
  *
- * An explicit variable rather than `NODE_ENV`, because the behavioural stack runs
- * the production build over real TLS while a developer runs the same build over
- * plain http on localhost. Keyed off `NODE_ENV` the `Secure` branch would be
- * unreachable in the one place able to assert it — and a `Secure` cookie on plain
- * http is silently dropped by the browser, which fails as "signed out at random"
- * rather than as an error.
+ * Secure by default in production, and overridable in either direction. The
+ * explicit variable wins when it is set — the behavioural stack sets it `true`, and a
+ * developer can set it `false` to run a production build over plain http on localhost
+ * without the browser silently dropping the cookie and failing as "signed out at
+ * random". When the variable is absent, production opts in rather than out: a
+ * deployment that forgets the flag still ships `Secure` cookies instead of sending
+ * the tokens in the clear.
  */
 export function cookiesAreSecure(): boolean {
-  return process.env.SESSION_COOKIE_SECURE === 'true';
+  const configured = process.env.SESSION_COOKIE_SECURE;
+  if (configured !== undefined) return configured === 'true';
+
+  return process.env.NODE_ENV === 'production';
 }
 
 /**

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { REFRESH_TOKEN_TTL_MS } from '@app/contracts';
 import {
   SESSION_COOKIES,
@@ -52,22 +52,33 @@ describe('session cookie attributes', () => {
 describe('cookiesAreSecure', () => {
   afterEach(() => {
     delete process.env.SESSION_COOKIE_SECURE;
+    vi.unstubAllEnvs();
   });
 
   it('is off when the environment says nothing, so local http works', () => {
     expect(cookiesAreSecure()).toBe(false);
   });
 
+  it('is on by default in production', () => {
+    // A deployment that forgets SESSION_COOKIE_SECURE must still get Secure cookies,
+    // not tokens in the clear. The default is the thing a missing flag used to break.
+    vi.stubEnv('NODE_ENV', 'production');
+    expect(cookiesAreSecure()).toBe(true);
+  });
+
   it('follows the explicit variable rather than the build environment', () => {
     // Read from its own variable on purpose. The behavioural stack runs the
     // production build over real TLS and a developer runs the same build over plain
-    // http, so inferring this from NODE_ENV would make the Secure branch unreachable
-    // in the only place that can assert it.
+    // http, so a set variable must decide — the default only fills a gap.
     process.env.SESSION_COOKIE_SECURE = 'true';
     expect(cookiesAreSecure()).toBe(true);
     expect(refreshCookieAttributes(cookiesAreSecure()).secure).toBe(true);
 
     process.env.SESSION_COOKIE_SECURE = 'false';
+    expect(cookiesAreSecure()).toBe(false);
+
+    // Explicit off still wins over a production build, for a local `next start`.
+    vi.stubEnv('NODE_ENV', 'production');
     expect(cookiesAreSecure()).toBe(false);
   });
 });
