@@ -1,5 +1,5 @@
 import type { ElementType } from 'react';
-import { CardVariants, type CardVariant } from './constants';
+import { CARD_DEFAULT_ELEMENT, CardVariants, type CardVariant } from './constants';
 import type { CardProps } from './interfaces/card.interface';
 
 const variants: Record<CardVariant, string> = {
@@ -14,12 +14,12 @@ const variants: Record<CardVariant, string> = {
  * The panel surface on a hairline. It sets the surface and nothing else: padding, width and
  * layout belong to what sits on it, so the caller passes them.
  */
-export function Card<E extends ElementType = 'div'>({
+export function Card<E extends ElementType = typeof CARD_DEFAULT_ELEMENT>({
   as,
   variant = CardVariants.PANEL,
   className = '',
   ...props
 }: CardProps<E>) {
-  const Component: ElementType = as ?? 'div';
+  const Component: ElementType = as ?? CARD_DEFAULT_ELEMENT;
   return <Component className={`${variants[variant]} ${className}`} {...props} />;
 }

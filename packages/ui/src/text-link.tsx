@@ -1,4 +1,5 @@
 import type { ElementType } from 'react';
+import { TEXT_LINK_DEFAULT_ELEMENT } from './constants';
 import type { TextLinkProps } from './interfaces/text-link.interface';
 
 /**
@@ -9,8 +10,8 @@ import type { TextLinkProps } from './interfaces/text-link.interface';
  * is a contrast pair `tokens.spec.ts` asserts, and the underline means the link does not rely
  * on colour alone (WCAG 1.4.1).
  */
-export function TextLink<E extends ElementType = 'a'>({ as, className = '', ...props }: TextLinkProps<E>) {
-  const Component: ElementType = as ?? 'a';
+export function TextLink<E extends ElementType = typeof TEXT_LINK_DEFAULT_ELEMENT>({ as, className = '', ...props }: TextLinkProps<E>) {
+  const Component: ElementType = as ?? TEXT_LINK_DEFAULT_ELEMENT;
   return (
     <Component className={`font-semibold text-action underline underline-offset-2 ${className}`} {...props} />
   );
