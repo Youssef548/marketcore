@@ -33,6 +33,28 @@ describe('safeRedirect', () => {
     expect(safeRedirect('//evil.test', CONSOLE)).toBe('/admin');
     expect(safeRedirect('\\/evil.test', CONSOLE)).toBe('/admin');
   });
+
+  it('refuses a backslash the URL parser reads as a separator', () => {
+    // The shape a prefix check cannot see: `/%5Cevil.test` decodes to `/\evil.test`,
+    // which starts with exactly one slash. The parser folds `\` into `/` for http
+    // schemes, so the value resolves to an authority on another host — the redirect
+    // lands off-site after the victim has typed real credentials here.
+    expect(safeRedirect('/\\evil.test', CONSOLE)).toBe('/admin');
+    expect(safeRedirect('/\\evil.test/verify', CONSOLE)).toBe('/admin');
+    expect(safeRedirect('/\\evil.test?next=/admin', CONSOLE)).toBe('/admin');
+  });
+
+  it('refuses a value whose control characters the parser strips', () => {
+    // Tabs and newlines are removed before parsing, so `/\t/evil.test` becomes
+    // `//evil.test` — again an authority, again not this site.
+    expect(safeRedirect('/\t/evil.test', CONSOLE)).toBe('/admin');
+    expect(safeRedirect('/\n/evil.test', CONSOLE)).toBe('/admin');
+  });
+
+  it('keeps a path, query and fragment it accepts', () => {
+    expect(safeRedirect('/admin?a=1#top', CONSOLE)).toBe('/admin?a=1#top');
+    expect(safeRedirect('/', CONSOLE)).toBe('/');
+  });
 });
 
 describe('messageFrom', () => {
