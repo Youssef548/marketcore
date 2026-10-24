@@ -125,8 +125,32 @@ describe('shared type declarations', () => {
     expect(rulesFired(result).filter((id) => id === 'no-restricted-syntax')).toHaveLength(2);
   });
 
-  it('allows a type derived from a value beside it, and a private type', async () => {
+  it('allows a type derived from a value beside it', async () => {
     const result = await lintFile('packages/pkg/src/derived-type.ts');
+    expect(result.fatalErrorCount).toBe(0);
+    expect(rulesFired(result)).not.toContain('no-restricted-syntax');
+  });
+
+  // An earlier version matched only exported declarations, and a written exception let
+  // private shapes stay in their files; they drifted there. Unexported is no exception now.
+  it('forbids a private interface or hand-written type in an implementation file', async () => {
+    const result = await lintFile('packages/pkg/src/private-shape.ts');
+    expect(result.fatalErrorCount).toBe(0);
+    expect(rulesFired(result).filter((id) => id === 'no-restricted-syntax')).toHaveLength(2);
+  });
+
+  it('forbids a shape declared inside a test file', async () => {
+    const result = await lintFile('packages/pkg/src/private-shape.integration-spec.ts');
+    expect(rulesFired(result).filter((id) => id === 'no-restricted-syntax')).toHaveLength(1);
+  });
+
+  it('forbids a shape declared in test support code outside src/', async () => {
+    const result = await lintFile('packages/pkg/test/support/helper.ts');
+    expect(rulesFired(result).filter((id) => id === 'no-restricted-syntax')).toHaveLength(1);
+  });
+
+  it('allows a test shape in an interfaces/ file', async () => {
+    const result = await lintFile('packages/pkg/test/support/interfaces/helper.interface.ts');
     expect(result.fatalErrorCount).toBe(0);
     expect(rulesFired(result)).not.toContain('no-restricted-syntax');
   });
@@ -155,6 +179,16 @@ describe('rules fire from a package-rooted config, as in every real package', ()
     const result = await lintFromPackage('src/exported-interface.ts');
     expect(rulesFired(result)).toContain('no-restricted-syntax');
   });
+
+  it('forbids a private shape outside an interfaces/ file', async () => {
+    const result = await lintFromPackage('src/private-shape.ts');
+    expect(rulesFired(result)).toContain('no-restricted-syntax');
+  });
+
+  it('forbids a shape in test support code', async () => {
+    const result = await lintFromPackage('test/support/helper.ts');
+    expect(rulesFired(result)).toContain('no-restricted-syntax');
+  });
 });
 
 describe('named shapes', () => {
@@ -180,6 +214,10 @@ describe('named shapes', () => {
     const result = await lintFile('packages/pkg/src/allowed-shapes.ts');
     expect(result.fatalErrorCount).toBe(0);
     expect(restricted(result)).toHaveLength(0);
+
+    const tagged = await lintFile('packages/pkg/src/interfaces/outcome.interface.ts');
+    expect(tagged.fatalErrorCount).toBe(0);
+    expect(restricted(tagged)).toHaveLength(0);
   });
 
   it('fires from a package-rooted config', async () => {

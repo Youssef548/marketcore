@@ -5,6 +5,7 @@
  * test, so the conversion has to be inspectable here and must not move with a
  * library's next release. The matrices are Björn Ottosson's.
  */
+import type { Oklch, Rgb } from './interfaces/oklch.interface';
 
 const srgbToLinear = (channel: number): number =>
   channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
@@ -12,13 +13,7 @@ const srgbToLinear = (channel: number): number =>
 const linearToSrgb = (channel: number): number =>
   channel <= 0.0031308 ? channel * 12.92 : 1.055 * channel ** (1 / 2.4) - 0.055;
 
-export interface Oklch {
-  l: number;
-  c: number;
-  h: number;
-}
-
-export function oklchToRgb({ l, c, h }: Oklch): [number, number, number] {
+export function oklchToRgb({ l, c, h }: Oklch): Rgb {
   const radians = (h * Math.PI) / 180;
   const a = c * Math.cos(radians);
   const b = c * Math.sin(radians);
@@ -38,7 +33,7 @@ export function oklchToRgb({ l, c, h }: Oklch): [number, number, number] {
   ];
 }
 
-export function relativeLuminance([r, g, b]: [number, number, number]): number {
+export function relativeLuminance([r, g, b]: Rgb): number {
   return 0.2126 * srgbToLinear(r) + 0.7152 * srgbToLinear(g) + 0.0722 * srgbToLinear(b);
 }
 

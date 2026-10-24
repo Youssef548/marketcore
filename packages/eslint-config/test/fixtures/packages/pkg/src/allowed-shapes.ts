@@ -1,14 +1,11 @@
-// Shapes that stay: a const-object enum with its derived type, a union of keys passed to Omit, and
-// a tagged union whose literals are discriminants rather than options.
-const Sizes = { LG: 'lg', MD: 'md' } as const;
-type Size = (typeof Sizes)[keyof typeof Sizes];
+// Shapes that stay: a const-object enum with its derived type, and a union of keys passed to Omit.
+// The interface and the tagged union they use live in interfaces/, as every hand-written shape does.
+import type { Base } from './interfaces/base.interface';
+import type { Outcome } from './interfaces/outcome.interface';
 
-interface Base {
-  size: Size;
-  id: string;
-}
+const Sizes = { LG: 'lg', MD: 'md' } as const;
+export type Size = (typeof Sizes)[keyof typeof Sizes];
 
 type WithoutKeys = Omit<Base, 'size' | 'id'>;
-type Outcome = { kind: 'ok' } | { kind: 'failed'; reason: string };
 
 export const shapes: [Size, WithoutKeys, Outcome] | null = null;

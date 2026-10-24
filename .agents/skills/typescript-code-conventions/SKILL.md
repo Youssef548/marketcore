@@ -67,13 +67,15 @@ The same goes for a shape passed as a type argument: `PolymorphicProps<E, CardOw
 
 ## Rule 4 — Types live in `*.interface.ts`
 
-An exported, hand-written interface or type lives in a `<concern>.interface.ts` file, imported where
-it is used — in an `interfaces/` folder beside the code in an app or `packages/ui`, or beside its code
-as `packages/domain` and `packages/runtime` keep them. A package's entry point re-exports it.
+Every hand-written interface or type — **exported or not, in source or in a test** — lives in a
+`<concern>.interface.ts` file, imported where it is used: in an `interfaces/` folder beside the code
+in an app, a test directory or `packages/ui`, or beside its code as `packages/domain` and
+`packages/runtime` keep them. A package's entry point re-exports the exported ones.
 
-Two shapes stay where they are: a type **derived** from a value beside it (`z.infer<typeof Schema>`,
-`(typeof X)[keyof typeof X]`), so the type cannot drift from its source; and an **unexported** type,
-which belongs to its file — still named (Rule 3).
+One shape stays where it is: a type **derived** from a value beside it (`z.infer<typeof Schema>`,
+`(typeof X)[keyof typeof X]`), so the type cannot drift from its source. There is no exception for a
+private type: an earlier version had one, lint checked only exported declarations, and private
+shapes drifted into implementation and test files until a review caught them (2026-10-24).
 
 If a `constants.ts` and an interface file both export one name and the entry point does
 `export * from` both, TypeScript fails with a duplicate export: export each name from one place.

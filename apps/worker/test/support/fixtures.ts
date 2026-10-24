@@ -1,16 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import { CurrencyCodes, ProductStatuses, type CurrencyCode } from '@app/contracts';
+import { CurrencyCodes, ProductStatuses } from '@app/contracts';
 import { PrismaClient } from '@app/database';
+import type { FixtureLine, ProductFixture } from './interfaces/fixtures.interface';
 
 export const prisma: PrismaClient = new PrismaClient();
-
-export interface ProductFixture {
-  id: string;
-  organizationId: string;
-  name: string;
-  priceMinor: number;
-  currency: CurrencyCode;
-}
 
 const suffix = () => randomUUID().slice(0, 8);
 
@@ -38,7 +31,7 @@ export async function stockedProduct(available: number, organizationId?: string)
  */
 export async function placedCheckout(
   placedAt: Date,
-  lines: { product: ProductFixture; quantity: number }[],
+  lines: FixtureLine[],
 ): Promise<{ checkoutId: string }> {
   const buyer = await prisma.user.create({
     data: { email: `wk-${randomUUID()}@marketcore.test`, passwordHash: 'x' },

@@ -1,21 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { LogLevels, createLogger, type LogLevelName } from '@app/runtime';
-import { startWorker, type WorkerLogger } from './main';
+import { LogLevels, createLogger } from '@app/runtime';
+import { startWorker } from './main';
+import type { CapturedWorkerLog, PrintedLine } from './interfaces/main.interface';
 import { WORKER_LOGGER_CONTEXT, WorkerLogEvents } from './worker.constants';
 
-/** A line this process would have printed, captured through the logger's injected sink. */
-interface CapturedLine {
-  line: string;
-  level: LogLevelName;
-}
-
-function captureLogger(): { logger: WorkerLogger; lines: CapturedLine[] } {
-  const lines: CapturedLine[] = [];
+function captureLogger(): CapturedWorkerLog {
+  const lines: PrintedLine[] = [];
   const logger = createLogger(WORKER_LOGGER_CONTEXT, (line, level) => lines.push({ line, level }));
   return { logger, lines };
 }
 
-const failLines = (lines: CapturedLine[]) =>
+const failLines = (lines: PrintedLine[]) =>
   lines.filter(({ line }) => line.includes(WorkerLogEvents.RUN_FAILED));
 
 describe('worker main wiring', () => {
