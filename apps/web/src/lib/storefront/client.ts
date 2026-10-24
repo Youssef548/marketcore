@@ -65,6 +65,12 @@ export const storefront = {
       json('POST', body, { [IDEMPOTENCY_KEY_HEADER]: idempotencyKey }),
     ),
   checkout: (id: string) => call(`/api/checkouts/${segment(id)}`, CheckoutSchema),
+  /**
+   * Paying is its own call rather than part of placing (D108). A declined charge and a cart
+   * that changed are different refusals for the buyer, and a combined endpoint would hide
+   * which of the two happened.
+   */
+  payCheckout: (id: string) => call(`/api/checkouts/${segment(id)}/pay`, CheckoutSchema, { method: 'POST' }),
   orders: (cursor?: string) => call(`/api/buyer/orders${cursorQuery(cursor)}`, BuyerOrderPageSchema),
   order: (id: string) => call(`/api/buyer/orders/${segment(id)}`, BuyerOrderSchema),
 };
