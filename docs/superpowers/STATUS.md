@@ -1556,3 +1556,70 @@ the agent factory's first canary run (OpenCode, `opencode-go/glm-5.3`).
   runtime because jest transpiles without checking, and the bare call only stringified `undefined`
   into the seller's name and slug. Cost if wrong: revert one line.
 
+---
+
+## Literal tag values compared through named constants — 2026-10-24 (BL-004, #147)
+
+**Claim:** every tag value the web app narrows on — the two themes, the session's four states, the
+route gate's three answers, the products page's three load states — exists once as a named constant,
+the tagged unions are built from those constants, and every comparison and construction passes the
+member rather than the string.
+**Branch:** `agent/147-bl-004-literal-values-still-compared-in` (issue #147, the agent factory).
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The skill's check 2, before | the `typescript-code-conventions` PCRE scan | **21 hits in the six files whose logic compared tags** — theme-toggle 6, chrome 4, store-frame 4, products page 4, middleware 2, `parseTheme` 1 — every one a tag value spelled inline |
+| The skill's check 2, after | same | **no comparison hit remains in any of them**; the residue is named-constant definitions (`routes.ts`, `payments.ts`, `THEME_COOKIE`), the reasoned `cookies.ts` env flag, CSS attribute selectors (reasoned where they stand), and the deferred ui element defaults below |
+| The constants are the wire values | `pnpm --filter web exec vitest run src/lib/theme src/lib/session/client.test.tsx` | the two new tests pass — `Themes` pins the spelling the cookie, the painted attribute and the token layer's selectors agree on; `SessionStatuses` pins the four arms, hand-written from the union as it was |
+| The tags did not drift | `pnpm --filter web exec vitest run src/lib/session/routing.test.ts` | 15 passed — the gate's decisions are still asserted with hand-written literals, the independent source |
+| Behaviour unchanged | `pnpm --filter web test` | **147 passed, 31 files** (145 before; +2), including chrome's 11 and store-frame's 3 narrowing tests |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **37/37 tasks, exit 0** — api unit, e2e, integration and concurrency against real PostgreSQL; web 147; worker, ui and the other packages |
+
+### Delivered
+
+- **`lib/theme/theme.ts`** — `Themes` (`{ LIGHT, DARK }`), `DEFAULT_THEME` derived from it,
+  `parseTheme` comparing the member, and `SetThemeRequestSchema` reading `z.enum(wireValues(Themes))`
+  — the same shape `@app/contracts` gives `ProductStatuses`, so the theme values exist exactly once.
+- **`lib/session/constants.ts`** — `SessionStatuses` and `RoutingDecisionKinds`; `SessionState` and
+  `RoutingDecision` are built from them (`{ status: typeof SessionStatuses.ANONYMOUS }`), and the
+  provider, the gate, both shells and the middleware pass the member at every construction and
+  comparison.
+- **`admin/products/page.tsx`** — a page-local `PageStates`, the `State` union built from it, every
+  construction and comparison through the member.
+- **`chrome.tsx` redirects through `LOGIN_PATH`** rather than a spelled `/login` — the line was
+  already being edited, and `routing.ts`'s own docstring says every URL the console serves is named
+  there once so a page and the gate cannot disagree.
+- **`cookies.ts`'s `SESSION_COOKIE_SECURE === 'true'` carries a written reason** — the environment's
+  own spelling of yes, read by one function, agreed with by nothing else in the app.
+
+### Findings
+
+1. **`import type { SessionStatuses }` plus `typeof SessionStatuses.LOADING` is legal, and it is the
+   whole trick**: a type-only import of a const still serves `typeof`, so the interface files build
+   their unions from the constants without importing a value. The unions stay tagged unions — their
+   arms carry different data, exactly the shape BL-003's exception protects — while their tags stop
+   being hand-written literals.
+2. **`THEMES` was a tuple, so "compare the `THEMES` constants" had no members to compare.** It is now
+   the const-object enum `Themes`, the repo's uniform option-set shape; `THEMES[0]` (positional)
+   became `DEFAULT_THEME` (named), which is what it always meant.
+3. **The strongest drift risk the new theme test pins sits outside TypeScript**: a cookie a browser
+   already holds, the `data-theme` attribute the server paints, and the token layer's
+   `[data-theme='dark']` selectors — none of which the compiler checks. The session and routing tags
+   have no consumer outside the app, and the routing tags are additionally pinned by
+   `routing.test.ts`'s hand-written literal assertions.
+
+### Not proven / deferred
+
+- **Four check-2 hits in `packages/ui` remain, deliberately**: the polymorphic generic defaults
+  `E extends ElementType = 'div'` / `= 'a'` in `card.tsx`, `text-link.tsx` and their two interface
+  files. They are React's own element names (Rule 7's framework vocabulary), compared nowhere — but
+  each default *is* repeated by the `as ?? 'div'` runtime fallback, and naming them (a per-component
+  member in `packages/ui/src/constants.ts`) is the honest fix. It did not fit this change's 15-file
+  limit beside the ticket's named scope. Cost if wrong: four small files, one follow-up ticket.
+- **The behavioural suite runs on the pull request, not here** (no Docker in the run): the
+  dark-theme journey — luminance, `data-theme` painting — is the end-to-end check that the constants
+  still spell what the CSS selects; the new theme test pins that spelling locally in its place.
+
+
