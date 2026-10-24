@@ -50,6 +50,8 @@ Use the lowest layer that can falsify the claim:
 - Database constraints and concurrency: integration tests with real PostgreSQL.
 - API status, guards, validation, and envelopes: API e2e tests.
 - TLS, cookies, real browser, proxy, host, and forwarded headers: behavioural Playwright tests.
+- Security claims: source trace plus a bounded local reproduction, never a checklist deviation. A finding only
+  the finder believes is a `needs_validation` lead, not a finding. See `security-audit` under Agent skills.
 - Whole-repo gate: `pnpm turbo run lint typecheck test build`.
 
 Common commands:
@@ -85,3 +87,19 @@ The five default roles; each label string equals its role name. See `docs/agents
 ### Domain docs
 
 Single-context: root `GLOSSARY.md`, `docs/domain-model.md` and `docs/adr/`. See `docs/agents/domain.md`.
+
+### Security audit
+
+`.agents/skills/security-audit` — Cloudflare's `security-audit` skill, installed per machine with `npx skills add`; it is
+not committed. Load it for a security question, a focused review, or a full audit; it stays in guidance mode unless the
+request is an explicit audit or asks for report artifacts. Provenance, modes and the artifact location are in
+`docs/agents/security-audit.md`.
+
+- A full audit writes its artifacts **outside** the repository (`~/security-audit-skill/<repo>/run-<N>`), never into
+  the source tree, and the skill itself does not modify target code.
+- The parent owns `findings.json`, the coverage ledger and the prose reports; agents only write their own `scratch/`.
+- Both validators must pass before any coverage claim: `validate-findings.cjs` and `validate-coverage-ledger.cjs`.
+- A `confirmed` record needs a full source trace, a bounded local reproduction, and an independent verifier who tried
+  to disprove it. Everything unresolved stays `needs_validation` with its exact blocker and no severity.
+- Deployment, proxy, provider and browser facts that are not in this repository are `needs_validation`, never an
+  assumed absence or presence. That includes anything the guard audit cannot see, such as middleware-mounted routes.
