@@ -1618,8 +1618,19 @@ member rather than the string.
   each default *is* repeated by the `as ?? 'div'` runtime fallback, and naming them (a per-component
   member in `packages/ui/src/constants.ts`) is the honest fix. It did not fit this change's 15-file
   limit beside the ticket's named scope. Cost if wrong: four small files, one follow-up ticket.
+- **One intermediate full-gate run failed `api#test`** — output not captured, so the failing test
+  is unknown. The task passed alone immediately after (106 unit / 125 e2e / 122 integration /
+  5 concurrency, exit 0) and the full gate passed on the repeat over the identical tree. Nothing in
+  this diff touches an API file, and #148 and BL-001 both record this task's flakiness under
+  `turbo run` parallelism against the one database.
 - **The behavioural suite runs on the pull request, not here** (no Docker in the run): the
   dark-theme journey — luminance, `data-theme` painting — is the end-to-end check that the constants
   still spell what the CSS selects; the new theme test pins that spelling locally in its place.
-
-
+- **Three adjacent literals found in review, none of them check-2 hits, recorded rather than
+  widened into this change:** the bare `401` in `client.tsx` (now carries a written reason on the
+  line this diff touched — the protocol's number, spelled bare everywhere the app reads it); the BFF
+  route strings `fetch('/api/session')` and its siblings, wire values the route handlers own
+  (untouched lines, backlog rather than this ticket); and the two shells' identical
+  loading→anonymous→failed cascade in `chrome.tsx` and `store-frame.tsx` — two sightings, but the
+  branches differ in copy, redirect target and admission rule, and a shared gate component is a
+  design decision (T-002 territory), not a naming ticket's.

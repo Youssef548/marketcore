@@ -36,6 +36,9 @@ async function readSession(): Promise<SessionState> {
     return { status: SessionStatuses.FAILED, message: SERVER_UNREACHABLE_MESSAGE };
   }
 
+  // 401 is the API's own word for "there is no session" — the protocol's number,
+  // spelled bare everywhere this app reads it, and the one status that is a
+  // refusal rather than a failure.
   if (response.status === 401) return { status: SessionStatuses.ANONYMOUS };
 
   if (!response.ok) {
