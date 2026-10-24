@@ -9,7 +9,7 @@ import {
   requestLoggerMiddleware,
   validateEnv,
 } from '@app/runtime';
-import { ErrorEnvelopeFilter } from './filters/error-envelope.filter';
+import { ErrorEnvelopeFilter } from './common/filters/error-envelope.filter';
 import { corsOptions } from './http/cors-origins';
 
 /**
