@@ -265,6 +265,11 @@
   .week[data-state="next"]    .state-note { background: var(--next-wash); color: var(--next); }
   .week[data-state="planned"] .state-note { background: var(--surface-sunk); color: var(--ink-mute); }
 
+  /* A week can carry two phases with different states — week 4 holds phase 5
+     closed and phase 6 open — so each phase gets its own note, and the merged
+     phase's note keeps the done colours inside an active week. */
+  .week[data-state="next"] .state-note--done { background: var(--done-wash); color: var(--done); }
+
   /* The target is the payload of this page, so it outranks everything but the
      theme in the hierarchy. */
   .target {
@@ -392,16 +397,17 @@
   </p>
 
   <div class="status">
-    <p class="count"><b>1</b> <span>/ 12 weeks merged</span></p>
+    <p class="count"><b>3</b> <span>/ 12 weeks merged</span></p>
     <p class="count-label">
-      Week 1 is on <code>main</code>, tagged <code>w01-foundation</code>, CI green. Weeks 1–4 are the
-      first milestone: if nothing else ships, that alone is a coherent story.
+      Phase 4 closed M1 on 2026-10-17 and phase 5 closed M2 on 2026-10-18; phase 6 — the first
+      payment — is underway. Weeks 1–4 are the first milestone: if nothing else ships, that alone
+      is a coherent story.
     </p>
   </div>
 
   <ul class="legend">
     <li><span class="key key--done" aria-hidden="true"></span> merged and verified</li>
-    <li><span class="key key--next" aria-hidden="true"></span> next to start</li>
+    <li><span class="key key--next" aria-hidden="true"></span> in progress</li>
     <li><span class="key key--planned" aria-hidden="true"></span> planned</li>
   </ul>
 
@@ -435,7 +441,7 @@
       </div>
     </li>
 
-    <li class="week" data-state="next">
+    <li class="week" data-state="done">
       <div class="ordinal">
         <span class="n">02 <small>week</small></span>
         <span class="node" aria-hidden="true"></span>
@@ -445,7 +451,7 @@
         <p class="tagline">
           <span class="chip">phases 2–3</span>
           <span class="chip chip--milestone">first milestone</span>
-          <span class="state-note">next</span>
+          <span class="state-note">merged</span>
         </p>
         <dl class="target">
           <dt>Target</dt>
@@ -462,7 +468,7 @@
       </div>
     </li>
 
-    <li class="week" data-state="planned">
+    <li class="week" data-state="done">
       <div class="ordinal">
         <span class="n">03 <small>week</small></span>
         <span class="node" aria-hidden="true"></span>
@@ -472,7 +478,7 @@
         <p class="tagline">
           <span class="chip">phase 4</span>
           <span class="chip chip--milestone">first milestone</span>
-          <span class="state-note">planned</span>
+          <span class="state-note">merged</span>
         </p>
         <dl class="target">
           <dt>Target</dt>
@@ -488,7 +494,7 @@
       </div>
     </li>
 
-    <li class="week" data-state="planned">
+    <li class="week" data-state="next">
       <div class="ordinal">
         <span class="n">04 <small>week</small></span>
         <span class="node" aria-hidden="true"></span>
@@ -498,7 +504,8 @@
         <p class="tagline">
           <span class="chip">phases 5–6</span>
           <span class="chip chip--milestone">first milestone</span>
-          <span class="state-note">planned</span>
+          <span class="state-note state-note--done">phase 5 merged</span>
+          <span class="state-note">phase 6 in progress</span>
         </p>
         <dl class="target">
           <dt>Target</dt>
