@@ -6,6 +6,7 @@ import {
   CheckoutStatuses,
   CurrencyCodes,
   OrderStatuses,
+  POSTGRES_INT_MAX,
 } from '../src/constants';
 import {
   CheckoutConflictDetailsSchema,
@@ -28,6 +29,23 @@ describe('CreateCheckoutRequestSchema (SRS-FR-CHK-001, §7)', () => {
   });
   it('refuses the same product twice', () => {
     expect(CreateCheckoutRequestSchema.safeParse({ lines: [line('a'), line('a')] }).success).toBe(false);
+  });
+  it('refuses a total the database cannot store', () => {
+    // The columns are INTEGER, the price may be up to POSTGRES_INT_MAX and quantity up
+    // to 10, so a line total can exceed the column by an order of magnitude. Refusing
+    // it here is a 400 before the transaction; the service cannot fix it later because
+    // it stores the same arithmetic.
+    const overflowing = { productId: 'a', quantity: 2, unitPriceMinor: POSTGRES_INT_MAX };
+    expect(CreateCheckoutRequestSchema.safeParse({ lines: [overflowing] }).success).toBe(false);
+
+    const exactlyFits = { productId: 'a', quantity: 1, unitPriceMinor: POSTGRES_INT_MAX };
+    expect(CreateCheckoutRequestSchema.safeParse({ lines: [exactlyFits] }).success).toBe(true);
+  });
+  it('refuses a total that only overflows across lines', () => {
+    const half = Math.floor(POSTGRES_INT_MAX / 2) + 1;
+    const lines = [1, 2].map((n) => ({ productId: `p${n}`, quantity: 1, unitPriceMinor: half }));
+
+    expect(CreateCheckoutRequestSchema.safeParse({ lines }).success).toBe(false);
   });
   it.each([
     { quantity: 11 },
