@@ -1,14 +1,17 @@
 import type { ReactNode } from 'react';
 import type { Organization, UserSummary } from '@app/contracts';
 import type { SessionView } from '../session';
+import type { SessionStatuses } from '../constants';
 
+// Built from the constants beside it, so the tags a shell narrows on and the tags
+// the provider constructs are the same values by construction, not by agreement.
 export type SessionState =
-  | { status: 'loading' }
+  | { status: typeof SessionStatuses.LOADING }
   /** A refusal: there is no session. Distinct from a failure to ask. */
-  | { status: 'anonymous' }
+  | { status: typeof SessionStatuses.ANONYMOUS }
   /** The server could not be reached, or answered something unusable. */
-  | { status: 'failed'; message: string }
-  | { status: 'ready'; session: SessionView };
+  | { status: typeof SessionStatuses.FAILED; message: string }
+  | { status: typeof SessionStatuses.READY; session: SessionView };
 
 /**
  * The session a signed-in subtree may rely on.

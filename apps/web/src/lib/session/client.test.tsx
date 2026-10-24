@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import type { SessionView } from './session';
+import { SessionStatuses } from './constants';
 import { ReadySessionProvider, useReadySession } from './client';
 
 const SESSION: SessionView = {
@@ -39,6 +40,21 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+});
+
+describe('the session\u2019s states', () => {
+  it('names the four states once, so the two shells and the provider agree', () => {
+    // The tags are the vocabulary of every narrowing in the app — the console shell,
+    // the storefront frame and the provider itself — and the union is built from
+    // these constants. Hand-written here, from the arms the states have always had,
+    // so a tag renamed by accident cannot pass silently.
+    expect(Object.values(SessionStatuses)).toEqual([
+      'loading',
+      'anonymous',
+      'failed',
+      'ready',
+    ]);
+  });
 });
 
 describe('the ready session', () => {

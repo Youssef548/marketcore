@@ -1,4 +1,5 @@
 import type { RoutingDecision } from './interfaces/routing.interface';
+import { RoutingDecisionKinds } from './constants';
 
 /**
  * Where a visitor goes, as a decision with no Next in it.
@@ -80,18 +81,18 @@ export function decideRoute(pathname: string, signedIn: boolean): RoutingDecisio
   // *then*, so the `next` the visitor comes back to is an address that lives.
   const moved = movedTo(pathname);
   if (moved !== null) {
-    return { kind: 'moved', to: moved };
+    return { kind: RoutingDecisionKinds.MOVED, to: moved };
   }
 
   if (!signedIn && isProtected(pathname)) {
-    return { kind: 'redirect', to: `${LOGIN_PATH}?next=${encodeURIComponent(pathname)}` };
+    return { kind: RoutingDecisionKinds.REDIRECT, to: `${LOGIN_PATH}?next=${encodeURIComponent(pathname)}` };
   }
 
   // A signed-in visitor has no use for the credential pages; the API would refuse
   // the login they submitted anyway.
   if (signedIn && isCredentialPage(pathname)) {
-    return { kind: 'redirect', to: STOREFRONT_PATH };
+    return { kind: RoutingDecisionKinds.REDIRECT, to: STOREFRONT_PATH };
   }
 
-  return { kind: 'next' };
+  return { kind: RoutingDecisionKinds.NEXT };
 }
