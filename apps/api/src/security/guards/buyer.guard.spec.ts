@@ -1,11 +1,10 @@
 import type { ExecutionContext } from '@nestjs/common';
 import { buildBuyerContext } from '@app/domain';
 import { SecurityMetadata } from '../security.constants';
+import type { GuardRequest } from '../interfaces/guard-request.interface';
 import { BuyerGuard } from './buyer.guard';
 
-type Request = { user?: { id: string }; buyer?: unknown };
-
-const contextFor = (request: Request) =>
+const contextFor = (request: GuardRequest) =>
   ({
     switchToHttp: () => ({ getRequest: () => request }),
     getHandler: () => ({}),
@@ -21,21 +20,21 @@ const guardFor = (marks: { isPublic?: boolean; tenantFree?: boolean }) =>
 
 describe('BuyerGuard (D75)', () => {
   it('builds the buyer from the authenticated user on a tenant-free route', () => {
-    const request: Request = { user: { id: 'user_1' } };
+    const request: GuardRequest = { user: { id: 'user_1' } };
 
     expect(guardFor({ tenantFree: true }).canActivate(contextFor(request))).toBe(true);
     expect(request.buyer).toEqual(buildBuyerContext('user_1'));
   });
 
   it('builds nothing on a tenant route, so @Buyer() cannot be used there', () => {
-    const request: Request = { user: { id: 'user_1' } };
+    const request: GuardRequest = { user: { id: 'user_1' } };
 
     expect(guardFor({ tenantFree: false }).canActivate(contextFor(request))).toBe(true);
     expect(request.buyer).toBeUndefined();
   });
 
   it('builds nothing on a public route', () => {
-    const request: Request = {};
+    const request: GuardRequest = {};
 
     expect(guardFor({ isPublic: true, tenantFree: true }).canActivate(contextFor(request))).toBe(true);
     expect(request.buyer).toBeUndefined();

@@ -1,8 +1,6 @@
-// Types that stay beside their source: derived from a value in this file, or private to it.
+// The one shape that stays beside its source: a type derived from a value in this file.
 const Sizes = { LG: 'lg', MD: 'md' } as const;
 
 export type SizeName = (typeof Sizes)[keyof typeof Sizes];
 
-type Local = { size: SizeName };
-
-export const fallback: Local = { size: Sizes.MD };
+export const fallback: SizeName = Sizes.MD;

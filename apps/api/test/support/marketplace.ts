@@ -8,25 +8,12 @@ import {
 } from '@app/contracts';
 import { TokenService } from '../../src/auth/token.service';
 import { testPrisma } from './db';
+import type { ProductFixture, SellerFixture } from './interfaces/marketplace.interface';
 
 const suffix = (): string => randomUUID().slice(0, 8);
 
 /** Placeholder hash: these users never log in, they are handed a signed token. */
 const UNUSABLE_PASSWORD_HASH = 'x';
-
-export interface SellerFixture {
-  organizationId: string;
-  name: string;
-  slug: string;
-}
-
-export interface ProductFixture {
-  id: string;
-  organizationId: string;
-  name: string;
-  priceMinor: number;
-  currency: CurrencyCode;
-}
 
 export async function createSeller(prefix: string): Promise<SellerFixture> {
   const organization = await testPrisma.organization.create({

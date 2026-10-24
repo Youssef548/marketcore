@@ -1,8 +1,9 @@
 import { EventEmitter } from 'node:events';
 import { describe, expect, it, vi } from 'vitest';
-import type { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request } from 'express';
 import { FORWARDED_FOR_HEADER, FORWARDED_PROTO_HEADER } from '@app/contracts';
 import { requestLoggerMiddleware } from './request-logger.middleware';
+import type { FakeResponse } from './request-logger.spec.interface';
 
 function fakeReq(
   requestId?: string,
@@ -15,8 +16,6 @@ function fakeReq(
     headers,
   } as unknown as Request;
 }
-
-type FakeResponse = Response & EventEmitter & { writableFinished: boolean };
 
 function fakeRes(statusCode = 201): FakeResponse {
   const emitter = new EventEmitter() as FakeResponse;

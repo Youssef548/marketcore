@@ -18,8 +18,8 @@ import {
   createBuyer,
   createProduct,
   createSeller,
-  type ProductFixture,
 } from '../support/marketplace';
+import type { ProductFixture } from '../support/interfaces/marketplace.interface';
 
 afterAll(async () => {
   await testPrisma.$disconnect();

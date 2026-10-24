@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { OrganizationSchema, TokenPairSchema } from '@app/contracts';
 import { credentials, organizationPayload, TEST_PASSWORD, unique } from '../support/fixtures';
+import type { Rgb } from './interfaces/web-journey.interface';
 
 const API = '/api/v1';
 
@@ -21,7 +22,6 @@ const WEB = 'https://web.marketcore.test:8443';
  * how the assertions below passed while measuring nothing. `fillStyle` parses any
  * colour syntax and `getImageData` returns the bytes the screen would show.
  */
-type Rgb = [number, number, number];
 
 function bodyColour(page: Page, property: 'backgroundColor' | 'color'): Promise<Rgb> {
   return page.evaluate((prop) => {

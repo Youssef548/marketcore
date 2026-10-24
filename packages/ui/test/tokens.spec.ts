@@ -1,7 +1,8 @@
 // @vitest-environment node
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { contrastRatio, oklchToRgb, relativeLuminance, type Oklch } from './support/oklch';
+import { contrastRatio, oklchToRgb, relativeLuminance } from './support/oklch';
+import type { Oklch } from './support/interfaces/oklch.interface';
 
 const css = readFileSync(new URL('../src/tokens.css', import.meta.url), 'utf8').replace(
   /\/\*[\s\S]*?\*\//g,

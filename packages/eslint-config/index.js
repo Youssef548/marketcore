@@ -20,20 +20,21 @@ const COLOUR_LITERAL = {
     'A colour value belongs in the token layer (packages/ui/src/tokens.css), named for the job it does. A component names a role — bg-action, text-ink, border-rule — never a value.',
 };
 
-// An exported, hand-written shape lives in a `*.interface.ts` file — in an `interfaces/`
-// folder, or beside its code as `packages/domain` and `packages/runtime` keep them — so a reader finds every
-// shape in one place and an importer never reaches into an implementation file for one
-// (BL-001). Two shapes are allowed where they are, deliberately: a type derived from a
-// value beside it — `z.infer<typeof X>` is a type reference, `(typeof X)[keyof typeof X]`
-// an indexed access, neither matched below — because moving it would split a type from
-// its single source; and an unexported type, which belongs to its file.
+// Every hand-written shape lives in a `*.interface.ts` file — in an `interfaces/` folder, or
+// beside its code as `packages/domain` and `packages/runtime` keep them — so a reader finds every
+// shape in one place (BL-001). Exported or not, and in tests as well as source: an earlier
+// version matched only exported declarations and let private shapes drift into implementation
+// files under a written exception nobody meant. One shape is allowed where it is, deliberately:
+// a type derived from a value beside it — `z.infer<typeof X>` is a type reference,
+// `(typeof X)[keyof typeof X]` an indexed access, neither matched below — because moving it
+// would split a type from its single source.
 const SHARED_TYPE_MESSAGE =
-  'An exported interface or hand-written type belongs in a <concern>.interface.ts file (in an interfaces/ folder, or beside its code as packages/domain does), imported where it is used. Types derived from a value beside them (z.infer, typeof) stay where they are.';
+  'An interface or hand-written type, exported or not, belongs in a <concern>.interface.ts file (in an interfaces/ folder, or beside its code as packages/domain does), imported where it is used. Only types derived from a value beside them (z.infer, typeof) stay where they are.';
 const SHARED_TYPE_DECLARATIONS = [
-  { selector: 'ExportNamedDeclaration > TSInterfaceDeclaration', message: SHARED_TYPE_MESSAGE },
+  { selector: 'TSInterfaceDeclaration', message: SHARED_TYPE_MESSAGE },
   {
     selector:
-      'ExportNamedDeclaration > TSTypeAliasDeclaration[typeAnnotation.type=/^(TSUnionType|TSIntersectionType|TSTypeLiteral|TSFunctionType|TSLiteralType|TSTupleType|TSMappedType)$/]',
+      'TSTypeAliasDeclaration[typeAnnotation.type=/^(TSUnionType|TSIntersectionType|TSTypeLiteral|TSFunctionType|TSLiteralType|TSTupleType|TSMappedType)$/]',
     message: SHARED_TYPE_MESSAGE,
   },
 ];
@@ -65,6 +66,8 @@ const NAMED_SHAPES = [
   },
 ];
 const INTERFACE_FILES = ['**/src/**/interfaces/**/*.ts', '**/src/**/*.interface.ts'];
+// Test code outside a `src/` tree: e2e suites, their support helpers, fixtures.
+const TEST_SUPPORT_FILES = ['**/test/**/*.{ts,tsx}', '**/tests/**/*.{ts,tsx}'];
 
 /**
  * The boundary rules: apps never import each other, packages never import an
@@ -194,6 +197,14 @@ export function defineConfig({ type, tsconfigRootDir, importRules = true, rootPa
     files: ['**/src/**/*.ts'],
     ignores: [...TEST_FILES, '**/interfaces/**', '**/*.interface.ts', '**/*.d.ts'],
     rules: { 'no-restricted-syntax': ['error', ...SHARED_TYPE_DECLARATIONS, ...NAMED_SHAPES] },
+  });
+  // Tests declare shapes too — a captured response, a fake request — and they belong in
+  // interfaces/ for the same reason. Only the placement rule applies here; the source blocks
+  // above ignore test files, so this block replaces nothing.
+  rules.push({
+    files: [...TEST_FILES, ...TEST_SUPPORT_FILES],
+    ignores: ['**/interfaces/**', '**/*.interface.ts', '**/*.d.ts'],
+    rules: { 'no-restricted-syntax': ['error', ...SHARED_TYPE_DECLARATIONS] },
   });
   // Interface files are where shared shapes belong, so only the shape rules apply to them —
   // in their own block, because a block that also matched them would replace this rule entry.
