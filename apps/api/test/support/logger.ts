@@ -1,13 +1,7 @@
-import type { LoggerService } from '@nestjs/common';
-
-export interface CapturedLine {
-  level: string;
-  event: unknown;
-  fields: Record<string, unknown>;
-}
+import type { CapturedLine, CapturingLogger } from './interfaces/logger.interface';
 
 /** A LoggerService that remembers what it was told, for asserting structured log lines. */
-export function captureLogger(): LoggerService & { lines: CapturedLine[] } {
+export function captureLogger(): CapturingLogger {
   const lines: CapturedLine[] = [];
   const at =
     (level: string) =>

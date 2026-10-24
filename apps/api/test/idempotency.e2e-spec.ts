@@ -16,6 +16,7 @@ import { expectContract } from './support/contracts';
 import { testPrisma } from './support/db';
 import { newTenant, publishedProduct, tenantHeaders } from './support/fixtures';
 import { availableOf, bearer, mintBuyers } from './support/marketplace';
+import type { PlacementLine } from './interfaces/idempotency.interface';
 
 /**
  * SRS-FR-CHK-008 on the wire: a retry is not a second checkout, and a key is not a lid.
@@ -45,14 +46,12 @@ describe('idempotent checkout (e2e)', () => {
     await testPrisma.$disconnect();
   });
 
-  type Line = { productId: string; quantity: number; unitPriceMinor: number };
-
   const buyer = async () => (await mintBuyers(app, 1))[0];
   const addToCart = (token: string, productId: string, quantity: number) =>
     request(server()).put(`/api/v1/cart/items/${productId}`).set(bearer(token)).send({ quantity }).expect(200);
 
   /** One attempt with the key the caller chose. `undefined` sends no header at all. */
-  const place = (token: string, key: string | undefined, lines: Line[]) => {
+  const place = (token: string, key: string | undefined, lines: PlacementLine[]) => {
     const call = request(server()).post('/api/v1/checkouts').set(bearer(token));
     return (key === undefined ? call : call.set(IDEMPOTENCY_KEY_HEADER, key)).send({ lines });
   };
@@ -64,7 +63,7 @@ describe('idempotent checkout (e2e)', () => {
     const b = await buyer();
     const product = await publishedProduct(app, seller, { priceMinor: 2_500, available });
     await addToCart(b.token, product.id, quantity);
-    const lines: Line[] = [{ productId: product.id, quantity, unitPriceMinor: 2_500 }];
+    const lines: PlacementLine[] = [{ productId: product.id, quantity, unitPriceMinor: 2_500 }];
     return { b, product, lines };
   }
 
@@ -137,7 +136,7 @@ describe('idempotent checkout (e2e)', () => {
     await addToCart(b.token, first.id, 1);
     await addToCart(b.token, second.id, 1);
     const key = `key-${randomUUID()}`;
-    const lines: Line[] = [
+    const lines: PlacementLine[] = [
       { productId: first.id, quantity: 1, unitPriceMinor: 1_000 },
       { productId: second.id, quantity: 1, unitPriceMinor: 2_000 },
     ];

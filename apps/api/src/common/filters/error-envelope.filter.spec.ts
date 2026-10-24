@@ -7,23 +7,15 @@ import {
   PayloadTooLargeException,
   ServiceUnavailableException,
   type ArgumentsHost,
-  type LoggerService,
 } from '@nestjs/common';
 import { ZodValidationException } from 'nestjs-zod';
 import { z } from 'zod';
 import { ErrorCodes, ErrorEnvelopeSchema } from '@app/contracts';
 import { ErrorEnvelopeFilter } from './error-envelope.filter';
+import type { Sent } from './interfaces/sent.interface';
+import type { SpyLogger } from './interfaces/spy-logger.interface';
 
 const REQUEST_ID = 'req_test';
-
-interface Sent {
-  status?: number;
-  body?: unknown;
-}
-
-interface SpyLogger extends LoggerService {
-  error: jest.Mock;
-}
 
 function silentLogger(): SpyLogger {
   return { log: jest.fn(), error: jest.fn(), warn: jest.fn() };

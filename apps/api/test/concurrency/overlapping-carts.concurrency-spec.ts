@@ -15,8 +15,8 @@ import {
   createProduct,
   createSeller,
   mintBuyers,
-  type ProductFixture,
 } from '../support/marketplace';
+import type { ProductFixture } from '../support/interfaces/marketplace.interface';
 
 /**
  * SRS-NFR-REL-002 and RISK-003: overlapping multi-seller checkouts never
