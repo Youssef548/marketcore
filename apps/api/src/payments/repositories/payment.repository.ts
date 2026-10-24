@@ -120,7 +120,14 @@ export class PaymentRepository {
         data: { status: 'SUCCEEDED', providerRef: captured.providerRef, capturedAt: captured.capturedAt },
       });
       await tx.checkout.update({ where: { id: checkoutId }, data: { status: 'PAID' } });
-      await tx.order.updateMany({ where: { checkoutId }, data: { status: 'PAID' } });
+      // The order has no `FOR UPDATE` re-read of its own, so its terminal-state guard
+      // lives here in the WHERE instead: a cancelled (or already paid) order must not
+      // move again. The checkout's guard above is its own re-read; this pins the order's
+      // state at the same moment in the same transaction.
+      await tx.order.updateMany({
+        where: { checkoutId, status: 'PENDING_PAYMENT' },
+        data: { status: 'PAID' },
+      });
 
       return { kind: 'PAID' } satisfies PaymentSettlement;
     }, TX);

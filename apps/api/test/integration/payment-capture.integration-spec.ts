@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, it } from '@jest/globals';
-import { CurrencyCodes } from '@app/contracts';
+import { CurrencyCodes, OrderStatuses } from '@app/contracts';
 import { SimulatorVerdicts, buildBuyerContext, providerOperationKey, simulatedProviderRef } from '@app/domain';
 import type { PrismaService } from '@app/runtime';
 import { PaymentService } from '../../src/payments/payment.service';
@@ -78,6 +78,23 @@ describe('capturing a checkout (SRS-FR-PAY-001/003/004)', () => {
       attempts: 1,
     });
     expect(payment.capturedAt).toBeInstanceOf(Date);
+  });
+
+  it('does not resurrect a cancelled order when its checkout is paid', async () => {
+    const { buyer, checkoutId, orderId } = await aCheckout(AMOUNT_CAPTURED);
+    // A diverged order: terminal, while its checkout is still payable. This cannot be
+    // produced by the worker (it cancels checkout and orders together), so it is the
+    // exact state a future partial-refund or admin path could leave behind.
+    await testPrisma.order.update({ where: { id: orderId }, data: { status: OrderStatuses.CANCELLED } });
+
+    expect(await serviceWith(simulator).pay(buyer, checkoutId, 'req_0')).toEqual({
+      kind: PayCheckoutOutcomes.PAID,
+    });
+
+    const checkout = await testPrisma.checkout.findUniqueOrThrow({ where: { id: checkoutId } });
+    const order = await testPrisma.order.findUniqueOrThrow({ where: { id: orderId } });
+    expect(checkout.status).toBe('PAID');
+    expect(order.status).toBe(OrderStatuses.CANCELLED);
   });
 
   it('leaves a declined checkout payable, records FAILED, and counts the next attempt on the same row', async () => {
