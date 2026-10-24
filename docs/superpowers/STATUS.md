@@ -1508,3 +1508,49 @@ Each exactly-once claim was falsified by mutation before it was believed:
 - **Load numbers** — phase 13.
 - **No by-hand `curl` demonstration this phase.** Phase 4's entry has one; here the real-browser suite is
   the end-to-end evidence and the wire behaviour is enumerated from the e2e log rather than re-typed.
+
+---
+
+## The roadmap page brought level with the delivered phases — 2026-10-24 (#148)
+
+**Claim:** `docs/roadmap.html` shows phases 0–5 as merged and phase 6 as in progress, matching this
+file — weeks 1–3 (phases 0–4) and phase 5 merged, phase 6 open with its PRs landing but no gate
+entry yet. The page had not moved since it was written with only week 1 merged: phases 2–3 read
+"next", phase 4 "planned", the masthead counted 1/12.
+**Branch:** `feat/agent-factory` (issue #148)
+
+### Proven
+
+| Check | Command | Result |
+|---|---|---|
+| The statuses as structure | `node .superpowers/148/roadmap-check.mjs` (scratch, this worktree) | **PASS** — weeks 1–3 done/"merged", week 4 active with "phase 5 merged" + "phase 6 in progress", weeks 5–12 planned, tags balanced; the same check on the pre-change page **fails on the exact reported staleness** |
+| The statuses as rendered | headless Chromium, both themes | week 4's two pills read by computed colour — phase 5's in `--done`, phase 6's in `--next`; no console errors and no horizontal overflow at 1280/720/375px |
+| Whole-repo gate | `pnpm turbo run lint typecheck test build` | **37/37 tasks, twice, with this diff** (api 106 unit / 125 e2e / 122 integration / 5 concurrency; web 145; worker 19 + 6 integration; ui 37). Four later runs of the same command failed only `api#test` — three on the race below, one on the two flakes below it |
+
+### Not proven / deferred
+
+- **A pre-existing racy pipeline, hit by repeat runs and not caused by this change.** `turbo run
+  test` runs `worker#test` in parallel with `api#test` against the one database, and the worker's
+  integration fixtures write `PUBLISHED` products straight into it — while the storefront paging
+  test asserts its 25 just-created rows are the whole table's newest. Gate 7's intruder is a named
+  row: `Worker item cd13f90e` (org `wk-…`) was created 87 ms *inside* the paging test's creation
+  loop (`Item 0802e854`, org `paging-…`), displacing it from page one. The two suites pass alone
+  (14/14), and the intruding id differs on every failing run. Phase 5 recorded this pipeline as
+  vetted under parallelism once; three consecutive repeat runs here hit it. The fix — isolate the
+  worker suite's database, serialize the two tasks, or scope the assertion — is a maintainer's
+  decision, not a roadmap ticket's.
+- **Two further flakes in one run, not diagnosed further:** gate 4's run also failed
+  `public catalog › hides an inactive organization's products` with `ECONNRESET`, and
+  `auth (e2e) › answers an unknown email and a wrong password identically` with a 404 on a route
+  that answered 200 in every other run. Both passed on an immediate rerun of the file alone — the
+  same shape as the flaky `auth (e2e)` case this file already records under BL-001.
+
+### Deviation
+
+- **One line outside the ticket's file scope.** The capture integration spec called `createSeller()`
+  bare against the helper's `createSeller(prefix: string)` — TS2554, `api#typecheck` red at HEAD, so
+  the whole-repo gate could not pass for any change. Fixed as `createSeller('paycap')`, every sibling
+  spec's prefix convention; the spec is 7/7 against real PostgreSQL. The suite had stayed green at
+  runtime because jest transpiles without checking, and the bare call only stringified `undefined`
+  into the seller's name and slug. Cost if wrong: revert one line.
+
