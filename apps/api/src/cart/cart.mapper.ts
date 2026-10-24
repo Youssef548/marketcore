@@ -1,17 +1,7 @@
-import {
-  CartSchema,
-  type Cart,
-  type CartLine,
-  type Seller,
-} from '@app/contracts';
+import { CartSchema, type Cart } from '@app/contracts';
 import { MIN_PUBLISHABLE_PRICE_MINOR, cartLineAvailability, groupBySeller, isPurchasable } from '@app/domain';
 import type { CartLineRow } from './interfaces/cart.interface';
-
-interface SellerLine {
-  sellerId: string;
-  seller: Seller;
-  line: CartLine;
-}
+import type { SellerLine } from './interfaces/seller-line.interface';
 
 function toSellerLine(row: CartLineRow): SellerLine {
   const { product } = row;
